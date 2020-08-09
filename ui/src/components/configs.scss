@@ -1,0 +1,267 @@
+$hoverColor: #f5f6fa;
+
+$subtleColor: #718093;
+$iconColor: #fbc531; // #487eb0;
+
+$monoFont: monospace;
+
+$tableEven: #ecf0f1;
+$tableSelected: #151b18;
+$tableHighlight: #555b68;
+$tableConfig: #fbc531;
+$tableValue: #4cd137;
+
+
+.info_list {
+  > span {
+    display: inline-block;
+    overflow: hidden;
+  }
+
+  > span.key {
+    margin-right: 5px;
+    width: 120px;
+    opacity: 0.7;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: top;
+
+
+    & + span {
+      &:before {
+        content: ':';
+        opacity: 0.3 !important;
+        margin-right: 5px;
+        //font-family: $normalFont;
+      }
+    }
+  }
+
+  &.mono {
+    span.value {
+      font-family: $monoFont;
+    }
+  }
+
+  &.highlight {
+    font-weight: bold;
+  }
+}
+
+.run {
+  font-size: 10px;
+  padding: 10px 0;
+  width: 480px;
+  h3, h4 {
+    padding: 0 10px
+  }
+  h3 {
+    color: #34495e;
+  }
+  h4 {
+    color: #7f8c8d;
+  }
+}
+
+.configs {
+  .ignored {
+    display: none;
+  }
+
+  .not-hyperparam {
+    //display: none;
+  }
+
+  .info_list {
+    &.only_option {
+      > span.key {
+        opacity: 0.4;
+      }
+
+      > span {
+        opacity: 0.4;
+      }
+    }
+
+    &.common {
+      > span.key {
+        opacity: 0.4;
+      }
+
+      > span {
+        opacity: 0.4;
+      }
+    }
+
+    &.ignored {
+      > span.key {
+        opacity: 0.4;
+      }
+
+      > span {
+        opacity: 0.4;
+        text-decoration: line-through;
+      }
+    }
+  }
+}
+
+.config {
+  .combined {
+    width: 330px;
+    > span {
+      display: inline-block
+    }
+  }
+
+  .computed {
+    //font-weight: bold;
+    margin-right: 5px;
+    font-family: $monoFont;
+  }
+
+  .option {
+    margin-right: 5px;
+    font-family: $monoFont;
+    color: #c0392b;
+  }
+
+  .options {
+    font-family: $monoFont;
+    >span {
+      font-style: italic;
+      color: #2980b9;
+    }
+  }
+
+  &.only_option {
+    > .option {
+      opacity: 0.8;
+    }
+  }
+
+  &.specified {
+    font-weight: bold;
+  }
+
+  &.hyperparam {
+    font-weight: bold;
+  }
+}
+
+.collapsed {
+  .info_list.collapsible {
+    display: none;
+  }
+}
+
+.block {
+  .info_list {
+    padding: 0 10px;
+    line-height: 0;
+
+    > span {
+      line-height: 2;
+    }
+
+    &:hover {
+      background: $tableHighlight !important;
+
+      > span {
+        opacity: 1.0 !important;
+        text-decoration: none;
+      }
+    }
+
+    &:nth-child(even) {
+      //background: $tableEven;
+    }
+  }
+}
+
+.collapsed {
+  .info_list {
+    &:nth-child(even) {
+      background: none;
+    }
+  }
+
+  .not_collapsible, {
+    &:nth-child(even) {
+      background: $tableEven;
+    }
+  }
+}
+
+.key_icon {
+  margin-right: 8px;
+  //color: $iconColor;
+  opacity: 0.3;
+}
+
+.key_split {
+  display: inline-block;
+  width: 16px;
+}
+
+.boolean {
+  color: #f39c12;
+}
+
+.int {
+  color: #27ae60;
+}
+
+.float {
+  color: #27ae60;
+}
+
+.string {
+  color: #e84118;
+}
+
+.unknown {
+  color: #f5f6fa;
+}
+
+.subtle {
+  color: #ccc;
+  font-size: 0.6rem;
+}
+
+.size_unit {
+  //font-weight: bold;
+  color: $hoverColor;
+  //font-family: $normalFont;
+}
+
+.size {
+  opacity: 0.9;
+}
+
+.generation {
+  font-size: .7em;
+  color: #6ab04c;
+  margin-right: 2px;
+}
+
+@mixin row-colors($rowColor) {
+  background: $rowColor;
+
+  div.cell {
+    &.config {
+      background: mix($rowColor, $tableConfig, 95%);
+    }
+
+    &.value {
+      background: mix($rowColor, $tableValue, 95%);
+    }
+  }
+
+  &:hover {
+    div.cell {
+      background: $tableHighlight !important;
+    }
+  }
+
+}

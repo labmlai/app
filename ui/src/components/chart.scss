@@ -1,0 +1,34 @@
+svg#chart {
+  g.bottom-axis, g.right-axis {
+    color: #7f8c8d;
+
+    path.domain {
+      color: #ecf0f1;
+    }
+
+    g.tick {
+      line {
+        color: #bdc3c7;
+      }
+    }
+  }
+
+  path.line-fill {
+    opacity: 0.1;
+  }
+
+  path.line {
+    stroke-width: 3;
+  }
+
+  g.sparkline-list-item {
+    text {
+      font-weight: bold;
+      font-size: 12px
+    }
+
+    path.line {
+      stroke-width: 1.5;
+    }
+  }
+}
