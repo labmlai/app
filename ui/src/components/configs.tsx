@@ -14,7 +14,7 @@ export interface Config {
     type: string
     is_hyperparam?: boolean
     is_meta?: boolean
-    is_explicitly_specified: boolean
+    is_explicitly_specified?: boolean
 }
 
 
@@ -67,6 +67,7 @@ interface OptionInfo {
     isCustom: boolean
     isOnlyOption: boolean
     value: string
+    isDefault: boolean
     otherOptions?: ReactElement
 }
 
@@ -80,16 +81,21 @@ function parseOption(conf: Config): OptionInfo {
     let res: OptionInfo = {
         isCustom: false,
         isOnlyOption: false,
-        value: conf.value
+        value: conf.value,
+        isDefault: false
     }
 
     if (options.has(conf.value)) {
         options.delete(conf.value)
         if (options.size === 0) {
             res.isOnlyOption = true
+            res.isDefault = true
         }
     } else {
         res.isCustom = true
+        if (conf.is_explicitly_specified !== true) {
+            res.isDefault = true
+        }
     }
     if (options.size > 0) {
         res.otherOptions = <OtherOptions options={[...options]}/>
@@ -114,13 +120,13 @@ function ConfigItemView(props: { config: Config, configs: Config[] }) {
 
     let prefix = ''
     let parentKey = ''
-    let parentOnlyOption = false
+    let isParentDefault = false
     let conf_modules = conf.key.split('.')
     for (let i = 0; i < conf_modules.length - 1; ++i) {
         parentKey += conf_modules[i]
         let optInfo = parseOption(configs[parentKey])
-        if (optInfo.isOnlyOption) {
-            parentOnlyOption = true
+        if (optInfo.isDefault) {
+            isParentDefault = true
         }
         parentKey += '.'
         prefix += '--- '
@@ -135,16 +141,15 @@ function ConfigItemView(props: { config: Config, configs: Config[] }) {
         let options = parseOption(conf)
 
         if (options.isCustom) {
-            if (parentOnlyOption && !conf.is_explicitly_specified && !conf.is_hyperparam) {
+            if (isParentDefault && !conf.is_explicitly_specified && !conf.is_hyperparam && !conf.is_hyperparam) {
                 classes.push('.only_option')
                 isCollapsible = true
             } else {
                 classes.push('.custom')
             }
-
         } else {
             optionElem = <Option value={conf.value}/>
-            if (parentOnlyOption || options.isOnlyOption) {
+            if (!conf.is_explicitly_specified && !conf.is_hyperparam && (isParentDefault || options.isOnlyOption)) {
                 classes.push('.only_option')
                 isCollapsible = true
             } else {
@@ -189,7 +194,7 @@ export function ConfigsView(props: { configs: Config[] }) {
 
     configs.sort((a, b) => {
         if (a.key < b.key) return -1;
-        else if(a.key > b.key) return +1;
+        else if (a.key > b.key) return +1;
         else return 0
     })
     console.log(configs)
