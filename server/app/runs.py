@@ -111,6 +111,7 @@ class Run:
 
     def __init__(self, *,
                  run_uuid: str,
+                 labml_token: str,
                  slack_thread_ts: str = '',
                  file_id: str = '',
                  name: str = '',
@@ -127,6 +128,7 @@ class Run:
         self.comment = comment
         self.name = name
         self.run_uuid = run_uuid
+        self.labml_token = labml_token
         self.slack_thread_ts = slack_thread_ts
         self.file_id = file_id
         self.step = 0
@@ -136,6 +138,7 @@ class Run:
     def to_dict(self):
         return {
             'run_uuid': self.run_uuid,
+            'labml_token': self.labml_token,
             'slack_thread_ts': self.slack_thread_ts,
             'file_id': self.file_id,
             'name': self.name,
@@ -225,13 +228,13 @@ class Run:
 _RUNS: Dict[str, Run] = {}
 
 
-def get_or_create(run_uuid: str):
+def get_or_create(run_uuid: str, labml_token: str = ''):
     if run_uuid in _RUNS:
         return _RUNS[run_uuid]
 
     path = Path(settings.DATA_PATH / 'runs' / f'{run_uuid}.json')
     if not path.exists():
-        run = Run(run_uuid=run_uuid)
+        run = Run(run_uuid=run_uuid, labml_token=labml_token)
         run.save()
 
         _RUNS[run.run_uuid] = run
