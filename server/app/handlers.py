@@ -50,7 +50,7 @@ def update_run():
 
     json = request.json
     run_uuid = json.get('run_uuid', '')
-    run = runs.get_or_create(run_uuid)
+    run = runs.get_or_create(run_uuid, labml_token)
 
     run.update(json)
     if 'track' in json:
