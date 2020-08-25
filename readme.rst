@@ -31,7 +31,7 @@ How it works? A simple Sine Wave
     from labml import tracker, experiment, lab
 
     lab.configure({
-        'web_api': 'https://api.lab-ml.com/api/v1/track?labml_token=YOUR_LABML_TOEKN&channel=YOUR_SLACK_CHANNEL',
+    'web_api': 'https://api.lab-ml.com/api/v1/track?labml_token=903c84fba8ca49ca9f215922833e08cf&channel=colab-alerts',
     })
 
     configs = {
