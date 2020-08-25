@@ -59,4 +59,4 @@ Links
 
 `📹 Youtube Video <https://www.youtube.com/watch?v=FY3e1EHqwEE&feature=emb_title>`_
 
-`📓 Kaggle Notebook <http://https//join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/>`_
+`📓 Kaggle Notebook <https://www.kaggle.com/hnipun/push-ml-dl-model-training-updates-to-slack/>`_
