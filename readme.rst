@@ -10,13 +10,20 @@ An open source library to push charts and updates of your ML/DL model training t
 .. image:: https://github.com/lab-ml/app/blob/master/images/labml.gif
    :alt: Slack output
 
-**How it works? A simple sin signal**
+How it works? A simple Sine Wave
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Go to  `App <https://web.lab-ml.com/>`_ and generate a web_api url.
+1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **web_api url**.
 
 2. Add LabML App to your channel.
 
-3. Run the following sample code.
+3. Install labml library
+
+.. code-block:: console
+
+    pip install labml
+
+4. Run the following sample code.
 
 .. code-block:: python
 
@@ -42,3 +49,12 @@ An open source library to push charts and updates of your ML/DL model training t
     for y_i in y:
         tracker.save({'loss': y_i, 'noisy': y_i + np.random.normal(0, 10, 100)})
         tracker.add_global_step()
+
+Links
+-----
+
+`📑 Medium Article <https://medium.com/@labml/labml-slack-integration-79519cf9c3a4>`_
+
+`📹 Youtube Video <https://www.youtube.com/watch?v=FY3e1EHqwEE&feature=emb_title>`_
+
+
