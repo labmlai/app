@@ -50,7 +50,7 @@ How it works? A simple Sine Wave
         tracker.save({'loss': y_i, 'noisy': y_i + np.random.normal(0, 10, 100)})
         tracker.add_global_step()
 
-5. To view updates in slack, please join our Slack workspace `here <http://https//join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/>`_.
+5. To view updates in slack, please join our Slack workspace `here <https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g>`_.
 
 Links
 -----
