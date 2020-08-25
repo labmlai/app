@@ -17,7 +17,7 @@ How it works? A simple Sine Wave
 
 2. Add LabML App to your channel.
 
-3. Install labml library
+3. Install the **labml** library
 
 .. code-block:: console
 
@@ -50,6 +50,8 @@ How it works? A simple Sine Wave
         tracker.save({'loss': y_i, 'noisy': y_i + np.random.normal(0, 10, 100)})
         tracker.add_global_step()
 
+5. To view updates in slack, please join our Slack workspace `here <http://https//join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/>`_.
+
 Links
 -----
 
@@ -57,4 +59,4 @@ Links
 
 `📹 Youtube Video <https://www.youtube.com/watch?v=FY3e1EHqwEE&feature=emb_title>`_
 
-
+`📓 Kaggle Notebook <http://https//join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/>`_
