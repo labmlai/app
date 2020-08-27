@@ -75,7 +75,7 @@ def compile_iter_message(run: Run):
     }]
 
 
-def compile_init_message(run_uuid: str, name: str, comment: str, params: Dict[str, str]):
+def compile_init_message(run_uuid: str, name: str, comment: str):
     text = f':microscope: *{name}*\n'
     if comment.strip():
         text += f'_{comment}_\n'
@@ -87,6 +87,18 @@ def compile_init_message(run_uuid: str, name: str, comment: str, params: Dict[st
         'type': 'context',
         'elements': [{'type': 'mrkdwn', 'text': f'{run_uuid}'}]
     }]
+
+    return blocks
+
+
+def compile_status_message(reason: str, details: str, end_date: str, end_time: str):
+    blocks = [{
+        'type': 'section',
+        'text': {'type': 'mrkdwn', 'text': f'* Experiment {reason} on {end_date} {end_time}* :boom: :boom: :boom:'}
+    }] + ([{
+        'type': 'context',
+        'elements': [{'type': 'mrkdwn', 'text': f'{details}'}]
+    }] if details else [])
 
     return blocks
 
@@ -115,14 +127,20 @@ class SlackMessage:
     def __init__(self, slack_token: str):
         self._client = _get_client(slack_token)
 
-    def send_message(self, channel: str, run: Run):
-        if run.slack_thread_ts:
-            blocks = compile_iter_message(run)
-            notification = f"Update from experiment {run.name}"
-        else:
-            blocks = compile_init_message(run.run_uuid, run.name, run.comment, {'configs': 'TODO'})
-            notification = f"Experiment {run.name} has started"
+    def send_init_message(self, channel: str, run: Run):
+        blocks = compile_init_message(run.run_uuid, run.name, run.comment)
+        notification = f"Experiment {run.name} has started"
 
+        return self.send_message(channel, run, notification, blocks)
+
+    def send_status_message(self, channel: str, run: Run):
+        status = run.status
+        blocks = compile_status_message(status['reason'], status['details'], status['end_date'], status['end_time'])
+        notification = f"Status update from Experiment {run.name}"
+
+        return self.send_message(channel, run, notification, blocks)
+
+    def send_message(self, channel: str, run: Run, notification, blocks):
         res = {'error': '', 'success': False, 'ts': ''}
 
         if IS_DEBUG:
@@ -196,7 +214,7 @@ class SlackMessage:
 
             run.file_id = res.get('file_id', '')
         else:
-            res = self.send_message(channel, run)
+            res = self.send_init_message(channel, run)
             self._collect_errors(res, run)
             if not res['success']:
                 return
