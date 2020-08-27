@@ -92,9 +92,15 @@ def compile_init_message(run_uuid: str, name: str, comment: str):
 
 
 def compile_status_message(reason: str, details: str, end_date: str, end_time: str):
+    if 'completed' in reason:
+        emoji = ':white_check_mark: :white_check_mark: :white_check_mark:'
+    else:
+        emoji = ':x: :x: :x:'
+
     blocks = [{
         'type': 'section',
-        'text': {'type': 'mrkdwn', 'text': f'* Experiment {reason} on {end_date} {end_time}* :boom: :boom: :boom:'}
+        'text': {'type': 'mrkdwn',
+                 'text': f'* Experiment {reason} on {end_date} {end_time}* {emoji}'}
     }] + ([{
         'type': 'context',
         'elements': [{'type': 'mrkdwn', 'text': f'{details}'}]
