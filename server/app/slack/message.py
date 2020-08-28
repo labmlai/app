@@ -144,8 +144,7 @@ class SlackMessage:
         blocks = compile_status_message(status['reason'], status['details'], status['end_date'], status['end_time'])
         notification = f"Status update from Experiment {run.name}"
 
-        res = self.send_message(channel, run, notification, blocks)
-        self._collect_errors(res, run)
+        return self.send_message(channel, run, notification, blocks)
 
     def send_message(self, channel: str, run: Run, notification, blocks):
         res = {'error': '', 'success': False, 'ts': ''}
@@ -218,6 +217,10 @@ class SlackMessage:
             if run.file_id:
                 del_res = self.delete_file(run.file_id)
                 self._collect_errors(del_res, run)
+
+            if run.status:
+                res_status = self.send_status_message(channel, run)
+                self._collect_errors(res_status, run)
 
             run.file_id = res.get('file_id', '')
         else:
