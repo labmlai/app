@@ -2,7 +2,6 @@ import axios from 'axios';
 
 class NETWORK {
     static async authorize(): Promise<any> {
-        console.log(process.env)
         return axios.post(`${process.env.REACT_APP_SERVER_URL}/signup`, {})
     }
 

@@ -21,7 +21,6 @@ function RunView(props: RunProps) {
     useEffect(() => {
         if (run_uuid) {
             NETWORK.get_run(run_uuid).then((res) => {
-                console.log('run', res)
                 setRun(res.data)
             })
         }

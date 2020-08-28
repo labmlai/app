@@ -16,7 +16,6 @@ function ChartView(props: ChartProps) {
     useEffect(() => {
         if (run_uuid) {
             NETWORK.get_tracking(run_uuid).then((res) => {
-                console.log(res)
                 setTrack(res.data)
             })
         }

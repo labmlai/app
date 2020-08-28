@@ -184,7 +184,7 @@ function ConfigItemView(props: { config: Config, configs: Config[] }) {
         <span className={'combined'}>
         {computedElem}
             {optionElem}
-            {otherOptionsElem}
+            {/*{otherOptionsElem}*/}
         </span>
     </div>
 }
@@ -197,8 +197,8 @@ export function ConfigsView(props: { configs: Config[] }) {
         else if (a.key > b.key) return +1;
         else return 0
     })
-    console.log(configs)
+
     return <div className={"configs block collapsed"}>
-        {configs.map((c) => <ConfigItemView key={c.name} config={c} configs={configs}/>)}
+        {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}/>)}
     </div>
 }

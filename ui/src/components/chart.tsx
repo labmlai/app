@@ -79,7 +79,6 @@ function BottomAxis(props: AxisProps) {
     const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5)
     const id = `axis_${Math.round(Math.random() * 1e9)}`
     useEffect(() => {
-        console.log(`#${id}`)
         d3.select(`#${id}`).append('g').call(axis)
     });
 
@@ -91,7 +90,6 @@ function RightAxis(props: AxisProps) {
     const axis = d3.axisRight(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5)
     const id = `axis_${Math.round(Math.random() * 1e9)}`
     useEffect(() => {
-        console.log(`#${id}`)
         d3.select(`#${id}`).append('g').call(axis)
     });
 
