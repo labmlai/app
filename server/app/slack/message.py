@@ -91,16 +91,18 @@ def compile_init_message(run_uuid: str, name: str, comment: str):
     return blocks
 
 
-def compile_status_message(reason: str, details: str, end_date: str, end_time: str):
-    if 'completed' in reason:
+def compile_status_message(status: str, details: str, end_date: str, end_time: str):
+    if 'completed' == status:
         emoji = ':white_check_mark: :white_check_mark: :white_check_mark:'
-    else:
+    elif 'crashed' == status:
         emoji = ':x: :x: :x:'
+    else:
+        emoji = ':warning: :warning: :warning:'
 
     blocks = [{
         'type': 'section',
         'text': {'type': 'mrkdwn',
-                 'text': f'* Experiment {reason} on {end_date} {end_time}* {emoji}'}
+                 'text': f'* Experiment {status} on {end_date} {end_time}* {emoji}'}
     }] + ([{
         'type': 'context',
         'elements': [{'type': 'mrkdwn', 'text': f'{details}'}]
@@ -141,7 +143,7 @@ class SlackMessage:
 
     def send_status_message(self, channel: str, run: Run):
         status = run.status
-        blocks = compile_status_message(status['reason'], status['details'], status['end_date'], status['end_time'])
+        blocks = compile_status_message(status['status'], status['details'], status['end_date'], status['end_time'])
         notification = f"Status update from experiment {run.name}"
 
         return self.send_message(channel, run, notification, blocks)
