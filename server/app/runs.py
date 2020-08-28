@@ -125,6 +125,7 @@ class Run:
 
         self.tracking = tracking
         self.configs = configs
+        self.status: Dict[str, any] = {}
         self.comment = comment
         self.name = name
         self.run_uuid = run_uuid
@@ -176,6 +177,8 @@ class Run:
         if not self.comment:
             self.comment = data.get('comment', '')
         self.configs.update(data.get('configs', {}))
+        self.status.update(data.get('status', {}))
+
         self.save()
 
     def track(self, data: Dict[str, SeriesModel]):
