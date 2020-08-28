@@ -170,13 +170,13 @@ class SlackMessage:
 
         return res
 
-    def upload_file(self, channel: str, run: Run, chart: str, title: str):
+    def upload_file(self, channel: str, run: Run, file_path: str, title: str):
         res = {'error': '', 'success': False, 'ts': ''}
 
         try:
             ret = self._client.files_upload(
                 channels=channel,
-                file=chart,
+                file=file_path,
                 filetype='png',
                 title=title,
                 thread_ts=run.slack_thread_ts

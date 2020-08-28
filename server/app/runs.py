@@ -6,7 +6,10 @@ import numpy as np
 
 from labml import monit
 from . import settings
-from .screenshot import WEB_DRIVER
+try:
+    from .screenshot.selenium import WEB_DRIVER
+except ImportError:
+    from .screenshot.dummy import WEB_DRIVER
 
 MAX_BUFFER_LENGTH = 1024
 

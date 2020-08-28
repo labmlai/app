@@ -107,6 +107,7 @@ function MainView(props: MainProps) {
             </div>
             <iframe width="700"
                     height="415"
+                    title={"Demonstration"}
                     src="https://www.youtube.com/embed/FY3e1EHqwEE"
                     frameBorder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
