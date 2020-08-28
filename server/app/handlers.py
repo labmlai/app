@@ -56,16 +56,14 @@ def update_run():
     if 'track' in json:
         run.track(json['track'])
 
-    if 'status' in json:
-        message = SlackMessage(user.slack_token)
-        message.send_status_message(channel, run)
-
-        return jsonify({'errors': run.errors})
-
     if run.last_notified + NOTIFICATION_DELAY < time.time():
         run.last_notified = time.time()
         message = SlackMessage(user.slack_token)
         tasks.post_slack_message(message, channel, run)
+
+    if 'status' in json:
+        message = SlackMessage(user.slack_token)
+        message.send_status_message(channel, run)
 
     return jsonify({'errors': run.errors})
 
