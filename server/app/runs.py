@@ -180,7 +180,9 @@ class Run:
         if not self.comment:
             self.comment = data.get('comment', '')
         self.configs.update(data.get('configs', {}))
-        self.status.update(data.get('status', {}))
+
+        if data.get('status', {}):
+            self.status.update(data.get('status', {}))
 
         self.save()
 
