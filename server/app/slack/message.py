@@ -143,7 +143,7 @@ class SlackMessage:
 
     def send_status_message(self, channel: str, run: Run):
         status = run.status
-        blocks = compile_status_message(status['status'], status['details'], status['end_date'], status['end_time'])
+        blocks = compile_status_message(status['status'], status['details'], status['date'], status['time'])
         notification = f"Status update from experiment {run.name}"
 
         return self.send_message(channel, run, notification, blocks)
