@@ -1,17 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import * as Sentry from '@sentry/react';
+import {Integrations} from '@sentry/tracing';
 import './index.css';
 import App from './App';
 // import * as serviceWorker from './serviceWorker';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+if (process.env.DSN) {
+    Sentry.init({
+        dsn: process.env.DSN,
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
+        tracesSampleRate: 1.0,
+    });
+}
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <React.StrictMode>
+        <App/>
+    </React.StrictMode>,
+    document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
