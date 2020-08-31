@@ -16,6 +16,10 @@ request = typing.cast(werkzeug.wrappers.Request, request)
 NOTIFICATION_DELAY = 60
 
 
+def test():
+    division_by_zero = 1 / 0
+
+
 def signup():
     return jsonify({
         'uri': authorize.gen_authorize_uri("stateless")
@@ -82,6 +86,8 @@ def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
 
 
 def add_handlers(app: flask.Flask):
+    _add(app, 'GET', test, 'test')
+
     _add(app, 'POST', signup, 'signup')
     _add(app, 'GET', slack_authenticated, 'auth/redirect')
     _add(app, 'POST', update_run, 'track')

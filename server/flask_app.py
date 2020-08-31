@@ -1,7 +1,17 @@
+import sentry_sdk
 from flask import Flask
 from flask_cors import CORS, cross_origin
+from sentry_sdk.integrations.flask import FlaskIntegration
 
 from app import handlers
+from app import settings
+
+if settings.DSN:
+    sentry_sdk.init(
+        dsn=settings.DSN,
+        integrations=[FlaskIntegration()],
+        traces_sample_rate=1.0
+    )
 
 
 def create_app():
