@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react"
 
 import NETWORK from '../network'
 import {ConfigsView} from "../components/configs";
+import LineChart, {SeriesModel} from "../components/chart";
 
 interface RunProps {
     location: any
@@ -14,6 +15,7 @@ function RunView(props: RunProps) {
         comment: '',
         configs: [],
     })
+    const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const params = new URLSearchParams(props.location.search)
     const run_uuid = params.get('run_uuid')
@@ -22,6 +24,9 @@ function RunView(props: RunProps) {
         if (run_uuid) {
             NETWORK.get_run(run_uuid).then((res) => {
                 setRun(res.data)
+            })
+            NETWORK.get_tracking(run_uuid).then((res) => {
+                setTrack(res.data)
             })
         }
     }, [run_uuid])
@@ -34,8 +39,15 @@ function RunView(props: RunProps) {
             <ConfigsView configs={run.configs}/>
         </div>
     }
+
+    let chart = null
+    if (track != null) {
+        chart = <LineChart key={1} series={track as SeriesModel[]}/>
+    }
+
     return <div>
         {runView}
+        {chart}
     </div>
 
 }

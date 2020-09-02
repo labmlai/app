@@ -28,7 +28,7 @@ function HeaderView(props: HeaderProps) {
 
     let runView = null
     if (run.configs.length !== 0) {
-        runView = <div id={'run'} className={'run'}>
+        runView = <div id={'run'} className={'run-header run'}>
             <h3>{run.name}</h3>
             <h4>{run.comment}</h4>
             <ConfigsView configs={run.configs}/>
