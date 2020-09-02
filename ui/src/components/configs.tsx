@@ -3,6 +3,8 @@ import "./configs.scss"
 import {FormattedValue} from "./value";
 
 const CONFIG_PRINT_LEN = 20
+const KEY_WIDTH = 125
+const PADDING = 10
 
 export interface Config {
     key: string
@@ -104,7 +106,13 @@ function parseOption(conf: Config): OptionInfo {
     return res
 }
 
-function ConfigItemView(props: { config: Config, configs: Config[] }) {
+interface ConfigItemProps {
+    config: Config
+    configs: Config[]
+    width: number
+}
+
+function ConfigItemView(props: ConfigItemProps) {
     let conf = props.config
     let configs: { [key: string]: Config } = {}
     for (let c of props.configs) {
@@ -181,15 +189,22 @@ function ConfigItemView(props: { config: Config, configs: Config[] }) {
 
     return <div className={classes.join(' ')}>
         <span className={'key'}>{prefix + conf.name}</span>
-        <span className={'combined'}>
-        {computedElem}
+        <span className={'combined'}
+              style={{width: `${props.width - KEY_WIDTH - 2 * PADDING}px`}}>
+            {computedElem}
             {optionElem}
             {/*{otherOptionsElem}*/}
         </span>
     </div>
 }
 
-export function ConfigsView(props: { configs: Config[] }) {
+interface ConfigsProps {
+    configs: Config[]
+    width: number
+}
+
+
+export function ConfigsView(props: ConfigsProps) {
     let configs = props.configs
 
     configs.sort((a, b) => {
@@ -198,7 +213,11 @@ export function ConfigsView(props: { configs: Config[] }) {
         else return 0
     })
 
-    return <div className={"configs block collapsed"}>
-        {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}/>)}
+    let style = {
+        width: `${props.width}px`
+    }
+    return <div className={"configs block collapsed"} style={style}>
+        {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}
+                                            width={props.width}/>)}
     </div>
 }

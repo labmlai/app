@@ -3,11 +3,6 @@ import * as d3 from "d3";
 import "./chart.scss"
 import {formatFixed} from "./value";
 
-const MARGIN = 10
-const AXIS_SIZE = 30
-const CHART_WIDTH = 480
-const CHART_HEIGHT = 240
-const ITEM_HEIGHT = 35
 
 interface PointValue {
     step: number
@@ -50,11 +45,11 @@ function getScale(series: PointValue[][], func: (d: PointValue) => number, size:
         .range([0, size])
 }
 
-function getYScale(series: PointValue[][], size = CHART_HEIGHT): d3.ScaleLinear<number, number> {
+function getYScale(series: PointValue[][], size: number): d3.ScaleLinear<number, number> {
     return getScale(series, d => d.value, -size)
 }
 
-function getXScale(series: PointValue[][], size = CHART_WIDTH): d3.ScaleLinear<number, number> {
+function getXScale(series: PointValue[][], size: number): d3.ScaleLinear<number, number> {
     return getScale(series, d => d.step, size)
 }
 
@@ -65,10 +60,6 @@ export interface SeriesModel {
     step: number[]
     value: number[]
     series: PointValue[]
-}
-
-interface SeriesProps {
-    series: SeriesModel[]
 }
 
 interface AxisProps {
@@ -158,7 +149,19 @@ function ListRow(props: ListRowProps) {
     </g>
 }
 
+interface SeriesProps {
+    series: SeriesModel[]
+    width: number
+}
+
+
 function LineChart(props: SeriesProps) {
+    const margin = Math.floor(props.width / 64)
+    const axisSize = 30
+    const chartWidth = props.width - 2 * margin - axisSize
+    const chartHeight = Math.round(chartWidth / 2)
+    const itemHeight = 35
+
     let track = props.series
 
     for (let s of track) {
@@ -171,8 +174,8 @@ function LineChart(props: SeriesProps) {
 
     let plot = track.filter((s => s.is_plot))
     let plotSeries = plot.map(s => s.series)
-    const yScale = getYScale(plotSeries)
-    const xScale = getXScale(plotSeries)
+    const yScale = getYScale(plotSeries, chartHeight)
+    const xScale = getXScale(plotSeries, chartWidth)
 
     // let rects = series.map((d, i) => {
     //     return <rect key={i} x={xScale(d.step)} y={yScale(d.value)} width={40}
@@ -186,25 +189,25 @@ function LineChart(props: SeriesProps) {
 
     let list = track.map((s, i) => {
         return <g key={s.name}
-                  transform={`translate(${MARGIN}, ${MARGIN + CHART_HEIGHT + AXIS_SIZE + i * ITEM_HEIGHT})`}>
-            <ListRow name={s.name} series={s.series} idx={i} width={CHART_WIDTH}/>
+                  transform={`translate(${margin}, ${margin + chartHeight + axisSize + i * itemHeight})`}>
+            <ListRow name={s.name} series={s.series} idx={i} width={chartWidth}/>
         </g>
     })
 
     return <div>
         <svg id={'chart'}
-             height={2 * MARGIN + AXIS_SIZE + CHART_HEIGHT + ITEM_HEIGHT * track.length}
-             width={2 * MARGIN + AXIS_SIZE + CHART_WIDTH}>
-            <g transform={`translate(${MARGIN}, ${MARGIN + CHART_HEIGHT})`}>
+             height={2 * margin + axisSize + chartHeight + itemHeight * track.length}
+             width={2 * margin + axisSize + chartWidth}>
+            <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 {lines}
             </g>
 
             <g className={'bottom-axis'}
-               transform={`translate(${MARGIN}, ${MARGIN + CHART_HEIGHT})`}>
+               transform={`translate(${margin}, ${margin + chartHeight})`}>
                 <BottomAxis scale={xScale}/>
             </g>
             <g className={'right-axis'}
-               transform={`translate(${MARGIN + CHART_WIDTH}, ${MARGIN + CHART_HEIGHT})`}>
+               transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
                 <RightAxis scale={yScale}/>
             </g>
 

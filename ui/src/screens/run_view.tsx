@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react"
 import NETWORK from '../network'
 import {ConfigsView} from "../components/configs";
 import LineChart, {SeriesModel} from "../components/chart";
+import useWindowDimensions from "../utils/window_dimensions";
 
 interface RunProps {
     location: any
@@ -15,6 +16,7 @@ function RunView(props: RunProps) {
         comment: '',
         configs: [],
     })
+    const { width: windowWidth } = useWindowDimensions()
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const params = new URLSearchParams(props.location.search)
@@ -33,16 +35,19 @@ function RunView(props: RunProps) {
 
     let runView = null
     if (run.configs.length !== 0) {
+        let style = {
+            width: `${windowWidth}px`
+        }
         runView = <div id={'run'} className={'run'}>
             <h3>{run.name}</h3>
             <h4>{run.comment}</h4>
-            <ConfigsView configs={run.configs}/>
+            <ConfigsView configs={run.configs} width={windowWidth}/>
         </div>
     }
 
     let chart = null
     if (track != null) {
-        chart = <LineChart key={1} series={track as SeriesModel[]}/>
+        chart = <LineChart key={1} series={track as SeriesModel[]} width={windowWidth}/>
     }
 
     return <div>
