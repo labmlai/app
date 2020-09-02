@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from glob import glob
 from datetime import datetime
 from typing import Dict, List, Any
 
@@ -121,19 +122,24 @@ class Run:
                  file_id: str = '',
                  name: str = '',
                  comment: str = '',
+                 start: Dict[str, str] = None,
                  configs: Dict[str, any] = None,
+                 status: Dict[str, any] = None,
                  tracking: List[Dict[str, any]] = None):
         if configs is None:
             configs = {}
         if tracking is None:
             tracking = {}
-
-        start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S").split()
+        if status is None:
+            status = {}
+        if start is None:
+            start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S").split()
+            start = {'date': start_time[0], 'time': start_time[1]}
 
         self.tracking = tracking
         self.configs = configs
-        self.status: Dict[str, any] = {}
-        self.start = {'date': start_time[0], 'time': start_time[1]}
+        self.status = status
+        self.start = start
         self.comment = comment
         self.name = name
         self.run_uuid = run_uuid
@@ -276,6 +282,17 @@ def _initialize():
     image_path = Path(settings.DATA_PATH / 'images')
     if not image_path.exists():
         image_path.mkdir(parents=True)
+
+    path = Path(settings.DATA_PATH / 'runs')
+    for f_name in glob(f'{path}/*.json'):
+        if 'tracking' in f_name:
+            continue
+
+        with open(f_name, 'r') as f:
+            data = json.load(f)
+
+        run = Run(**data)
+        _RUNS[run.run_uuid] = run
 
 
 with monit.section("Initialize runs"):
