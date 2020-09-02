@@ -8,6 +8,7 @@ from slack import WebClient
 from slack.errors import SlackApiError
 
 from app.runs import Run
+from .. import settings
 
 IS_DEBUG = False
 
@@ -85,8 +86,13 @@ def compile_init_message(run_uuid: str, name: str, comment: str):
         'text': {'type': 'mrkdwn', 'text': text}
     }, {
         'type': 'context',
-        'elements': [{'type': 'mrkdwn', 'text': f'{run_uuid}'}]
-    }]
+        'elements': [{'type': 'mrkdwn', 'text': f':pushpin: {run_uuid}'}]
+    },
+        {
+            'type': 'context',
+            'elements': [{'type': 'mrkdwn',
+                          'text': f':chart_with_upwards_trend: view run at {settings.WEB_URL}/run/?run_uuid={run_uuid}'}]
+        }]
 
     return blocks
 
