@@ -1,11 +1,13 @@
 import json
 from pathlib import Path
+from datetime import datetime
 from typing import Dict, List, Any
 
 import numpy as np
 
 from labml import monit
 from . import settings
+
 try:
     from .screenshot.selenium import WEB_DRIVER
 except ImportError:
@@ -126,9 +128,12 @@ class Run:
         if tracking is None:
             tracking = {}
 
+        start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S").split()
+
         self.tracking = tracking
         self.configs = configs
         self.status: Dict[str, any] = {}
+        self.start = {'date': start_time[0], 'time': start_time[1]}
         self.comment = comment
         self.name = name
         self.run_uuid = run_uuid
@@ -147,7 +152,9 @@ class Run:
             'file_id': self.file_id,
             'name': self.name,
             'comment': self.comment,
+            'start': self.start,
             'configs': self.configs,
+            'status': self.status,
         }
 
     def get_data(self):
