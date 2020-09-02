@@ -23,7 +23,7 @@ function ChartView(props: ChartProps) {
 
     let chart = null
     if (track != null) {
-        chart = <LineChart key={1} series={track as SeriesModel[]}/>
+        chart = <LineChart key={1} series={track as SeriesModel[]} width={480}/>
     }
 
     return <div>

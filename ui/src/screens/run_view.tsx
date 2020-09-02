@@ -47,7 +47,7 @@ function RunView(props: RunProps) {
 
     let chart = null
     if (track != null) {
-        chart = <LineChart key={1} series={track as SeriesModel[]}/>
+        chart = <LineChart key={1} series={track as SeriesModel[]} width={windowWidth}/>
     }
 
     return <div>
