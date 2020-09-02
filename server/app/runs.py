@@ -230,7 +230,7 @@ class Run:
         return image_path
 
     def get_intro_image(self):
-        return WEB_DRIVER.run(self.run_uuid)
+        return WEB_DRIVER.run_header(self.run_uuid)
 
 
 _RUNS: Dict[str, Run] = {}

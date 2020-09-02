@@ -46,8 +46,8 @@ class WebDriver:
 
         return self._screenshot_div(url, page_image_path, div_image_path, div_id)
 
-    def run(self, run_uuid):
-        url = f'{settings.WEB_URL}/run/?run_uuid={run_uuid}'
+    def run_header(self, run_uuid):
+        url = f'{settings.WEB_URL}/run_header/?run_uuid={run_uuid}'
         page_image_path = str(Path(settings.DATA_PATH / 'images' / f'{run_uuid}.runPageImage.png'))
         div_image_path = str(Path(settings.DATA_PATH / 'images' / f'{run_uuid}.run.png'))
         div_id = 'run'

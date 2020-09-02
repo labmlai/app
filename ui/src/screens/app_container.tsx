@@ -3,6 +3,7 @@ import React from "react";
 import {Route, Switch} from "react-router-dom";
 
 import MainView from "../screens/main_view";
+import HeaderView from "./header_view";
 import RunView from "./run_view";
 import ChartView from "./chart_view";
 import SampleChart from "./sample_chart";
@@ -18,6 +19,9 @@ function AppContainer() {
                          />
                          <Route
                              path="/chart" component={ChartView}
+                         />
+                         <Route
+                             path="/run_header" component={HeaderView}
                          />
                          <Route
                              path="/run" component={RunView}
