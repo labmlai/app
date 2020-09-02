@@ -77,7 +77,9 @@ def compile_iter_message(run: Run):
 
 
 def compile_init_message(run_uuid: str, name: str, comment: str):
-    text = f':microscope: *{name}*\n'
+    run_view_url = f'{settings.WEB_URL}/run/?run_uuid={run_uuid}'
+
+    text = f'<{run_view_url}|:microscope: *{name}*>'
     if comment.strip():
         text += f'_{comment}_\n'
 
@@ -87,12 +89,7 @@ def compile_init_message(run_uuid: str, name: str, comment: str):
     }, {
         'type': 'context',
         'elements': [{'type': 'mrkdwn', 'text': f':pushpin: {run_uuid}'}]
-    },
-        {
-            'type': 'context',
-            'elements': [{'type': 'mrkdwn',
-                          'text': f':chart_with_upwards_trend: view run at {settings.WEB_URL}/run/?run_uuid={run_uuid}'}]
-        }]
+    }]
 
     return blocks
 
