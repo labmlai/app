@@ -13,7 +13,7 @@ from .slack.message import SlackMessage
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
-NOTIFICATION_DELAY = 60
+NOTIFICATION_DELAY = 120
 
 
 def test():
