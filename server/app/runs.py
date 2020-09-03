@@ -117,7 +117,7 @@ class Run:
 
     def __init__(self, *,
                  run_uuid: str,
-                 labml_token: str,
+                 labml_token: str = '',
                  slack_thread_ts: str = '',
                  file_id: str = '',
                  name: str = '',
