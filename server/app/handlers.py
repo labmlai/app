@@ -42,17 +42,18 @@ def update_run():
 
     user = users.get(labml_token=labml_token)
     if not user:
-        return jsonify({'error': 'invalid_labml_token',
+        return jsonify({'errors': 'invalid_labml_token',
                         'message': 'The labml_token sent to the api is not valid.'
                                    ' Please create a valid token at https://web.lab-ml.com',
                         'success': False})
 
     if not channel:
-        return jsonify({'error': 'no_channel',
+        return jsonify({'errors': 'no_channel',
                         'message': 'Please provide the channel parameter in the web_api url',
                         'success': False})
 
     json = request.json
+    print(json)
     run_uuid = json.get('run_uuid', '')
     run = runs.get_or_create(run_uuid, labml_token)
 
