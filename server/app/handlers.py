@@ -53,7 +53,6 @@ def update_run():
                         'success': False})
 
     json = request.json
-    print(json)
     run_uuid = json.get('run_uuid', '')
     run = runs.get_or_create(run_uuid, labml_token)
 
