@@ -142,7 +142,7 @@ class Run:
         self.start = start
         self.comment = comment
         self.name = name
-        self.run_view_url = f'{settings.WEB_URL}/run/?run_uuid={run_uuid}'
+        self.run_view_url = f'{settings.WEB_URL}/run?run_uuid={run_uuid}'
         self.run_uuid = run_uuid
         self.labml_token = labml_token
         self.slack_thread_ts = slack_thread_ts

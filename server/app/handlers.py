@@ -65,7 +65,7 @@ def update_run():
         message = SlackMessage(user.slack_token)
         tasks.post_slack_message(message, channel, run)
 
-    return jsonify({'errors': run.errors, 'run_view_url': run.run_view_url})
+    return jsonify({'errors': run.errors, 'url': run.run_view_url})
 
 
 def get_run(run_uuid: str):

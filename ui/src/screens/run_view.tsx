@@ -46,7 +46,8 @@ function RunView(props: RunProps) {
     }
 
     let chart = null
-    if (track != null) {
+    if (track != null && track.length > 0) {
+        console.log(track)
         chart = <LineChart key={1} series={track as SeriesModel[]} width={windowWidth}/>
     }
 
