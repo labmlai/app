@@ -218,21 +218,9 @@ class SlackMessage:
 
     def post_to_channel(self, channel: str, run: Run):
         if run.slack_thread_ts:
-            progress_image = run.get_progress_image()
-            if not progress_image:
-                return
-            res = self.upload_file(channel, run, progress_image, f'step: {run.step :,}')
-            self._collect_errors(res, run)
-
-            if run.file_id:
-                del_res = self.delete_file(run.file_id)
-                self._collect_errors(del_res, run)
-
             if run.status:
                 res_status = self.send_status_message(channel, run)
                 self._collect_errors(res_status, run)
-
-            run.file_id = res.get('file_id', '')
         else:
             res = self.send_init_message(channel, run)
             self._collect_errors(res, run)
@@ -241,9 +229,3 @@ class SlackMessage:
 
             run.slack_thread_ts = res['ts']
             run.save()
-
-            intro_image = run.get_intro_image()
-            if not intro_image:
-                return
-
-            self.upload_file(channel, run, intro_image, 'experiment configs')

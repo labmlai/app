@@ -1,18 +1,12 @@
 import json
 from pathlib import Path
 from glob import glob
-from datetime import datetime
 from typing import Dict, List, Any
 
 import numpy as np
 
 from labml import monit
 from . import settings
-
-try:
-    from .screenshot.selenium import WEB_DRIVER
-except ImportError:
-    from .screenshot.dummy import WEB_DRIVER
 
 MAX_BUFFER_LENGTH = 1024
 
@@ -243,17 +237,6 @@ class Run:
                 self.tracking[k].load(s)
         except FileNotFoundError as e:
             print(f'file not found{e.filename}')
-
-    def get_progress_image(self, debug=False):
-        if debug:
-            image_path = str(settings.DATA_PATH / 'images' / 'chart.png')
-        else:
-            image_path = WEB_DRIVER.chart_image(self.run_uuid, self.step)
-
-        return image_path
-
-    def get_intro_image(self):
-        return WEB_DRIVER.run_header(self.run_uuid)
 
 
 _RUNS: Dict[str, Run] = {}
