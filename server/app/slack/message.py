@@ -8,7 +8,7 @@ from slack import WebClient
 from slack.errors import SlackApiError
 
 from app.runs import Run
-from .. import settings
+from datetime import datetime
 
 IS_DEBUG = False
 
@@ -30,6 +30,12 @@ def format_int(value: int):
     string = str(value)
 
     return number_with_commas(string)
+
+
+def format_timestamp(timestamp: float):
+    value = datetime.fromtimestamp(timestamp)
+
+    return f"{value:%Y-%m-%d %H:%M:%S}"
 
 
 def format_value(value: any):
@@ -93,7 +99,7 @@ def compile_init_message(run_uuid: str, name: str, comment: str, url: str):
     return blocks
 
 
-def compile_status_message(status: str, details: str, end_date: str, end_time: str):
+def compile_status_message(status: str, details: str, end_time: float):
     if 'completed' == status:
         emoji = ':white_check_mark: :white_check_mark: :white_check_mark:'
     elif 'crashed' == status:
@@ -104,7 +110,7 @@ def compile_status_message(status: str, details: str, end_date: str, end_time: s
     blocks = [{
         'type': 'section',
         'text': {'type': 'mrkdwn',
-                 'text': f'* Experiment {status} on {end_date} {end_time}* {emoji}'}
+                 'text': f'* Experiment {status} on {format_timestamp(end_time)}* {emoji}'}
     }] + ([{
         'type': 'context',
         'elements': [{'type': 'mrkdwn', 'text': f'{details}'}]
@@ -145,7 +151,7 @@ class SlackMessage:
 
     def send_status_message(self, channel: str, run: Run):
         status = run.status
-        blocks = compile_status_message(status['status'], status['details'], status['date'], status['time'])
+        blocks = compile_status_message(status['status'], status['details'], status['time'])
         notification = f"Status update from experiment {run.name}"
 
         return self.send_message(channel, run, notification, blocks)

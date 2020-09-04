@@ -122,7 +122,8 @@ class Run:
                  file_id: str = '',
                  name: str = '',
                  comment: str = '',
-                 start: Dict[str, str] = None,
+                 start: float = None,
+                 time: float = None,
                  configs: Dict[str, any] = None,
                  status: Dict[str, any] = None,
                  tracking: List[Dict[str, any]] = None):
@@ -132,9 +133,6 @@ class Run:
             tracking = {}
         if status is None:
             status = {}
-        if start is None:
-            start_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S").split()
-            start = {'date': start_time[0], 'time': start_time[1]}
 
         self.tracking = tracking
         self.configs = configs
@@ -142,6 +140,7 @@ class Run:
         self.start = start
         self.comment = comment
         self.name = name
+        self.time = time
         self.run_uuid = run_uuid
         self.labml_token = labml_token
         self.slack_thread_ts = slack_thread_ts
@@ -163,6 +162,7 @@ class Run:
             'name': self.name,
             'comment': self.comment,
             'start': self.start,
+            'time': self.time,
             'configs': self.configs,
             'status': self.status,
         }
@@ -196,8 +196,11 @@ class Run:
             self.name = data.get('name', '')
         if not self.comment:
             self.comment = data.get('comment', '')
-        self.configs.update(data.get('configs', {}))
+        if not self.start:
+            self.start = data.get('time', None)
+        self.time = data.get('time', self.time)
 
+        self.configs.update(data.get('configs', {}))
         if data.get('status', {}):
             self.status.update(data.get('status', {}))
 
