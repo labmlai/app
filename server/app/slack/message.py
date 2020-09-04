@@ -76,8 +76,8 @@ def compile_iter_message(run: Run):
     }]
 
 
-def compile_init_message(run_uuid: str, name: str, comment: str, run_view_url: str):
-    text = f'<{run_view_url}|:microscope: *{name}*>'
+def compile_init_message(run_uuid: str, name: str, comment: str, url: str):
+    text = f'<{url}|:microscope: *{name}*>'
 
     if comment.strip():
         text += f'_{comment}_\n'
@@ -138,7 +138,7 @@ class SlackMessage:
         self._client = _get_client(slack_token)
 
     def send_init_message(self, channel: str, run: Run):
-        blocks = compile_init_message(run.run_uuid, run.name, run.comment, run.run_view_url)
+        blocks = compile_init_message(run.run_uuid, run.name, run.comment, run.url)
         notification = f"Experiment {run.name} has started"
 
         return self.send_message(channel, run, notification, blocks)
