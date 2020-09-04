@@ -152,7 +152,8 @@ class Run:
 
     @property
     def url(self):
-        f'{settings.WEB_URL}/run?run_uuid={self.run_uuid}'
+        return f'{settings.WEB_URL}/run?run_uuid={self.run_uuid}'
+
     def to_dict(self):
         return {
             'run_uuid': self.run_uuid,
@@ -227,15 +228,18 @@ class Run:
             json.dump(data, f, indent=4)
 
     def load_tracking(self):
-        with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'r') as f:
-            data = json.load(f)
+        try:
+            with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'r') as f:
+                data = json.load(f)
 
-        self.step = data['step']
-        del data['step']
+            self.step = data['step']
+            del data['step']
 
-        for k, s in data.items():
-            self.tracking[k] = Series()
-            self.tracking[k].load(s)
+            for k, s in data.items():
+                self.tracking[k] = Series()
+                self.tracking[k].load(s)
+        except FileNotFoundError as e:
+            print(f'file not found{e.filename}')
 
     def get_progress_image(self, debug=False):
         if debug:
@@ -268,10 +272,7 @@ def get_or_create(run_uuid: str, labml_token: str = ''):
         data = json.load(f)
 
     run = Run(**data)
-    try:
-        run.load_tracking()
-    except FileNotFoundError as e:
-        print(f'file not found{e.filename}')
+    run.load_tracking()
     _RUNS[run.run_uuid] = run
 
     return run
@@ -295,6 +296,7 @@ def _initialize():
             data = json.load(f)
 
         run = Run(**data)
+        run.load_tracking()
         _RUNS[run.run_uuid] = run
 
 
