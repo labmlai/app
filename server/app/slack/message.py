@@ -110,7 +110,7 @@ def compile_status_message(status: str, details: str, end_time: float):
     blocks = [{
         'type': 'section',
         'text': {'type': 'mrkdwn',
-                 'text': f'* Experiment {status} on {format_timestamp(end_time)}* {emoji}'}
+                 'text': f'* Experiment {status}* {emoji}'}
     }] + ([{
         'type': 'context',
         'elements': [{'type': 'mrkdwn', 'text': f'{details}'}]
