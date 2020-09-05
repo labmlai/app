@@ -83,7 +83,7 @@ def compile_iter_message(run: Run):
 
 
 def compile_init_message(run_uuid: str, name: str, comment: str, url: str):
-    text = f'<{url}|:microscope: *{name}*>'
+    text = f'<{url}|:microscope: *{name}*>\n'
 
     if comment.strip():
         text += f'_{comment}_\n'
