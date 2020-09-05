@@ -275,8 +275,7 @@ def _initialize():
     if not image_path.exists():
         image_path.mkdir(parents=True)
 
-    path = Path(settings.DATA_PATH / 'runs')
-    for f_name in glob(f'{path}/*.json'):
+    for f_name in glob(f'{runs_path}/*.json'):
         if 'tracking' in f_name:
             continue
 
