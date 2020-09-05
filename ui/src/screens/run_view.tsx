@@ -15,12 +15,45 @@ function RunView(props: RunProps) {
         name: '',
         comment: '',
         configs: [],
+        start: Number.NaN,
+        time: Number.NaN
     })
-    const { width: windowWidth } = useWindowDimensions()
+    const {width: windowWidth} = useWindowDimensions()
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const params = new URLSearchParams(props.location.search)
     const run_uuid = params.get('run_uuid')
+
+    function formatTime(time: number): string {
+        let date = new Date(time)
+        let hours = date.getHours()
+        let minutes: string | number = date.getMinutes()
+        let ampm = hours >= 12 ? 'pm' : 'am'
+
+        hours = hours % 12
+        hours = hours ? hours : 12
+        minutes = minutes < 10 ? '0' + minutes : minutes
+
+        let strTime = hours + ':' + minutes + ' ' + ampm
+        return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + "  " + strTime;
+    }
+
+
+    function getTimeDiff(timestamp: number): string {
+        let timeDiff = (Date.now() - timestamp) / (1000 * 60)
+
+        if (timeDiff < 1) {
+            return '< 1 minutes ago'
+        } else if (timeDiff < 2) {
+            return '< 2 minutes ago'
+        } else if (timeDiff < 5) {
+            return '< 5 minutes ago'
+        } else if (timeDiff < 10) {
+            return '< 10 minutes ago'
+        }
+
+        return formatTime(timestamp)
+    }
 
     useEffect(() => {
         if (run_uuid) {
@@ -42,6 +75,8 @@ function RunView(props: RunProps) {
             <h3>{run.name}</h3>
             <h4>{run.comment}</h4>
             <ConfigsView configs={run.configs} width={windowWidth}/>
+            <h5 className={"mt-2"}>started {formatTime(run.start * 1000)}</h5>
+            <h5>last updated {getTimeDiff(run.time * 1000)}</h5>
         </div>
     }
 
