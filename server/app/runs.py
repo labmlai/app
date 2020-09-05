@@ -126,7 +126,7 @@ class Run:
         if tracking is None:
             tracking = {}
         if status is None:
-            status = {}
+            status = {"status": "in progress", "details": None, "time": time}
 
         self.tracking = tracking
         self.configs = configs
@@ -169,7 +169,8 @@ class Run:
             'comment': self.comment,
             'configs': configs,
             'start': self.start,
-            'time': self.time
+            'time': self.time,
+            'status': self.status
         }
 
     def get_tracking(self):

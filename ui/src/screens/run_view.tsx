@@ -16,7 +16,12 @@ function RunView(props: RunProps) {
         comment: '',
         configs: [],
         start: Number.NaN,
-        time: Number.NaN
+        time: Number.NaN,
+        status: {
+            status: '',
+            details: NaN,
+            time: Number.NaN
+        }
     })
     const {width: windowWidth} = useWindowDimensions()
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
@@ -72,8 +77,8 @@ function RunView(props: RunProps) {
             width: `${windowWidth}px`
         }
         runView = <div id={'run'} className={'run'}>
-            <h3>{run.name}</h3>
-            <h4>{run.comment}</h4>
+            <h3 className={"d-inline"}>{run.name}</h3> <h5 className={"d-inline"}>{run.status.status}</h5>
+            <h4 className={"mt-2"}>{run.comment}</h4>
             <ConfigsView configs={run.configs} width={windowWidth}/>
             <h5 className={"mt-2"}>started {formatTime(run.start * 1000)}</h5>
             <h5>last updated {getTimeDiff(run.time * 1000)}</h5>
