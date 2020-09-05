@@ -167,7 +167,9 @@ class Run:
             'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
-            'configs': configs
+            'configs': configs,
+            'start': self.start,
+            'time': self.time
         }
 
     def get_tracking(self):
