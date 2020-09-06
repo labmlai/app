@@ -1,5 +1,3 @@
-# run
-
 
 class Enums:
     RUN_COMPLETED = 'completed'
