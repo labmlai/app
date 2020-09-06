@@ -63,15 +63,18 @@ export interface SeriesModel {
 }
 
 interface AxisProps {
+    chartId: string
     scale: d3.ScaleLinear<number, number>
 }
 
 function BottomAxis(props: AxisProps) {
     const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5)
-    const id = `axis_${Math.round(Math.random() * 1e9)}`
+    const id = `${props.chartId}_axis_bottom`
     useEffect(() => {
-        d3.select(`#${id}`).append('g').call(axis)
-    });
+        let layer = d3.select(`#${id}`)
+        layer.selectAll('g').remove()
+        layer.append('g').call(axis)
+    })
 
 
     return <g id={id}/>
@@ -79,10 +82,12 @@ function BottomAxis(props: AxisProps) {
 
 function RightAxis(props: AxisProps) {
     const axis = d3.axisRight(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5)
-    const id = `axis_${Math.round(Math.random() * 1e9)}`
+    const id = `${props.chartId}_axis_right`
     useEffect(() => {
-        d3.select(`#${id}`).append('g').call(axis)
-    });
+        let layer = d3.select(`#${id}`)
+        layer.selectAll('g').remove()
+        layer.append('g').call(axis)
+    })
 
 
     return <g id={id}/>
@@ -157,9 +162,10 @@ interface SeriesProps {
 
 
 function LineChart(props: SeriesProps) {
-    const margin = Math.floor(props.width / 64)
+    const windowWidth = props.width
+    const margin = Math.floor(windowWidth / 64)
     const axisSize = 30
-    const chartWidth = props.width - 2 * margin - axisSize
+    const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
     const itemHeight = 35
 
@@ -191,9 +197,11 @@ function LineChart(props: SeriesProps) {
     let list = track.map((s, i) => {
         return <g key={s.name}
                   transform={`translate(${margin}, ${margin + chartHeight + axisSize + i * itemHeight})`}>
-            <ListRow name={s.name} series={s.series} idx={i} width={props.width - 2 * margin}/>
+            <ListRow name={s.name} series={s.series} idx={i} width={windowWidth - 3 * margin}/>
         </g>
     })
+
+    const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div>
         <svg id={'chart'}
@@ -205,11 +213,11 @@ function LineChart(props: SeriesProps) {
 
             <g className={'bottom-axis'}
                transform={`translate(${margin}, ${margin + chartHeight})`}>
-                <BottomAxis scale={xScale}/>
+                <BottomAxis chartId={chartId} scale={xScale}/>
             </g>
             <g className={'right-axis'}
                transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
-                <RightAxis scale={yScale}/>
+                <RightAxis chartId={chartId} scale={yScale}/>
             </g>
 
             {list}
