@@ -30,9 +30,8 @@ const COLORS = [
     '#BAB0AB']
 
 
-function getScale(series: PointValue[][], func: (d: PointValue) => number, size: number): d3.ScaleLinear<number, number> {
+function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false): [number, number] {
     let extent = d3.extent(series[0], func) as [number, number]
-    extent[0] = Math.min(0, extent[0])
 
     for (let s of series) {
         let e = d3.extent(s, func) as [number, number]
@@ -40,17 +39,23 @@ function getScale(series: PointValue[][], func: (d: PointValue) => number, size:
         extent[1] = Math.max(e[1], extent[1])
     }
 
+    if (forceZero || (extent[0] > 0 && extent[0] / extent[1] < 0.1)) {
+        extent[0] = Math.min(0, extent[0])
+    }
+
+    return extent
+}
+
+function getScale(extent: [number, number], size: number): d3.ScaleLinear<number, number> {
     return d3.scaleLinear<number, number>()
         .domain(extent).nice()
         .range([0, size])
 }
 
-function getYScale(series: PointValue[][], size: number): d3.ScaleLinear<number, number> {
-    return getScale(series, d => d.value, -size)
-}
-
 function getXScale(series: PointValue[][], size: number): d3.ScaleLinear<number, number> {
-    return getScale(series, d => d.step, size)
+    let extent = getExtent(series, d => d.step)
+
+    return getScale(extent, size)
 }
 
 
@@ -130,19 +135,21 @@ interface ListRowProps {
     series: PointValue[]
     idx: number
     width: number
+    stepExtent: [number, number]
 }
 
 function ListRow(props: ListRowProps) {
-    const colWidth = Math.round(props.width * .375)
+    const titleWidth = Math.min(150, Math.round(props.width * .375))
+    const chartWidth = props.width - titleWidth * 2
     const s = props.series
-    const yScale = getYScale([s], 25)
-    const xScale = getXScale([s], colWidth)
+    const yScale = getScale(getExtent([s], d => d.value, true), -25)
+    const xScale = getScale(props.stepExtent, chartWidth)
 
     return <g className={'sparkline-list-item'}>
         <text y={10} dy={"0.71em"} fill={COLORS[props.idx]}
             //      clipPath={`url(#clip-${props.name})`}
         >{props.name}</text>
-        <g transform={`translate(${colWidth}, 25)`}>
+        <g transform={`translate(${titleWidth}, 25)`}>
             <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
         </g>
         <text y={10} dy={"0.71em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
@@ -181,8 +188,9 @@ function LineChart(props: SeriesProps) {
 
     let plot = track.filter((s => s.is_plot))
     let plotSeries = plot.map(s => s.series)
-    const yScale = getYScale(plotSeries, chartHeight)
-    const xScale = getXScale(plotSeries, chartWidth)
+    const yScale = getScale(getExtent(plotSeries, d => d.value, true), -chartHeight)
+    const stepExtent = getExtent(plotSeries, d => d.step)
+    const xScale = getScale(stepExtent, chartWidth)
 
     // let rects = series.map((d, i) => {
     //     return <rect key={i} x={xScale(d.step)} y={yScale(d.value)} width={40}
@@ -194,10 +202,10 @@ function LineChart(props: SeriesProps) {
                          key={s.name}/>
     })
 
+    const rowWidth = Math.min(450, windowWidth - 3 * margin)
     let list = track.map((s, i) => {
-        return <g key={s.name}
-                  transform={`translate(${margin}, ${margin + chartHeight + axisSize + i * itemHeight})`}>
-            <ListRow name={s.name} series={s.series} idx={i} width={windowWidth - 3 * margin}/>
+        return <g key={s.name} transform={`translate(${margin}, ${margin + chartHeight + axisSize + i * itemHeight})`}>
+            <ListRow name={s.name} series={s.series} idx={i} stepExtent={stepExtent} width={rowWidth}/>
         </g>
     })
 
