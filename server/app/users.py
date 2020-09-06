@@ -15,7 +15,7 @@ def generate_token():
 class User:
     def __init__(self, *,
                  labml_token: str,
-                 slack_token: str):
+                 slack_token: str = ''):
         self.labml_token = labml_token
         self.slack_token = slack_token
 
@@ -50,21 +50,24 @@ def _initialize():
     for data in users:
         user = User(**data)
         _USERS[user.labml_token] = user
-        _SLACK_TOKENS[user.slack_token] = user
+
+        if user.slack_token:
+            _SLACK_TOKENS[user.slack_token] = user
 
 
 with monit.section("Load users"):
     _initialize()
 
 
-def get_or_create(*, slack_token: str):
-    if slack_token in _SLACK_TOKENS:
+def get_or_create(*, labml_token: str = '', slack_token: str = ''):
+    if labml_token and labml_token in _USERS:
+        return _USERS[labml_token]
+
+    if slack_token and slack_token in _SLACK_TOKENS:
         return _SLACK_TOKENS[slack_token]
 
-    user = User(labml_token=generate_token(),
-                slack_token=slack_token)
+    user = User(labml_token=generate_token())
     _USERS[user.labml_token] = user
-    _SLACK_TOKENS[user.slack_token] = user
     save()
 
     return user

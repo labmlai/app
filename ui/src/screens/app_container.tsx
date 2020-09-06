@@ -2,7 +2,7 @@ import React from "react";
 
 import {Route, Switch} from "react-router-dom";
 
-import MainView from "../screens/main_view";
+import LoginView from "../screens/login_view";
 import HeaderView from "./header_view";
 import RunView from "./run_view";
 import ChartView from "./chart_view";
@@ -27,7 +27,7 @@ function AppContainer() {
                              path="/run" component={RunView}
                          />
                          <Route
-                            path="/" component={MainView}
+                            path="/" component={LoginView}
                         />
                     </Switch>
                 </div>

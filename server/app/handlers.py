@@ -20,7 +20,7 @@ def test():
     division_by_zero = 1 / 0
 
 
-def signup():
+def slack_signup():
     return jsonify({
         'uri': authorize.gen_authorize_uri("stateless")
     })
@@ -34,6 +34,14 @@ def slack_authenticated():
     user = users.get_or_create(slack_token=slack_token)
 
     return make_response(redirect(f"{settings.WEB_URL}/?labml_token={user.labml_token}"))
+
+
+def signup():
+    user = users.get_or_create()
+
+    return jsonify({
+        'uri': f"{settings.WEB_URL}/?labml_token={user.labml_token}"
+    })
 
 
 def update_run():
