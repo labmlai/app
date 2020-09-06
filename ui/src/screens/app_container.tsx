@@ -7,26 +7,30 @@ import HeaderView from "./header_view";
 import RunView from "./run_view";
 import ChartView from "./chart_view";
 import SampleChart from "./sample_chart";
+import RunsView from "./runs_view";
 
 function AppContainer() {
     return (
         <div className="page-wrapper chiller-theme toggled" id="changer">
-            <main >
+            <main>
                 <div>
                     <Switch>
-                         <Route
-                             path="/sample_chart" component={SampleChart}
-                         />
-                         <Route
-                             path="/chart" component={ChartView}
-                         />
-                         <Route
-                             path="/run_header" component={HeaderView}
-                         />
-                         <Route
-                             path="/run" component={RunView}
-                         />
-                         <Route
+                        <Route
+                            path="/sample_chart" component={SampleChart}
+                        />
+                        <Route
+                            path="/chart" component={ChartView}
+                        />
+                        <Route
+                            path="/run_header" component={HeaderView}
+                        />
+                        <Route
+                            path="/run" component={RunView}
+                        />
+                        <Route
+                            path="/runs" component={RunsView}
+                        />
+                        <Route
                             path="/" component={LoginView}
                         />
                     </Switch>

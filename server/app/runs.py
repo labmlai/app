@@ -268,6 +268,15 @@ def get_or_create(run_uuid: str, labml_token: str = ''):
     return run
 
 
+def get_runs(labml_token: str):
+    res = []
+    for run_uuid, run in _RUNS.items():
+        if run.labml_token == labml_token:
+            res.append(run.get_data())
+
+    return res
+
+
 def _initialize():
     runs_path = Path(settings.DATA_PATH / 'runs')
     if not runs_path.exists():

@@ -12,6 +12,10 @@ class NETWORK {
     static async get_tracking(run_uuid: string): Promise<any> {
         return axios.post(`${process.env.REACT_APP_SERVER_URL}/track/${run_uuid}`, {})
     }
+
+    static async get_runs(labml_token: string): Promise<any> {
+        return axios.get(`${process.env.REACT_APP_SERVER_URL}/runs/${labml_token}`, {})
+    }
 }
 
 export default NETWORK

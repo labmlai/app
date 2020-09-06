@@ -81,6 +81,10 @@ def get_run(run_uuid: str):
     return jsonify(run.get_data())
 
 
+def get_runs(labml_token: str):
+    return jsonify(runs.get_runs(labml_token))
+
+
 def get_tracking(run_uuid: str):
     run = runs.get_or_create(run_uuid)
     return jsonify(run.get_tracking())
@@ -101,4 +105,5 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
+    _add(app, 'GET', get_runs, 'runs/<labml_token>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
