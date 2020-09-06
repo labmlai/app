@@ -8,6 +8,7 @@ from slack import WebClient
 from slack.errors import SlackApiError
 
 from app.runs import Run
+from app.enums import Enums
 from datetime import datetime
 
 IS_DEBUG = False
@@ -99,13 +100,15 @@ def compile_init_message(run_uuid: str, name: str, comment: str, url: str):
     return blocks
 
 
-def compile_status_message(status: str, details: str, end_time: float):
-    if 'completed' == status:
+def compile_status_message(status: str, details: str):
+    if status == Enums.RUN_COMPLETED:
         emoji = ':white_check_mark: :white_check_mark: :white_check_mark:'
-    elif 'crashed' == status:
+    elif status == Enums.RUN_CRASHED:
         emoji = ':x: :x: :x:'
-    else:
+    elif status == Enums.RUN_INTERRUPTED:
         emoji = ':warning: :warning: :warning:'
+    else:
+        emoji = ''
 
     blocks = [{
         'type': 'section',
@@ -151,7 +154,7 @@ class SlackMessage:
 
     def send_status_message(self, channel: str, run: Run):
         status = run.status
-        blocks = compile_status_message(status['status'], status['details'], status['time'])
+        blocks = compile_status_message(status['status'], status['details'])
         notification = f"Status update from experiment {run.name}"
 
         return self.send_message(channel, run, notification, blocks)
@@ -218,7 +221,7 @@ class SlackMessage:
 
     def post_to_channel(self, channel: str, run: Run):
         if run.slack_thread_ts:
-            if run.status:
+            if run.status and run.status['status'] != Enums.RUN_IN_PROGRESS:
                 res_status = self.send_status_message(channel, run)
                 self._collect_errors(res_status, run)
         else:

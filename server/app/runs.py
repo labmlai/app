@@ -7,6 +7,7 @@ import numpy as np
 
 from labml import monit
 from . import settings
+from .enums import Enums
 
 MAX_BUFFER_LENGTH = 1024
 
@@ -126,7 +127,7 @@ class Run:
         if tracking is None:
             tracking = {}
         if status is None:
-            status = {"status": "in progress", "details": None, "time": time}
+            status = {"status": Enums.RUN_IN_PROGRESS, "details": None, "time": time}
 
         self.tracking = tracking
         self.configs = configs
