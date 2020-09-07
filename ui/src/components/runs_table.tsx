@@ -1,5 +1,5 @@
-import React from "react";
-import {Table} from "react-bootstrap";
+import React from "react"
+import "./runs_table.scss"
 
 import {getTimeDiff, StatusView, formatTime, Run} from "./utils"
 
@@ -10,46 +10,42 @@ interface RunsTableProps {
 
 export function RunsTable(props: RunsTableProps) {
 
-    return <Table striped bordered hover responsive>
-        <thead>
-        <tr>
-            <th>#</th>
-            <th>Run UUID</th>
-            <th>Name</th>
-            <th>Comment</th>
-            <th>Start Time</th>
-            <th>Last Updated Time</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
+    return <div className={"table"}>
+        <div className={"table-header"}>
+            <span>#</span>
+            <span>Run UUID</span>
+            <span>Name</span>
+            <span>Comment</span>
+            <span>Start Time</span>
+            <span>Last Updated Time</span>
+            <span>Status</span>
+        </div>
         {props.runs.map((run, idx) => (
-            <tr key={idx}>
-                <td>
+            <div key={idx}>
+                <span>
                     {idx + 1}
-                </td>
-                <td>
+                </span>
+                <span>
                     <a href={`/run?run_uuid=${run.run_uuid}`}>
                         {run.run_uuid}
                     </a>
-                </td>
-                <td>
+                </span>
+                <span>
                     {run.name}
-                </td>
-                <td>
+                </span>
+                <span>
                     {run.comment}
-                </td>
-                <td>
+                </span>
+                <span>
                     {formatTime(run.start)}
-                </td>
-                <td>
+                </span>
+                <span>
                     {getTimeDiff(run.time)}
-                </td>
-                <td>
+                </span>
+                <span>
                     <StatusView status={run.status}/>
-                </td>
-            </tr>
+                </span>
+            </div>
         ))}
-        </tbody>
-    </Table>
+    </div>
 }

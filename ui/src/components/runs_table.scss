@@ -1,0 +1,16 @@
+.table {
+  display: table;
+
+  .table-header {
+    display: table-header-group;
+    font-weight: bold;
+  }
+
+  div {
+    display: table-row;
+  }
+
+  span {
+    display: table-cell;
+  }
+}
