@@ -1,10 +1,12 @@
 import warnings
 
-from flask import Flask
+from time import strftime
+from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
 from app import handlers
 from app import settings
+from logs.logger import LOGGER
 
 if settings.DSN:
     try:
@@ -44,6 +46,12 @@ handlers.add_handlers(app)
 @app.route('/<handler>/<path:path>')
 def rest(handler, path):
     pass
+
+
+@app.before_request
+def before_request():
+    timestamp = strftime('[%Y-%b-%d %H:%M]')
+    LOGGER.info(f'time: {timestamp}, uri: {request.full_path} body: {request.get_data()}')
 
 
 if __name__ == '__main__':

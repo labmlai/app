@@ -40,3 +40,4 @@ data/
 geckodriver
 geckodriver.log
 labml
+/server/app.log
