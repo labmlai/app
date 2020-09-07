@@ -1,10 +1,11 @@
 import React from "react";
 import {Table} from "react-bootstrap";
 
-import {getTimeDiff, StatusView, formatTime} from "./utils"
+import {getTimeDiff, StatusView, formatTime, Run} from "./utils"
+
 
 interface RunsTableProps {
-    runs: any[]
+    runs: Run[]
 }
 
 export function RunsTable(props: RunsTableProps) {

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react"
 
 import NETWORK from '../network'
 import {RunsTable} from "../components/runs_table";
+import {Run} from "../components/utils";
 
 
 interface RunsProps {
@@ -9,7 +10,7 @@ interface RunsProps {
 }
 
 function RunsView(props: RunsProps) {
-    const [runs, setRuns] = useState<any[]>([]);
+    const [runs, setRuns] = useState<Run[]>([]);
 
     const params = new URLSearchParams(props.location.search)
     const labml_token = params.get('labml_token')

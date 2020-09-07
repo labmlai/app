@@ -6,6 +6,15 @@ export interface Status {
     details: string
 }
 
+export interface Run {
+    run_uuid: string,
+    name: string,
+    comment: string,
+    start: number,
+    time: number,
+    status: Status
+}
+
 export function formatTime(time: number): string {
     let date = new Date(time * 1000)
     let timeStr = date.toTimeString().substr(0, 8)
