@@ -10,6 +10,9 @@
     font-size: 9px;
     text-transform: uppercase;
   }
+  h3, h4, h5 {
+    overflow-wrap: break-word;
+  }
   h3 {
     color: #34495e;
   }
