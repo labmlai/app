@@ -43,15 +43,12 @@ function RunView(props: RunProps) {
         }
     }, [run_uuid])
 
-    let runView = null
-    if (run.configs.length !== 0) {
-        runView = <div id={'run'} className={'run-header'}>
-            <RunInfo name={run.name} comment={run.comment}
-                     start={run.start} time={run.time}
-                     status={run.status} width={actualWidth}/>
-            <ConfigsView configs={run.configs} width={actualWidth}/>
-        </div>
-    }
+    let runView = <div id={'run'} className={'run-header'}>
+        <RunInfo name={run.name} comment={run.comment}
+                 start={run.start} time={run.time}
+                 status={run.status} width={actualWidth}/>
+        <ConfigsView configs={run.configs} width={actualWidth}/>
+    </div>
 
     let chart = null
     if (track != null && track.length > 0) {

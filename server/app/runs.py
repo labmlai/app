@@ -1,11 +1,11 @@
 import json
-from pathlib import Path
 from glob import glob
+from pathlib import Path
 from typing import Dict, List, Any
 
 import numpy as np
-
 from labml import monit
+
 from . import settings
 from .enums import Enums
 
@@ -176,16 +176,31 @@ class Run:
 
     def get_tracking(self):
         res = []
+
+        is_plot_count = 0
         for k, s in self.tracking.items():
             series: Dict[str, Any] = s.summary
             name = k.split('.')
             if name[-1] == 'mean':
                 name = name[:-1]
             series['name'] = '.'.join(name)
-            series['is_plot'] = name[0] == 'loss'
+            if name[0] == 'loss':
+                series['is_plot'] = True
+                is_plot_count += 1
+            else:
+                series['is_plot'] = False
             res.append(series)
 
+        if is_plot_count == 0:
+            for series in res:
+                if series['name'].find('loss') != -1:
+                    series['is_plot'] = True
+                    is_plot_count += 1
+
         res.sort(key=lambda s: f"{int(not s['is_plot'])}{s['name']}")
+
+        if is_plot_count == 0 and res:
+            res[0]['is_plot'] = True
 
         return res
 

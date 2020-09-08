@@ -73,7 +73,8 @@ interface AxisProps {
 }
 
 function BottomAxis(props: AxisProps) {
-    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5)
+    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>)
+        .ticks(5, ".2s")
     const id = `${props.chartId}_axis_bottom`
     useEffect(() => {
         let layer = d3.select(`#${id}`)
@@ -187,6 +188,10 @@ function LineChart(props: SeriesProps) {
     }
 
     let plot = track.filter((s => s.is_plot))
+    if(plot.length === 0) {
+        return <div></div>
+    }
+
     let plotSeries = plot.map(s => s.series)
     const yScale = getScale(getExtent(plotSeries, d => d.value, true), -chartHeight)
     const stepExtent = getExtent(plotSeries, d => d.step)
