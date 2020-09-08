@@ -1,4 +1,3 @@
-
 class Enums:
     RUN_COMPLETED = 'completed'
     RUN_CRASHED = 'crashed'

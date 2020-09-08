@@ -142,7 +142,7 @@ class Run:
         self.file_id = file_id
         self.step = 0
         self.errors = []
-        self.last_notified = 0.
+        self.last_notified = None
 
     @property
     def url(self):
@@ -296,10 +296,6 @@ def _initialize():
     runs_path = Path(settings.DATA_PATH / 'runs')
     if not runs_path.exists():
         runs_path.mkdir(parents=True)
-
-    image_path = Path(settings.DATA_PATH / 'images')
-    if not image_path.exists():
-        image_path.mkdir(parents=True)
 
     for f_name in glob(f'{runs_path}/*.json'):
         if 'tracking' in f_name:

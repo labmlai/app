@@ -220,10 +220,9 @@ class SlackMessage:
                                'message': SLACK_ERRORS.get(err, err)})
 
     def post_to_channel(self, channel: str, run: Run):
-        if run.slack_thread_ts:
-            if run.status and run.status['status'] != Enums.RUN_IN_PROGRESS:
-                res_status = self.send_status_message(channel, run)
-                self._collect_errors(res_status, run)
+        if run.slack_thread_ts and run.status:
+            res_status = self.send_status_message(channel, run)
+            self._collect_errors(res_status, run)
         else:
             res = self.send_init_message(channel, run)
             self._collect_errors(res, run)

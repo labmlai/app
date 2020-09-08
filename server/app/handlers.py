@@ -8,6 +8,7 @@ from flask import jsonify, request, make_response, redirect
 from . import runs
 from . import settings
 from . import users, tasks
+from .enums import Enums
 from .slack import authorize
 from .slack.message import SlackMessage
 
@@ -55,11 +56,6 @@ def update_run():
                                    ' Please create a valid token at https://web.lab-ml.com',
                         'success': False})
 
-    if not channel:
-        return jsonify({'errors': 'no_channel',
-                        'message': 'Please provide the channel parameter in the web_api url',
-                        'success': False})
-
     json = request.json
     run_uuid = json.get('run_uuid', '')
     run = runs.get_or_create(run_uuid, labml_token)
@@ -68,7 +64,7 @@ def update_run():
     if 'track' in json:
         run.track(json['track'])
 
-    if run.last_notified + NOTIFICATION_DELAY < time.time() or json.get('status', {}):
+    if channel and (not run.last_notified or run.status['status'] != Enums.RUN_IN_PROGRESS):
         run.last_notified = time.time()
         message = SlackMessage(user.slack_token)
         tasks.post_slack_message(message, channel, run)
