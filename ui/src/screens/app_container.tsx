@@ -7,7 +7,7 @@ import HeaderView from "./header_view";
 import RunView from "./run_view";
 import ChartView from "./chart_view";
 import SampleChart from "./sample_chart";
-import RunsView from "./runs_view";
+import RunsListView from "./runs_list_view";
 
 function AppContainer() {
     return (
@@ -28,7 +28,7 @@ function AppContainer() {
                             path="/run" component={RunView}
                         />
                         <Route
-                            path="/runs" component={RunsView}
+                            path="/runs" component={RunsListView}
                         />
                         <Route
                             path="/" component={LoginView}

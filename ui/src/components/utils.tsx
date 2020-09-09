@@ -1,19 +1,5 @@
 import React from "react";
-
-export interface Status {
-    status: string
-    time: number
-    details: string
-}
-
-export interface Run {
-    run_uuid: string,
-    name: string,
-    comment: string,
-    start: number,
-    time: number,
-    status: Status
-}
+import {Status} from "./models";
 
 export function formatTime(time: number): string {
     let date = new Date(time * 1000)

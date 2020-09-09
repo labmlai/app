@@ -1,6 +1,7 @@
 import React from "react";
 import "./run_info.scss"
-import {Status, getTimeDiff, StatusView, formatTime} from "./utils"
+import {formatTime, getTimeDiff, StatusView} from "./utils"
+import {Status} from "./models";
 
 
 interface RunInfoProps {

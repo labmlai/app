@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from "react"
 
 import NETWORK from '../network'
-import {RunsTable} from "../components/runs_table"
+import {RunsList} from "../components/runs_list"
 import {Code} from "../components/code"
 import {LabLoader} from "../components/loader"
 
 
-interface RunsProps {
+interface RunsListProps {
     location: any
 }
 
-function RunsView(props: RunsProps) {
+function RunsListView(props: RunsListProps) {
     const [isLoading, setIsLoading] = useState(true)
     const [runs, setRuns] = useState<any[]>([])
 
@@ -41,11 +41,11 @@ function RunsView(props: RunsProps) {
                 )
             } else {
                 return (
-                    <RunsTable runs={runs}/>
+                    <RunsList runs={runs}/>
                 )
             }
         })()}
     </div>
 }
 
-export default RunsView
+export default RunsListView

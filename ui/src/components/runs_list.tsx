@@ -1,15 +1,24 @@
 import React from "react"
 import {useHistory} from "react-router-dom";
-import "./runs_table.scss"
+import "./runs_list.scss"
 
-import {getTimeDiff, StatusView, formatTime, Run} from "./utils"
+import {getTimeDiff, StatusView, formatTime} from "./utils"
+import {Run} from "./models";
 
 
-interface RunsTableProps {
+interface RunsListProps {
     runs: Run[]
 }
 
-export function RunsTable(props: RunsTableProps) {
+interface RunsListItemProps {
+    run: Run
+}
+
+function RunsListItem(props: RunsListItemProps) {
+
+}
+
+export function RunsList(props: RunsListProps) {
     const history = useHistory();
 
     return <div className={"table"}>
