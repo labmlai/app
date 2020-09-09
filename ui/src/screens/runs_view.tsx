@@ -1,10 +1,9 @@
 import React, {useEffect, useState} from "react"
-import Loader from 'react-loader-spinner'
-
 
 import NETWORK from '../network'
 import {RunsTable} from "../components/runs_table"
 import {Markdown} from "../components/markdown"
+import {LabLoader} from "../components/loader"
 
 
 interface RunsProps {
@@ -34,14 +33,7 @@ function RunsView(props: RunsProps) {
         {(() => {
             if (isLoading) {
                 return (
-                    <div className={'loader'}>
-                        <Loader
-                            type="Bars"
-                            color="#00BFFF"
-                            height={100}
-                            width={100}
-                        />
-                    </div>
+                    <LabLoader isLoading={isLoading}/>
                 )
             } else if (runs.length === 0) {
                 return (
