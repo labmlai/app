@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 
 import NETWORK from '../network'
 import {RunsTable} from "../components/runs_table"
-import {Markdown} from "../components/markdown"
+import {Code} from "../components/code"
 import {LabLoader} from "../components/loader"
 
 
@@ -37,7 +37,7 @@ function RunsView(props: RunsProps) {
                 )
             } else if (runs.length === 0) {
                 return (
-                    <Markdown labMlToken={labMlToken}/>
+                    <Code labMlToken={labMlToken}/>
                 )
             } else {
                 return (
