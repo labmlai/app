@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react"
 import CopyToClipboard from 'react-copy-to-clipboard'
+import {useHistory} from "react-router-dom";
 import Swal from "sweetalert2"
 import {
     Image,
@@ -17,6 +18,8 @@ interface MainProps {
 }
 
 function MainView(props: MainProps) {
+    const history = useHistory();
+
     const [message, setMessage] = useState('')
     const [userInput, setUserInput] = useState('')
     const [isCopied, setIsCopied] = useState(false)
@@ -32,12 +35,12 @@ function MainView(props: MainProps) {
 
     const onSubmit = () => {
         if (userInput) {
-            window.location.href = `/runs?labml_token=${userInput}`;
+            history.push(`/runs?labml_token=${userInput}`)
         } else {
             NETWORK.authorize().then((res) => {
                 window.location.href = res.data.uri;
             }).catch((error) => {
-                Swal.fire('Authorization Failed!', `${error}`, 'error');
+                Swal.fire('Authorization Failed!', `${error}`, 'error')
             })
         }
     }

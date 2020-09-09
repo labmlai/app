@@ -1,4 +1,5 @@
 import React from "react"
+import {useHistory} from "react-router-dom";
 import "./runs_table.scss"
 
 import {getTimeDiff, StatusView, formatTime, Run} from "./utils"
@@ -9,6 +10,7 @@ interface RunsTableProps {
 }
 
 export function RunsTable(props: RunsTableProps) {
+    const history = useHistory();
 
     return <div className={"table"}>
         <div className={"table-header"}>
@@ -26,9 +28,13 @@ export function RunsTable(props: RunsTableProps) {
                     {idx + 1}
                 </span>
                 <span>
-                    <a href={`/run?run_uuid=${run.run_uuid}`}>
-                        {run.run_uuid}
-                    </a>
+                    <button
+                        onClick={() => {
+                            history.push(`/run?run_uuid=${run.run_uuid}`);
+                        }}
+                    >
+                    {run.run_uuid}
+                  </button>
                 </span>
                 <span>
                     {run.name}
