@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from "react"
-import CopyToClipboard from 'react-copy-to-clipboard'
 import {useHistory} from "react-router-dom";
 import Swal from "sweetalert2"
 import {
     Image,
     Button,
-    Card,
     FormControl,
 } from 'react-bootstrap'
 
@@ -13,25 +11,9 @@ import NETWORK from '../network'
 import imageSrc from '../assets/lab_cover.png'
 
 
-interface MainProps {
-    location: any
-}
-
-function MainView(props: MainProps) {
+function LoginView() {
     const history = useHistory();
-
-    const [message, setMessage] = useState('')
     const [userInput, setUserInput] = useState('')
-    const [isCopied, setIsCopied] = useState(false)
-
-    const params = new URLSearchParams(props.location.search)
-    const labMlToken = params.get('labml_token')
-
-    useEffect(() => {
-        if (labMlToken) {
-            setMessage(`${process.env.REACT_APP_SERVER_URL}/track?labml_token=${labMlToken}`)
-        }
-    }, [labMlToken]);
 
     const onSubmit = () => {
         if (userInput) {
@@ -56,27 +38,13 @@ function MainView(props: MainProps) {
                 mobile</h5>
             <Image src={imageSrc} rounded/>
             <div className={"w-75 mx-auto"}>
-                {labMlToken
-                    ? <Card>
-                        <Card.Body>
-                            <Card.Title><h5>Your web_api URL is</h5></Card.Title>
-                            <Card.Text>
-                                <h6 className={"text-secondary"}>{message}</h6>
-                            </Card.Text>
-                            <CopyToClipboard text={message} onCopy={() => setIsCopied(true)}>
-                                <Button className={"button-theme"}> {isCopied ? 'URL Copied' : 'Copy URL'}</Button>
-                            </CopyToClipboard>
-                        </Card.Body>
-                    </Card>
-                    :
-                    <div className={"w-50 mx-auto"}>
-                        <FormControl type='text' placeholder="If you already have generated a LabMLToken, enter here"
-                                     onChange={handleTokenChange}/>
-                        <Button className={"mt-3 button-theme"} onClick={onSubmit}>
-                            Try it Out
-                        </Button>
-                    </div>
-                }
+                <div className={"w-50 mx-auto"}>
+                    <FormControl type='text' placeholder="If you already have generated a LabMLToken, enter here"
+                                 onChange={handleTokenChange}/>
+                    <Button className={"mt-3 button-theme"} onClick={onSubmit}>
+                        Try it Out
+                    </Button>
+                </div>
             </div>
         </div>
         <div>
@@ -92,4 +60,4 @@ function MainView(props: MainProps) {
     </div>
 }
 
-export default MainView
+export default LoginView

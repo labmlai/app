@@ -40,9 +40,7 @@ def slack_authenticated():
 def signup():
     user = users.get_or_create()
 
-    return jsonify({
-        'uri': f"{settings.WEB_URL}/?labml_token={user.labml_token}"
-    })
+    return jsonify({'uri': f"{settings.WEB_URL}/runs?labml_token={user.labml_token}"})
 
 
 def update_run():

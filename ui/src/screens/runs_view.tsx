@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react"
 
 import NETWORK from '../network'
-import {RunsTable} from "../components/runs_table";
-import {Run} from "../components/utils";
+import {RunsTable} from "../components/runs_table"
+import {Markdown} from "../components/markdown"
+import {Run} from "../components/utils"
 
 
 interface RunsProps {
@@ -13,20 +14,24 @@ function RunsView(props: RunsProps) {
     const [runs, setRuns] = useState<Run[]>([]);
 
     const params = new URLSearchParams(props.location.search)
-    const labml_token = params.get('labml_token')
+    const labMlToken = params.get('labml_token')
+
 
     useEffect(() => {
-        if (labml_token) {
-            NETWORK.get_runs(labml_token).then((res) => {
+        if (labMlToken) {
+            NETWORK.get_runs(labMlToken).then((res) => {
                 setRuns(res.data)
             })
         }
-    }, [labml_token])
+    }, [labMlToken])
 
     return <div className={'pt-5'}>
-        <RunsTable runs={runs}/>
+        {runs.length !== 0
+            ? <RunsTable runs={runs}/>
+            :
+            <Markdown labMlToken={labMlToken}/>
+        }
     </div>
-
 }
 
 export default RunsView
