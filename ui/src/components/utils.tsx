@@ -21,10 +21,3 @@ export function getTimeDiff(timestamp: number): string {
     }
 }
 
-export function StatusView(props: { status: Status }) {
-    if (props.status.status === 'in progress') {
-        return <div className={'badge badge-info'}>🏃 experiment is running</div>
-    } else {
-        return <div className={'badge badge-info'}>{props.status.status}</div>
-    }
-}

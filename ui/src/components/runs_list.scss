@@ -1,16 +1,39 @@
-.table {
-  display: table;
+.runs-list {
+  .runs-list-item {
+    margin-top: 1px;
+    font-size: 12px;
 
-  .table-header {
-    display: table-header-group;
-    font-weight: bold;
-  }
+    .badge {
+      font-size: 9px;
+      text-transform: uppercase;
+    }
 
-  div {
-    display: table-row;
-  }
+    h3, h4, h5, h6, p {
+      overflow-wrap: break-word;
+      padding: 0;
+      margin: 2px 0;
+    }
 
-  span {
-    display: table-cell;
+    h5 {
+      color: #34495e;
+    }
+
+    h6 {
+      color: #7f8c8d;
+    }
+
+    p {
+      color: #7f8c8d;
+    }
+
+    .status {
+      text-transform: uppercase;
+      color: #7f8c8d;
+      font-size: 8px;
+    }
+
+    :hover {
+
+    }
   }
 }

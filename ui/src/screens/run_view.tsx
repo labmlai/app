@@ -45,8 +45,8 @@ function RunView(props: RunProps) {
 
     let runView = <div id={'run'} className={'run-header'}>
         <RunInfo name={run.name} comment={run.comment}
-                 start={run.start} time={run.time}
-                 status={run.status} width={actualWidth}/>
+                 start={run.start} lastUpdatedTime={run.time}
+                 status={run.status}/>
         <ConfigsView configs={run.configs} width={actualWidth}/>
     </div>
 
