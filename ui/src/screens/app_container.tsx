@@ -8,8 +8,14 @@ import RunView from "./run_view";
 import ChartView from "./chart_view";
 import SampleChart from "./sample_chart";
 import RunsListView from "./runs_list_view";
+import ReactGA from 'react-ga';
+
+/* TODO: Get this from configs */
+ReactGA.initialize('UA-164228270-01');
 
 function AppContainer() {
+    ReactGA.pageview(window.location.pathname + window.location.search);
+
     return (
         <div className="page-wrapper chiller-theme toggled" id="changer">
             <main>

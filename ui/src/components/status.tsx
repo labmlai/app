@@ -32,10 +32,10 @@ export function StatusView(props: StatusProps) {
     if (status.status === 'in progress') {
         return <div className={'badge badge-info'}>🏃 experiment is running</div>
     } else if (status.status === 'no response') {
-        return <div className={'badge badge-danger'}>no response</div>
+        return <div className={'badge badge-warning'}>no response</div>
     } else if (status.status === 'unknown') {
-        return <div className={'badge badge-info'}>{'Unknown'}</div>
+        return <div className={'status'}>{'Unknown Status'}</div>
     } else {
-        return <div className={'badge badge-info'}>{status}</div>
+        return <div className={'badge badge-info'}>{status.status}</div>
     }
 }
