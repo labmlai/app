@@ -31,8 +31,8 @@ export function Code(props: MarkdownProps) {
 
     return <div>
         <LabLoader isLoading={true}/>
-        <h4 className={'text-center text-secondary mt-5'}>We have nothing to show. Run the below code snippet to
-            generate an experiment.</h4>
+        <p className={'text-center text-secondary mt-5'}>We have nothing to show. Run the below code snippet to
+            generate an experiment.</p>
         <div className={"w-75 mx-auto mt-4"}>
             <Highlight language={'python'}>
                 {code}

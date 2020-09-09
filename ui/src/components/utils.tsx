@@ -1,6 +1,3 @@
-import React from "react";
-import {Status} from "./models";
-
 export function formatTime(time: number): string {
     let date = new Date(time * 1000)
     let timeStr = date.toTimeString().substr(0, 8)
