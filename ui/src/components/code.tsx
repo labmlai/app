@@ -18,7 +18,7 @@ export function Code(props: CodeProps) {
         <LabLoader isLoading={true}/>
         <h6 className={'text-center text-secondary mt-5'}>Your experiment list is empty. Run the below code snippet to
             generate a sample experiment.</h6>
-        <div className={'mt-5 bg-light container-sm'}>
+        <div className={'mt-5 bg-light container-sm mb-5'}>
             <code className={"text-secondary"}>
                 <p>
                     import numpy as np <br/>
@@ -54,8 +54,6 @@ export function Code(props: CodeProps) {
                 </p>
             </code>
         </div>
-        <div  className={'mt-5'}>
-            <Footer/>
-        </div>
+        <Footer/>
     </div>
 }

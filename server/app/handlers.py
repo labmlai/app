@@ -43,6 +43,10 @@ def signup():
     return jsonify({'uri': f"{settings.WEB_URL}/runs?labml_token={user.labml_token}"})
 
 
+def is_valid_user(labml_token: str):
+    return jsonify({'valid': users.is_valid_user(labml_token)})
+
+
 def update_run():
     channel = request.args.get('channel')
     labml_token = request.args.get('labml_token')
@@ -95,7 +99,10 @@ def add_handlers(app: flask.Flask):
     _add(app, 'GET', test, 'test')
 
     _add(app, 'POST', signup, 'signup')
+    _add(app, 'GET', is_valid_user, 'validations/<labml_token>')
+
     _add(app, 'GET', slack_authenticated, 'auth/redirect')
+
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')

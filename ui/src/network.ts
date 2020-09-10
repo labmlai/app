@@ -16,6 +16,10 @@ class NETWORK {
     static async get_runs(labml_token: string): Promise<any> {
         return axios.get(`${process.env.REACT_APP_SERVER_URL}/runs/${labml_token}`, {})
     }
+
+    static async get_user_validation(labml_token: string): Promise<any> {
+        return axios.get(`${process.env.REACT_APP_SERVER_URL}/validations/${labml_token}`, {})
+    }
 }
 
 export default NETWORK

@@ -73,5 +73,12 @@ def get_or_create(*, labml_token: str = '', slack_token: str = ''):
     return user
 
 
+def is_valid_user(labml_token: str):
+    if labml_token and labml_token in _USERS:
+        return True
+
+    return False
+
+
 def get(*, labml_token: str) -> User:
     return _USERS.get(labml_token, None)
