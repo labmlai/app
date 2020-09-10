@@ -105,13 +105,6 @@ function MainView(props: MainProps) {
                                       instructions={['Check logs in your Slack channel.']}/></li>
                 </ul>
             </div>
-            <iframe width="700"
-                    height="415"
-                    title={"Demonstration"}
-                    src="https://www.youtube.com/embed/FY3e1EHqwEE"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen/>
         </div>
         <div className={css(styles.container)}>
             <Container className={"text-center pt-5"}>
