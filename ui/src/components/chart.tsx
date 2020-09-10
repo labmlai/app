@@ -3,6 +3,8 @@ import * as d3 from "d3";
 import "./chart.scss"
 import {formatFixed} from "./value";
 
+const SMOOTH_POINTS = 50
+const OUTLIER_MARGIN = 0.04
 
 interface PointValue {
     step: number
@@ -33,14 +35,14 @@ const COLORS = [
 function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
     let values = series.map(func)
     values.sort((a, b) => a - b)
-    if (values.length == 0) {
+    if (values.length === 0) {
         return [0, 0]
     }
     if (values.length < 10) {
         return [values[0], values[values.length - 1]]
     }
     let extent = [0, values.length - 1]
-    let margin = Math.floor(values.length / 20)
+    let margin = Math.floor(values.length * OUTLIER_MARGIN)
     let stdDev = d3.deviation(values.slice(margin, values.length - margin))
     if (stdDev == null) {
         stdDev = (values[values.length - margin - 1] - values[margin]) / 2
@@ -122,7 +124,7 @@ function RightAxis(props: AxisProps) {
 }
 
 function smoothSeries(series: number[]): number[] {
-    let span = Math.floor(series.length / 100)
+    let span = Math.floor(series.length / SMOOTH_POINTS)
     const spanExtra = Math.floor(span / 2)
 
     let n = 0
