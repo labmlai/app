@@ -139,8 +139,8 @@ function smoothSeries(series: PointValue[]): SmoothedPointValue[] {
             sum += series[i].value
             n++
         }
-        if(j - spanExtra >= 0) {
-            sum -= series[j - spanExtra].value
+        if(j - spanExtra - 1 >= 0) {
+            sum -= series[j - spanExtra - 1].value
             n--
         }
         if(j >= 0) {
