@@ -1,5 +1,6 @@
 import React from "react";
 import {LabLoader} from "./loader"
+import {Footer} from './footer'
 
 
 interface CodeProps {
@@ -15,9 +16,9 @@ function Tab() {
 export function Code(props: CodeProps) {
     return <div>
         <LabLoader isLoading={true}/>
-        <h6 className={'text-center text-muted mt-5'}>Your experiment list is empty. Run the below code snippet to
+        <h6 className={'text-center text-secondary mt-5'}>Your experiment list is empty. Run the below code snippet to
             generate a sample experiment.</h6>
-        <div className={'w-75 mx-auto mt-5 bg-light'}>
+        <div className={'mt-5 bg-light container-sm'}>
             <code className={"text-secondary"}>
                 <p>
                     import numpy as np <br/>
@@ -52,6 +53,9 @@ export function Code(props: CodeProps) {
                     </span>
                 </p>
             </code>
+        </div>
+        <div  className={'mt-5'}>
+            <Footer/>
         </div>
     </div>
 }
