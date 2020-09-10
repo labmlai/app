@@ -7,6 +7,7 @@ import LineChart, {SeriesModel} from "../components/chart";
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
+import Loader from "react-loader-spinner";
 
 
 interface RunProps {
@@ -14,8 +15,6 @@ interface RunProps {
 }
 
 function RunView(props: RunProps) {
-    const [isLoading, setIsLoading] = useState(true)
-
     const [run, setRun] = useState({
         run_uuid: '',
         name: '',
@@ -51,7 +50,6 @@ function RunView(props: RunProps) {
             })
             NETWORK.get_tracking(run_uuid).then((res) => {
                 setTrack(res.data)
-                setIsLoading(false)
             })
         }
 
@@ -82,9 +80,7 @@ function RunView(props: RunProps) {
     }
     return <div>
         {(() => {
-            if (isLoading) {
-                return <LabLoader isLoading={isLoading}/>
-            } else {
+            if (track && run) {
                 return <div className={'run'} style={style}>
                     {runView}
                     {chart}
@@ -94,6 +90,8 @@ function RunView(props: RunProps) {
                         <a href={'https://github.com/lab-ml/app'}>LabML App Github Repo</a>
                     </div>
                 </div>
+            } else {
+                return <LabLoader isLoading={true}/>
             }
         })()}
     </div>
