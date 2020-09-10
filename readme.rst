@@ -37,7 +37,7 @@ How it works? A simple Sine Wave
     y = np.sin(2 * np.pi * configs['f'] * (x / configs['fs']))
 
     experiment.record(name='sin_wave', conf_dict=configs, lab_conf={'web_api':
-                      'https://api.lab-ml.com/api/v1/track?labml_token=${props.labMlToken}'})
+                      'https://api.lab-ml.com/api/v1/track?labml_token=Your Token'})
     with experiment.start():
         for y_i in y:
             tracker.save({'loss': y_i, 'noisy': y_i + np.random.normal(0, 10, 100)})
