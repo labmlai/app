@@ -1,42 +1,57 @@
 import React from "react";
 import {LabLoader} from "./loader"
-import Highlight from 'react-highlight.js'
 
 
 interface CodeProps {
     labMlToken: string | null
 }
 
-export function Code(props: CodeProps) {
-    const code =
-    `    
-    import numpy as np
-    from labml import tracker, experiment
-    
-    configs = {
-        'fs': 100000,  # sample rate
-        'f': 1,  # the frequency of the signal
-    }
-    
-    x = np.arange(configs['fs'])
-    y = np.sin(2 * np.pi * configs['f'] * (x / configs['fs']))
-    
-    experiment.record(name='sin_wave', conf_dict=configs, lab_conf={'web_api':
-                     'https://api.lab-ml.com/api/v1/track?labml_token=${props.labMlToken}'})
-    with experiment.start():
-        for y_i in y:
-            tracker.save({'loss': y_i, 'noisy': y_i + np.random.normal(0, 10, 100)})
-            tracker.add_global_step() 
-    `
+function Tab() {
+    return <span>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+    </span>
+}
 
+export function Code(props: CodeProps) {
     return <div>
         <LabLoader isLoading={true}/>
-        <p className={'text-center text-secondary mt-5'}>We have nothing to show. Run the below code snippet to
-            generate a sample experiment.</p>
-        <div className={"w-75 mx-auto mt-4"}>
-            <Highlight language={'python'}>
-                {code}
-            </Highlight>
+        <h6 className={'text-center text-muted mt-5'}>Your experiment list is empty. Run the below code snippet to
+            generate a sample experiment.</h6>
+        <div className={'w-75 mx-auto mt-5 bg-light'}>
+            <code className={"text-secondary"}>
+                <p>
+                    import numpy as np <br/>
+                    from labml import tracker, experiment
+                </p>
+                <p className={'mt-5'}>
+                    conf = {"{'batch_size': 20}"}<br/>
+                    n = 0
+                </p>
+                <p className={'mt-3'}>
+                    <span>
+                        def train():<br/>
+                     </span>
+                    <span>
+                        <Tab/>global n<br/>
+                        <Tab/>n += 1<br/>
+                        <Tab/>return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
+                    </span>
+                </p>
+                <p className={'mt-3'}>
+                    <span className={'font-weight-bolder text-dark'}>
+                        with experiment.record(name='sample', exp_conf=conf, web_api={props.labMlToken}, comment='test'):<br/>
+                    </span>
+                    <span>
+                        <Tab/>for i in range(100000):<br/>
+                    </span>
+                    <span>
+                       <Tab/><Tab/>loss, accuracy = train()<br/>
+                    </span>
+                    <span className={'font-weight-bolder text-dark'}>
+                        <Tab/><Tab/>tracker.save(i, {"loss': loss, 'accuracy': accuracy"})<br/>
+                    </span>
+                </p>
+            </code>
         </div>
     </div>
 }
