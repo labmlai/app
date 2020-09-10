@@ -47,8 +47,5 @@ How it works? A simple Loss curve
 Links
 -----
 
-`📑 Medium Article <https://medium.com/@labml/labml-slack-integration-79519cf9c3a4>`_
+`📑 Sample Link <https://web.lab-ml.com/run?run_uuid=1f072860ef2511eaa6a01ffd436495e3>`_
 
-`📹 Youtube Video <https://www.youtube.com/watch?v=FY3e1EHqwEE&feature=emb_title>`_
-
-`📓 Kaggle Notebook <https://www.kaggle.com/hnipun/push-ml-dl-model-training-updates-to-slack/>`_
