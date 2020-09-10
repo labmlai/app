@@ -3,11 +3,11 @@ import {LabLoader} from "./loader"
 import Highlight from 'react-highlight.js'
 
 
-interface MarkdownProps {
+interface CodeProps {
     labMlToken: string | null
 }
 
-export function Code(props: MarkdownProps) {
+export function Code(props: CodeProps) {
     const code =
     `    
     import numpy as np
@@ -32,7 +32,7 @@ export function Code(props: MarkdownProps) {
     return <div>
         <LabLoader isLoading={true}/>
         <p className={'text-center text-secondary mt-5'}>We have nothing to show. Run the below code snippet to
-            generate an experiment.</p>
+            generate a sample experiment.</p>
         <div className={"w-75 mx-auto mt-4"}>
             <Highlight language={'python'}>
                 {code}
