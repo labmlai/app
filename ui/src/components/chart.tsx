@@ -7,11 +7,6 @@ import {formatFixed} from "./value";
 interface PointValue {
     step: number
     value: number
-}
-
-interface SmoothedPointValue {
-    step: number
-    value: number
     smoothed: number
 }
 
@@ -126,25 +121,25 @@ function RightAxis(props: AxisProps) {
     return <g id={id}/>
 }
 
-function smoothSeries(series: PointValue[]): SmoothedPointValue[] {
+function smoothSeries(series: number[]): number[] {
     let span = Math.floor(series.length / 100)
     const spanExtra = Math.floor(span / 2)
 
     let n = 0
     let sum = 0
-    let smoothed: SmoothedPointValue[] = []
-    for(let i = 0; i < series.length + spanExtra; ++i) {
+    let smoothed: number[] = []
+    for (let i = 0; i < series.length + spanExtra; ++i) {
         const j = i - spanExtra
-        if(i < series.length) {
-            sum += series[i].value
+        if (i < series.length) {
+            sum += series[i]
             n++
         }
-        if(j - spanExtra - 1 >= 0) {
-            sum -= series[j - spanExtra - 1].value
+        if (j - spanExtra - 1 >= 0) {
+            sum -= series[j - spanExtra - 1]
             n--
         }
-        if(j >= 0) {
-            smoothed.push({step: series[j].step, value: series[j].value, smoothed: sum / n})
+        if (j >= 0) {
+            smoothed.push(sum / n)
         }
     }
 
@@ -159,8 +154,8 @@ interface LinePlotProps {
 }
 
 function LinePlot(props: LinePlotProps) {
-    let series = smoothSeries(props.series)
-    let smoothedLine = d3.line<SmoothedPointValue>()
+    let series = props.series
+    let smoothedLine = d3.line<PointValue>()
         .curve(d3.curveMonotoneX)
         .x((d) => {
             return props.xScale(d.step)
@@ -171,7 +166,7 @@ function LinePlot(props: LinePlotProps) {
 
     let d: string = smoothedLine(series) as string
 
-    let unsmoothedLine = d3.line<SmoothedPointValue>()
+    let unsmoothedLine = d3.line<PointValue>()
         .curve(d3.curveMonotoneX)
         .x((d) => {
             return props.xScale(d.step)
@@ -210,6 +205,21 @@ function ListRow(props: ListRowProps) {
     const yScale = getScale(getExtent([s], d => d.value, true), -25)
     const xScale = getScale(props.stepExtent, chartWidth)
 
+    const last = s[s.length - 1]
+    let value = []
+    if (Math.abs(last.value - last.smoothed) > last.value / 1e6) {
+        value.push(<text key={'value'} y={10} dy={"0.2em"} x={props.width} textAnchor={'end'} fill={'#7f8c8d'}>
+            {formatFixed(last.value, 6)}
+        </text>)
+        value.push(<text key={'smoothed'} y={10} dy={"1.20em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
+            {formatFixed(last.smoothed, 6)}
+        </text>)
+
+    } else {
+        value.push(<text key={'value'} y={10} dy={"0.71em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
+            {formatFixed(last.value, 6)}
+        </text>)
+    }
     return <g className={'sparkline-list-item'}>
         <text y={10} dy={"0.71em"} fill={COLORS[props.idx]}
             //      clipPath={`url(#clip-${props.name})`}
@@ -217,10 +227,7 @@ function ListRow(props: ListRowProps) {
         <g transform={`translate(${titleWidth}, 25)`}>
             <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
         </g>
-        <text y={10} dy={"0.71em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
-            {formatFixed(s[s.length - 1].value, 6)}
-        </text>
-
+        {value}
         {/*<clipPath id={`clip-${props.name}`}>*/}
         {/*    <rect width={100} height={20}/>*/}
         {/*</clipPath>*/}
@@ -242,11 +249,11 @@ function LineChart(props: SeriesProps) {
     const itemHeight = 35
 
     let track = props.series
-
     for (let s of track) {
         let res: PointValue[] = []
+        let smoothed = smoothSeries(s.value)
         for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i]})
+            res.push({step: s.step[i], value: s.value[i], smoothed: smoothed[i]})
         }
         s.series = res
     }
