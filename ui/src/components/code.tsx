@@ -16,15 +16,15 @@ function Tab() {
 export function Code(props: CodeProps) {
     return <div>
         <LabLoader isLoading={true}/>
-        <h6 className={'text-center text-secondary mt-5'}>Your experiment list is empty. Run the below code snippet to
+        <h6 className={'text-center text-dark mt-3'}>Your experiment list is empty. Run the below code snippet to
             generate a sample experiment.</h6>
-        <div className={'mt-5 bg-light container-sm mb-5'}>
+        <div className={'mt-3 bg-light container-sm mb-3'}>
             <code className={"text-secondary"}>
                 <p>
                     import numpy as np <br/>
                     from labml import tracker, experiment
                 </p>
-                <p className={'mt-5'}>
+                <p className={'mt-3'}>
                     conf = {"{'batch_size': 20}"}<br/>
                     n = 0
                 </p>

@@ -42,7 +42,7 @@ function LoginView() {
     }
 
     return <div>
-        <div className={"container-sm text-center mb-2"}>
+        <div className={"container-sm text-center mb-3"}>
             <h2>Get Model Training Updates in Mobile</h2>
             <h5 className={"text-secondary"}>An open-source library to push updates of your ML/DL model training to
                 mobile</h5>
