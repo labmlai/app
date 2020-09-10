@@ -10,7 +10,7 @@ An open-source library to push updates of your ML/DL model training to mobile
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
    :alt: Mobile view
 
-How it works? A simple Sine Wave
+How it works? A simple Loss curve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **web_api url**.
@@ -26,23 +26,23 @@ How it works? A simple Sine Wave
 .. code-block:: python
 
     import numpy as np
+
     from labml import tracker, experiment
 
-    configs = {
-        'fs': 100000,  # sample rate
-        'f': 1,  # the frequency of the signal
-    }
+    conf = {'batch_size': 20}
+    n = 0
 
-    x = np.arange(configs['fs'])
-    y = np.sin(2 * np.pi * configs['f'] * (x / configs['fs']))
 
-    experiment.record(name='sin_wave', conf_dict=configs, lab_conf={'web_api':
-                      'https://api.lab-ml.com/api/v1/track?labml_token=Your Token'})
+    def train():
+        global n
+        n += 1
+        return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
 
-    with experiment.start():
-        for y_i in y:
-            tracker.save({'loss': y_i, 'noisy': y_i + np.random.normal(0, 10, 100)})
-            tracker.add_global_step()
+
+    with experiment.record(name='sample', exp_conf=conf, web_api='903c84fba8ca49ca9f215922833e08cf', comment='test'):
+        for i in range(100000):
+            loss, accuracy = train()
+            tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 
 Links
 -----
