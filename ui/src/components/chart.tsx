@@ -9,6 +9,12 @@ interface PointValue {
     value: number
 }
 
+interface SmoothedPointValue {
+    step: number
+    value: number
+    smoothed: number
+}
+
 // const FLAT_COLORS = [
 //     '#2980b9',
 //     '#c0392b',
@@ -120,6 +126,31 @@ function RightAxis(props: AxisProps) {
     return <g id={id}/>
 }
 
+function smoothSeries(series: PointValue[]): SmoothedPointValue[] {
+    let span = Math.floor(series.length / 100)
+    const spanExtra = Math.floor(span / 2)
+
+    let n = 0
+    let sum = 0
+    let smoothed: SmoothedPointValue[] = []
+    for(let i = 0; i < series.length + spanExtra; ++i) {
+        const j = i - spanExtra
+        if(i < series.length) {
+            sum += series[i].value
+            n++
+        }
+        if(j - spanExtra >= 0) {
+            sum -= series[j - spanExtra].value
+            n--
+        }
+        if(j >= 0) {
+            smoothed.push({step: series[j].step, value: series[j].value, smoothed: sum / n})
+        }
+    }
+
+    return smoothed
+}
+
 interface LinePlotProps {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
@@ -128,7 +159,19 @@ interface LinePlotProps {
 }
 
 function LinePlot(props: LinePlotProps) {
-    let line = d3.line<PointValue>()
+    let series = smoothSeries(props.series)
+    let smoothedLine = d3.line<SmoothedPointValue>()
+        .curve(d3.curveMonotoneX)
+        .x((d) => {
+            return props.xScale(d.step)
+        })
+        .y((d) => {
+            return props.yScale(d.smoothed)
+        })
+
+    let d: string = smoothedLine(series) as string
+
+    let unsmoothedLine = d3.line<SmoothedPointValue>()
         .curve(d3.curveMonotoneX)
         .x((d) => {
             return props.xScale(d.step)
@@ -137,18 +180,18 @@ function LinePlot(props: LinePlotProps) {
             return props.yScale(d.value)
         })
 
-    let d: string = line(props.series) as string
+    let smoothedPath = <path className={'smoothed-line'} fill={'none'} stroke={props.color} d={d}/>
+    let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
+                               d={unsmoothedLine(series) as string}/>
 
-    let path = <path className={'line'} fill={'none'} stroke={props.color} d={d}/>
-
-    let dFill = `M${props.xScale(props.series[0].step)},0L` +
+    let dFill = `M${props.xScale(series[0].step)},0L` +
         d.substr(1) +
-        `L${props.xScale(props.series[props.series.length - 1].step)},0`
+        `L${props.xScale(props.series[series.length - 1].step)},0`
     let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
                          d={dFill}/>
 
     return <g>
-        {path}{pathFill}
+        {smoothedPath}{unsmoothedPath}{pathFill}
     </g>
 }
 
