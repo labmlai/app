@@ -42,10 +42,10 @@ function LoginView() {
     }
 
     return <div>
-        <div className={"container-sm text-center mb-3"}>
-            <h2>Get Model Training Updates in Mobile</h2>
-            <h5 className={"text-secondary"}>An open-source library to push updates of your ML/DL model training to
-                mobile</h5>
+        <div className={"container-sm text-center mb-3 mt-3"}>
+            <h5>Get Model Training Updates in Mobile</h5>
+            <h6 className={"text-secondary"}>An open-source library to push updates of your ML/DL model training to
+                mobile</h6>
             <Image src={imageSrc} rounded/>
             <div className={"w-50 mx-auto"}>
                 <FormControl type='text' placeholder="If you already have generated a Token, Enter here"

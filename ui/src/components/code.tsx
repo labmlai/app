@@ -16,8 +16,10 @@ function Tab() {
 export function Code(props: CodeProps) {
     return <div>
         <LabLoader isLoading={true}/>
-        <h6 className={'text-center text-dark mt-3'}>Your experiment list is empty. Run the below code snippet to
-            generate a sample experiment.</h6>
+        <div className={'text-center'}>
+            <h5 className={'text-dark mt-5'}>Your experiment list is empty</h5>
+            <p className={'text-secondary'}>Run the below code snippet to generate a sample experiment </p>
+        </div>
         <div className={'mt-3 bg-light container-sm mb-3'}>
             <code className={"text-secondary"}>
                 <p>
