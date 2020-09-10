@@ -7,7 +7,6 @@ import LineChart, {SeriesModel} from "../components/chart";
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
-import Loader from "react-loader-spinner";
 
 
 interface RunProps {
