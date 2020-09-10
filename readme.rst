@@ -47,5 +47,5 @@ How it works? A simple Loss curve
 Links
 -----
 
-`📑 Sample Link <https://web.lab-ml.com/run?run_uuid=76a85d2af2b611eabfc96b0ec88e3371>`_
+`📑 Sample Link <https://web.lab-ml.com/run?run_uuid=4e91a0e2f37611eabc21a705ed364f19>`_
 
