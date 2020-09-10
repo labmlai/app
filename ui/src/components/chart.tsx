@@ -29,12 +29,40 @@ const COLORS = [
     '#9C755F',
     '#BAB0AB']
 
+function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
+    let values = series.map(func)
+    values.sort((a, b) => a - b)
+    if (values.length == 0) {
+        return [0, 0]
+    }
+    if (values.length < 10) {
+        return [values[0], values[values.length - 1]]
+    }
+    let extent = [0, values.length - 1]
+    let margin = Math.floor(values.length / 20)
+    let stdDev = d3.deviation(values.slice(margin, values.length - margin))
+    if (stdDev == null) {
+        stdDev = (values[values.length - margin - 1] - values[margin]) / 2
+    }
+    for (; extent[0] < margin; extent[0]++) {
+        if (values[extent[0]] + stdDev * 2 > values[margin]) {
+            break
+        }
+    }
+    for (; extent[1] > values.length - margin - 1; extent[1]--) {
+        if (values[extent[1]] - stdDev * 2 < values[values.length - margin - 1]) {
+            break
+        }
+    }
+
+    return [values[extent[0]], values[extent[1]]]
+}
 
 function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false): [number, number] {
-    let extent = d3.extent(series[0], func) as [number, number]
+    let extent = getExtentWithoutOutliers(series[0], func)
 
     for (let s of series) {
-        let e = d3.extent(s, func) as [number, number]
+        let e = getExtentWithoutOutliers(s, func)
         extent[0] = Math.min(e[0], extent[0])
         extent[1] = Math.max(e[1], extent[1])
     }
@@ -51,13 +79,6 @@ function getScale(extent: [number, number], size: number): d3.ScaleLinear<number
         .domain(extent).nice()
         .range([0, size])
 }
-
-function getXScale(series: PointValue[][], size: number): d3.ScaleLinear<number, number> {
-    let extent = getExtent(series, d => d.step)
-
-    return getScale(extent, size)
-}
-
 
 export interface SeriesModel {
     name: string
@@ -188,7 +209,7 @@ function LineChart(props: SeriesProps) {
     }
 
     let plot = track.filter((s => s.is_plot))
-    if(plot.length === 0) {
+    if (plot.length === 0) {
         return <div></div>
     }
 
