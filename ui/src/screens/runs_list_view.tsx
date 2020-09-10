@@ -33,17 +33,11 @@ function RunsListView(props: RunsListProps) {
     return <div>
         {(() => {
             if (isLoading) {
-                return (
-                    <LabLoader isLoading={isLoading}/>
-                )
+                return <LabLoader isLoading={isLoading}/>
             } else if (runs.length === 0) {
-                return (
-                    <Code labMlToken={labMlToken}/>
-                )
+                return <Code labMlToken={labMlToken}/>
             } else {
-                return (
-                    <RunsList runs={runs}/>
-                )
+                return <RunsList runs={runs}/>
             }
         })()}
     </div>

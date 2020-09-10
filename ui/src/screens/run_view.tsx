@@ -6,12 +6,16 @@ import {ConfigsView} from "../components/configs";
 import LineChart, {SeriesModel} from "../components/chart";
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
+import {LabLoader} from "../components/loader"
+
 
 interface RunProps {
     location: any
 }
 
 function RunView(props: RunProps) {
+    const [isLoading, setIsLoading] = useState(true)
+
     const [run, setRun] = useState({
         run_uuid: '',
         name: '',
@@ -36,7 +40,7 @@ function RunView(props: RunProps) {
 
     useEffect(() => {
         function loadFromServer(run_uuid: string) {
-                console.log("Try")
+            console.log("Try")
             if (run.status.status !== '' && run.status.status !== 'running') {
                 console.log("duh")
                 return
@@ -47,8 +51,8 @@ function RunView(props: RunProps) {
             })
             NETWORK.get_tracking(run_uuid).then((res) => {
                 setTrack(res.data)
+                setIsLoading(false)
             })
-
         }
 
         let interval: number = 0
@@ -76,14 +80,22 @@ function RunView(props: RunProps) {
     let style = {
         width: actualWidth
     }
-    return <div className={'run'} style={style}>
-        {runView}
-        {chart}
-        <div className={'footer-copyright text-center'}>
-            <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
-            <span> | </span>
-            <a href={'https://github.com/lab-ml/app'}>LabML App Github Repo</a>
-        </div>
+    return <div>
+        {(() => {
+            if (isLoading) {
+                return <LabLoader isLoading={isLoading}/>
+            } else {
+                return <div className={'run'} style={style}>
+                    {runView}
+                    {chart}
+                    <div className={'footer-copyright text-center'}>
+                        <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
+                        <span> | </span>
+                        <a href={'https://github.com/lab-ml/app'}>LabML App Github Repo</a>
+                    </div>
+                </div>
+            }
+        })()}
     </div>
 
 }
