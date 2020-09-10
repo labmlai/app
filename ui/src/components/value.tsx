@@ -40,16 +40,16 @@ export function FormattedValue(props: {value: any}) {
     } else if (typeof value === 'string') {
         return <span className={'string'}>{value}</span>
     } else if (value instanceof Array) {
-        let elements = [<span className={'subtle'}>{'['}</span>]
+        let elements = [<span key={'start'} className={'subtle'}>{'['}</span>]
 
         for(let i = 0; i < value.length; ++i) {
             if (i > 0) {
-                elements.push(<span className={'subtle'}>{', '}</span>)
+                elements.push(<span key={`sep_${i}`} className={'subtle'}>{', '}</span>)
             }
-            elements.push(<FormattedValue value={value[i]}/> )
+            elements.push(<FormattedValue key={i} value={value[i]}/> )
         }
 
-        elements.push(<span className={'subtle'}>{']'}</span>)
+        elements.push(<span key={'end'} className={'subtle'}>{']'}</span>)
         return <span>{elements}</span>
     } else {
         return <span className={'unknown'}>{value}</span>

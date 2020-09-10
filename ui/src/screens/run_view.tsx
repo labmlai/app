@@ -32,16 +32,34 @@ function RunView(props: RunProps) {
     const run_uuid = params.get('run_uuid')
 
     const actualWidth = Math.min(800, windowWidth)
+
+
     useEffect(() => {
-        if (run_uuid) {
+        function loadFromServer(run_uuid: string) {
+                console.log("Try")
+            if (run.status.status !== '' && run.status.status !== 'running') {
+                console.log("duh")
+                return
+            }
+
             NETWORK.get_run(run_uuid).then((res) => {
                 setRun(res.data)
             })
             NETWORK.get_tracking(run_uuid).then((res) => {
                 setTrack(res.data)
             })
+
         }
-    }, [run_uuid])
+
+        let interval: number = 0
+        if (run_uuid) {
+            loadFromServer(run_uuid)
+            let interval = setInterval(() => {
+                loadFromServer(run_uuid);
+            }, 2 * 60 * 1000);
+        }
+        return () => clearInterval(interval);
+    }, [run_uuid]);
 
     let runView = <div id={'run'} className={'run-header'}>
         <RunInfo name={run.name} comment={run.comment}

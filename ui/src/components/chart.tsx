@@ -3,10 +3,13 @@ import * as d3 from "d3";
 import "./chart.scss"
 import {formatFixed} from "./value";
 
+const SMOOTH_POINTS = 50
+const OUTLIER_MARGIN = 0.04
 
 interface PointValue {
     step: number
     value: number
+    smoothed: number
 }
 
 // const FLAT_COLORS = [
@@ -29,12 +32,40 @@ const COLORS = [
     '#9C755F',
     '#BAB0AB']
 
+function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
+    let values = series.map(func)
+    values.sort((a, b) => a - b)
+    if (values.length === 0) {
+        return [0, 0]
+    }
+    if (values.length < 10) {
+        return [values[0], values[values.length - 1]]
+    }
+    let extent = [0, values.length - 1]
+    let margin = Math.floor(values.length * OUTLIER_MARGIN)
+    let stdDev = d3.deviation(values.slice(margin, values.length - margin))
+    if (stdDev == null) {
+        stdDev = (values[values.length - margin - 1] - values[margin]) / 2
+    }
+    for (; extent[0] < margin; extent[0]++) {
+        if (values[extent[0]] + stdDev * 2 > values[margin]) {
+            break
+        }
+    }
+    for (; extent[1] > values.length - margin - 1; extent[1]--) {
+        if (values[extent[1]] - stdDev * 2 < values[values.length - margin - 1]) {
+            break
+        }
+    }
+
+    return [values[extent[0]], values[extent[1]]]
+}
 
 function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false): [number, number] {
-    let extent = d3.extent(series[0], func) as [number, number]
+    let extent = getExtentWithoutOutliers(series[0], func)
 
     for (let s of series) {
-        let e = d3.extent(s, func) as [number, number]
+        let e = getExtentWithoutOutliers(s, func)
         extent[0] = Math.min(e[0], extent[0])
         extent[1] = Math.max(e[1], extent[1])
     }
@@ -51,13 +82,6 @@ function getScale(extent: [number, number], size: number): d3.ScaleLinear<number
         .domain(extent).nice()
         .range([0, size])
 }
-
-function getXScale(series: PointValue[][], size: number): d3.ScaleLinear<number, number> {
-    let extent = getExtent(series, d => d.step)
-
-    return getScale(extent, size)
-}
-
 
 export interface SeriesModel {
     name: string
@@ -99,6 +123,31 @@ function RightAxis(props: AxisProps) {
     return <g id={id}/>
 }
 
+function smoothSeries(series: number[]): number[] {
+    let span = Math.floor(series.length / SMOOTH_POINTS)
+    const spanExtra = Math.floor(span / 2)
+
+    let n = 0
+    let sum = 0
+    let smoothed: number[] = []
+    for (let i = 0; i < series.length + spanExtra; ++i) {
+        const j = i - spanExtra
+        if (i < series.length) {
+            sum += series[i]
+            n++
+        }
+        if (j - spanExtra - 1 >= 0) {
+            sum -= series[j - spanExtra - 1]
+            n--
+        }
+        if (j >= 0) {
+            smoothed.push(sum / n)
+        }
+    }
+
+    return smoothed
+}
+
 interface LinePlotProps {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
@@ -107,7 +156,19 @@ interface LinePlotProps {
 }
 
 function LinePlot(props: LinePlotProps) {
-    let line = d3.line<PointValue>()
+    let series = props.series
+    let smoothedLine = d3.line<PointValue>()
+        .curve(d3.curveMonotoneX)
+        .x((d) => {
+            return props.xScale(d.step)
+        })
+        .y((d) => {
+            return props.yScale(d.smoothed)
+        })
+
+    let d: string = smoothedLine(series) as string
+
+    let unsmoothedLine = d3.line<PointValue>()
         .curve(d3.curveMonotoneX)
         .x((d) => {
             return props.xScale(d.step)
@@ -116,18 +177,18 @@ function LinePlot(props: LinePlotProps) {
             return props.yScale(d.value)
         })
 
-    let d: string = line(props.series) as string
+    let smoothedPath = <path className={'smoothed-line'} fill={'none'} stroke={props.color} d={d}/>
+    let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
+                               d={unsmoothedLine(series) as string}/>
 
-    let path = <path className={'line'} fill={'none'} stroke={props.color} d={d}/>
-
-    let dFill = `M${props.xScale(props.series[0].step)},0L` +
+    let dFill = `M${props.xScale(series[0].step)},0L` +
         d.substr(1) +
-        `L${props.xScale(props.series[props.series.length - 1].step)},0`
+        `L${props.xScale(props.series[series.length - 1].step)},0`
     let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
                          d={dFill}/>
 
     return <g>
-        {path}{pathFill}
+        {smoothedPath}{unsmoothedPath}{pathFill}
     </g>
 }
 
@@ -146,6 +207,21 @@ function ListRow(props: ListRowProps) {
     const yScale = getScale(getExtent([s], d => d.value, true), -25)
     const xScale = getScale(props.stepExtent, chartWidth)
 
+    const last = s[s.length - 1]
+    let value = []
+    if (Math.abs(last.value - last.smoothed) > last.value / 1e6) {
+        value.push(<text key={'value'} y={10} dy={"0.2em"} x={props.width} textAnchor={'end'} fill={'#7f8c8d'}>
+            {formatFixed(last.value, 6)}
+        </text>)
+        value.push(<text key={'smoothed'} y={10} dy={"1.20em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
+            {formatFixed(last.smoothed, 6)}
+        </text>)
+
+    } else {
+        value.push(<text key={'value'} y={10} dy={"0.71em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
+            {formatFixed(last.value, 6)}
+        </text>)
+    }
     return <g className={'sparkline-list-item'}>
         <text y={10} dy={"0.71em"} fill={COLORS[props.idx]}
             //      clipPath={`url(#clip-${props.name})`}
@@ -153,10 +229,7 @@ function ListRow(props: ListRowProps) {
         <g transform={`translate(${titleWidth}, 25)`}>
             <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
         </g>
-        <text y={10} dy={"0.71em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
-            {formatFixed(s[s.length - 1].value, 6)}
-        </text>
-
+        {value}
         {/*<clipPath id={`clip-${props.name}`}>*/}
         {/*    <rect width={100} height={20}/>*/}
         {/*</clipPath>*/}
@@ -178,17 +251,17 @@ function LineChart(props: SeriesProps) {
     const itemHeight = 35
 
     let track = props.series
-
     for (let s of track) {
         let res: PointValue[] = []
+        let smoothed = smoothSeries(s.value)
         for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i]})
+            res.push({step: s.step[i], value: s.value[i], smoothed: smoothed[i]})
         }
         s.series = res
     }
 
     let plot = track.filter((s => s.is_plot))
-    if(plot.length === 0) {
+    if (plot.length === 0) {
         return <div></div>
     }
 

@@ -17,8 +17,12 @@ svg#chart {
     opacity: 0.1;
   }
 
-  path.line {
+  path.smoothed-line {
     stroke-width: 3;
+  }
+
+  path.unsmoothed-line {
+    stroke-width: 0.5;
   }
 
   g.sparkline-list-item {
@@ -27,8 +31,11 @@ svg#chart {
       font-size: 12px
     }
 
-    path.line {
+    path.smoothed-line {
       stroke-width: 1.5;
+    }
+    path.unsmoothed-line {
+      stroke-width: 0;
     }
   }
 }

@@ -19,7 +19,8 @@ interface RunsListItemProps {
 export function StatusView(props: StatusProps) {
     let status = getActualStatus(props.status, props.lastUpdatedTime)
     if (status.status === 'in progress') {
-        return <div className={'badge badge-info'}>🏃 experiment is running</div>
+        return <div className={'badge badge-info'}>
+            <span role={'img'} aria-label={'running'}>🏃</span> experiment is running</div>
     } else if (status.status === 'no response') {
         return <div className={'status'}>no response</div>
     } else if (status.status === 'unknown') {
