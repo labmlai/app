@@ -80,6 +80,7 @@ function RunView(props: RunProps) {
     return <div>
         {(() => {
             if (track && Object.keys(run).length > 0) {
+                console.log(run)
                 return <div className={'run'} style={style}>
                     {runView}
                     {chart}
