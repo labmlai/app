@@ -79,7 +79,7 @@ function RunView(props: RunProps) {
     }
     return <div>
         {(() => {
-            if (track && run.configs) {
+            if (track && run.configs.length > 0) {
                 console.log(run)
                 return <div className={'run'} style={style}>
                     {runView}
