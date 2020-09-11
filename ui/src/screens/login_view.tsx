@@ -15,7 +15,7 @@ function LoginView() {
     const history = useHistory();
     const [userInput, setUserInput] = useState('')
 
-    const onGoToExperiments = () => {
+    function onGoToExperiments() {
         if (userInput) {
             NETWORK.get_user_validation(userInput).then((res) => {
                 if (res.data.valid) {
