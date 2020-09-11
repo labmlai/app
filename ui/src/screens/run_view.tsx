@@ -14,6 +14,9 @@ interface RunProps {
 }
 
 function RunView(props: RunProps) {
+    const [isTrackLoading, setIsTrackLoading] = useState(true)
+    const [isRunLoading, setIsRunLoading] = useState(true)
+
     const [run, setRun] = useState({
         run_uuid: '',
         name: '',
@@ -46,9 +49,11 @@ function RunView(props: RunProps) {
 
             NETWORK.get_run(run_uuid).then((res) => {
                 setRun(res.data)
+                setIsRunLoading(false)
             })
             NETWORK.get_tracking(run_uuid).then((res) => {
                 setTrack(res.data)
+                setIsTrackLoading(false)
             })
         }
 
@@ -79,7 +84,9 @@ function RunView(props: RunProps) {
     }
     return <div>
         {(() => {
-            if (track && run.configs.length > 0) {
+            if (isRunLoading || isTrackLoading) {
+                return <LabLoader isLoading={true}/>
+            } else {
                 return <div className={'run'} style={style}>
                     {runView}
                     {chart}
@@ -89,8 +96,6 @@ function RunView(props: RunProps) {
                         <a href={'https://github.com/lab-ml/app'}>LabML App Github Repo</a>
                     </div>
                 </div>
-            } else {
-                return <LabLoader isLoading={true}/>
             }
         })()}
     </div>
