@@ -18,7 +18,7 @@ export function Code(props: CodeProps) {
         <LabLoader isLoading={true}/>
         <div className={'text-center'}>
             <h5 className={'text-dark mt-5'}>You don't have any experiments</h5>
-            <p className={'text-secondary'}>Start monitoring your models by adding just two line sof codes, here is an example</p>
+            <p className={'text-secondary'}>Start monitoring your models by adding just two lines of code, here is an example</p>
         </div>
         <div className={'mt-3 bg-light container-sm mb-3'}>
             <code className={"text-secondary"}>
