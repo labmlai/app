@@ -17,8 +17,8 @@ export function Code(props: CodeProps) {
     return <div>
         <LabLoader isLoading={true}/>
         <div className={'text-center'}>
-            <h5 className={'text-dark mt-5'}>Your experiment list is empty</h5>
-            <p className={'text-secondary'}>Run the below code snippet to generate a sample experiment </p>
+            <h5 className={'text-dark mt-5'}>You don't have any experiments</h5>
+            <p className={'text-secondary'}>Start monitoring your models by adding just two line sof codes, here is an example</p>
         </div>
         <div className={'mt-3 bg-light container-sm mb-3'}>
             <code className={"text-secondary"}>
@@ -30,7 +30,7 @@ export function Code(props: CodeProps) {
                     conf = {"{'batch_size': 20}"}<br/>
                     n = 0
                 </p>
-                <p className={'mt-3'}>
+                <p className={'mt-5'}>
                     <span>
                         def train():<br/>
                      </span>
@@ -40,9 +40,9 @@ export function Code(props: CodeProps) {
                         <Tab/>return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
                     </span>
                 </p>
-                <p className={'mt-3'}>
+                <p className={'mt-5'}>
                     <span className={'font-weight-bolder text-dark'}>
-                        with experiment.record(name='sample', exp_conf=conf, web_api={props.labMlToken}, comment='test'):<br/>
+                        with experiment.record(name='sample', comment='test', exp_conf=conf, token='{props.labMlToken}'):<br/>
                     </span>
                     <span>
                         <Tab/>for i in range(100000):<br/>
@@ -51,7 +51,7 @@ export function Code(props: CodeProps) {
                        <Tab/><Tab/>loss, accuracy = train()<br/>
                     </span>
                     <span className={'font-weight-bolder text-dark'}>
-                        <Tab/><Tab/>tracker.save(i, {"loss': loss, 'accuracy': accuracy"})<br/>
+                        <Tab/><Tab/>tracker.save(i, {"{'loss': loss, 'accuracy': accuracy}"})<br/>
                     </span>
                 </p>
             </code>

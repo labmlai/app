@@ -53,9 +53,9 @@ def update_run():
 
     user = users.get(labml_token=labml_token)
     if not user:
-        return jsonify({'errors': 'invalid_labml_token',
-                        'message': 'The labml_token sent to the api is not valid.'
-                                   ' Please create a valid token at https://web.lab-ml.com',
+        return jsonify({'errors': [{'error': 'invalid_labml_token',
+                                    'message': 'The labml_token sent to the api is not valid.  '
+                                               'Please create a valid token at https://web.lab-ml.com'}],
                         'success': False})
 
     json = request.json
