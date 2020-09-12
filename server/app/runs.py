@@ -59,8 +59,8 @@ class Series:
         while j < len(self):
             if self.last_step[j] - last_step < self.step_gap:
                 # merge
-                iw = self.last_step[i] - last_step
-                jw = self.last_step[j] - self.last_step[i]
+                iw = max(1., self.last_step[i] - last_step)
+                jw = max(1., self.last_step[j] - self.last_step[i])
                 self.step[i] = (self.step[i] * iw + self.step[j] * jw) / (iw + jw)
                 self.value[i] = (self.value[i] * iw + self.value[j] * jw) / (iw + jw)
                 self.last_step[i] = self.last_step[j]
