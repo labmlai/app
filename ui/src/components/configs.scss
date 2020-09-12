@@ -150,18 +150,14 @@ $tableValue: #4cd137;
       line-height: 2;
     }
 
-    &:hover {
-      background: $tableHighlight !important;
-
-      > span {
-        opacity: 1.0 !important;
-        text-decoration: none;
-      }
-    }
-
-    &:nth-child(even) {
-      //background: $tableEven;
-    }
+    //&:hover {
+    //  background: $tableHighlight !important;
+    //
+    //  > span {
+    //    opacity: 1.0 !important;
+    //    text-decoration: none;
+    //  }
+    //}
   }
 }
 
@@ -173,7 +169,7 @@ $tableValue: #4cd137;
   }
 
   .not_collapsible, {
-    &:nth-child(even) {
+    &:nth-child(odd) {
       background: $tableEven;
     }
   }
@@ -244,10 +240,10 @@ $tableValue: #4cd137;
     }
   }
 
-  &:hover {
-    div.cell {
-      background: $tableHighlight !important;
-    }
-  }
+  //&:hover {
+  //  div.cell {
+  //    background: $tableHighlight !important;
+  //  }
+  //}
 
 }

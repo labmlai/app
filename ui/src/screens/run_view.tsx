@@ -68,7 +68,8 @@ function RunView(props: RunProps) {
     }, [run_uuid]);
 
     let runView = <div id={'run'} className={'run-header'}>
-        <RunInfo name={run.name} comment={run.comment}
+        <RunInfo uuid={run.run_uuid}
+                 name={run.name} comment={run.comment}
                  start={run.start} lastUpdatedTime={run.time}
                  status={run.status}/>
         <ConfigsView configs={run.configs} width={actualWidth}/>

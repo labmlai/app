@@ -28,12 +28,23 @@ svg#chart {
   g.sparkline-list-item {
     text {
       font-weight: bold;
-      font-size: 12px
+      font-size: 12px;
+
+      &.value-primary {
+        font-weight: bold;
+        fill: #34495e;
+      }
+
+      &.value-secondary {
+        font-weight: normal;
+        fill: #7f8c8d;
+      }
     }
 
     path.smoothed-line {
       stroke-width: 1.5;
     }
+
     path.unsmoothed-line {
       stroke-width: 0;
     }

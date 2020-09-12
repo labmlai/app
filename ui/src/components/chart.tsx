@@ -5,6 +5,7 @@ import {formatFixed} from "./value";
 
 const SMOOTH_POINTS = 50
 const OUTLIER_MARGIN = 0.04
+const BASE_COLOR = '#34495e'
 
 interface PointValue {
     step: number
@@ -195,7 +196,7 @@ function LinePlot(props: LinePlotProps) {
 interface ListRowProps {
     name: string
     series: PointValue[]
-    idx: number
+    color: string
     width: number
     stepExtent: [number, number]
 }
@@ -210,20 +211,23 @@ function ListRow(props: ListRowProps) {
     const last = s[s.length - 1]
     let value = []
     if (Math.abs(last.value - last.smoothed) > last.value / 1e6) {
-        value.push(<text key={'value'} y={10} dy={"0.2em"} x={props.width} textAnchor={'end'} fill={'#7f8c8d'}>
+        value.push(<text className={'value-secondary'} key={'value'} y={10} dy={"0.2em"} x={props.width}
+                         textAnchor={'end'}>
             {formatFixed(last.value, 6)}
         </text>)
-        value.push(<text key={'smoothed'} y={10} dy={"1.20em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
+        value.push(<text className={'value-primary'} key={'smoothed'} y={10} dy={"1.20em"} x={props.width}
+                         textAnchor={'end'}>
             {formatFixed(last.smoothed, 6)}
         </text>)
 
     } else {
-        value.push(<text key={'value'} y={10} dy={"0.71em"} x={props.width} textAnchor={'end'} fill={'currentColor'}>
+        value.push(<text className={'value-primary'} key={'value'} y={10} dy={"0.71em"} x={props.width}
+                         textAnchor={'end'}>
             {formatFixed(last.value, 6)}
         </text>)
     }
     return <g className={'sparkline-list-item'}>
-        <text y={10} dy={"0.71em"} fill={COLORS[props.idx]}
+        <text y={10} dy={"0.71em"} fill={props.color}
             //      clipPath={`url(#clip-${props.name})`}
         >{props.name}</text>
         <g transform={`translate(${titleWidth}, 25)`}>
@@ -262,7 +266,7 @@ function LineChart(props: SeriesProps) {
 
     let plot = track.filter((s => s.is_plot))
     if (plot.length === 0) {
-        return <div></div>
+        return <div/>
     }
 
     let plotSeries = plot.map(s => s.series)
@@ -282,8 +286,12 @@ function LineChart(props: SeriesProps) {
 
     const rowWidth = Math.min(450, windowWidth - 3 * margin)
     let list = track.map((s, i) => {
+        let color = COLORS[i]
+        if (!s.is_plot) {
+            color = BASE_COLOR
+        }
         return <g key={s.name} transform={`translate(${margin}, ${margin + chartHeight + axisSize + i * itemHeight})`}>
-            <ListRow name={s.name} series={s.series} idx={i} stepExtent={stepExtent} width={rowWidth}/>
+            <ListRow name={s.name} series={s.series} color={color} stepExtent={stepExtent} width={rowWidth}/>
         </g>
     })
 
