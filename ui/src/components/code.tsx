@@ -23,35 +23,35 @@ export function Code(props: CodeProps) {
         <div className={'mt-3 bg-light container-sm mb-3'}>
             <code className={"text-secondary"}>
                 <p>
-                    import numpy as np <br/>
+                    from numpy.random import random<br/>
                     from labml import tracker, experiment
                 </p>
                 <p className={'mt-3'}>
                     conf = {"{'batch_size': 20}"}<br/>
-                    n = 0
                 </p>
                 <p className={'mt-5'}>
                     <span>
-                        def train():<br/>
+                        def train(n: int):<br/>
                      </span>
                     <span>
-                        <Tab/>global n<br/>
-                        <Tab/>n += 1<br/>
-                        <Tab/>return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
+                        <Tab/>return 0.999 ** n + random() / 10, 1 - .999 ** n +\<br/>
+                        <Tab/><Tab/><Tab/>random() / 10
                     </span>
                 </p>
                 <p className={'mt-5'}>
                     <span className={'font-weight-bolder text-dark'}>
-                        with experiment.record(name='sample', comment='test', exp_conf=conf, token='{props.labMlToken}'):<br/>
+                        with experiment.record(name='sample', exp_conf=conf, <br/>
+                        <Tab/><Tab/><Tab/>token='{props.labMlToken}'):<br/>
                     </span>
                     <span>
                         <Tab/>for i in range(100000):<br/>
                     </span>
                     <span>
-                       <Tab/><Tab/>loss, accuracy = train()<br/>
+                       <Tab/><Tab/>loss, accuracy = train(i)<br/>
                     </span>
                     <span className={'font-weight-bolder text-dark'}>
-                        <Tab/><Tab/>tracker.save(i, {"{'loss': loss, 'accuracy': accuracy}"})<br/>
+                        <Tab/><Tab/>tracker.save(i, {"{'loss': loss, 'accuracy': "}<br/>
+                        <Tab/><Tab/><Tab/>{"accuracy}"})<br/>
                     </span>
                 </p>
             </code>
