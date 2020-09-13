@@ -22,7 +22,11 @@ export function StatusView(props: StatusProps) {
         return <div className={'badge badge-info'}>
             <span role={'img'} aria-label={'running'}>🏃</span> experiment is running</div>
     } else if (status.status === 'no response') {
-        return <div className={'status'}>no response</div>
+        return <div className={'status text-warning'}>no response</div>
+    } else if (status.status === 'completed') {
+        return <div className={'status text-success'}>completed</div>
+    } else if (status.status === 'crashed') {
+        return <div className={'status text-danger'}>crashed</div>
     } else if (status.status === 'unknown') {
         return <div className={'status'}>{'Unknown Status'}</div>
     } else {
