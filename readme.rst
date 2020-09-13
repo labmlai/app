@@ -13,7 +13,7 @@ An open-source library to push updates of your ML/DL model training to mobile
 How it works? A simple Loss curve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **web_api url**.
+1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **token**.
 
 2. Install the **labml** library
 
