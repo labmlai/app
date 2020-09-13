@@ -146,20 +146,20 @@ class SlackMessage:
     def __init__(self, slack_token: str):
         self._client = _get_client(slack_token)
 
-    def send_init_message(self, channel: str, run: Run):
+    def init_message(self, channel: str, run: Run):
         blocks = compile_init_message(run.run_uuid, run.name, run.comment, run.url)
         notification = f"Experiment {run.name} has started"
 
-        return self.send_message(channel, run, notification, blocks)
+        return self.send_message(channel, run.slack_thread_ts, notification, blocks)
 
-    def send_status_message(self, channel: str, run: Run):
+    def status_message(self, channel: str, run: Run):
         status = run.status
         blocks = compile_status_message(status['status'], status['details'])
         notification = f"Status update from experiment {run.name}"
 
-        return self.send_message(channel, run, notification, blocks)
+        return self.send_message(channel, run.slack_thread_ts, notification, blocks)
 
-    def send_message(self, channel: str, run: Run, notification, blocks):
+    def send_message(self, channel: str, slack_thread_ts: str, notification: str, blocks: list):
         res = {'error': '', 'success': False, 'ts': ''}
 
         if IS_DEBUG:
@@ -172,7 +172,7 @@ class SlackMessage:
                     channel=channel,
                     text=notification,
                     blocks=blocks,
-                    thread_ts=run.slack_thread_ts
+                    thread_ts=slack_thread_ts
                 )
                 res['ts'] = ret['ts']
                 res['success'] = True
@@ -221,10 +221,10 @@ class SlackMessage:
 
     def post_to_channel(self, channel: str, run: Run):
         if run.slack_thread_ts and run.status:
-            res_status = self.send_status_message(channel, run)
+            res_status = self.status_message(channel, run)
             self._collect_errors(res_status, run)
         else:
-            res = self.send_init_message(channel, run)
+            res = self.init_message(channel, run)
             self._collect_errors(res, run)
             if not res['success']:
                 return
