@@ -1,11 +1,7 @@
-LabML App
-=========
+LabML App - Monitor ML model training on mobile phones
+======================================================
 
-Monitor Machine Learning model training on mobile phones
---------------------------------------------------------
-
-An open-source library to push updates of your ML/DL model training to mobile
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is an open-source library to push updates of your ML/DL model training to mobile.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
    :alt: Mobile view
@@ -15,32 +11,26 @@ How it works? A simple Loss curve
 
 1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **token**.
 
-2. Install the **labml** library
+2. Install the `labml client library <https://github.com/lab-ml/labml>`_.
 
 .. code-block:: console
 
     pip install labml
 
-3. Run the following sample code.
+3. Start pushing updates to the app  `with two lines of code <http://lab-ml.com/guide/tracker.html>`_.
+
+
+Example
+^^^^^^^
 
 .. code-block:: python
 
-    import numpy as np
-    from labml import tracker, experiment
+	from labml import tracker, experiment
 
-    conf = {'batch_size': 20}
-    n = 0
-
-    def train():
-        global n
-        n += 1
-        return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
-
-    with experiment.record(name='sample', comment='test', exp_conf=conf, token=YOUR_TOKEN):
-        for i in range(100000):
-            loss, accuracy = train()
-            tracker.save(i, {'loss': loss, 'accuracy': accuracy})
-
+	with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
+	    for i in range(50):
+		loss, accuracy = train()
+		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 Links
 -----
 
