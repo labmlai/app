@@ -2,6 +2,11 @@ LabML App - Monitor ML model training on mobile phones
 ======================================================
 
 This is an open-source library to push updates of your ML/DL model training to mobile.
+`Here's a sample experiment <https://web.lab-ml.com/run?run_uuid=4e91a0e2f37611eabc21a705ed364f19>`_.
+
+You can host this on your own. We also have a small `AWS instance running <https://web.lab-ml.com>`_,
+and you are welcome to use it. Please consider using your own installation if you are running lots of
+experiments. Thanks.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
    :alt: Mobile view
@@ -31,10 +36,6 @@ Example
 	    for i in range(50):
 		loss, accuracy = train()
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
-Links
------
-
-`📑  Sample Link  <https://web.lab-ml.com/run?run_uuid=4e91a0e2f37611eabc21a705ed364f19>`_
 
 Citing LabML
 ------------
