@@ -11,10 +11,10 @@ experiments. Thanks.
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
    :alt: Mobile view
 
-How it works? A simple Loss curve
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to use it?
+~~~~~~~~~~~~~~
 
-1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **token**.
+1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **token** (no sign-up required).
 
 2. Install the `labml client library <https://github.com/lab-ml/labml>`_.
 
