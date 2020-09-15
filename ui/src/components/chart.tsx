@@ -270,7 +270,7 @@ function LineChart(props: SeriesProps) {
     }
 
     let plotSeries = plot.map(s => s.series)
-    const yScale = getScale(getExtent(plotSeries, d => d.value, true), -chartHeight)
+    const yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
     const stepExtent = getExtent(plotSeries, d => d.step)
     const xScale = getScale(stepExtent, chartWidth)
 
