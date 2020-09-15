@@ -36,6 +36,10 @@ Example
 	    for i in range(50):
 		loss, accuracy = train()
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+		
+		
+You can run the sample Google Colab code `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_.
+
 
 Citing LabML
 ------------
