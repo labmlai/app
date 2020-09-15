@@ -38,7 +38,7 @@ Example
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 		
 		
-**Try our sample Google Colab code `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_.**
+**Try our sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_.
 
 
 Citing LabML
