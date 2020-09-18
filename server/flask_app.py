@@ -8,7 +8,7 @@ from app import handlers
 from app import settings
 from logs.logger import LOGGER
 
-if settings.DSN:
+if settings.SENTRY_DSN:
     try:
         import sentry_sdk
         from sentry_sdk.integrations.flask import FlaskIntegration

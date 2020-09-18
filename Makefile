@@ -11,7 +11,8 @@ server-prod: ## compile and start server in prod
 watch-ui: ## start and watch ui
 	BROWSER=none npm start --prefix ./ui
 
-build-ui: ## start and watch ui
+build-ui: ## build production ui
+	npm install --prefix ./ui
 	npm run build --prefix ./ui
 
 setup-prod: ## install server and ui dependencies
