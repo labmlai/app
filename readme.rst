@@ -1,50 +1,45 @@
-LabML App
-=========
+LabML App - Monitor ML model training on mobile phones
+======================================================
 
-Monitor Machine Learning model training on mobile phones
---------------------------------------------------------
+This is an open-source library to push updates of your ML/DL model training to mobile.
+`Here's a sample experiment <https://web.lab-ml.com/run?run_uuid=4e91a0e2f37611eabc21a705ed364f19>`_.
 
-An open-source library to push updates of your ML/DL model training to mobile
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can host this on your own. We also have a small `AWS instance running <https://web.lab-ml.com>`_,
+and you are welcome to use it. Please consider using your own installation if you are running lots of
+experiments. Thanks.
 
 .. image:: https://raw.githubusercontent.com/vpj/lab/master/images/mobile.png
    :alt: Mobile view
 
-How it works? A simple Loss curve
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+How to use it?
+~~~~~~~~~~~~~~
 
-1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **token**.
+1. Go to  the `App <https://web.lab-ml.com/>`_ and generate a **token** (no sign-up required).
 
-2. Install the **labml** library
+2. Install the `labml client library <https://github.com/lab-ml/labml>`_.
 
 .. code-block:: console
 
     pip install labml
 
-3. Run the following sample code.
+3. Start pushing updates to the app  `with two lines of code <http://lab-ml.com/guide/tracker.html>`_.
+
+
+Example
+^^^^^^^
 
 .. code-block:: python
 
-    import numpy as np
-    from labml import tracker, experiment
+	from labml import tracker, experiment
 
-    conf = {'batch_size': 20}
-    n = 0
+	with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
+	    for i in range(50):
+		loss, accuracy = train()
+		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
+		
+		
+**Try our sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_.
 
-    def train():
-        global n
-        n += 1
-        return 0.999 ** n + np.random.random() / 10, 1 - .999 ** n + np.random.random() / 10
-
-    with experiment.record(name='sample', comment='test', exp_conf=conf, token=YOUR_TOKEN):
-        for i in range(100000):
-            loss, accuracy = train()
-            tracker.save(i, {'loss': loss, 'accuracy': accuracy})
-
-Links
------
-
-`📑  Sample Link  <https://web.lab-ml.com/run?run_uuid=4e91a0e2f37611eabc21a705ed364f19>`_
 
 Citing LabML
 ------------

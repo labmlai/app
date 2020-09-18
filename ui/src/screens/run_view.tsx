@@ -7,6 +7,7 @@ import LineChart, {SeriesModel} from "../components/chart";
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
+import {Alert} from "react-bootstrap";
 
 
 interface RunProps {
@@ -16,6 +17,7 @@ interface RunProps {
 function RunView(props: RunProps) {
     const [isTrackLoading, setIsTrackLoading] = useState(true)
     const [isRunLoading, setIsRunLoading] = useState(true)
+    const [networkError, setNetworkError] = useState(null)
 
     const [run, setRun] = useState({
         run_uuid: '',
@@ -38,6 +40,13 @@ function RunView(props: RunProps) {
 
     const actualWidth = Math.min(800, windowWidth)
 
+    useEffect(() => {
+        if (run.name.trim() != null) {
+            document.title = `LabML: ${run.name.trim()}`
+        } else {
+            document.title = 'LabML'
+        }
+    }, [run])
 
     useEffect(() => {
         function loadFromServer(run_uuid: string) {
@@ -47,14 +56,22 @@ function RunView(props: RunProps) {
                 return
             }
 
-            NETWORK.get_run(run_uuid).then((res) => {
-                setRun(res.data)
-                setIsRunLoading(false)
-            })
-            NETWORK.get_tracking(run_uuid).then((res) => {
-                setTrack(res.data)
-                setIsTrackLoading(false)
-            })
+            NETWORK.get_run(run_uuid)
+                .then((res) => {
+                    setRun(res.data)
+                    setIsRunLoading(false)
+                })
+                .catch((err) => {
+                    setNetworkError(err.message)
+                })
+            NETWORK.get_tracking(run_uuid)
+                .then((res) => {
+                    setTrack(res.data)
+                    setIsTrackLoading(false)
+                })
+                .catch((err) => {
+                    setNetworkError(err.message)
+                })
         }
 
         let interval: number = 0
@@ -85,7 +102,9 @@ function RunView(props: RunProps) {
     }
     return <div>
         {(() => {
-            if (isRunLoading || isTrackLoading) {
+            if (networkError != null) {
+                return <Alert variant={'danger'}>{networkError}</Alert>
+            } else if (isRunLoading || isTrackLoading) {
                 return <LabLoader isLoading={true}/>
             } else {
                 return <div className={'run'} style={style}>

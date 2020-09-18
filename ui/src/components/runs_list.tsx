@@ -4,7 +4,7 @@ import "./runs_list.scss"
 import {ListGroup} from "react-bootstrap"
 import {Run} from "./models";
 import {formatTime} from "./utils";
-import {getActualStatus, StatusProps} from "./status";
+import {StatusView} from "./status";
 
 
 interface RunsListProps {
@@ -14,24 +14,6 @@ interface RunsListProps {
 interface RunsListItemProps {
     idx: number
     run: Run
-}
-
-export function StatusView(props: StatusProps) {
-    let status = getActualStatus(props.status, props.lastUpdatedTime)
-    if (status.status === 'in progress') {
-        return <div className={'badge badge-info'}>
-            <span role={'img'} aria-label={'running'}>🏃</span> experiment is running</div>
-    } else if (status.status === 'no response') {
-        return <div className={'status text-warning'}>no response</div>
-    } else if (status.status === 'completed') {
-        return <div className={'status text-success'}>completed</div>
-    } else if (status.status === 'crashed') {
-        return <div className={'status text-danger'}>crashed</div>
-    } else if (status.status === 'unknown') {
-        return <div className={'status'}>{'Unknown Status'}</div>
-    } else {
-        return <div className={'status'}>{status.status}</div>
-    }
 }
 
 function RunsListItem(props: RunsListItemProps) {
