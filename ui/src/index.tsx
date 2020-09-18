@@ -8,7 +8,7 @@ import App from './App';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-if (process.env.DSN) {
+if (process.env.SENTRY_DSN) {
     Sentry.init({
         dsn: process.env.DSN,
         integrations: [
