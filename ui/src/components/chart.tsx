@@ -297,7 +297,7 @@ function LineChart(props: SeriesProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
-    return <div>
+    return <div className={'card'}>
         <svg id={'chart'}
              height={2 * margin + axisSize + chartHeight + itemHeight * track.length}
              width={2 * margin + axisSize + chartWidth}>

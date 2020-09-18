@@ -84,7 +84,7 @@ function RunView(props: RunProps) {
         return () => clearInterval(interval);
     }, [run_uuid]);
 
-    let runView = <div id={'run'} className={'run-header'}>
+    let runView = <div>
         <RunInfo uuid={run.run_uuid}
                  name={run.name} comment={run.comment}
                  start={run.start} lastUpdatedTime={run.time}

@@ -20,7 +20,7 @@ const RunInfo: FunctionComponent<RunInfoProps> = (props: RunInfoProps) => {
         lastUpdated = <div className={'last-updated'}>Last updated {getTimeDiff(props.lastUpdatedTime)}</div>
     }
 
-    return <div className={'run-info'}>
+    return <div className={'run-info card'}>
         {lastUpdated}
         <StatusView status={props.status} lastUpdatedTime={props.lastUpdatedTime}/>
         <h3>{props.name}</h3>

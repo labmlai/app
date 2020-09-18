@@ -4,7 +4,7 @@ import {FormattedValue} from "./value";
 
 const CONFIG_PRINT_LEN = 20
 const KEY_WIDTH = 125
-const PADDING = 10
+const PADDING = 11
 
 export interface Config {
     key: string
@@ -216,7 +216,8 @@ export function ConfigsView(props: ConfigsProps) {
     let style = {
         width: `${props.width}px`
     }
-    return <div className={"configs block collapsed"} style={style}>
+    return <div className={"configs block collapsed card"} style={style}>
+        <h3>Configurations</h3>
         {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}
                                             width={props.width}/>)}
     </div>
