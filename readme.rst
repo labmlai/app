@@ -42,7 +42,7 @@ Example
 
 
 Citing LabML
-------------
+^^^^^^^^^^^^
 
 If you use LabML for academic research, please cite the library using the following BibTeX entry.
 
@@ -57,7 +57,7 @@ If you use LabML for academic research, please cite the library using the follow
 
 
 Setup instructions
-------------------
+^^^^^^^^^^^^^^^^^^
 
 1. Requirements: Python 3.7 and npm installed in your machine.
 
