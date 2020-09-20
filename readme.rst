@@ -56,3 +56,36 @@ If you use LabML for academic research, please cite the library using the follow
 	}
 
 
+Setup instructions
+------------------
+
+1. Requirements: Python 3.7 and npm installed in your machine.
+
+2. Clone the repository
+
+.. code-block:: console
+
+     git@github.com:lab-ml/app.git
+
+3. Install server and ui dependencies
+
+.. code-block:: console
+
+     make setup
+
+4. For server and UI dev
+
+.. code-block:: console
+
+     make server-dev
+     make watch-ui
+
+5. For server and UI prod
+
+.. code-block:: console
+
+     make server-prod
+     make build-ui
+
+
+
