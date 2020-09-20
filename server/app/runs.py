@@ -261,6 +261,13 @@ class Run:
 _RUNS: Dict[str, Run] = {}
 
 
+def get_run(run_uuid: str):
+    if run_uuid in _RUNS:
+        return _RUNS[run_uuid]
+
+    return None
+
+
 def get_or_create(run_uuid: str, labml_token: str = ''):
     if run_uuid in _RUNS:
         return _RUNS[run_uuid]

@@ -75,8 +75,12 @@ def update_run():
 
 
 def get_run(run_uuid: str):
-    run = runs.get_or_create(run_uuid)
-    return jsonify(run.get_data())
+    run_data = {}
+    run = runs.get_run(run_uuid)
+    if run:
+        run_data = run.get_data()
+
+    return jsonify(run_data)
 
 
 def get_runs(labml_token: str):
@@ -84,8 +88,12 @@ def get_runs(labml_token: str):
 
 
 def get_tracking(run_uuid: str):
-    run = runs.get_or_create(run_uuid)
-    return jsonify(run.get_tracking())
+    track_data = []
+    run = runs.get_run(run_uuid)
+    if run:
+        track_data = run.get_tracking()
+
+    return jsonify(track_data)
 
 
 def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
@@ -99,7 +107,7 @@ def add_handlers(app: flask.Flask):
     _add(app, 'GET', test, 'test')
 
     _add(app, 'POST', signup, 'signup')
-    _add(app, 'GET', is_valid_user, 'validations/<labml_token>')
+    _add(app, 'GET', is_valid_user, 'validations/user/<labml_token>')
 
     _add(app, 'GET', slack_authenticated, 'auth/redirect')
 
