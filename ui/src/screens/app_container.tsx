@@ -6,7 +6,7 @@ import LoginView from "../screens/login_view";
 import HeaderView from "./header_view";
 import RunView from "./run_view";
 import ChartView from "./chart_view";
-import SampleChart from "./sample_chart";
+import PageNotFound from "./page_not_found_view";
 import RunsListView from "./runs_list_view";
 import ReactGA from 'react-ga';
 
@@ -22,7 +22,7 @@ function AppContainer() {
                 <div>
                     <Switch>
                         <Route
-                            path="/sample_chart" component={SampleChart}
+                            path="/404" component={PageNotFound}
                         />
                         <Route
                             path="/chart" component={ChartView}
