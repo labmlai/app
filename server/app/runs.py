@@ -246,6 +246,7 @@ class Run:
     def load_tracking(self):
         try:
             with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'r') as f:
+                print(self.run_uuid)
                 data = json.load(f)
 
             self.step = data['step']
