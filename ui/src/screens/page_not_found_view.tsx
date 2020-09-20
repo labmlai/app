@@ -4,14 +4,16 @@ import animation from '../assets/lottie/Chemical.json'
 
 
 function PageNotFound() {
-    return <div className={'container text-center mt-5'}>
-        <h1 className={'display-1 text-danger'}>404</h1>
-        <h1 className={'text-primary'}>ERROR - LAB EXPLOSION</h1>
-        <Lottie style={{width: 500, margin: '0 auto'}}
-                options={{
-                    animationData: animation
-                }}
-        />
+    return <div className={'container'}>
+        <div className={'text-center mt-5'}>
+            <h1 className={'display-1 text-danger'}>404</h1>
+            <h1 className={'text-primary'}>ERROR - LAB EXPLOSION</h1>
+            <Lottie style={{width: 500, margin: '0 auto'}}
+                    options={{
+                        animationData: animation
+                    }}
+            />
+        </div>
     </div>
 }
 
