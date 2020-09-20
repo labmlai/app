@@ -1,4 +1,6 @@
 import React, {useEffect, useState} from "react"
+import {useHistory} from "react-router-dom";
+
 import {Alert} from "react-bootstrap"
 import NETWORK from '../network'
 import {RunsList} from "../components/runs_list"
@@ -12,9 +14,11 @@ interface RunsListProps {
 }
 
 function RunsListView(props: RunsListProps) {
+    const history = useHistory();
     const [isLoading, setIsLoading] = useState(true)
     const [networkError, setNetworkError] = useState(null)
     const [runs, setRuns] = useState<Run[]>([])
+    const [isValidUser, setIsValidUser] = useState(null)
 
     const params = new URLSearchParams(props.location.search)
     const labMlToken = params.get('labml_token')
@@ -25,7 +29,8 @@ function RunsListView(props: RunsListProps) {
             NETWORK.get_runs(labMlToken)
                 .then((res) => {
                     if (res) {
-                        setRuns(res.data)
+                        setRuns(res.data.runs)
+                        setIsValidUser(res.data.is_valid_user)
                         setIsLoading(false)
                     }
                 })
@@ -45,6 +50,8 @@ function RunsListView(props: RunsListProps) {
                 return <Alert variant={'danger'}>{networkError}</Alert>
             } else if (isLoading) {
                 return <LabLoader isLoading={isLoading}/>
+            } else if (!isValidUser) {
+                history.push(`/404`)
             } else if (runs.length === 0) {
                 return <Code labMlToken={labMlToken}/>
             } else {

@@ -84,7 +84,7 @@ def get_run(run_uuid: str):
 
 
 def get_runs(labml_token: str):
-    return jsonify(runs.get_runs(labml_token))
+    return jsonify({'runs': runs.get_runs(labml_token), 'is_valid_user': users.is_valid_user(labml_token)})
 
 
 def get_tracking(run_uuid: str):
