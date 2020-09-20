@@ -14,7 +14,7 @@ if settings.SENTRY_DSN:
         from sentry_sdk.integrations.flask import FlaskIntegration
 
         sentry_sdk.init(
-            dsn=settings.DSN,
+            dsn=settings.SENTRY_DSN,
             integrations=[FlaskIntegration()],
             traces_sample_rate=1.0
         )
