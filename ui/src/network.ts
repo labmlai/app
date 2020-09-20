@@ -18,7 +18,7 @@ class NETWORK {
     }
 
     static async get_user_validation(labml_token: string): Promise<any> {
-        return axios.get(`${process.env.REACT_APP_SERVER_URL}/validations/${labml_token}`, {})
+        return axios.get(`${process.env.REACT_APP_SERVER_URL}/validations/user/${labml_token}`, {})
     }
 }
 

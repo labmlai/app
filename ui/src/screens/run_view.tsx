@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react"
+import {useHistory} from "react-router-dom";
 
 import "./run_view.scss"
 import NETWORK from '../network'
@@ -15,6 +16,7 @@ interface RunProps {
 }
 
 function RunView(props: RunProps) {
+    const history = useHistory();
     const [isTrackLoading, setIsTrackLoading] = useState(true)
     const [isRunLoading, setIsRunLoading] = useState(true)
     const [networkError, setNetworkError] = useState(null)
@@ -41,7 +43,7 @@ function RunView(props: RunProps) {
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
-        if (run.name.trim() != null) {
+        if (run.name && run.name.trim() != null) {
             document.title = `LabML: ${run.name.trim()}`
         } else {
             document.title = 'LabML'
@@ -106,6 +108,8 @@ function RunView(props: RunProps) {
                 return <Alert variant={'danger'}>{networkError}</Alert>
             } else if (isRunLoading || isTrackLoading) {
                 return <LabLoader isLoading={true}/>
+            } else if (Object.keys(run).length === 0) {
+                history.push(`/404`)
             } else {
                 return <div className={'run'} style={style}>
                     {runView}
