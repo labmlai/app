@@ -73,14 +73,16 @@ Setup instructions
 
      make setup
 
-4. For server and UI dev
+4. create `app/server/app/setting.py` similar to `app/server/app/setting.example.py` and `app/ui/src/.env` similar to `app/ui/src/.env.example` files and change the parameters accordingly.
+
+5. For server and UI dev
 
 .. code-block:: console
 
      make server-dev
      make watch-ui
 
-5. For server and UI prod
+6. For server and UI prod
 
 .. code-block:: console
 
