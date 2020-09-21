@@ -73,7 +73,7 @@ Setup instructions
 
      make setup
 
-4. create ``app/server/app/setting.py`` similar to ``app/server/app/setting.example.py`` and ``app/ui/src/.env`` similar to ``app/ui/src/.env.example`` files and change the parameters accordingly.
+4. Create ``app/server/app/setting.py`` similar to ``app/server/app/setting.example.py`` and ``app/ui/src/.env`` similar to ``app/ui/src/.env.example`` files and change the parameters accordingly.
 
 5. For server and UI dev
 
