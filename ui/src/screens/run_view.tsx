@@ -2,13 +2,14 @@ import React, {useEffect, useState} from "react"
 import {useHistory} from "react-router-dom";
 
 import "./run_view.scss"
-import CACHE, {Run, SeriesModel} from "../cache/cache"
+import CACHE from "../cache/cache"
 import {ConfigsView} from "../components/configs";
 import LineChart from "../components/chart";
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
 import {Alert} from "react-bootstrap";
+import {Run, SeriesModel} from "../models/run";
 
 
 interface RunProps {

@@ -2,7 +2,7 @@ import React, {useEffect} from "react"
 import * as d3 from "d3";
 import "./chart.scss"
 import {formatFixed} from "./value";
-import {PointValue, SeriesModel} from "../cache/cache";
+import {PointValue, SeriesModel} from "../models/run";
 
 const SMOOTH_POINTS = 50
 const OUTLIER_MARGIN = 0.04

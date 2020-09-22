@@ -1,78 +1,8 @@
-import axios from "axios";
 import NETWORK from "../network";
+import {Run, RunModel, SeriesModel} from "../models/run";
 
 const TRACKING_TIMEOUT = 60 * 1000
 
-export interface RunStatusModel {
-    status: string
-    details: string
-    time: number
-}
-
-export interface RunModel {
-    run_uuid: string
-    name: string
-    comment: string
-    configs: []
-    start: number
-    time: number
-    status: RunStatusModel
-}
-
-export interface SeriesModel {
-    name: string
-    is_plot: boolean
-    step: number[]
-    value: number[]
-    series: PointValue[]
-}
-
-export class RunStatus {
-    status: string
-    details: string
-    time: number
-
-    constructor(status: RunStatusModel) {
-        this.status = status.status
-        this.details = status.details
-        this.time = status.time
-    }
-}
-
-export class Run {
-    uuid: string
-    name: string
-    comment: string
-    configs: []
-    start: number
-    time: number
-    status: RunStatus
-
-    constructor(run: RunModel) {
-        this.uuid = run.run_uuid
-        this.name = run.name
-        this.comment = run.comment
-        this.configs = run.configs
-        this.start = run.start
-        this.time = run.time
-        this.status = new RunStatus(run.status)
-    }
-
-    get isRunning() {
-        if (this.status.status === 'in progress') {
-            let timeDiff = (Date.now() / 1000 - this.time) / 60
-            return timeDiff <= 15
-        } else {
-            return false
-        }
-    }
-}
-
-export interface PointValue {
-    step: number
-    value: number
-    smoothed: number
-}
 
 class RunCache {
     private uuid: string
@@ -138,14 +68,14 @@ class RunCache {
 }
 
 class Cache {
-    private runs: {[uuid: string]: RunCache}
+    private readonly runs: { [uuid: string]: RunCache }
 
     constructor() {
         this.runs = {}
     }
 
     get(uuid: string) {
-        if(this.runs[uuid] == null) {
+        if (this.runs[uuid] == null) {
             this.runs[uuid] = new RunCache(uuid)
         }
 
