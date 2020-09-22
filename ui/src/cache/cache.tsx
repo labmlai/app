@@ -25,6 +25,7 @@ class BroadcastPromise<T> {
         })
 
         if (!this.isLoading) {
+            this.isLoading = true
             load().then((res) => {
                 this.resolve(res)
             }).catch((err) => {
