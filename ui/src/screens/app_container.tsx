@@ -3,9 +3,7 @@ import React from "react";
 import {Route, Switch} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
-import HeaderView from "./header_view";
 import RunView from "./run_view";
-import ChartView from "./chart_view";
 import PageNotFound from "./page_not_found_view";
 import RunsListView from "./runs_list_view";
 import ReactGA from 'react-ga';
@@ -23,12 +21,6 @@ function AppContainer() {
                     <Switch>
                         <Route
                             path="/404" component={PageNotFound}
-                        />
-                        <Route
-                            path="/chart" component={ChartView}
-                        />
-                        <Route
-                            path="/run_header" component={HeaderView}
                         />
                         <Route
                             path="/run" component={RunView}

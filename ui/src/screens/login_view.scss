@@ -1,0 +1,42 @@
+.login-view {
+  position: fixed;
+  border: 2px solid #868e96;
+  border-radius: 25px;
+  top: 50%;
+  left: 50%;
+  width: 400px;
+  height: 500px;
+  transform: translate(-50%, -50%);
+
+  .login-view-centre {
+    text-align: center !important
+  }
+
+  .customBtn {
+    display: inline-block;
+    background: #4285F4;
+    width: 250px;
+    border-radius: 5px;
+    border: thin solid #888;
+    box-shadow: 1px 1px 1px grey;
+    white-space: nowrap;
+  }
+
+  .icon {
+    display: inline-block;
+    vertical-align: middle;
+    width: 42px;
+    height: 42px;
+  }
+}
+
+span.buttonText {
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 42px;
+  color: white;
+  padding-right: 42px;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: sans-serif;
+}

@@ -8,9 +8,9 @@ import {Integrations} from '@sentry/tracing';
 import App from './App';
 // import * as serviceWorker from './serviceWorker';
 
-if (process.env.SENTRY_DSN) {
+if (process.env.REACT_APP_SENTRY_DSN) {
     Sentry.init({
-        dsn: process.env.DSN,
+        dsn: process.env.REACT_APP_SENTRY_DSN,
         integrations: [
             new Integrations.BrowserTracing(),
         ],

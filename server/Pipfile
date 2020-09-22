@@ -20,6 +20,7 @@ Pillow = "*"
 selenium = "*"
 numpy = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
+google-api-python-client = "*"
 
 [requires]
 python_version = "3.7"

@@ -1,16 +1,13 @@
-import time
 import typing
 
 import flask
 import werkzeug.wrappers
-from flask import jsonify, request, make_response, redirect
+from flask import jsonify, request
 
 from . import runs
 from . import settings
-from . import users, tasks
-from .enums import Enums
-from .slack import authorize
-from .slack.message import SlackMessage
+from . import users
+from .auth import google
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -21,34 +18,14 @@ def test():
     division_by_zero = 1 / 0
 
 
-def slack_signup():
-    return jsonify({
-        'uri': authorize.gen_authorize_uri("stateless")
-    })
-
-
-def slack_authenticated():
-    access_token_result = authorize.get_access_token(request.args.get('code'))
-
-    slack_token = access_token_result.get('access_token', '')
-
-    user = users.get_or_create(slack_token=slack_token)
-
-    return make_response(redirect(f"{settings.WEB_URL}/?labml_token={user.labml_token}"))
-
-
-def signup():
-    user = users.get_or_create()
+def google_sign_in():
+    json = request.json
+    user = google.sign_in(json['token'])
 
     return jsonify({'uri': f"{settings.WEB_URL}/runs?labml_token={user.labml_token}"})
 
 
-def is_valid_user(labml_token: str):
-    return jsonify({'valid': users.is_valid_user(labml_token)})
-
-
 def update_run():
-    channel = request.args.get('channel')
     labml_token = request.args.get('labml_token')
 
     user = users.get(labml_token=labml_token)
@@ -65,11 +42,6 @@ def update_run():
     run.update(json)
     if 'track' in json:
         run.track(json['track'])
-
-    if channel and (not run.last_notified or run.status['status'] != Enums.RUN_IN_PROGRESS):
-        run.last_notified = time.time()
-        message = SlackMessage(user.slack_token)
-        tasks.post_slack_message(message, channel, run)
 
     return jsonify({'errors': run.errors, 'url': run.url})
 
@@ -106,13 +78,10 @@ def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
 def add_handlers(app: flask.Flask):
     _add(app, 'GET', test, 'test')
 
-    _add(app, 'POST', signup, 'signup')
-    _add(app, 'GET', is_valid_user, 'validations/user/<labml_token>')
-
-    _add(app, 'GET', slack_authenticated, 'auth/redirect')
-
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_runs, 'runs/<labml_token>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
+
+    _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
