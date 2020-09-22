@@ -1,6 +1,16 @@
 .run {
   margin: 0 auto;
 
+  .last-updated {
+    font-size: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 10px;
+
+    opacity: 0.7;
+  }
+
+
   .footer-copyright {
     margin-top: 10px;
     margin-bottom: 10px;

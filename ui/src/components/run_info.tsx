@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from "react";
 import "./run_info.scss"
-import {formatTime, getTimeDiff} from "./utils"
+import {formatTime} from "./utils"
 import {Status} from "./models";
 import {StatusView} from "./status"
 
@@ -11,17 +11,10 @@ interface RunInfoProps {
     status: Status
     start: number
     lastUpdatedTime: number
-    showLastUpdated?: boolean
 }
 
 const RunInfo: FunctionComponent<RunInfoProps> = (props: RunInfoProps) => {
-    let lastUpdated = null
-    if (props.showLastUpdated) {
-        lastUpdated = <div className={'last-updated'}>Last updated {getTimeDiff(props.lastUpdatedTime)}</div>
-    }
-
     return <div className={'run-info card'}>
-        {lastUpdated}
         <StatusView status={props.status} lastUpdatedTime={props.lastUpdatedTime}/>
         <h3>{props.name}</h3>
         <h5>{props.comment}</h5>
@@ -30,8 +23,8 @@ const RunInfo: FunctionComponent<RunInfoProps> = (props: RunInfoProps) => {
     </div>
 }
 
-RunInfo.defaultProps = {
-    showLastUpdated: true
-};
+// RunInfo.defaultProps = {
+//     showLastUpdated: true
+// };
 
 export {RunInfo}
