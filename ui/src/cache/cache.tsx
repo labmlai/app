@@ -61,8 +61,8 @@ class BroadcastPromise<T> {
 class RunCache {
     private uuid: string
     private lastUpdated: number
-    private run?: Run
-    private tracking?: SeriesModel[]
+    private run!: Run
+    private tracking!: SeriesModel[]
     private runPromise = new BroadcastPromise<RunModel>()
     private trackingPromise = new BroadcastPromise<SeriesModel[]>()
 
@@ -94,9 +94,7 @@ class RunCache {
     }
 
     async getTracking(): Promise<SeriesModel[]> {
-        if (this.run == null) {
-            throw new Error("Trying to get tracking before run is loaded")
-        }
+        await this.getRun()
 
         if (this.tracking == null) {
             this.tracking = await this.loadTracking()
