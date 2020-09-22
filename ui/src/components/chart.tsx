@@ -2,16 +2,12 @@ import React, {useEffect} from "react"
 import * as d3 from "d3";
 import "./chart.scss"
 import {formatFixed} from "./value";
+import {PointValue, SeriesModel} from "../cache/cache";
 
 const SMOOTH_POINTS = 50
 const OUTLIER_MARGIN = 0.04
 const BASE_COLOR = '#34495e'
 
-interface PointValue {
-    step: number
-    value: number
-    smoothed: number
-}
 
 // const FLAT_COLORS = [
 //     '#2980b9',
@@ -82,14 +78,6 @@ function getScale(extent: [number, number], size: number): d3.ScaleLinear<number
     return d3.scaleLinear<number, number>()
         .domain(extent).nice()
         .range([0, size])
-}
-
-export interface SeriesModel {
-    name: string
-    is_plot: boolean
-    step: number[]
-    value: number[]
-    series: PointValue[]
 }
 
 interface AxisProps {
