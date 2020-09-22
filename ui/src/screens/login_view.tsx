@@ -5,6 +5,7 @@ import {Image} from "react-bootstrap"
 import NETWORK from '../network'
 import labLogoSrc from "../assets/lab_logo.png"
 import gLogoSrc from "../assets/g_normal.png"
+import {Footer} from '../components/footer'
 
 import './login_view.scss'
 
@@ -19,8 +20,8 @@ function LoginView() {
     }
 
     return <div className={"login-view"}>
-        <div className={"login-view-centre"}>
-            <Image className={"pt-5"} src={labLogoSrc} rounded/>
+        <div className={"login-view-centre mb-3"}>
+            <Image src={labLogoSrc} thumbnail/>
             <h1 className={"mt-3"}>LabML</h1>
             <div className={"mt-3"}>
                 <GoogleLogin
@@ -37,6 +38,7 @@ function LoginView() {
                 />
             </div>
         </div>
+        <Footer/>
     </div>
 }
 
