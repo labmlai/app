@@ -14,7 +14,7 @@ interface RunInfoProps {
 }
 
 const RunInfo: FunctionComponent<RunInfoProps> = (props: RunInfoProps) => {
-    return <div className={'run-info card'}>
+    return <div className={'run-info labml-card'}>
         <StatusView status={props.status} lastUpdatedTime={props.lastUpdatedTime}/>
         <h3>{props.name}</h3>
         <h5>{props.comment}</h5>

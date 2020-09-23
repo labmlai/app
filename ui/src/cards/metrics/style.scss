@@ -24,29 +24,54 @@ svg#chart {
   path.unsmoothed-line {
     stroke-width: 0.5;
   }
+}
 
-  g.sparkline-list-item {
-    text {
+div.sparkline-list-item {
+  padding: .25rem 1.25rem;
+  border: none;
+
+  span {
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 12px;
+    display: inline-block;
+
+    &.value-primary {
       font-weight: bold;
-      font-size: 12px;
-
-      &.value-primary {
-        font-weight: bold;
-        fill: #34495e;
-      }
-
-      &.value-secondary {
-        font-weight: normal;
-        fill: #7f8c8d;
-      }
+      fill: #34495e;
     }
 
+    &.value-secondary {
+      font-weight: normal;
+      fill: #7f8c8d;
+    }
+  }
+
+  svg.sparkline {
     path.smoothed-line {
       stroke-width: 1.5;
     }
 
     path.unsmoothed-line {
       stroke-width: 0;
+    }
+
+    path.line-fill {
+      opacity: 0.1;
+    }
+  }
+
+  span.value {
+    text-align: right;
+    height: 36px;
+
+    &.primary-only {
+      span {
+        line-height: 3;
+      }
+    }
+    span {
+      display: block;
     }
   }
 }
