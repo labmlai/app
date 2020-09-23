@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import {Route, Switch} from "react-router-dom";
 
@@ -10,8 +10,22 @@ import ReactGA from 'react-ga';
 import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/metrics/card"
 
+import NETWORK from '../network'
+
 /* TODO: Get this from configs */
 ReactGA.initialize('UA-164228270-01');
+
+
+function Auth() {
+    useEffect(() => {
+        NETWORK.auth().then((res) => {
+            window.location.href = res.data.uri;
+        })
+    }, [])
+
+    return <div>
+    </div>
+}
 
 function AppContainer() {
     ReactGA.pageview(window.location.pathname + window.location.search);
@@ -24,7 +38,8 @@ function AppContainer() {
                 <Route path="/configs" component={ConfigsCard.View}/>
                 <Route path="/metrics" component={MetricsCard.View}/>
                 <Route path="/runs" component={RunsListView}/>
-                <Route path="/" component={LoginView}/>
+                <Route path="/login" component={LoginView}/>
+                <Route  path="/" component={Auth}  />
             </Switch>
         </main>
     );

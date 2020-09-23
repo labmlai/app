@@ -1,62 +1,41 @@
-import React, {useState} from "react"
-import {useHistory} from "react-router-dom";
-import Swal from "sweetalert2"
-import {
-    Image,
-    Button,
-    FormControl,
-} from 'react-bootstrap'
+import React from 'react'
+import {GoogleLogin} from 'react-google-login'
+import {Image} from "react-bootstrap"
 
 import NETWORK from '../network'
-import imageSrc from '../assets/lab_cover.png'
+import labLogoSrc from "../assets/lab_logo.png"
+import gLogoSrc from "../assets/g_normal.png"
 import {Footer} from '../components/footer'
 
+import './login_view.scss'
+
+
 function LoginView() {
-    const history = useHistory();
-    const [userInput, setUserInput] = useState('')
+    const clientID: any = process.env.REACT_APP_GOOGLE_CLIENT_ID
 
-    function onGoToExperiments() {
-        if (userInput) {
-            NETWORK.get_user_validation(userInput).then((res) => {
-                if (res.data.valid) {
-                    history.push(`/runs?labml_token=${userInput}`)
-                } else {
-                    Swal.fire('Invalid Token!', 'error')
-                }
-            })
-        } else {
-            Swal.fire('Empty Token!', 'error')
-        }
-    }
-
-    function onGenerateToken() {
-        NETWORK.authorize().then((res) => {
+    function responseGoogle(response: any) {
+        NETWORK.google_sign_in(response.tokenObj.id_token).then((res) => {
             window.location.href = res.data.uri;
-        }).catch((error) => {
-            Swal.fire('Authorization Failed!', `${error}`, 'error')
         })
     }
 
-    const handleTokenChange = (e: any) => {
-        setUserInput(e.target.value)
-    }
-
-    return <div>
-        <div className={"container-sm text-center mb-3 mt-3"}>
-            <h5>Get Model Training Updates in Mobile</h5>
-            <h6 className={"text-secondary"}>An open-source library to push updates of your ML/DL model training to
-                mobile</h6>
-            <Image src={imageSrc} rounded/>
-            <div className={"w-50 mx-auto"}>
-                <FormControl type='text' placeholder="If you already have generated a Token, Enter here"
-                             onChange={handleTokenChange}/>
-                <Button className={"mt-2 button-theme"} onClick={onGoToExperiments}>
-                    Go to Experiments
-                </Button>
-                <h4 className={"mt-1"}>or</h4>
-                <Button className={"mt-1 button-theme"} onClick={onGenerateToken}>
-                    Generate a Token
-                </Button>
+    return <div className={"login-view"}>
+        <div className={"login-view-centre mb-3"}>
+            <Image src={labLogoSrc} thumbnail/>
+            <h1 className={"mt-3"}>LabML</h1>
+            <div className={"mt-3"}>
+                <GoogleLogin
+                    clientId={clientID}
+                    render={renderProps => (
+                        <a onClick={renderProps.onClick} className="customBtn" type='button'>
+                            <Image className={"icon"} src={gLogoSrc}/>
+                            <span className="buttonText ">Sign in with Google</span>
+                        </a>
+                    )}
+                    onSuccess={responseGoogle}
+                    onFailure={responseGoogle}
+                    cookiePolicy={'single_host_origin'}
+                />
             </div>
         </div>
         <Footer/>

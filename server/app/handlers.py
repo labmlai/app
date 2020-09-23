@@ -1,54 +1,78 @@
-import time
 import typing
-
+import functools
 import flask
 import werkzeug.wrappers
 from flask import jsonify, request, make_response, redirect
 
 from . import runs
 from . import settings
-from . import users, tasks
-from .enums import Enums
-from .slack import authorize
-from .slack.message import SlackMessage
+from . import users
+from . import sessions
+from .auth import google
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
-NOTIFICATION_DELAY = 120
+
+def login_required(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        session_id = request.cookies.get('session_id')
+
+        session = sessions.get_or_create(session_id)
+
+        if session.is_auth:
+            return func(*args, **kwargs)
+        else:
+            response = make_response()
+            response.status_code = 403
+
+            if session_id != session.session_id:
+                response.set_cookie('session_id', session.session_id)
+
+            return response
+
+    return wrapper
 
 
 def test():
-    division_by_zero = 1 / 0
+    return jsonify({'uri': True})
 
 
-def slack_signup():
-    return jsonify({
-        'uri': authorize.gen_authorize_uri("stateless")
-    })
+def auth():
+    session_id = request.cookies.get('session_id')
+
+    session = sessions.get_or_create(session_id)
+    if session.is_auth:
+        uri = f'{settings.WEB_URL}/runs?labml_token={session.labml_token}'
+    else:
+        uri = f'{settings.WEB_URL}/login'
+
+    response = make_response(jsonify({'uri': uri}))
+
+    if session_id != session.session_id:
+        response.set_cookie('session_id', session.session_id)
+
+    return response
 
 
-def slack_authenticated():
-    access_token_result = authorize.get_access_token(request.args.get('code'))
+def google_sign_in():
+    json = request.json
+    user = google.sign_in(json['token'])
 
-    slack_token = access_token_result.get('access_token', '')
+    session_id = request.cookies.get('session_id')
+    session = sessions.get_or_create(session_id)
 
-    user = users.get_or_create(slack_token=slack_token)
+    session.update({'labml_token': user.labml_token})
 
-    return make_response(redirect(f"{settings.WEB_URL}/?labml_token={user.labml_token}"))
+    response = make_response(jsonify({'uri': f'{settings.WEB_URL}/runs?labml_token={user.labml_token}'}))
 
+    if session_id != session.session_id:
+        response.set_cookie('session_id', session.session_id)
 
-def signup():
-    user = users.get_or_create()
-
-    return jsonify({'uri': f"{settings.WEB_URL}/runs?labml_token={user.labml_token}"})
-
-
-def is_valid_user(labml_token: str):
-    return jsonify({'valid': users.is_valid_user(labml_token)})
+    return response
 
 
 def update_run():
-    channel = request.args.get('channel')
     labml_token = request.args.get('labml_token')
 
     user = users.get(labml_token=labml_token)
@@ -65,11 +89,6 @@ def update_run():
     run.update(json)
     if 'track' in json:
         run.track(json['track'])
-
-    if channel and (not run.last_notified or run.status['status'] != Enums.RUN_IN_PROGRESS):
-        run.last_notified = time.time()
-        message = SlackMessage(user.slack_token)
-        tasks.post_slack_message(message, channel, run)
 
     return jsonify({'errors': run.errors, 'url': run.url})
 
@@ -106,13 +125,11 @@ def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
 def add_handlers(app: flask.Flask):
     _add(app, 'GET', test, 'test')
 
-    _add(app, 'POST', signup, 'signup')
-    _add(app, 'GET', is_valid_user, 'validations/user/<labml_token>')
-
-    _add(app, 'GET', slack_authenticated, 'auth/redirect')
-
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_runs, 'runs/<labml_token>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
+
+    _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
+    _add(app, 'GET', auth, 'auth')
