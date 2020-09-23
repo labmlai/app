@@ -1,3 +1,5 @@
+import {Config, ConfigModel} from "./config";
+
 export interface RunStatusModel {
     status: string
     details: string
@@ -8,7 +10,7 @@ export interface RunModel {
     run_uuid: string
     name: string
     comment: string
-    configs: []
+    configs: ConfigModel[]
     start: number
     time: number
     status: RunStatusModel
@@ -38,7 +40,7 @@ export class Run {
     uuid: string
     name: string
     comment: string
-    configs: []
+    configs: Config[]
     start: number
     time: number
     status: RunStatus
@@ -47,7 +49,10 @@ export class Run {
         this.uuid = run.run_uuid
         this.name = run.name
         this.comment = run.comment
-        this.configs = run.configs
+        this.configs = []
+        for(let c of run.configs) {
+            this.configs.push(new Config(c))
+        }
         this.start = run.start
         this.time = run.time
         this.status = new RunStatus(run.status)

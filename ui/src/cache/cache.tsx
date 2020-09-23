@@ -90,7 +90,7 @@ class RunCache {
         if (this.run == null) {
             this.run = new Run(await this.loadRun())
         }
-        console.log(this.run)
+
         return this.run
     }
 

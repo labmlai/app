@@ -3,7 +3,7 @@ import {useHistory} from "react-router-dom";
 
 import "./run_view.scss"
 import CACHE from "../cache/cache"
-import ConfigsCard from "../cards/configs"
+import ConfigsCard from "../cards/configs/card"
 import LineChart from "../components/chart";
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";

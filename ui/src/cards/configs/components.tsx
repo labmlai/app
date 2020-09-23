@@ -1,24 +1,11 @@
-import React, {ReactElement} from "react";
-import "./configs.scss"
-import {FormattedValue} from "./value";
+import React from "react";
+import "./styles.scss"
+import {FormattedValue} from "../../components/value";
+import {Config} from "../../models/config";
 
 const CONFIG_PRINT_LEN = 20
 const KEY_WIDTH = 125
 const PADDING = 11
-
-export interface Config {
-    key: string
-    name: string
-    computed: any
-    value: any
-    options: string[]
-    order: number
-    type: string
-    is_hyperparam?: boolean
-    is_meta?: boolean
-    is_explicitly_specified?: boolean
-}
-
 
 function ComputedValue(props: { computed: any }) {
     if (typeof props.computed !== 'string') {
@@ -65,47 +52,6 @@ function OtherOptions(props: { options: any[] }) {
     </span>
 }
 
-interface OptionInfo {
-    isCustom: boolean
-    isOnlyOption: boolean
-    value: string
-    isDefault: boolean
-    otherOptions?: ReactElement
-}
-
-
-function parseOption(conf: Config): OptionInfo {
-    let options = new Set()
-    for (let opt of conf.options) {
-        options.add(opt)
-    }
-
-    let res: OptionInfo = {
-        isCustom: false,
-        isOnlyOption: false,
-        value: conf.value,
-        isDefault: false
-    }
-
-    if (options.has(conf.value)) {
-        options.delete(conf.value)
-        if (options.size === 0) {
-            res.isOnlyOption = true
-            res.isDefault = true
-        }
-    } else {
-        res.isCustom = true
-        if (conf.is_explicitly_specified !== true) {
-            res.isDefault = true
-        }
-    }
-    if (options.size > 0) {
-        res.otherOptions = <OtherOptions options={[...options]}/>
-    }
-
-    return res
-}
-
 interface ConfigItemProps {
     config: Config
     configs: Config[]
@@ -132,8 +78,7 @@ function ConfigItemView(props: ConfigItemProps) {
     let conf_modules = conf.key.split('.')
     for (let i = 0; i < conf_modules.length - 1; ++i) {
         parentKey += conf_modules[i]
-        let optInfo = parseOption(configs[parentKey])
-        if (optInfo.isDefault) {
+        if (configs[parentKey].isDefault) {
             isParentDefault = true
         }
         parentKey += '.'
@@ -146,10 +91,8 @@ function ConfigItemView(props: ConfigItemProps) {
     } else {
         computedElem = <ComputedValue computed={conf.computed}/>
 
-        let options = parseOption(conf)
-
-        if (options.isCustom) {
-            if (isParentDefault && !conf.is_explicitly_specified && !conf.is_hyperparam && !conf.is_hyperparam) {
+        if (conf.isCustom) {
+            if (isParentDefault && !conf.isExplicitlySpecified && !conf.isHyperparam) {
                 classes.push('.only_option')
                 isCollapsible = true
             } else {
@@ -157,7 +100,7 @@ function ConfigItemView(props: ConfigItemProps) {
             }
         } else {
             optionElem = <Option value={conf.value}/>
-            if (!conf.is_explicitly_specified && !conf.is_hyperparam && (isParentDefault || options.isOnlyOption)) {
+            if (!conf.isExplicitlySpecified && !conf.isHyperparam && (isParentDefault || conf.isOnlyOption)) {
                 classes.push('.only_option')
                 isCollapsible = true
             } else {
@@ -165,18 +108,18 @@ function ConfigItemView(props: ConfigItemProps) {
             }
         }
 
-        otherOptionsElem = options.otherOptions
+        otherOptionsElem = <OtherOptions options = {[...conf.otherOptions]} />
 
-        if (conf.is_hyperparam) {
+        if (conf.isHyperparam) {
             classes.push('hyperparam')
-        } else if (conf.is_explicitly_specified) {
+        } else if (conf.isExplicitlySpecified) {
             classes.push('specified')
         } else {
             classes.push('not-hyperparam')
         }
     }
 
-    if (conf.is_meta) {
+    if (conf.isMeta) {
         return null
     }
 

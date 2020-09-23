@@ -1,9 +1,9 @@
-import {ConfigsView} from "../components/configs";
+import {ConfigsView} from "./components";
 import React, {useEffect, useState} from "react";
-import {Run} from "../models/run";
-import CACHE from "../cache/cache"
+import {Run} from "../../models/run";
+import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
-import useWindowDimensions from "../utils/window_dimensions";
+import useWindowDimensions from "../../utils/window_dimensions";
 
 interface CardProps {
     uuid: string
