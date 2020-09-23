@@ -10,6 +10,7 @@ from . import settings
 from .enums import Enums
 
 MAX_BUFFER_LENGTH = 1024
+SMOOTH_POINTS = 50
 
 
 class Series:
@@ -85,9 +86,29 @@ class Series:
     def summary(self):
         return {
             'step': self.last_step,
-            'value': self.value
+            'value': self.value,
+            'smoothed': self.smooth_value()
         }
 
+    def smooth_value(self) -> List[float]:
+        span = len(self.value) // SMOOTH_POINTS
+        span_extra = span // 2
+
+        n = 0
+        total = 0
+        smoothed = []
+        for i in range(len(self.value) + span_extra):
+            j = i - span_extra
+            if i < len(self.value):
+                total += self.value[i]
+                n += 1
+            if j - span_extra - 1 >= 0:
+                total -= self.value[j - span_extra - 1]
+                n -= 1
+            if j >= 0:
+                smoothed.append(total / n)
+
+        return smoothed
     def to_dict(self):
         return {
             'step': self.step,

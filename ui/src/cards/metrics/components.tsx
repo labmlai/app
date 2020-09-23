@@ -113,31 +113,6 @@ function RightAxis(props: AxisProps) {
     return <g id={id}/>
 }
 
-function smoothSeries(series: number[]): number[] {
-    let span = Math.floor(series.length / SMOOTH_POINTS)
-    const spanExtra = Math.floor(span / 2)
-
-    let n = 0
-    let sum = 0
-    let smoothed: number[] = []
-    for (let i = 0; i < series.length + spanExtra; ++i) {
-        const j = i - spanExtra
-        if (i < series.length) {
-            sum += series[i]
-            n++
-        }
-        if (j - spanExtra - 1 >= 0) {
-            sum -= series[j - spanExtra - 1]
-            n--
-        }
-        if (j >= 0) {
-            smoothed.push(sum / n)
-        }
-    }
-
-    return smoothed
-}
-
 interface LinePlotProps {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
@@ -247,9 +222,8 @@ export function LineChart(props: SeriesProps) {
     let track = props.series
     for (let s of track) {
         let res: PointValue[] = []
-        let smoothed = smoothSeries(s.value)
         for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i], smoothed: smoothed[i]})
+            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
         }
         s.series = res
     }

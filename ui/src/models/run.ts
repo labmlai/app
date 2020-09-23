@@ -21,6 +21,7 @@ export interface SeriesModel {
     is_plot: boolean
     step: number[]
     value: number[]
+    smoothed: number[]
     series: PointValue[]
 }
 
