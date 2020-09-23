@@ -1,20 +1,20 @@
-import {ConfigsView} from "./components";
+import {LineChart} from "./components";
 import React, {useEffect, useState} from "react";
-import {Run} from "../../models/run";
+import {SeriesModel} from "../../models/run";
 import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
 import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
 
 function Card(props: CardProps) {
-    let [run, setRun] = useState(null as unknown as Run)
+    const [track, setTrack] = useState(null as unknown as SeriesModel[])
     const runCache = CACHE.get(props.uuid)
     const history = useHistory();
 
     useEffect(() => {
         async function load() {
             try {
-                setRun(await runCache.getRun())
+                setTrack(await runCache.getTracking())
             } catch (e) {
             }
         }
@@ -22,30 +22,30 @@ function Card(props: CardProps) {
         load().then()
     })
 
-    let configsView = null
-    if (run != null) {
-        configsView = <ConfigsView configs={run.configs} width={props.width}/>
+    let chart = null
+    if (track != null && track.length > 0) {
+        chart = <LineChart key={1} series={track as SeriesModel[]} width={props.width}/>
     }
 
     return <div onClick={
         () => {
-            history.push(`/configs?run_uuid=${run.uuid}`);
+            history.push(`/metrics?run_uuid=${props.uuid}`);
         }
-    }>{configsView}</div>
+    }>{chart}</div>
 }
 
 function View(props: ViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
     const runCache = CACHE.get(runUUID)
-    let [run, setRun] = useState(null as unknown as Run)
+    const [track, setTrack] = useState(null as unknown as SeriesModel[])
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
         async function load() {
             try {
-                setRun(await runCache.getRun())
+                setTrack(await runCache.getTracking())
             } catch (e) {
             }
         }
@@ -53,12 +53,12 @@ function View(props: ViewProps) {
         load().then()
     })
 
-    let configsView = null
-    if (run != null) {
-        configsView = <ConfigsView configs={run.configs} width={actualWidth}/>
+    let chart = null
+    if (track != null && track.length > 0) {
+        chart = <LineChart key={1} series={track as SeriesModel[]} width={actualWidth}/>
     }
 
-    return <div>{configsView}</div>
+    return <div>{chart}</div>
 }
 
 export default {

@@ -8,6 +8,7 @@ import PageNotFound from "./page_not_found_view";
 import RunsListView from "./runs_list_view";
 import ReactGA from 'react-ga';
 import ConfigsCard from "../cards/configs/card"
+import MetricsCard from "../cards/metrics/card"
 
 /* TODO: Get this from configs */
 ReactGA.initialize('UA-164228270-01');
@@ -28,6 +29,9 @@ function AppContainer() {
                         />
                         <Route
                             path="/configs" component={ConfigsCard.View}
+                        />
+                        <Route
+                            path="/metrics" component={MetricsCard.View}
                         />
                         <Route
                             path="/runs" component={RunsListView}

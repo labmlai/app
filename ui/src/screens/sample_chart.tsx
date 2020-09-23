@@ -1,6 +1,6 @@
 import React, {useEffect} from "react"
 import * as d3 from "d3";
-import "../components/chart.scss"
+import "../cards/metrics/chart.scss"
 
 const MARGIN = 10
 const AXIS_SIZE = 25

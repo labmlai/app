@@ -1,8 +1,8 @@
 import React, {useEffect} from "react"
 import * as d3 from "d3";
-import "./chart.scss"
-import {formatFixed} from "./value";
-import {PointValue, SeriesModel} from "../models/run";
+import "./style.scss"
+import {formatFixed} from "../../components/value";
+import {PointValue, SeriesModel} from "../../models/run";
 
 const SMOOTH_POINTS = 50
 const OUTLIER_MARGIN = 0.04
@@ -234,7 +234,7 @@ interface SeriesProps {
 }
 
 
-function LineChart(props: SeriesProps) {
+export function LineChart(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
     const axisSize = 30
@@ -306,5 +306,3 @@ function LineChart(props: SeriesProps) {
         </svg>
     </div>
 }
-
-export default LineChart

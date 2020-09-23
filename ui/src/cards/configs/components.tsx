@@ -1,5 +1,5 @@
 import React from "react";
-import "./styles.scss"
+import "./style.scss"
 import {FormattedValue} from "../../components/value";
 import {Config} from "../../models/config";
 
