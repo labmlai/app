@@ -39,7 +39,7 @@ function AppContainer() {
                 <Route path="/metrics" component={MetricsCard.View}/>
                 <Route path="/runs" component={RunsListView}/>
                 <Route path="/login" component={LoginView}/>
-                <Route  path="/" component={Auth}  />
+                <Route path="/" component={Auth}/>
             </Switch>
         </main>
     );
