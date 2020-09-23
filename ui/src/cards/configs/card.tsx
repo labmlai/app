@@ -1,14 +1,10 @@
-import {ConfigsView} from "../components/configs";
+import {ConfigsView} from "./components";
 import React, {useEffect, useState} from "react";
-import {Run} from "../models/run";
-import CACHE from "../cache/cache"
+import {Run} from "../../models/run";
+import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
-import useWindowDimensions from "../utils/window_dimensions";
-
-interface CardProps {
-    uuid: string
-    width: number
-}
+import useWindowDimensions from "../../utils/window_dimensions";
+import {CardProps, ViewProps} from "../types";
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
@@ -38,10 +34,6 @@ function Card(props: CardProps) {
     }>{configsView}</div>
 }
 
-interface ViewProps {
-    location: any
-}
-
 function View(props: ViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
@@ -66,7 +58,7 @@ function View(props: ViewProps) {
         configsView = <ConfigsView configs={run.configs} width={actualWidth}/>
     }
 
-    return <div>{configsView}</div>
+    return <div className={'page'} style={{width: actualWidth}}>{configsView}</div>
 }
 
 export default {

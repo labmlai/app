@@ -1,7 +1,8 @@
 import json
+import math
 from glob import glob
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 import numpy as np
 from labml import monit
@@ -10,6 +11,9 @@ from . import settings
 from .enums import Enums
 
 MAX_BUFFER_LENGTH = 1024
+SMOOTH_POINTS = 50
+MIN_SMOOTH_POINTS = 1
+OUTLIER_MARGIN = 0.04
 
 
 class Series:
@@ -85,8 +89,89 @@ class Series:
     def summary(self):
         return {
             'step': self.last_step,
-            'value': self.value
+            'value': self.value,
+            'smoothed': self.smooth_45()
         }
+
+    def get_extent(self, is_remove_outliers: bool):
+        if len(self.value) == 0:
+            return [0, 0]
+        elif len(self.value) < 10:
+            return [min(self.value), max(self.value)]
+        elif not is_remove_outliers:
+            return [min(self.value), max(self.value)]
+
+        values = np.sort(self.value)
+        margin = int(len(values) * OUTLIER_MARGIN)
+        std_dev = np.std(self.value[margin:-margin])
+        start = 0
+        while start < margin:
+            if values[start] + std_dev * 2 > values[margin]:
+                break
+            start += 1
+        end = len(values) - 1
+        while end > len(values) - margin - 1:
+            if values[end] - std_dev * 2 < values[-margin]:
+                break
+            end -= 1
+
+        return [values[start], values[end]]
+
+    def smooth_45(self) -> List[float]:
+        forty_five = math.pi / 4
+        hi = max(1, len(self.value) // MIN_SMOOTH_POINTS)
+        lo = 1
+
+        # angles = [self.mean_angle(self.smooth_value(m), 0.5) for m in range(lo, hi)]
+        # print(angles)
+        while lo < hi:
+            m = (lo + hi) // 2
+            smoothed = self.smooth_value(m)
+            angle = self.mean_angle(smoothed, 0.5)
+            if angle > forty_five:
+                lo = m + 1
+            else:
+                hi = m
+
+        return self.smooth_value(hi)
+
+    def mean_angle(self, smoothed: List[float], aspect_ratio: float):
+        x_range = max(self.last_step) - min(self.last_step)
+        y_extent = self.get_extent(True)
+        y_range = y_extent[1] - y_extent[0]
+        # y_range = max(smoothed) - min(smoothed)
+
+        if x_range < 1e-9 or y_range < 1e-9:
+            return 0
+
+        angles = []
+        for i in range(len(smoothed) - 1):
+            dx = (self.last_step[i + 1] - self.last_step[i]) / x_range
+            dy = (smoothed[i + 1] - smoothed[i]) / y_range
+            angles.append(math.atan2(abs(dy) * aspect_ratio, abs(dx)))
+
+        return np.mean(angles)
+
+    def smooth_value(self, span: Optional[int] = None) -> List[float]:
+        if span is None:
+            span = len(self.value) // SMOOTH_POINTS
+        span_extra = span // 2
+
+        n = 0
+        total = 0
+        smoothed = []
+        for i in range(len(self.value) + span_extra):
+            j = i - span_extra
+            if i < len(self.value):
+                total += self.value[i]
+                n += 1
+            if j - span_extra - 1 >= 0:
+                total -= self.value[j - span_extra - 1]
+                n -= 1
+            if j >= 0:
+                smoothed.append(total / n)
+
+        return smoothed
 
     def to_dict(self):
         return {

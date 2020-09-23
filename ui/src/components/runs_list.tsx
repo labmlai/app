@@ -24,10 +24,12 @@ function RunsListItem(props: RunsListItemProps) {
         history.push(`/run?run_uuid=${run.run_uuid}`);
     }}
     >
+        <div>
         <StatusView status={run.status} lastUpdatedTime={run.time}/>
         <p>Started on {formatTime(run.start)}</p>
         <h5>{run.name}</h5>
         <h6>{run.comment}</h6>
+            </div>
     </ListGroup.Item>
 }
 

@@ -3,13 +3,13 @@ import {useHistory} from "react-router-dom";
 
 import "./run_view.scss"
 import CACHE from "../cache/cache"
-import ConfigsCard from "../cards/configs"
-import LineChart from "../components/chart";
+import ConfigsCard from "../cards/configs/card"
+import MetricsCard from "../cards/metrics/card"
 import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
 import {Alert} from "react-bootstrap";
-import {Run, SeriesModel} from "../models/run";
+import {Run} from "../models/run";
 import {getTimeDiff} from "../components/utils";
 
 
@@ -19,13 +19,11 @@ interface RunProps {
 
 function RunView(props: RunProps) {
     const history = useHistory();
-    const [isTrackLoading, setIsTrackLoading] = useState(true)
     const [isRunLoading, setIsRunLoading] = useState(true)
     const [networkError, setNetworkError] = useState(null)
 
     const [run, setRun] = useState(null as unknown as Run)
     const {width: windowWidth} = useWindowDimensions()
-    const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
@@ -45,8 +43,6 @@ function RunView(props: RunProps) {
             try {
                 setRun(await runCache.getRun())
                 setIsRunLoading(false)
-                setTrack(await runCache.getTracking())
-                setIsTrackLoading(false)
             } catch (err) {
                 setNetworkError(err.message)
             }
@@ -70,27 +66,24 @@ function RunView(props: RunProps) {
         </div>
     }
 
-    let chart = null
-    if (track != null && track.length > 0) {
-        chart = <LineChart key={1} series={track as SeriesModel[]} width={actualWidth}/>
-    }
+    // let chart = null
+    // if (track != null && track.length > 0) {
+    //     chart = <LineChart key={1} series={track as SeriesModel[]} width={actualWidth}/>
+    // }
 
-    let style = {
-        width: actualWidth
-    }
     return <div>
         {(() => {
             if (networkError != null) {
                 return <Alert variant={'danger'}>{networkError}</Alert>
-            } else if (isRunLoading || isTrackLoading) {
+            } else if (isRunLoading) {
                 return <LabLoader isLoading={true}/>
             } else if (Object.keys(run).length === 0) {
                 history.push(`/404`)
             } else {
-                return <div className={'run'} style={style}>
+                return <div className={'run page'} style={{width: actualWidth}}>
                     {runView}
                     <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
-                    {chart}
+                    <MetricsCard.Card uuid={runUUID} width={actualWidth}/>
                     <div className={'footer-copyright text-center'}>
                         <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
                         <span> | </span>
