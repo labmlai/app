@@ -17,32 +17,16 @@ function AppContainer() {
     ReactGA.pageview(window.location.pathname + window.location.search);
 
     return (
-        <div className="page-wrapper chiller-theme toggled" id="changer">
-            <main>
-                <div>
-                    <Switch>
-                        <Route
-                            path="/404" component={PageNotFound}
-                        />
-                        <Route
-                            path="/run" component={RunView}
-                        />
-                        <Route
-                            path="/configs" component={ConfigsCard.View}
-                        />
-                        <Route
-                            path="/metrics" component={MetricsCard.View}
-                        />
-                        <Route
-                            path="/runs" component={RunsListView}
-                        />
-                        <Route
-                            path="/" component={LoginView}
-                        />
-                    </Switch>
-                </div>
-            </main>
-        </div>
+        <main>
+            <Switch>
+                <Route path="/404" component={PageNotFound}/>
+                <Route path="/run" component={RunView}/>
+                <Route path="/configs" component={ConfigsCard.View}/>
+                <Route path="/metrics" component={MetricsCard.View}/>
+                <Route path="/runs" component={RunsListView}/>
+                <Route path="/" component={LoginView}/>
+            </Switch>
+        </main>
     );
 }
 
