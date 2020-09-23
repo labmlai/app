@@ -1,28 +1,75 @@
 import typing
-
+import functools
 import flask
 import werkzeug.wrappers
-from flask import jsonify, request
+from flask import jsonify, request, make_response, redirect
 
 from . import runs
 from . import settings
 from . import users
+from . import sessions
 from .auth import google
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
-NOTIFICATION_DELAY = 120
+
+def login_required(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        session_id = request.cookies.get('session_id')
+
+        session = sessions.get_or_create(session_id)
+
+        if session.is_auth:
+            return func(*args, **kwargs)
+        else:
+            response = make_response()
+            response.status_code = 403
+
+            if session_id != session.session_id:
+                response.set_cookie('session_id', session.session_id)
+
+            return response
+
+    return wrapper
 
 
 def test():
-    division_by_zero = 1 / 0
+    return jsonify({'uri': True})
+
+
+def auth():
+    session_id = request.cookies.get('session_id')
+
+    session = sessions.get_or_create(session_id)
+    if session.is_auth:
+        uri = f'{settings.WEB_URL}/runs?labml_token={session.labml_token}'
+    else:
+        uri = f'{settings.WEB_URL}/login'
+
+    response = make_response(jsonify({'uri': uri}))
+
+    if session_id != session.session_id:
+        response.set_cookie('session_id', session.session_id)
+
+    return response
 
 
 def google_sign_in():
     json = request.json
     user = google.sign_in(json['token'])
 
-    return jsonify({'uri': f"{settings.WEB_URL}/runs?labml_token={user.labml_token}"})
+    session_id = request.cookies.get('session_id')
+    session = sessions.get_or_create(session_id)
+
+    session.update({'labml_token': user.labml_token})
+
+    response = make_response(jsonify({'uri': f'{settings.WEB_URL}/runs?labml_token={user.labml_token}'}))
+
+    if session_id != session.session_id:
+        response.set_cookie('session_id', session.session_id)
+
+    return response
 
 
 def update_run():
@@ -85,3 +132,4 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
     _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
+    _add(app, 'GET', auth, 'auth')
