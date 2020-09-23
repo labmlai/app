@@ -9,7 +9,7 @@ import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
 import {Alert} from "react-bootstrap";
-import {Run, SeriesModel} from "../models/run";
+import {Run} from "../models/run";
 import {getTimeDiff} from "../components/utils";
 
 
@@ -71,9 +71,6 @@ function RunView(props: RunProps) {
     //     chart = <LineChart key={1} series={track as SeriesModel[]} width={actualWidth}/>
     // }
 
-    let style = {
-        width: actualWidth
-    }
     return <div>
         {(() => {
             if (networkError != null) {
@@ -83,7 +80,7 @@ function RunView(props: RunProps) {
             } else if (Object.keys(run).length === 0) {
                 history.push(`/404`)
             } else {
-                return <div className={'run'} style={style}>
+                return <div className={'run page'} style={{width: actualWidth}}>
                     {runView}
                     <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
                     <MetricsCard.Card uuid={runUUID} width={actualWidth}/>

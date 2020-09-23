@@ -58,7 +58,7 @@ function View(props: ViewProps) {
         chart = <LineChart key={1} series={track as SeriesModel[]} width={actualWidth}/>
     }
 
-    return <div>{chart}</div>
+    return <div className={'page'}  style={{width: actualWidth}}>{chart}</div>
 }
 
 export default {

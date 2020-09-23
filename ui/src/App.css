@@ -59,3 +59,7 @@ body {
 .list-group-item {
     margin-bottom: 0px;
 }
+
+.page {
+  margin: 0 auto;
+}

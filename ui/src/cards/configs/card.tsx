@@ -58,7 +58,7 @@ function View(props: ViewProps) {
         configsView = <ConfigsView configs={run.configs} width={actualWidth}/>
     }
 
-    return <div>{configsView}</div>
+    return <div className={'page'} style={{width: actualWidth}}>{configsView}</div>
 }
 
 export default {
