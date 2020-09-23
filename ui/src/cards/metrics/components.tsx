@@ -5,7 +5,6 @@ import {formatFixed} from "../../components/value";
 import {PointValue, SeriesModel} from "../../models/run";
 import {ListGroup} from "react-bootstrap"
 
-const SMOOTH_POINTS = 50
 const OUTLIER_MARGIN = 0.04
 const BASE_COLOR = '#34495e'
 
