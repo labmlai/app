@@ -20,10 +20,10 @@ function LoginView() {
     }
 
     return <div className={"login-view"}>
-        <div className={"login-view-centre mb-3"}>
+        <div className={"login-view-centre pt-5"}>
             <Image src={labLogoSrc} thumbnail/>
             <h1 className={"mt-3"}>LabML</h1>
-            <div className={"mt-3"}>
+            <div className={"mt-5 mb-3"}>
                 <GoogleLogin
                     clientId={clientID}
                     render={renderProps => (
