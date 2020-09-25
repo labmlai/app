@@ -2,7 +2,7 @@ import typing
 import functools
 import flask
 import werkzeug.wrappers
-from flask import jsonify, request, make_response, redirect
+from flask import jsonify, request, make_response
 
 from . import runs
 from . import settings
@@ -34,25 +34,14 @@ def login_required(func):
     return wrapper
 
 
-def test():
-    return jsonify({'uri': True})
-
-
-def auth():
+def get_session() -> sessions.Session:
     session_id = request.cookies.get('session_id')
 
-    session = sessions.get_or_create(session_id)
-    if session.is_auth:
-        uri = f'{settings.WEB_URL}/runs?labml_token={session.labml_token}'
-    else:
-        uri = f'{settings.WEB_URL}/login'
+    return sessions.get_or_create(session_id)
 
-    response = make_response(jsonify({'uri': uri}))
 
-    if session_id != session.session_id:
-        response.set_cookie('session_id', session.session_id)
-
-    return response
+def test():
+    return jsonify({'uri': True})
 
 
 def google_sign_in():
@@ -93,6 +82,7 @@ def update_run():
     return jsonify({'errors': run.errors, 'url': run.url})
 
 
+@login_required
 def get_run(run_uuid: str):
     run_data = {}
     run = runs.get_run(run_uuid)
@@ -102,10 +92,15 @@ def get_run(run_uuid: str):
     return jsonify(run_data)
 
 
-def get_runs(labml_token: str):
-    return jsonify({'runs': runs.get_runs(labml_token), 'is_valid_user': users.is_valid_user(labml_token)})
+@login_required
+def get_runs():
+    session = get_session()
+    labml_token = session.labml_token
+
+    return jsonify({'runs': runs.get_runs(labml_token), 'labml_token': labml_token})
 
 
+@login_required
 def get_tracking(run_uuid: str):
     track_data = []
     run = runs.get_run(run_uuid)
@@ -128,8 +123,7 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
-    _add(app, 'GET', get_runs, 'runs/<labml_token>')
+    _add(app, 'GET', get_runs, 'runs')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
     _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
-    _add(app, 'GET', auth, 'auth')

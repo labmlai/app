@@ -1,6 +1,7 @@
-import React, {useEffect} from "react";
+import React from "react";
 
 import {Route, Switch} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
 import RunView from "./run_view";
@@ -10,25 +11,27 @@ import ReactGA from 'react-ga';
 import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/metrics/card"
 
+
 import NETWORK from '../network'
 
 /* TODO: Get this from configs */
 ReactGA.initialize('UA-164228270-01');
 
-
-function Auth() {
-    useEffect(() => {
-        NETWORK.auth().then((res) => {
-            window.location.href = res.data.uri;
-        })
-    }, [])
-
-    return <div>
-    </div>
-}
-
 function AppContainer() {
-    ReactGA.pageview(window.location.pathname + window.location.search);
+    ReactGA.pageview(window.location.pathname + window.location.search)
+
+    const history = useHistory()
+
+    NETWORK.axiosInstance.interceptors.response.use(function (response: any) {
+        return response
+    }, function (error: any) {
+        if (error.response.status === 403) {
+            history.push('/login')
+        }
+        history.push('/404')
+
+        return Promise.reject(error)
+    })
 
     return (
         <main>
@@ -37,9 +40,8 @@ function AppContainer() {
                 <Route path="/run" component={RunView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
                 <Route path="/metrics" component={MetricsCard.View}/>
-                <Route path="/runs" component={RunsListView}/>
+                <Route path={["/runs", "/"]} component={RunsListView}/>
                 <Route path="/login" component={LoginView}/>
-                <Route path="/" component={Auth}/>
             </Switch>
         </main>
     );
