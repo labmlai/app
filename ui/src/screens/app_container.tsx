@@ -1,6 +1,6 @@
 import React from "react";
 
-import {Route, Switch} from "react-router-dom";
+import {Route, Switch, Redirect} from "react-router-dom";
 import {useHistory} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
@@ -28,7 +28,6 @@ function AppContainer() {
         if (error.response.status === 403) {
             history.push('/login')
         }
-        history.push('/404')
 
         return Promise.reject(error)
     })
@@ -40,8 +39,9 @@ function AppContainer() {
                 <Route path="/run" component={RunView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
                 <Route path="/metrics" component={MetricsCard.View}/>
-                <Route path={["/runs", "/"]} component={RunsListView}/>
+                <Route path="/runs" component={RunsListView}/>
                 <Route path="/login" component={LoginView}/>
+                <Route path="/"><Redirect to="/runs"/></Route>
             </Switch>
         </main>
     );

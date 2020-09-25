@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react"
 
-import {Alert} from "react-bootstrap"
 import NETWORK from '../network'
 import {RunsList} from "../components/runs_list"
 import {Code} from "../components/code"
@@ -10,7 +9,6 @@ import {Run} from "../components/models"
 
 function RunsListView() {
     const [isLoading, setIsLoading] = useState(true)
-    const [networkError, setNetworkError] = useState(null)
     const [runs, setRuns] = useState<Run[]>([])
     const [labMlToken, setLabMlToken] = useState('')
 
@@ -24,7 +22,7 @@ function RunsListView() {
                 }
             })
             .catch((err) => {
-                setNetworkError(err.message)
+                console.log(err)
             })
     })
 
@@ -34,9 +32,7 @@ function RunsListView() {
 
     return <div>
         {(() => {
-            if (networkError != null) {
-                return <Alert variant={'danger'}>{networkError}</Alert>
-            } else if (isLoading) {
+            if (isLoading) {
                 return <LabLoader isLoading={isLoading}/>
             } else if (runs.length === 0) {
                 return <Code labMlToken={labMlToken}/>

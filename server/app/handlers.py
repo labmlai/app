@@ -53,7 +53,7 @@ def google_sign_in():
 
     session.update({'labml_token': user.labml_token})
 
-    response = make_response(jsonify({'uri': f'{settings.WEB_URL}/runs?labml_token={user.labml_token}'}))
+    response = make_response(jsonify({'uri': f'{settings.WEB_URL}/runs'}))
 
     if session_id != session.session_id:
         response.set_cookie('session_id', session.session_id)
