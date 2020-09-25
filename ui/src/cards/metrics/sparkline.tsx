@@ -11,6 +11,7 @@ interface SparkLineProps {
     color: string
     width: number
     stepExtent: [number, number]
+    onClick?: () => void
 }
 
 export function SparkLine(props: SparkLineProps) {
@@ -38,7 +39,7 @@ export function SparkLine(props: SparkLineProps) {
             </span>
         </span>
     }
-    return <ListGroup.Item className={'sparkline-list-item'}>
+    return <ListGroup.Item className={'sparkline-list-item'} action={props.onClick != null} onClick={props.onClick}>
         <span style={{color: props.color, width: `${titleWidth}px`}}>{props.name}</span>
         <svg className={'sparkline'}
              height={25} width={chartWidth}>

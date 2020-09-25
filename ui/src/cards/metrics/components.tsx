@@ -46,6 +46,7 @@ interface SeriesProps {
     series: SeriesModel[]
     plotIdx: number[]
     width: number
+    onSelect?: (i: number) => void
 }
 
 
@@ -65,15 +66,19 @@ export function LineChart(props: SeriesProps) {
         s.series = res
     }
 
+    if (track.length === 0) {
+        return <div/>
+    }
     let plot = track.filter(((s, i) => props.plotIdx[i] >= 0))
     let filteredPlotIdx = props.plotIdx.filter(s => s >= 0)
-    if (plot.length === 0) {
-        return <div/>
+    if (props.plotIdx.length > 0 && Math.max(...props.plotIdx) < 0) {
+        plot = [track[0]]
+        filteredPlotIdx = [0]
     }
 
     let plotSeries = plot.map(s => s.series)
     const yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
-    const stepExtent = getExtent(plotSeries, d => d.step)
+    const stepExtent = getExtent(track.map(s => s.series), d => d.step)
     const xScale = getScale(stepExtent, chartWidth)
 
     let lines = plot.map((s, i) => {
@@ -87,8 +92,12 @@ export function LineChart(props: SeriesProps) {
         if (props.plotIdx[i] >= 0) {
             color = CHART_COLORS[props.plotIdx[i]]
         }
+        let onClick
+        if (props.onSelect != null) {
+            onClick = props.onSelect.bind(null, i)
+        }
         return <SparkLine key={s.name} name={s.name} series={s.series} color={color} stepExtent={stepExtent}
-                          width={rowWidth}/>
+                          width={rowWidth} onClick={onClick}/>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`

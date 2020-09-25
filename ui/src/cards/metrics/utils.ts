@@ -66,10 +66,6 @@ export function defaultSeriesToPlot(series: SeriesModel[]) {
         }
     }
 
-    if(count == 0 && series.length > 0) {
-        plotIdx[0] = 0
-    }
-
     return plotIdx
 }
 
