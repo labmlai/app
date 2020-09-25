@@ -88,15 +88,11 @@ export function LineChart(props: SeriesProps) {
 
     const rowWidth = Math.min(450, windowWidth - 3 * margin)
     let list = track.map((s, i) => {
-        let color = BASE_COLOR
-        if (props.plotIdx[i] >= 0) {
-            color = CHART_COLORS[props.plotIdx[i]]
-        }
         let onClick
         if (props.onSelect != null) {
             onClick = props.onSelect.bind(null, i)
         }
-        return <SparkLine key={s.name} name={s.name} series={s.series} color={color} stepExtent={stepExtent}
+        return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]} stepExtent={stepExtent}
                           width={rowWidth} onClick={onClick}/>
     })
 

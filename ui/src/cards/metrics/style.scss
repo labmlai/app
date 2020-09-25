@@ -30,6 +30,15 @@ div.sparkline-list-item {
   border: none;
 }
 
+button.sparkline-list-item {
+  outline: none;
+  &:focus {
+    background-color: transparent;
+  }
+  &.selected {
+    background-color: #f8f9fa;
+  }
+}
 .sparkline-list-item {
   padding: .25rem 5px;
 

@@ -4,17 +4,23 @@ import {ListGroup} from "react-bootstrap";
 import React from "react";
 import {getExtent, getScale} from "./utils";
 import {LinePlot} from "./line_plot";
+import {BASE_COLOR, CHART_COLORS} from "./constants";
 
 interface SparkLineProps {
     name: string
     series: PointValue[]
-    color: string
     width: number
     stepExtent: [number, number]
+    selected: number
     onClick?: () => void
 }
 
 export function SparkLine(props: SparkLineProps) {
+    let color = BASE_COLOR
+    if (props.selected >= 0) {
+        color = CHART_COLORS[props.selected]
+    }
+
     const titleWidth = Math.min(150, Math.round(props.width * .375))
     const chartWidth = props.width - titleWidth * 2
     const s = props.series
@@ -39,8 +45,12 @@ export function SparkLine(props: SparkLineProps) {
             </span>
         </span>
     }
-    return <ListGroup.Item className={'sparkline-list-item'} action={props.onClick != null} onClick={props.onClick}>
-        <span style={{color: props.color, width: `${titleWidth}px`}}>{props.name}</span>
+    let className = 'sparkline-list-item'
+    if(props.onClick != null && props.selected >= 0) {
+        className += ' selected'
+    }
+    return <ListGroup.Item className={className} action={props.onClick != null} onClick={props.onClick}>
+        <span style={{color: color, width: `${titleWidth}px`}}>{props.name}</span>
         <svg className={'sparkline'}
              height={25} width={chartWidth}>
             <g transform={`translate(${0}, 25)`}>
