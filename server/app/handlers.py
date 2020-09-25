@@ -89,6 +89,8 @@ def get_run(run_uuid: str):
     if run:
         run_data = run.get_data()
 
+    print(run_uuid)
+
     return jsonify(run_data)
 
 
@@ -96,6 +98,8 @@ def get_run(run_uuid: str):
 def get_runs():
     session = get_session()
     labml_token = session.labml_token
+
+    print(labml_token)
 
     return jsonify({'runs': runs.get_runs(labml_token), 'labml_token': labml_token})
 
@@ -106,6 +110,8 @@ def get_tracking(run_uuid: str):
     run = runs.get_run(run_uuid)
     if run:
         track_data = run.get_tracking()
+
+    print(run_uuid)
 
     return jsonify(track_data)
 

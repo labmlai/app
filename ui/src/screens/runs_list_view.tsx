@@ -24,7 +24,7 @@ function RunsListView() {
             .catch((err) => {
                 console.log(err)
             })
-    })
+    }, [])
 
     useEffect(() => {
         document.title = "LabML: Runs list"
