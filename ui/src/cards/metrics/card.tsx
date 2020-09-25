@@ -5,6 +5,7 @@ import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
 import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
+import {defaultSeriesToPlot} from "./utils";
 
 function Card(props: CardProps) {
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
@@ -24,7 +25,9 @@ function Card(props: CardProps) {
 
     let chart = null
     if (track != null && track.length > 0) {
-        chart = <LineChart key={1} series={track as SeriesModel[]} width={props.width}/>
+        let series = track as SeriesModel[]
+        let plotIdx = defaultSeriesToPlot(series)
+        chart = <LineChart key={1} series={series} width={props.width} plotIdx={plotIdx}/>
     }
 
     return <div onClick={
@@ -55,7 +58,9 @@ function View(props: ViewProps) {
 
     let chart = null
     if (track != null && track.length > 0) {
-        chart = <LineChart key={1} series={track as SeriesModel[]} width={actualWidth}/>
+        let series = track as SeriesModel[]
+        let plotIdx = defaultSeriesToPlot(series)
+        chart = <LineChart key={1} series={series} width={actualWidth} plotIdx={plotIdx}/>
     }
 
     return <div className={'page'}  style={{width: actualWidth}}>{chart}</div>

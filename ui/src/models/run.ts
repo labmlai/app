@@ -18,7 +18,6 @@ export interface RunModel {
 
 export interface SeriesModel {
     name: string
-    is_plot: boolean
     step: number[]
     value: number[]
     smoothed: number[]

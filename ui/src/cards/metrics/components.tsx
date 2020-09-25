@@ -44,6 +44,7 @@ function RightAxis(props: AxisProps) {
 
 interface SeriesProps {
     series: SeriesModel[]
+    plotIdx: number[]
     width: number
 }
 
@@ -64,7 +65,8 @@ export function LineChart(props: SeriesProps) {
         s.series = res
     }
 
-    let plot = track.filter((s => s.is_plot))
+    let plot = track.filter(((s, i) => props.plotIdx[i] >= 0))
+    let filteredPlotIdx = props.plotIdx.filter(s => s >= 0)
     if (plot.length === 0) {
         return <div/>
     }
@@ -74,28 +76,19 @@ export function LineChart(props: SeriesProps) {
     const stepExtent = getExtent(plotSeries, d => d.step)
     const xScale = getScale(stepExtent, chartWidth)
 
-    // let rects = series.map((d, i) => {
-    //     return <rect key={i} x={xScale(d.step)} y={yScale(d.value)} width={40}
-    //                  height={-yScale(d.value)} fill={'red'}/>
-    // })
-
     let lines = plot.map((s, i) => {
-        return <LinePlot series={s.series} xScale={xScale} yScale={yScale} color={CHART_COLORS[i]}
-                         key={s.name}/>
+        return <LinePlot series={s.series} xScale={xScale} yScale={yScale}
+                         color={CHART_COLORS[filteredPlotIdx[i]]} key={s.name}/>
     })
 
     const rowWidth = Math.min(450, windowWidth - 3 * margin)
     let list = track.map((s, i) => {
-        let color = CHART_COLORS[i]
-        if (!s.is_plot) {
-            color = BASE_COLOR
+        let color = BASE_COLOR
+        if (props.plotIdx[i] >= 0) {
+            color = CHART_COLORS[props.plotIdx[i]]
         }
         return <SparkLine key={s.name} name={s.name} series={s.series} color={color} stepExtent={stepExtent}
                           width={rowWidth}/>
-
-        // return <g key={s.name} transform={`translate(${margin}, ${margin + chartHeight + axisSize + i * itemHeight})`}>
-        //     <ListRow name={s.name} series={s.series} color={color} stepExtent={stepExtent} width={rowWidth}/>
-        // </g>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -117,7 +110,7 @@ export function LineChart(props: SeriesProps) {
                 <RightAxis chartId={chartId} scale={yScale}/>
             </g>
         </svg>
-        
+
         <ListGroup className={'sparkline-list'}>
             {list}
         </ListGroup>

@@ -1,4 +1,4 @@
-import {PointValue} from "../../models/run";
+import {PointValue, SeriesModel} from "../../models/run";
 import * as d3 from "d3";
 import {OUTLIER_MARGIN} from "./constants";
 
@@ -52,3 +52,24 @@ export function getScale(extent: [number, number], size: number): d3.ScaleLinear
         .domain(extent).nice()
         .range([0, size])
 }
+
+export function defaultSeriesToPlot(series: SeriesModel[]) {
+    let count = 0
+    let plotIdx = []
+    for(let s of series) {
+        let name = s.name.split('.')
+        if(name[0] === 'loss') {
+            plotIdx.push(count)
+            count++
+        } else {
+            plotIdx.push(-1)
+        }
+    }
+
+    if(count == 0 && series.length > 0) {
+        plotIdx[0] = 0
+    }
+
+    return plotIdx
+}
+
