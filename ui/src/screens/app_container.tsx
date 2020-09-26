@@ -28,6 +28,7 @@ function AppContainer() {
         if (error.response.status === 403) {
             history.push('/login')
         }
+        history.push('/404')
 
         return Promise.reject(error)
     })

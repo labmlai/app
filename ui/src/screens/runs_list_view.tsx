@@ -6,14 +6,20 @@ import {Code} from "../components/code"
 import {LabLoader} from "../components/loader"
 import {Run} from "../components/models"
 
+interface RunsListProps {
+    location: any
+}
 
-function RunsListView() {
+
+function RunsListView(props: RunsListProps) {
     const [isLoading, setIsLoading] = useState(true)
     const [runs, setRuns] = useState<Run[]>([])
     const [labMlToken, setLabMlToken] = useState('')
 
+    const params = new URLSearchParams(props.location.search)
+
     useEffect(() => {
-        NETWORK.get_runs()
+        NETWORK.get_runs(params.get('labml_token'))
             .then((res) => {
                 if (res) {
                     setRuns(res.data.runs)

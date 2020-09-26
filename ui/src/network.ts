@@ -14,8 +14,8 @@ class NETWORK {
         return this.axiosInstance.post(`/track/${run_uuid}`, {})
     }
 
-    static async get_runs(): Promise<any> {
-        return this.axiosInstance.get(`/runs`,)
+    static async get_runs(labml_token: string | null): Promise<any> {
+        return this.axiosInstance.get(`/runs/${labml_token}`, {})
     }
 
     static async google_sign_in(token: string): Promise<any> {

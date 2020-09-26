@@ -13,13 +13,43 @@ from .auth import google
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
+def process_parameters(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        _kwargs = {}
+        for k, v in kwargs.items():
+            if v == 'null':
+                _kwargs[k] = ''
+            else:
+                _kwargs[k] = v
+
+        return func(*args, **_kwargs)
+
+    return wrapper
+
+
+@process_parameters
+def is_runs_permitted(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        labml_token = kwargs.get('labml_token', '')
+
+        user = users.get(labml_token)
+        if user and user.is_sharable:
+            return func(*args, **kwargs)
+
+        kwargs['labml_token'] = ''
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 def login_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         session_id = request.cookies.get('session_id')
-
         session = sessions.get_or_create(session_id)
-
         if session.is_auth:
             return func(*args, **kwargs)
         else:
@@ -95,9 +125,14 @@ def get_run(run_uuid: str):
 
 
 @login_required
-def get_runs():
+@is_runs_permitted
+def get_runs(labml_token: str):
     session = get_session()
-    labml_token = session.labml_token
+
+    if labml_token:
+        labml_token = labml_token
+    else:
+        labml_token = session.labml_token
 
     print(labml_token)
 
@@ -129,7 +164,7 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
-    _add(app, 'GET', get_runs, 'runs')
+    _add(app, 'GET', get_runs, 'runs/<labml_token>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
     _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
