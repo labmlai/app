@@ -1,12 +1,12 @@
-import {Status} from "./models";
 import React from "react";
+import {RunStatusModel} from "../models/run";
 
 export interface StatusProps {
-    status: Status
+    status: RunStatusModel
     lastUpdatedTime?: number
 }
 
-export function getActualStatus(status: Status, lastUpdatedTime?: number) {
+export function getActualStatus(status: RunStatusModel, lastUpdatedTime?: number) {
     let notResponding = false
 
     if (status.status === 'in progress') {

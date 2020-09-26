@@ -202,8 +202,6 @@ class Run:
                  file_id: str = '',
                  name: str = '',
                  comment: str = '',
-                 start: float = None,
-                 time: float = None,
                  configs: Dict[str, any] = None,
                  status: Dict[str, any] = None,
                  tracking: List[Dict[str, any]] = None):
@@ -211,16 +209,12 @@ class Run:
             configs = {}
         if tracking is None:
             tracking = {}
-        if status is None:
-            status = {"status": Enums.RUN_IN_PROGRESS, "details": None, "time": time}
 
         self.tracking = tracking
         self.configs = configs
         self.status = status
-        self.start = start
         self.comment = comment
         self.name = name
-        self.time = time
         self.run_uuid = run_uuid
         self.labml_token = labml_token
         self.slack_thread_ts = slack_thread_ts
@@ -241,8 +235,6 @@ class Run:
             'file_id': self.file_id,
             'name': self.name,
             'comment': self.comment,
-            'start': self.start,
-            'time': self.time,
             'configs': self.configs,
             'status': self.status,
         }
@@ -254,8 +246,6 @@ class Run:
             'name': self.name,
             'comment': self.comment,
             'configs': configs,
-            'start': self.start,
-            'time': self.time,
             'status': self.status
         }
 
@@ -279,13 +269,12 @@ class Run:
             self.name = data.get('name', '')
         if not self.comment:
             self.comment = data.get('comment', '')
-        if not self.start:
-            self.start = data.get('time', None)
-        self.time = data.get('time', self.time)
 
         self.configs.update(data.get('configs', {}))
-        if data.get('status', {}):
-            self.status.update(data.get('status', {}))
+
+        status = data.get('status', {})
+        if status:
+            self.status.update(status)
 
         self.save()
 

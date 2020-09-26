@@ -58,10 +58,10 @@ function RunView(props: RunProps) {
     let runView = null
     if (run != null) {
         runView = <div>
-            <div className={'last-updated'}>Last updated {getTimeDiff(run.time)}</div>
+            <div className={'last-updated'}>Last updated {getTimeDiff(run.last_updated_time)}</div>
             <RunInfo uuid={run.uuid}
                      name={run.name} comment={run.comment}
-                     start={run.start} lastUpdatedTime={run.time}
+                     startTime={run.start_time} lastUpdatedTime={run.last_updated_time}
                      status={run.status}/>
         </div>
     }

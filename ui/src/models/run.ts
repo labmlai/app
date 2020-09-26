@@ -11,8 +11,8 @@ export interface RunModel {
     name: string
     comment: string
     configs: ConfigModel[]
-    start: number
-    time: number
+    start_time: number
+    last_updated_time: number
     status: RunStatusModel
 }
 
@@ -41,8 +41,8 @@ export class Run {
     name: string
     comment: string
     configs: Config[]
-    start: number
-    time: number
+    start_time: number
+    last_updated_time: number
     status: RunStatus
 
     constructor(run: RunModel) {
@@ -50,17 +50,17 @@ export class Run {
         this.name = run.name
         this.comment = run.comment
         this.configs = []
-        for(let c of run.configs) {
+        for (let c of run.configs) {
             this.configs.push(new Config(c))
         }
-        this.start = run.start
-        this.time = run.time
+        this.start_time = run.start_time
+        this.last_updated_time = run.last_updated_time
         this.status = new RunStatus(run.status)
     }
 
     get isRunning() {
         if (this.status.status === 'in progress') {
-            let timeDiff = (Date.now() / 1000 - this.time) / 60
+            let timeDiff = (Date.now() / 1000 - this.last_updated_time) / 60
             return timeDiff <= 15
         } else {
             return false

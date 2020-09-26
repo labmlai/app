@@ -4,7 +4,7 @@ import NETWORK from '../network'
 import {RunsList} from "../components/runs_list"
 import {Code} from "../components/code"
 import {LabLoader} from "../components/loader"
-import {Run} from "../components/models"
+import {RunModel} from "../models/run"
 
 interface RunsListProps {
     location: any
@@ -13,7 +13,7 @@ interface RunsListProps {
 
 function RunsListView(props: RunsListProps) {
     const [isLoading, setIsLoading] = useState(true)
-    const [runs, setRuns] = useState<Run[]>([])
+    const [runs, setRuns] = useState<RunModel[]>([])
     const [labMlToken, setLabMlToken] = useState('')
 
     const params = new URLSearchParams(props.location.search)
