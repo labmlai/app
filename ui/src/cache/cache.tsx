@@ -1,5 +1,5 @@
 import NETWORK from "../network";
-import {Run, RunModel, SeriesModel} from "../models/run";
+import {Run, RunModel, Status, StatusModel, SeriesModel} from "../models/run";
 
 const TRACKING_TIMEOUT = 60 * 1000
 
@@ -63,9 +63,11 @@ class RunCache {
     private uuid: string
     private lastUpdated: number
     private run!: Run
+    private status!: Status
     private tracking!: SeriesModel[]
     private runPromise = new BroadcastPromise<RunModel>()
     private trackingPromise = new BroadcastPromise<SeriesModel[]>()
+    private statusPromise = new BroadcastPromise<StatusModel>()
 
     constructor(uuid: string) {
         this.uuid = uuid
@@ -75,6 +77,13 @@ class RunCache {
     private async loadRun(): Promise<RunModel> {
         return this.runPromise.create(async () => {
             let res = await NETWORK.get_run(this.uuid)
+            return res.data
+        })
+    }
+
+    private async loadStatus(): Promise<StatusModel> {
+        return this.statusPromise.create(async () => {
+            let res = await NETWORK.get_status(this.uuid)
             return res.data
         })
     }
@@ -94,6 +103,15 @@ class RunCache {
         return this.run
     }
 
+    async getStatus(): Promise<Status> {
+        if (this.status == null) {
+            this.status = new Status(await this.loadStatus())
+        }
+
+        return this.status
+    }
+
+
     async getTracking(): Promise<SeriesModel[]> {
         await this.getRun()
 
@@ -102,7 +120,7 @@ class RunCache {
             this.lastUpdated = (new Date()).getTime()
         }
 
-        if (this.run.isRunning) {
+        if (this.status.isRunning) {
             if ((new Date()).getTime() - this.lastUpdated > TRACKING_TIMEOUT) {
                 this.tracking = await this.loadTracking()
                 this.lastUpdated = (new Date()).getTime()
