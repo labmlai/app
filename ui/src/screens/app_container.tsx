@@ -1,7 +1,7 @@
 import React from "react";
 
 import {Route, Switch, Redirect} from "react-router-dom";
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
 import RunView from "./run_view";
@@ -21,12 +21,13 @@ function AppContainer() {
     ReactGA.pageview(window.location.pathname + window.location.search)
 
     const history = useHistory()
+    const location = useLocation();
 
     NETWORK.axiosInstance.interceptors.response.use(function (response: any) {
         return response
     }, function (error: any) {
         if (error.response.status === 403) {
-            history.push('/login')
+            history.push(`/login/?redirect=${location.pathname + location.search}`)
         }
 
         return Promise.reject(error)

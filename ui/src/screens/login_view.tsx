@@ -9,9 +9,15 @@ import {Footer} from '../components/footer'
 
 import './login_view.scss'
 
+interface RunsListProps {
+    location: any
+}
 
-function LoginView() {
+
+function LoginView(props: RunsListProps) {
     const clientID: any = process.env.REACT_APP_GOOGLE_CLIENT_ID
+
+    const params = new URLSearchParams(props.location.search)
 
     useEffect(() => {
         document.title = "Login"
@@ -19,7 +25,7 @@ function LoginView() {
 
     function responseGoogle(response: any) {
         NETWORK.google_sign_in(response.tokenObj.id_token).then((res) => {
-            window.location.href = res.data.uri;
+            window.location.href = res.data.uri + params.get('redirect');
         })
     }
 
