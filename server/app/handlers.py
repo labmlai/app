@@ -2,7 +2,7 @@ import typing
 import functools
 import flask
 import werkzeug.wrappers
-from flask import jsonify, request, make_response, redirect
+from flask import jsonify, request, make_response
 
 from . import runs
 from . import settings
@@ -13,13 +13,43 @@ from .auth import google
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
+def process_parameters(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        _kwargs = {}
+        for k, v in kwargs.items():
+            if v == 'null':
+                _kwargs[k] = ''
+            else:
+                _kwargs[k] = v
+
+        return func(*args, **_kwargs)
+
+    return wrapper
+
+
+@process_parameters
+def is_runs_permitted(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        labml_token = kwargs.get('labml_token', '')
+
+        user = users.get(labml_token)
+        if user and user.is_sharable:
+            return func(*args, **kwargs)
+
+        kwargs['labml_token'] = ''
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
 def login_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         session_id = request.cookies.get('session_id')
-
         session = sessions.get_or_create(session_id)
-
         if session.is_auth:
             return func(*args, **kwargs)
         else:
@@ -34,25 +64,14 @@ def login_required(func):
     return wrapper
 
 
-def test():
-    return jsonify({'uri': True})
-
-
-def auth():
+def get_session() -> sessions.Session:
     session_id = request.cookies.get('session_id')
 
-    session = sessions.get_or_create(session_id)
-    if session.is_auth:
-        uri = f'{settings.WEB_URL}/runs?labml_token={session.labml_token}'
-    else:
-        uri = f'{settings.WEB_URL}/login'
+    return sessions.get_or_create(session_id)
 
-    response = make_response(jsonify({'uri': uri}))
 
-    if session_id != session.session_id:
-        response.set_cookie('session_id', session.session_id)
-
-    return response
+def test():
+    return jsonify({'uri': True})
 
 
 def google_sign_in():
@@ -64,7 +83,7 @@ def google_sign_in():
 
     session.update({'labml_token': user.labml_token})
 
-    response = make_response(jsonify({'uri': f'{settings.WEB_URL}/runs?labml_token={user.labml_token}'}))
+    response = make_response(jsonify({'uri': f'{settings.WEB_URL}/runs'}))
 
     if session_id != session.session_id:
         response.set_cookie('session_id', session.session_id)
@@ -93,24 +112,41 @@ def update_run():
     return jsonify({'errors': run.errors, 'url': run.url})
 
 
+@login_required
 def get_run(run_uuid: str):
     run_data = {}
     run = runs.get_run(run_uuid)
     if run:
         run_data = run.get_data()
 
+    print(run_uuid)
+
     return jsonify(run_data)
 
 
+@login_required
+@is_runs_permitted
 def get_runs(labml_token: str):
-    return jsonify({'runs': runs.get_runs(labml_token), 'is_valid_user': users.is_valid_user(labml_token)})
+    session = get_session()
+
+    if labml_token:
+        labml_token = labml_token
+    else:
+        labml_token = session.labml_token
+
+    print(labml_token)
+
+    return jsonify({'runs': runs.get_runs(labml_token), 'labml_token': labml_token})
 
 
+@login_required
 def get_tracking(run_uuid: str):
     track_data = []
     run = runs.get_run(run_uuid)
     if run:
         track_data = run.get_tracking()
+
+    print(run_uuid)
 
     return jsonify(track_data)
 
@@ -132,4 +168,3 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
     _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
-    _add(app, 'GET', auth, 'auth')

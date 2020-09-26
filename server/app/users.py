@@ -32,16 +32,19 @@ class GoogleInfo:
 class User:
     def __init__(self, *,
                  labml_token: str,
-                 google_info: Union[GoogleInfo, Dict] = None):
+                 google_info: Union[GoogleInfo, Dict] = None,
+                 is_sharable: bool = False):
         if isinstance(google_info, dict):
             google_info = GoogleInfo(**google_info)
 
         self.labml_token = labml_token
         self.google_info = google_info
+        self.is_sharable = is_sharable
 
     def to_dict(self):
         return {
             'labml_token': self.labml_token,
+            'is_sharable': self.is_sharable,
             'google_info': self.google_info.to_dict()
         }
 

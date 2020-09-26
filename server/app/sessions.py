@@ -30,7 +30,7 @@ class Session:
 
     @property
     def is_auth(self):
-        return self.labml_token and self.expiration > time.time()
+        return self.labml_token is not '' and self.expiration > time.time()
 
     def to_dict(self):
         return {

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {GoogleLogin} from 'react-google-login'
 import {Image} from "react-bootstrap"
 
@@ -12,6 +12,10 @@ import './login_view.scss'
 
 function LoginView() {
     const clientID: any = process.env.REACT_APP_GOOGLE_CLIENT_ID
+
+    useEffect(() => {
+        document.title = "Login"
+    })
 
     function responseGoogle(response: any) {
         NETWORK.google_sign_in(response.tokenObj.id_token).then((res) => {
