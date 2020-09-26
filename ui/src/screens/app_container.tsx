@@ -29,6 +29,7 @@ function AppContainer() {
         if (error.response.status === 403) {
             history.push(`/login/?redirect=${location.pathname + location.search}`)
         }
+        /* TODO: Handle different types of errors here*/
 
         return Promise.reject(error)
     })
