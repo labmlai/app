@@ -352,7 +352,7 @@ def _initialize():
         runs_path.mkdir(parents=True)
 
     for f_name in glob(f'{runs_path}/*.json'):
-        if 'tracking' in f_name:
+        if 'tracking' in f_name or 'status' in f_name:
             continue
 
         with open(f_name, 'r') as f:
