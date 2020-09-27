@@ -7,8 +7,8 @@ from typing import Dict, List, Any, Optional
 import numpy as np
 from labml import monit
 
+from . import statuses
 from . import settings
-from .enums import Enums
 
 MAX_BUFFER_LENGTH = 1024
 SMOOTH_POINTS = 50
@@ -198,36 +198,24 @@ class Run:
     def __init__(self, *,
                  run_uuid: str,
                  labml_token: str = '',
-                 slack_thread_ts: str = '',
-                 file_id: str = '',
                  name: str = '',
                  comment: str = '',
-                 start: float = None,
-                 time: float = None,
                  configs: Dict[str, any] = None,
-                 status: Dict[str, any] = None,
-                 tracking: List[Dict[str, any]] = None):
+                 tracking: List[Dict[str, any]] = None,
+                 ):
         if configs is None:
             configs = {}
         if tracking is None:
             tracking = {}
-        if status is None:
-            status = {"status": Enums.RUN_IN_PROGRESS, "details": None, "time": time}
 
         self.tracking = tracking
         self.configs = configs
-        self.status = status
-        self.start = start
         self.comment = comment
         self.name = name
-        self.time = time
         self.run_uuid = run_uuid
         self.labml_token = labml_token
-        self.slack_thread_ts = slack_thread_ts
-        self.file_id = file_id
         self.step = 0
         self.errors = []
-        self.last_notified = None
 
     @property
     def url(self):
@@ -237,14 +225,9 @@ class Run:
         return {
             'run_uuid': self.run_uuid,
             'labml_token': self.labml_token,
-            'slack_thread_ts': self.slack_thread_ts,
-            'file_id': self.file_id,
             'name': self.name,
             'comment': self.comment,
-            'start': self.start,
-            'time': self.time,
             'configs': self.configs,
-            'status': self.status,
         }
 
     def get_data(self):
@@ -254,9 +237,6 @@ class Run:
             'name': self.name,
             'comment': self.comment,
             'configs': configs,
-            'start': self.start,
-            'time': self.time,
-            'status': self.status
         }
 
     def get_tracking(self):
@@ -279,13 +259,8 @@ class Run:
             self.name = data.get('name', '')
         if not self.comment:
             self.comment = data.get('comment', '')
-        if not self.start:
-            self.start = data.get('time', None)
-        self.time = data.get('time', self.time)
 
         self.configs.update(data.get('configs', {}))
-        if data.get('status', {}):
-            self.status.update(data.get('status', {}))
 
         self.save()
 
@@ -316,7 +291,6 @@ class Run:
     def load_tracking(self):
         try:
             with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'r') as f:
-                print(self.run_uuid)
                 data = json.load(f)
 
             self.step = data['step']
@@ -365,7 +339,9 @@ def get_runs(labml_token: str):
     res = []
     for run_uuid, run in _RUNS.items():
         if run.labml_token == labml_token:
-            res.append(run.get_data())
+            status = statuses.get_status(run.run_uuid)
+            # TODO create a model for this
+            res.append({**run.get_data(), **status.to_dict()})
 
     return res
 

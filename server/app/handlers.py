@@ -1,67 +1,18 @@
 import typing
-import functools
 import flask
 import werkzeug.wrappers
 from flask import jsonify, request, make_response
 
-from . import runs
-from . import settings
+from . import statuses
 from . import users
 from . import sessions
-from .auth import google
+from . import runs
+
+from . import settings
+
+from .auth import google, login_required, is_runs_permitted
 
 request = typing.cast(werkzeug.wrappers.Request, request)
-
-
-def process_parameters(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        _kwargs = {}
-        for k, v in kwargs.items():
-            if v == 'null':
-                _kwargs[k] = ''
-            else:
-                _kwargs[k] = v
-
-        return func(*args, **_kwargs)
-
-    return wrapper
-
-
-@process_parameters
-def is_runs_permitted(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        labml_token = kwargs.get('labml_token', '')
-
-        user = users.get(labml_token)
-        if user and user.is_sharable:
-            return func(*args, **kwargs)
-
-        kwargs['labml_token'] = ''
-
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def login_required(func):
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        session_id = request.cookies.get('session_id')
-        session = sessions.get_or_create(session_id)
-        if session.is_auth:
-            return func(*args, **kwargs)
-        else:
-            response = make_response()
-            response.status_code = 403
-
-            if session_id != session.session_id:
-                response.set_cookie('session_id', session.session_id)
-
-            return response
-
-    return wrapper
 
 
 def get_session() -> sessions.Session:
@@ -104,8 +55,10 @@ def update_run():
     json = request.json
     run_uuid = json.get('run_uuid', '')
     run = runs.get_or_create(run_uuid, labml_token)
+    status = statuses.get_or_create(run_uuid)
 
     run.update(json)
+    status.update(json)
     if 'track' in json:
         run.track(json['track'])
 
@@ -119,9 +72,21 @@ def get_run(run_uuid: str):
     if run:
         run_data = run.get_data()
 
-    print(run_uuid)
+    print('run', run_uuid)
 
     return jsonify(run_data)
+
+
+@login_required
+def get_status(run_uuid: str):
+    status_data = {}
+    status = statuses.get_status(run_uuid)
+    if status:
+        status_data = status.to_dict()
+
+    print('status', run_uuid)
+
+    return jsonify(status_data)
 
 
 @login_required
@@ -134,7 +99,7 @@ def get_runs(labml_token: str):
     else:
         labml_token = session.labml_token
 
-    print(labml_token)
+    print('runs', labml_token)
 
     return jsonify({'runs': runs.get_runs(labml_token), 'labml_token': labml_token})
 
@@ -146,7 +111,7 @@ def get_tracking(run_uuid: str):
     if run:
         track_data = run.get_tracking()
 
-    print(run_uuid)
+    print('tracking', run_uuid)
 
     return jsonify(track_data)
 
@@ -163,8 +128,10 @@ def add_handlers(app: flask.Flask):
 
     _add(app, 'POST', update_run, 'track')
 
-    _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_runs, 'runs/<labml_token>')
+
+    _add(app, 'GET', get_run, 'run/<run_uuid>')
+    _add(app, 'GET', get_status, 'status/<run_uuid>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
     _add(app, 'POST', google_sign_in, 'auth/google/sign_in')

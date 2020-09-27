@@ -9,7 +9,7 @@ import useWindowDimensions from "../utils/window_dimensions";
 import {RunInfo} from "../components/run_info";
 import {LabLoader} from "../components/loader"
 import {Alert} from "react-bootstrap";
-import {Run} from "../models/run";
+import {Run, Status} from "../models/run";
 import {getTimeDiff} from "../components/utils";
 
 
@@ -23,6 +23,7 @@ function RunView(props: RunProps) {
     const [networkError, setNetworkError] = useState(null)
 
     const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
     const {width: windowWidth} = useWindowDimensions()
 
     const params = new URLSearchParams(props.location.search)
@@ -41,6 +42,7 @@ function RunView(props: RunProps) {
     useEffect(() => {
         async function loadFromServer() {
             try {
+                setStatus(await runCache.getStatus())
                 setRun(await runCache.getRun())
                 setIsRunLoading(false)
             } catch (err) {
@@ -58,11 +60,11 @@ function RunView(props: RunProps) {
     let runView = null
     if (run != null) {
         runView = <div>
-            <div className={'last-updated'}>Last updated {getTimeDiff(run.time)}</div>
+            <div className={'last-updated'}>Last updated {getTimeDiff(status.last_updated_time)}</div>
             <RunInfo uuid={run.uuid}
                      name={run.name} comment={run.comment}
-                     start={run.start} lastUpdatedTime={run.time}
-                     status={run.status}/>
+                     startTime={status.start_time} lastUpdatedTime={status.last_updated_time}
+                     status={status.status}/>
         </div>
     }
 

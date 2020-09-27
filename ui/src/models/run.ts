@@ -1,9 +1,20 @@
 import {Config, ConfigModel} from "./config";
 
+
+export interface RunListModel extends RunModel, StatusModel {
+}
+
 export interface RunStatusModel {
     status: string
     details: string
     time: number
+}
+
+export interface StatusModel {
+    run_uuid: string
+    start_time: number
+    last_updated_time: number
+    status: RunStatusModel
 }
 
 export interface RunModel {
@@ -11,9 +22,6 @@ export interface RunModel {
     name: string
     comment: string
     configs: ConfigModel[]
-    start: number
-    time: number
-    status: RunStatusModel
 }
 
 export interface SeriesModel {
@@ -29,10 +37,33 @@ export class RunStatus {
     details: string
     time: number
 
-    constructor(status: RunStatusModel) {
-        this.status = status.status
-        this.details = status.details
-        this.time = status.time
+    constructor(runStatus: RunStatusModel) {
+        this.status = runStatus.status
+        this.details = runStatus.details
+        this.time = runStatus.time
+    }
+}
+
+export class Status {
+    uuid: string
+    start_time: number
+    last_updated_time: number
+    status: RunStatus
+
+    constructor(status: StatusModel) {
+        this.uuid = status.run_uuid
+        this.start_time = status.start_time
+        this.last_updated_time = status.last_updated_time
+        this.status = new RunStatus(status.status)
+    }
+
+    get isRunning() {
+        if (this.status.status === 'in progress') {
+            let timeDiff = (Date.now() / 1000 - this.last_updated_time) / 60
+            return timeDiff <= 15
+        } else {
+            return false
+        }
     }
 }
 
@@ -41,29 +72,14 @@ export class Run {
     name: string
     comment: string
     configs: Config[]
-    start: number
-    time: number
-    status: RunStatus
 
     constructor(run: RunModel) {
         this.uuid = run.run_uuid
         this.name = run.name
         this.comment = run.comment
         this.configs = []
-        for(let c of run.configs) {
+        for (let c of run.configs) {
             this.configs.push(new Config(c))
-        }
-        this.start = run.start
-        this.time = run.time
-        this.status = new RunStatus(run.status)
-    }
-
-    get isRunning() {
-        if (this.status.status === 'in progress') {
-            let timeDiff = (Date.now() / 1000 - this.time) / 60
-            return timeDiff <= 15
-        } else {
-            return false
         }
     }
 }

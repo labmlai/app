@@ -10,6 +10,10 @@ class NETWORK {
         return this.axiosInstance.get(`/run/${run_uuid}`)
     }
 
+    static async get_status(run_uuid: string): Promise<any> {
+        return this.axiosInstance.get(`/status/${run_uuid}`)
+    }
+
     static async get_tracking(run_uuid: string): Promise<any> {
         return this.axiosInstance.post(`/track/${run_uuid}`, {})
     }
