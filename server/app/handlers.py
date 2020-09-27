@@ -10,7 +10,7 @@ from . import runs
 
 from . import settings
 
-from .auth import google, login_required, is_runs_permitted
+from .auth import google, labml, login_required, is_runs_permitted
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -25,9 +25,15 @@ def test():
     return jsonify({'uri': True})
 
 
-def google_sign_in():
+def sign_in():
     json = request.json
-    user = google.sign_in(json['token'])
+
+    if json['type'] == 'google':
+        user = google.sign_in(json['token'])
+    elif json['type'] == 'labml':
+        user = labml.sign_in(json['email'], json['password'])
+    else:
+        raise ValueError
 
     session_id = request.cookies.get('session_id')
     session = sessions.get_or_create(session_id)
@@ -53,6 +59,7 @@ def update_run():
                         'success': False})
 
     json = request.json
+
     run_uuid = json.get('run_uuid', '')
     run = runs.get_or_create(run_uuid, labml_token)
     status = statuses.get_or_create(run_uuid)
@@ -134,4 +141,4 @@ def add_handlers(app: flask.Flask):
     _add(app, 'GET', get_status, 'status/<run_uuid>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
-    _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
+    _add(app, 'POST', sign_in, 'auth/sign_in')
