@@ -3,11 +3,13 @@ import flask
 import werkzeug.wrappers
 from flask import jsonify, request, make_response
 
-from . import runs
 from . import statuses
-from . import settings
 from . import users
 from . import sessions
+from . import runs
+
+from . import settings
+
 from .auth import google, login_required, is_runs_permitted
 
 request = typing.cast(werkzeug.wrappers.Request, request)
@@ -56,10 +58,9 @@ def update_run():
     status = statuses.get_or_create(run_uuid)
 
     run.update(json)
+    status.update(json)
     if 'track' in json:
         run.track(json['track'])
-    if 'status' in json:
-        status.update(json['status'])
 
     return jsonify({'errors': run.errors, 'url': run.url})
 
@@ -71,7 +72,7 @@ def get_run(run_uuid: str):
     if run:
         run_data = run.get_data()
 
-    print(run_uuid)
+    print('run', run_uuid)
 
     return jsonify(run_data)
 
@@ -83,7 +84,7 @@ def get_status(run_uuid: str):
     if status:
         status_data = status.to_dict()
 
-    print(run_uuid)
+    print('status', run_uuid)
 
     return jsonify(status_data)
 
@@ -98,7 +99,7 @@ def get_runs(labml_token: str):
     else:
         labml_token = session.labml_token
 
-    print(labml_token)
+    print('runs', labml_token)
 
     return jsonify({'runs': runs.get_runs(labml_token), 'labml_token': labml_token})
 
@@ -110,7 +111,7 @@ def get_tracking(run_uuid: str):
     if run:
         track_data = run.get_tracking()
 
-    print(run_uuid)
+    print('tracking', run_uuid)
 
     return jsonify(track_data)
 
