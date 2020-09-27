@@ -3,6 +3,7 @@ import {GoogleLogin} from 'react-google-login'
 import {Image} from "react-bootstrap"
 
 import NETWORK from '../network'
+import {SignInData} from "../models/login";
 import labLogoSrc from "../assets/lab_logo.png"
 import gLogoSrc from "../assets/g_normal.png"
 import {LabLoader} from "../components/loader"
@@ -27,7 +28,11 @@ function LoginView(props: RunsListProps) {
     })
 
     function responseGoogle(response: any) {
-        NETWORK.google_sign_in(response.tokenObj.id_token).then((res) => {
+        let data = {} as SignInData
+        data.token = response.tokenObj.id_token
+        data.type = 'google'
+
+        NETWORK.sign_in(data).then((res) => {
             window.location.href = res.data.uri + params.get('redirect');
         })
     }
