@@ -42,8 +42,8 @@ function RunView(props: RunProps) {
     useEffect(() => {
         async function loadFromServer() {
             try {
-                setRun(await runCache.getRun())
                 setStatus(await runCache.getStatus())
+                setRun(await runCache.getRun())
                 setIsRunLoading(false)
             } catch (err) {
                 setNetworkError(err.message)
