@@ -7,10 +7,10 @@ BYTE_SALT = settings.SALT.encode()
 
 
 def hash_password(password: str) -> bytes:
-    x1 = hashlib.sha256(password.encode())
-    x1.update(BYTE_SALT)
+    hs = hashlib.sha256(password.encode())
+    hs.update(BYTE_SALT)
 
-    return x1.digest()
+    return hs.digest()
 
 
 def sign_in(email: str, password: str):
