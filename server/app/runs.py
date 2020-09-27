@@ -202,6 +202,7 @@ class Run:
                  comment: str = '',
                  configs: Dict[str, any] = None,
                  tracking: List[Dict[str, any]] = None,
+                 **kwargs
                  ):
         if configs is None:
             configs = {}
