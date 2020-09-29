@@ -8,9 +8,7 @@ from . import users
 from . import sessions
 from . import runs
 
-from . import settings
-
-from .auth import google, login_required, is_runs_permitted
+from .auth import login_required, is_runs_permitted
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -25,16 +23,19 @@ def test():
     return jsonify({'uri': True})
 
 
-def google_sign_in():
+def sign_in():
     json = request.json
-    user = google.sign_in(json['token'])
+    print(json)
+
+    auth_o_info = users.AuthOInfo(**json)
+    user = users.get_or_create_auth_o_user(auth_o_info)
 
     session_id = request.cookies.get('session_id')
     session = sessions.get_or_create(session_id)
 
     session.update({'labml_token': user.labml_token})
 
-    response = make_response(jsonify({'uri': f'{settings.WEB_URL}'}))
+    response = make_response(jsonify({'is_successful': True}))
 
     if session_id != session.session_id:
         response.set_cookie('session_id', session.session_id)
@@ -53,6 +54,7 @@ def update_run():
                         'success': False})
 
     json = request.json
+
     run_uuid = json.get('run_uuid', '')
     run = runs.get_or_create(run_uuid, labml_token)
     status = statuses.get_or_create(run_uuid)
@@ -134,4 +136,4 @@ def add_handlers(app: flask.Flask):
     _add(app, 'GET', get_status, 'status/<run_uuid>')
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
-    _add(app, 'POST', google_sign_in, 'auth/google/sign_in')
+    _add(app, 'POST', sign_in, 'auth/sign_in')

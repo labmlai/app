@@ -1,11 +1,14 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './index.css'
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import * as Sentry from '@sentry/react';
-import {Integrations} from '@sentry/tracing';
-import App from './App';
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import * as Sentry from '@sentry/react'
+import {Integrations} from '@sentry/tracing'
+import {Auth0Provider} from "@auth0/auth0-react"
+
+import App from './App'
 
 if (process.env.REACT_APP_SENTRY_DSN) {
     Sentry.init({
@@ -17,9 +20,18 @@ if (process.env.REACT_APP_SENTRY_DSN) {
     });
 }
 
+const authODomain: string = process.env.REACT_APP_AUTHO_DOMAIN !
+const authOClientID: string = process.env.REACT_APP_AUTHO_CLIENT_ID !
+
 ReactDOM.render(
     <React.StrictMode>
-        <App/>
+        <Auth0Provider
+            domain={authODomain}
+            clientId={authOClientID}
+            redirectUri={window.location.origin + '/verify'}
+        >
+            <App/>
+        </Auth0Provider>,
     </React.StrictMode>,
     document.getElementById('root')
 );

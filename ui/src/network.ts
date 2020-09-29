@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import {SignInData} from "./models/login";
+
 class NETWORK {
     static axiosInstance: any = axios.create({
         baseURL: process.env.REACT_APP_SERVER_URL,
@@ -22,8 +24,8 @@ class NETWORK {
         return this.axiosInstance.get(`/runs/${labml_token}`, {})
     }
 
-    static async google_sign_in(token: string): Promise<any> {
-        return this.axiosInstance.post(`/auth/google/sign_in`, {'token': token})
+    static async sign_in(data: SignInData): Promise<any> {
+        return this.axiosInstance.post(`/auth/sign_in`, data)
     }
 }
 
