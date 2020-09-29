@@ -37,6 +37,7 @@ def sign_in():
 
     response = make_response(jsonify({'is_successful': True}))
 
+    print(session_id, session.session_id)
     if session_id != session.session_id:
         response.set_cookie('session_id', session.session_id)
 

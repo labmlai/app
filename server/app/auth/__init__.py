@@ -52,6 +52,7 @@ def login_required(func):
             response = make_response()
             response.status_code = 403
 
+            print(session_id, session.session_id)
             if session_id != session.session_id:
                 response.set_cookie('session_id', session.session_id)
 

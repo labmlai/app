@@ -30,7 +30,7 @@ function AppContainer() {
     }, function (error: any) {
         if (error.response.status === 403) {
             localStorage.setItem('uri', uri)
-            history.push(`/verify`)
+            history.push(`/login`)
         }
         /* TODO: Handle different types of errors here*/
 
