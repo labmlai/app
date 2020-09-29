@@ -8,9 +8,7 @@ from . import users
 from . import sessions
 from . import runs
 
-from . import settings
-
-from .auth import google, labml, login_required, is_runs_permitted
+from .auth import login_required, is_runs_permitted
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -27,20 +25,17 @@ def test():
 
 def sign_in():
     json = request.json
+    print(json)
 
-    if json['type'] == 'google':
-        user = google.sign_in(json['token'])
-    elif json['type'] == 'labml':
-        user = labml.sign_in(json['email'], json['password'])
-    else:
-        raise ValueError
+    auth_o_info = users.AuthOInfo(**json)
+    user = users.get_or_create_auth_o_user(auth_o_info)
 
     session_id = request.cookies.get('session_id')
     session = sessions.get_or_create(session_id)
 
     session.update({'labml_token': user.labml_token})
 
-    response = make_response(jsonify({'uri': f'{settings.WEB_URL}'}))
+    response = make_response(jsonify({'is_successful': True}))
 
     if session_id != session.session_id:
         response.set_cookie('session_id', session.session_id)

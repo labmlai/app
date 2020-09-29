@@ -1,6 +1,6 @@
 export interface SignInData {
-    token: string
+    sub: string
     email: string
-    password: string
-    type: string
+    name: string
+    email_verified: boolean
 }

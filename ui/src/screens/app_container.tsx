@@ -4,6 +4,7 @@ import {Route, Switch, Redirect} from "react-router-dom";
 import {useHistory, useLocation} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
+import VerifyView from "./verify_view";
 import RunView from "./run_view";
 import PageNotFound from "./page_not_found_view";
 import RunsListView from "./runs_list_view";
@@ -18,16 +19,18 @@ import NETWORK from '../network'
 ReactGA.initialize('UA-164228270-01');
 
 function AppContainer() {
-    ReactGA.pageview(window.location.pathname + window.location.search)
+    const uri = window.location.pathname + window.location.search
+
+    ReactGA.pageview(uri)
 
     const history = useHistory()
-    const location = useLocation();
 
     NETWORK.axiosInstance.interceptors.response.use(function (response: any) {
         return response
     }, function (error: any) {
         if (error.response.status === 403) {
-            history.push(`/login/?redirect=${location.pathname + location.search}`)
+            history.push(`/verify`)
+            localStorage.setItem('uri', uri)
         }
         /* TODO: Handle different types of errors here*/
 
@@ -43,6 +46,7 @@ function AppContainer() {
                 <Route path="/metrics" component={MetricsCard.View}/>
                 <Route path="/runs" component={RunsListView}/>
                 <Route path="/login" component={LoginView}/>
+                <Route path="/verify" component={VerifyView}/>
                 <Route path="/"><Redirect to="/runs"/></Route>
             </Switch>
         </main>
