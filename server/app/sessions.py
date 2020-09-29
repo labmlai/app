@@ -8,7 +8,7 @@ from labml import monit
 
 from . import settings
 
-EXPIRATION_DELAY = 60 * 60 * 24 * 3
+EXPIRATION_DELAY = 60 * 60 * 24 * 30
 
 
 def generate_token():
