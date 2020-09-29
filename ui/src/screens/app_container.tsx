@@ -1,7 +1,7 @@
 import React from "react";
 
 import {Route, Switch, Redirect} from "react-router-dom";
-import {useHistory, useLocation} from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
 import VerifyView from "./verify_view";
@@ -29,8 +29,8 @@ function AppContainer() {
         return response
     }, function (error: any) {
         if (error.response.status === 403) {
-            history.push(`/verify`)
             localStorage.setItem('uri', uri)
+            history.push(`/verify`)
         }
         /* TODO: Handle different types of errors here*/
 
