@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@auth0/auth0-react": "^1.1.0",
     "@sentry/react": "^5.22.3",
     "@sentry/tracing": "^5.22.3",
     "@testing-library/jest-dom": "^4.2.4",
