@@ -24,7 +24,7 @@ class AuthOInfo:
         self.name = name
         self.email_verified = email_verified
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             'sub': self.sub,
             'email': self.email,
@@ -46,7 +46,7 @@ class User:
         self.auth_o_info = auth_o_info
         self.is_sharable = is_sharable
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             'labml_token': self.labml_token,
             'is_sharable': self.is_sharable,

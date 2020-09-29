@@ -11,7 +11,7 @@ from . import settings
 EXPIRATION_DELAY = 60 * 60 * 24 * 30
 
 
-def get_expiration():
+def get_expiration() -> float:
     return time.time() + EXPIRATION_DELAY
 
 
@@ -33,10 +33,10 @@ class Session:
         self.expiration = expiration
 
     @property
-    def is_auth(self):
+    def is_auth(self) -> bool:
         return self.labml_token is not '' and self.expiration > time.time()
 
-    def to_dict(self):
+    def to_dict(self) -> dict:
         return {
             'session_id': self.session_id,
             'expiration': self.expiration,
