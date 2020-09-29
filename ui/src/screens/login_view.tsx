@@ -6,6 +6,7 @@ import {useHistory} from "react-router-dom"
 import {SignInData} from "../models/login"
 
 import NETWORK from '../network'
+import {Alert} from "react-bootstrap";
 
 
 function LoginView() {
@@ -44,7 +45,12 @@ function LoginView() {
     )
 
     return <div>
-        <LabLoader isLoading={isLoading}/>
+        {
+            error ?
+                <Alert variant={'danger'}>{error}</Alert>
+                :
+                <LabLoader isLoading={isLoading}/>
+        }
     </div>
 }
 
