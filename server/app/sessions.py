@@ -11,7 +11,11 @@ from . import settings
 EXPIRATION_DELAY = 60 * 60 * 24 * 30
 
 
-def generate_token():
+def get_expiration():
+    return time.time() + EXPIRATION_DELAY
+
+
+def generate_token() -> str:
     return uuid4().hex
 
 
@@ -22,7 +26,7 @@ class Session:
                  labml_token: str = ''
                  ):
         if expiration is None:
-            expiration = time.time() + EXPIRATION_DELAY
+            expiration = get_expiration()
 
         self.session_id = session_id
         self.labml_token = labml_token
@@ -41,6 +45,7 @@ class Session:
 
     def update(self, data: Dict[str, any]):
         self.labml_token = data.get('labml_token', '')
+        self.expiration = get_expiration()
         save()
 
 
