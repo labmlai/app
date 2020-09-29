@@ -4,7 +4,7 @@ import {Route, Switch, Redirect} from "react-router-dom";
 import {useHistory} from "react-router-dom";
 
 import LoginView from "../screens/login_view";
-import VerifyView from "./verify_view";
+import VerifyView from "../screens/verify_view";
 import RunView from "./run_view";
 import PageNotFound from "./page_not_found_view";
 import RunsListView from "./runs_list_view";
