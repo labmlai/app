@@ -1,5 +1,5 @@
 import NETWORK from "../network";
-import {Run, RunModel, Status, StatusModel, SeriesModel} from "../models/run";
+import {Run, RunModel, SeriesModel, Status, StatusModel} from "../models/run";
 
 const TRACKING_TIMEOUT = 60 * 1000
 
@@ -118,11 +118,13 @@ class RunCache {
         if (this.tracking == null) {
             this.tracking = await this.loadTracking()
             this.lastUpdated = (new Date()).getTime()
+            this.status = new Status(await this.loadStatus())
         }
 
         if (this.status.isRunning) {
             if ((new Date()).getTime() - this.lastUpdated > TRACKING_TIMEOUT) {
                 this.tracking = await this.loadTracking()
+                this.status = new Status(await this.loadStatus())
                 this.lastUpdated = (new Date()).getTime()
             }
         }

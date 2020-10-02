@@ -159,7 +159,7 @@ export function ConfigsView(props: ConfigsProps) {
     let style = {
         width: `${props.width}px`
     }
-    return <div className={"configs block collapsed labml-card"} style={style}>
+    return <div className={"configs block collapsed"} style={style}>
         <h3>Configurations</h3>
         {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}
                                             width={props.width}/>)}

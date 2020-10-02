@@ -98,7 +98,7 @@ export function LineChart(props: SeriesProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
-    return <div className={'labml-card'}>
+    return <div>
         <svg id={'chart'}
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}>

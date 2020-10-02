@@ -54,6 +54,9 @@ body {
     margin: 20px 0;
     box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
 }
+.labml-card.labml-card-action {
+    cursor: pointer;
+}
 
 /* Fix for some bootstrap thing messing up with react-bootstrap */
 .list-group-item {

@@ -27,7 +27,7 @@ function Card(props: CardProps) {
         configsView = <ConfigsView configs={run.configs} width={props.width}/>
     }
 
-    return <div onClick={
+    return <div className={'labml-card labml-card-action'} onClick={
         () => {
             history.push(`/configs?run_uuid=${run.uuid}`);
         }
@@ -58,7 +58,9 @@ function View(props: ViewProps) {
         configsView = <ConfigsView configs={run.configs} width={actualWidth}/>
     }
 
-    return <div className={'page'} style={{width: actualWidth}}>{configsView}</div>
+    return <div className={'page'} style={{width: actualWidth}}>
+        <div className={'labml-card'}>{configsView}</div>
+    </div>
 }
 
 export default {

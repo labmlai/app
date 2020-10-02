@@ -30,7 +30,7 @@ function Card(props: CardProps) {
         chart = <LineChart key={1} series={series} width={props.width} plotIdx={plotIdx}/>
     }
 
-    return <div onClick={
+    return <div className={'labml-card labml-card-action'} onClick={
         () => {
             history.push(`/metrics?run_uuid=${props.uuid}`);
         }
@@ -49,6 +49,7 @@ function View(props: ViewProps) {
     useEffect(() => {
         async function load() {
             try {
+                console.log(await runCache.getTracking())
                 setTrack(await runCache.getTracking())
             } catch (e) {
             }
@@ -77,7 +78,9 @@ function View(props: ViewProps) {
         chart = <LineChart key={1} series={series} width={actualWidth} plotIdx={plotIdx} onSelect={toggleChart}/>
     }
 
-    return <div className={'page'} style={{width: actualWidth}}>{chart}</div>
+    return <div className={'page'} style={{width: actualWidth}}>
+        <div className={'labml-card'}>{chart}</div>
+    </div>
 }
 
 export default {
