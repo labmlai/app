@@ -6,7 +6,6 @@ import MetricsCard from "../cards/metrics/card"
 import RunHeaderCard from "../cards/run_header/card"
 import useWindowDimensions from "../utils/window_dimensions";
 import {Alert} from "react-bootstrap";
-import {Run} from "../models/run";
 
 
 interface RunProps {
@@ -14,7 +13,8 @@ interface RunProps {
 }
 
 function RunView(props: RunProps) {
-    const [error, setError] = useState(null as unknown as string)
+    const [error, setError] = useState(null as (string | null))
+    const [lastUpdated, setLastUpdated] = useState(null as (string | null))
     const {width: windowWidth} = useWindowDimensions()
 
     const params = new URLSearchParams(props.location.search)
@@ -23,18 +23,31 @@ function RunView(props: RunProps) {
 
     let errorCallback = useCallback((message: string) => {
         setError(message)
-    }, [error])
+    }, [])
+
+    let lastUpdatedCallback = useCallback((message: string) => {
+        setLastUpdated(message)
+    }, [])
 
     let errorElem = null
     if (error != null) {
-        errorElem =  <Alert variant={'danger'}>{error}</Alert>
+        errorElem = <Alert variant={'danger'}>{error}</Alert>
+    }
+
+    let lastUpdatedElem = null
+    if (lastUpdated != null) {
+        lastUpdatedElem = <div className={'last-updated'}>Last updated {lastUpdated}</div>
     }
 
     return <div className={'run page'} style={{width: actualWidth}}>
         {errorElem}
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
-        <ConfigsCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
-        <MetricsCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
+        {lastUpdatedElem}
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}
+                            errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
+        <ConfigsCard.Card uuid={runUUID} width={actualWidth}
+                          errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
+        <MetricsCard.Card uuid={runUUID} width={actualWidth}
+                          errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
         <div className={'footer-copyright text-center'}>
             <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
             <span> | </span>

@@ -10,22 +10,38 @@ import "./style.scss"
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
-    const [status, setStatus] = useState(null as unknown as Status)
+    const [status, setStatus] = useState(null as (Status | null))
     const runCache = CACHE.get(props.uuid)
     const history = useHistory();
 
     useEffect(() => {
         async function load() {
-            setStatus(await runCache.getStatus())
+            let status = await runCache.getStatus()
+            setStatus(status)
             let run = await runCache.getRun()
             document.title = `LabML: ${run.name.trim()}`
             setRun(run)
+            props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
         }
 
         load().then()
             .catch((e) => {
                 props.errorCallback(`${e}`)
             })
+    })
+
+    useEffect(() => {
+        async function loadStatus() {
+            let status = await runCache.getStatus()
+            setStatus(status)
+            if (!status.isRunning) {
+                clearInterval(interval)
+            }
+            props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
+        }
+
+        let interval = setInterval(loadStatus, 1000)
+        return () => clearInterval(interval)
     })
 
     let runView = null
@@ -35,7 +51,6 @@ function Card(props: CardProps) {
             return null
         }
         runView = <div>
-            <div className={'last-updated'}>Last updated {getTimeDiff(status.last_updated_time)}</div>
             <div className={'run-info'}>
                 <StatusView status={status.status} lastUpdatedTime={status.last_updated_time}/>
                 <h3>{run.name}</h3>

@@ -7,6 +7,7 @@ import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
 import {defaultSeriesToPlot} from "./utils";
 import {LabLoader} from "../../components/loader";
+import {getTimeDiff} from "../../components/utils";
 
 function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
     if (track != null) {
@@ -30,13 +31,22 @@ function Card(props: CardProps) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await runCache.getTracking())
+            try {
+                setTrack(await runCache.getTracking())
+                let status = await runCache.getStatus()
+                if (!status.isRunning) {
+                    clearInterval(interval)
+                }
+                props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
+            } catch (e) {
+                props.errorCallback(`${e}`)
+
+            }
         }
 
         load().then()
-            .catch((e) => {
-                props.errorCallback(`${e}`)
-            })
+        let interval = setInterval(load, 2 * 60 * 1000)
+        return () => clearInterval(interval)
     })
 
     let chart = getChart(track, null, props.width)
