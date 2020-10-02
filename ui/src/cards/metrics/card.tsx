@@ -6,29 +6,40 @@ import {useHistory} from "react-router-dom";
 import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
 import {defaultSeriesToPlot} from "./utils";
+import {LabLoader} from "../../components/loader";
+
+function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+    if (track != null) {
+        if (track.length == 0) {
+            return null
+        }
+        let series = track as SeriesModel[]
+        if (plotIdx == null) {
+            plotIdx = defaultSeriesToPlot(series)
+        }
+        return <LineChart key={1} series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+    } else {
+        return <LabLoader isLoading={true}/>
+    }
+}
 
 function Card(props: CardProps) {
-    const [track, setTrack] = useState(null as unknown as SeriesModel[])
+    const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const runCache = CACHE.get(props.uuid)
     const history = useHistory();
 
     useEffect(() => {
         async function load() {
-            try {
-                setTrack(await runCache.getTracking())
-            } catch (e) {
-            }
+            setTrack(await runCache.getTracking())
         }
 
         load().then()
+            .catch((e) => {
+                props.errorCallback(`${e}`)
+            })
     })
 
-    let chart = null
-    if (track != null && track.length > 0) {
-        let series = track as SeriesModel[]
-        let plotIdx = defaultSeriesToPlot(series)
-        chart = <LineChart key={1} series={series} width={props.width} plotIdx={plotIdx}/>
-    }
+    let chart = getChart(track, null, props.width)
 
     return <div className={'labml-card labml-card-action'} onClick={
         () => {
@@ -48,11 +59,7 @@ function View(props: ViewProps) {
 
     useEffect(() => {
         async function load() {
-            try {
-                console.log(await runCache.getTracking())
-                setTrack(await runCache.getTracking())
-            } catch (e) {
-            }
+            setTrack(await runCache.getTracking())
         }
 
         load().then()
@@ -68,15 +75,12 @@ function View(props: ViewProps) {
     }, [plotIdx])
 
 
-    let chart = null
-    if (track != null && track.length > 0) {
-        let series = track as SeriesModel[]
-        if (plotIdx == null) {
-            setPlotIdx(defaultSeriesToPlot(series))
-        }
-
-        chart = <LineChart key={1} series={series} width={actualWidth} plotIdx={plotIdx} onSelect={toggleChart}/>
+    if (track != null && track.length > 0 && plotIdx == null) {
+        setPlotIdx(defaultSeriesToPlot(track))
     }
+
+    let chart = getChart(track, plotIdx, actualWidth, toggleChart)
+
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'labml-card'}>{chart}</div>

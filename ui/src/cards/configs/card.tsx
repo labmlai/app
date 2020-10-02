@@ -5,6 +5,7 @@ import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
 import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
+import {LabLoader} from "../../components/loader";
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
@@ -13,21 +14,23 @@ function Card(props: CardProps) {
 
     useEffect(() => {
         async function load() {
-            try {
-                setRun(await runCache.getRun())
-            } catch (e) {
-            }
+            setRun(await runCache.getRun())
         }
 
         load().then()
+            .catch((e) => {
+                props.errorCallback(`${e}`)
+            })
     })
 
-    let configsView = null
+    let configsView
     if (run != null) {
         configsView = <ConfigsView configs={run.configs} width={props.width} isHyperParamOnly={true}/>
         if (run.configs.length == 0) {
             return null
         }
+    } else {
+        configsView = <LabLoader isLoading={true}/>
     }
 
     return <div>
@@ -52,10 +55,7 @@ function View(props: ViewProps) {
 
     useEffect(() => {
         async function load() {
-            try {
-                setRun(await runCache.getRun())
-            } catch (e) {
-            }
+            setRun(await runCache.getRun())
         }
 
         load().then()
@@ -64,6 +64,8 @@ function View(props: ViewProps) {
     let configsView = null
     if (run != null) {
         configsView = <ConfigsView configs={run.configs} width={actualWidth} isHyperParamOnly={false}/>
+    } else {
+        configsView = <LabLoader isLoading={true}/>
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
