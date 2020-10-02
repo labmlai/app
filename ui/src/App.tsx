@@ -1,5 +1,5 @@
 import React from 'react';
-import './App.css';
+import './App.scss';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 
 import AppContainer from './screens/app_container'

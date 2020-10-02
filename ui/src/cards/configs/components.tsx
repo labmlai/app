@@ -55,6 +55,7 @@ function OtherOptions(props: { options: any[] }) {
 interface ConfigItemProps {
     config: Config
     configs: Config[]
+    isHyperParamOnly: boolean
     width: number
 }
 
@@ -65,7 +66,6 @@ function ConfigItemView(props: ConfigItemProps) {
         configs[c.key] = c
     }
 
-    let isCollapsible = false
     let classes = ['info_list config']
 
     let computedElem = null
@@ -87,28 +87,36 @@ function ConfigItemView(props: ConfigItemProps) {
 
     if (conf.order < 0) {
         classes.push('ignored')
-        isCollapsible = true
+        if (props.isHyperParamOnly) {
+            return null
+        }
     } else {
         computedElem = <ComputedValue computed={conf.computed}/>
 
+        if (!conf.isExplicitlySpecified && !conf.isHyperparam) {
+            if (props.isHyperParamOnly) {
+                return null
+            }
+
+        }
         if (conf.isCustom) {
-            if (isParentDefault && !conf.isExplicitlySpecified && !conf.isHyperparam) {
-                classes.push('.only_option')
-                isCollapsible = true
+            if (isParentDefault) {
+                classes.push('only_option')
             } else {
-                classes.push('.custom')
+                classes.push('custom')
             }
         } else {
             optionElem = <Option value={conf.value}/>
-            if (!conf.isExplicitlySpecified && !conf.isHyperparam && (isParentDefault || conf.isOnlyOption)) {
-                classes.push('.only_option')
-                isCollapsible = true
+            if (isParentDefault || conf.isOnlyOption) {
+                classes.push('only_option')
             } else {
-                classes.push('.picked')
+                classes.push('picked')
             }
         }
 
-        otherOptionsElem = <OtherOptions options = {[...conf.otherOptions]} />
+        if (!props.isHyperParamOnly) {
+            otherOptionsElem = <OtherOptions options={[...conf.otherOptions]}/>
+        }
 
         if (conf.isHyperparam) {
             classes.push('hyperparam')
@@ -123,26 +131,24 @@ function ConfigItemView(props: ConfigItemProps) {
         return null
     }
 
-    if (isCollapsible) {
-        return null
-        // classes.push('collapsible')
-    } else {
-        classes.push('not_collapsible')
+    let key = prefix + conf.name
+    if(props.isHyperParamOnly) {
+        key = conf.key
     }
-
     return <div className={classes.join(' ')}>
-        <span className={'key'}>{prefix + conf.name}</span>
+        <span className={'key'}>{key}</span>
         <span className={'combined'}
               style={{width: `${props.width - KEY_WIDTH - 2 * PADDING}px`}}>
             {computedElem}
             {optionElem}
-            {/*{otherOptionsElem}*/}
+            {otherOptionsElem}
         </span>
     </div>
 }
 
 interface ConfigsProps {
     configs: Config[]
+    isHyperParamOnly: boolean
     width: number
 }
 
@@ -160,8 +166,8 @@ export function ConfigsView(props: ConfigsProps) {
         width: `${props.width}px`
     }
     return <div className={"configs block collapsed"} style={style}>
-        <h3>Configurations</h3>
         {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}
-                                            width={props.width}/>)}
+                                            width={props.width}
+                                            isHyperParamOnly={props.isHyperParamOnly}/>)}
     </div>
 }

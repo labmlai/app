@@ -24,14 +24,22 @@ function Card(props: CardProps) {
 
     let configsView = null
     if (run != null) {
-        configsView = <ConfigsView configs={run.configs} width={props.width}/>
+        configsView = <ConfigsView configs={run.configs} width={props.width} isHyperParamOnly={true}/>
+        if (run.configs.length == 0) {
+            return null
+        }
     }
 
-    return <div className={'labml-card labml-card-action'} onClick={
-        () => {
-            history.push(`/configs?run_uuid=${run.uuid}`);
-        }
-    }>{configsView}</div>
+    return <div>
+        <div className={'labml-card labml-card-action'} onClick={
+            () => {
+                history.push(`/configs?run_uuid=${run.uuid}`);
+            }
+        }>
+            <h3>Configurations</h3>
+            {configsView}
+        </div>
+    </div>
 }
 
 function View(props: ViewProps) {
@@ -55,10 +63,11 @@ function View(props: ViewProps) {
 
     let configsView = null
     if (run != null) {
-        configsView = <ConfigsView configs={run.configs} width={actualWidth}/>
+        configsView = <ConfigsView configs={run.configs} width={actualWidth} isHyperParamOnly={false}/>
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
+        <h3 className={'header'}>Configurations</h3>
         <div className={'labml-card'}>{configsView}</div>
     </div>
 }

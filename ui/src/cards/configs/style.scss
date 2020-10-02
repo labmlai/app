@@ -51,12 +51,6 @@ $tableValue: #4cd137;
 .configs {
   font-size: 10px;
 
-  h3 {
-    color: #7f8c8d;
-    font-size: 1rem;
-    padding: 0 10px
-  }
-
   .ignored {
     display: none;
   }
@@ -97,54 +91,55 @@ $tableValue: #4cd137;
       }
     }
   }
-}
 
-.config {
-  .combined {
-    width: 330px;
-    > span {
-      display: inline-block
+  .config {
+    .combined {
+      width: 330px;
+
+      > span {
+        display: inline-block
+      }
     }
-  }
 
-  .computed {
-    //font-weight: bold;
-    margin-right: 5px;
-    font-family: $monoFont;
-  }
-
-  .option {
-    margin-right: 5px;
-    font-family: $monoFont;
-    color: #c0392b;
-  }
-
-  .options {
-    font-family: $monoFont;
-    >span {
-      font-style: italic;
-      color: #2980b9;
+    .computed {
+      //font-weight: bold;
+      margin-right: 5px;
+      font-family: $monoFont;
     }
-  }
 
-  &.only_option {
-    > .option {
-      opacity: 0.8;
+    .option {
+      margin-right: 5px;
+      font-family: $monoFont;
+      color: #c0392b;
     }
-  }
 
-  &.specified {
-    font-weight: bold;
-  }
+    .options {
+      font-family: $monoFont;
 
-  &.hyperparam {
-    font-weight: bold;
-  }
-}
+      > span {
+        font-style: italic;
+        color: #2980b9;
+        margin-right: 5px;
+      }
+    }
 
-.collapsed {
-  .info_list.collapsible {
-    display: none;
+    &.only_option {
+      > .option {
+        opacity: 0.8;
+      }
+    }
+
+    &.specified, &.hyperparam {
+      font-weight: bold;
+
+      > span.key {
+        opacity: 1.0;
+      }
+
+      > span {
+        opacity: 1.0;
+      }
+    }
   }
 }
 
@@ -168,14 +163,12 @@ $tableValue: #4cd137;
   }
 }
 
-.collapsed {
+.configs {
   .info_list {
     &:nth-child(even) {
       background: none;
     }
-  }
 
-  .not_collapsible, {
     &:nth-child(odd) {
       background: $tableEven;
     }
