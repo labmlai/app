@@ -1,12 +1,13 @@
 import typing
 import flask
 import werkzeug.wrappers
-from flask import jsonify, request, make_response
+from flask import jsonify, request, make_response, redirect
 
 from . import statuses
 from . import users
 from . import sessions
 from . import runs
+from . import settings
 
 from .auth import login_required, is_runs_permitted
 
@@ -19,8 +20,8 @@ def get_session() -> sessions.Session:
     return sessions.get_or_create(session_id)
 
 
-def test():
-    return jsonify({'uri': True})
+def default():
+    return make_response(redirect(settings.WEB_URL))
 
 
 def sign_in():
@@ -138,7 +139,7 @@ def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
 
 
 def add_handlers(app: flask.Flask):
-    _add(app, 'GET', test, 'test')
+    _add(app, 'GET', default, '/')
 
     _add(app, 'POST', update_run, 'track')
 
