@@ -104,7 +104,18 @@ def get_runs(labml_token: str):
 
     print('runs', labml_token)
 
-    return jsonify({'runs': runs.get_runs(labml_token), 'labml_token': labml_token})
+    runs_list = sorted(runs.get_runs(labml_token), key=lambda i: i['start_time'])
+
+    return jsonify({'runs': runs_list, 'labml_token': labml_token})
+
+
+@login_required
+def get_user():
+    session = get_session()
+
+    print('user', session.labml_token)
+
+    return jsonify(users.get(session.labml_token).to_dict())
 
 
 @login_required
@@ -132,6 +143,7 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_runs, 'runs/<labml_token>')
+    _add(app, 'GET', get_user, 'user')
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_status, 'status/<run_uuid>')
