@@ -3,7 +3,7 @@ import {useAuth0} from "@auth0/auth0-react"
 import {LabLoader} from "../components/loader"
 import {useHistory} from "react-router-dom"
 
-import {SignInData} from "../models/login"
+import {UserModel} from "../models/user"
 
 import NETWORK from '../network'
 import {Alert} from "react-bootstrap";
@@ -20,12 +20,13 @@ function LoginView() {
             }
 
             if (!isLoading && isAuthenticated) {
-                let data = {} as SignInData
+                let data = {} as UserModel
 
                 data.name = user.name
                 data.email = user.email
                 data.sub = user.sub
                 data.email_verified = user.email_verified
+                data.picture = user.picture
 
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
@@ -35,7 +36,7 @@ function LoginView() {
                         if (uri) {
                             history.push(uri)
                         } else {
-                            history.push('/runs')
+                            history.push('/home')
                         }
                     }
                 })

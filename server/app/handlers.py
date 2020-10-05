@@ -26,7 +26,6 @@ def default():
 
 def sign_in():
     json = request.json
-    print(json)
 
     auth_o_info = users.AuthOInfo(**json)
     user = users.get_or_create_auth_o_user(auth_o_info)
@@ -38,7 +37,20 @@ def sign_in():
 
     response = make_response(jsonify({'is_successful': True}))
 
-    print(session_id, session.session_id)
+    if session_id != session.session_id:
+        response.set_cookie('session_id', session.session_id)
+
+    return response
+
+
+def sign_out():
+    session_id = request.cookies.get('session_id')
+    session = sessions.get_or_create(session_id)
+
+    session.update({'labml_token': ''})
+
+    response = make_response(jsonify({'is_successful': True}))
+
     if session_id != session.session_id:
         response.set_cookie('session_id', session.session_id)
 
@@ -115,8 +127,9 @@ def get_user():
     session = get_session()
 
     print('user', session.labml_token)
+    user = users.get(session.labml_token)
 
-    return jsonify(users.get(session.labml_token).to_dict())
+    return jsonify(user.to_data())
 
 
 @login_required
@@ -151,3 +164,4 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', get_tracking, 'track/<run_uuid>')
 
     _add(app, 'POST', sign_in, 'auth/sign_in')
+    _add(app, 'DELETE', sign_out, 'auth/sign_out')
