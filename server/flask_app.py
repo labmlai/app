@@ -1,7 +1,7 @@
 import warnings
 
 from time import strftime
-from flask import Flask, request
+from flask import Flask, request, make_response, redirect
 from flask_cors import CORS, cross_origin
 
 from app import handlers
@@ -45,7 +45,7 @@ handlers.add_handlers(app)
 @app.route('/', defaults={'path': '', 'handler': ''})
 @app.route('/<handler>/<path:path>')
 def rest(handler, path):
-    pass
+    return make_response(redirect(settings.WEB_URL))
 
 
 @app.before_request
