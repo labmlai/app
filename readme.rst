@@ -38,7 +38,10 @@ Example
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 		
 		
-**Try our sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
+**Try our Pytorch sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
+
+**Try our Keras sample Google Colab code** `here <https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone>`_.
+
 
 
 Citing LabML
