@@ -17,11 +17,13 @@ class AuthOInfo:
                  sub: str = '',
                  email: str = '',
                  name: str = '',
+                 picture: str = '',
                  email_verified: bool = False
                  ):
         self.sub = sub
         self.email = email
         self.name = name
+        self.picture = picture
         self.email_verified = email_verified
 
     def to_dict(self) -> dict:
@@ -29,6 +31,7 @@ class AuthOInfo:
             'sub': self.sub,
             'email': self.email,
             'name': self.name,
+            'picture': self.picture,
             'email_verified': self.email_verified
         }
 
@@ -51,6 +54,13 @@ class User:
             'labml_token': self.labml_token,
             'is_sharable': self.is_sharable,
             'auth_o_info': self.auth_o_info.to_dict(),
+        }
+
+    def to_data(self) -> dict:
+        return {
+            'labml_token': self.labml_token,
+            'is_sharable': self.is_sharable,
+            **self.auth_o_info.to_dict()
         }
 
     @classmethod

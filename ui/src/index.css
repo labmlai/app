@@ -660,14 +660,3 @@ carousel-indicators li {
     border-width: 2px !important;
     border-color: #eb6134 !important;
 }
-
-.button-theme {
-    background-color: #eb6134 !important;
-    border-color: #eb6134 !important;
-}
-
-.loader {
-    align-items: center !important;
-    justify-content: center !important;
-    display: flex !important;
-}

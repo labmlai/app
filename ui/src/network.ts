@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-import {SignInData} from "./models/login";
+import {UserModel} from "./models/user";
 
 class NETWORK {
     static axiosInstance: any = axios.create({
@@ -24,8 +24,16 @@ class NETWORK {
         return this.axiosInstance.get(`/runs/${labml_token}`, {})
     }
 
-    static async sign_in(data: SignInData): Promise<any> {
+    static async get_user(): Promise<any> {
+        return this.axiosInstance.get(`/user`, {})
+    }
+
+    static async sign_in(data: UserModel): Promise<any> {
         return this.axiosInstance.post(`/auth/sign_in`, data)
+    }
+
+    static async sign_out(): Promise<any> {
+        return this.axiosInstance.delete(`/auth/sign_out`)
     }
 }
 
