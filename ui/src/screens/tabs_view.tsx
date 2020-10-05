@@ -16,11 +16,11 @@ function TabsView() {
     return <div>
         <Tab.Container defaultActiveKey="second">
             <div className={'flex-container'}>
-                <Nav.Link eventKey="first">
-                    <FontAwesomeIcon icon={faSlidersH} className={'fa-2x text-dark'}/>
+                <Nav.Link eventKey="first" className={'tab'}>
+                    <FontAwesomeIcon icon={faSlidersH}/>
                 </Nav.Link>
-                <Nav.Link eventKey="second">
-                    <FontAwesomeIcon icon={faHome} className={'fa-2x text-dark'}/>
+                <Nav.Link eventKey="second"  className={'tab'}>
+                    <FontAwesomeIcon icon={faHome}/>
                 </Nav.Link>
             </div>
             <Tab.Content>

@@ -4,16 +4,6 @@
   height: auto;
 }
 
-body {
-  background: #ecf0f1;
-  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, sans-serif;
-}
-
-.page-wrap {
-  max-width: 75rem;
-  margin: 0 auto;
-}
-
 h5 {
   color: black;
   font-size: 1.5rem;
@@ -21,6 +11,10 @@ h5 {
   margin: 1.25rem 0;
 }
 
+h6 {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", Verdana, sans-serif;
+  color: dimgrey;
+}
 
 input {
   padding: 1rem 1rem;
