@@ -47,7 +47,7 @@ function AppContainer() {
                 <Route path="/home" component={TabsView}/>
                 <Route path="/login" component={LoginView}/>
                 <Route path="/runs" component={RunsView}/>
-                <Route path="/"><Redirect to="/runs"/></Route>
+                <Route path="/"><Redirect to="/home"/></Route>
             </Switch>
         </main>
     );

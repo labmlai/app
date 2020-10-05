@@ -36,9 +36,7 @@ function SettingsView() {
     function logOut() {
         NETWORK.sign_out().then((res) => {
             if (res.data.is_successful) {
-                logout({
-                    returnTo: window.location.origin
-                })
+                logout({returnTo: window.location.origin})
             }
         })
     }
@@ -47,7 +45,7 @@ function SettingsView() {
         {isLoading ?
             <LabLoader isLoading={isLoading}/>
             :
-            <div className={'page run'} style={{width: actualWidth}}>
+            <div className={'page'} style={{width: actualWidth}}>
                 <div className={'text-center'}>
                     <Image className={'image-style'}
                            src={user.picture ? user.picture : DEFAULT_IMAGE}
@@ -55,20 +53,12 @@ function SettingsView() {
                     <h6 className={'mt-3 text-secondary'}> Your token : {user.labml_token}</h6>
                 </div>
                 <div className={'mt-5'}>
-                    <Form.Row>
-                        <Form.Group as={Col} md="8">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" placeholder="Name" defaultValue={user.name}/>
-                        </Form.Group>
-                    </Form.Row>
-                    <Form.Row>
-                        <Form.Group as={Col} md="8">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control type="text" placeholder="Email" defaultValue={user.email}/>
-                        </Form.Group>
-                    </Form.Row>
+                    <h5>Name</h5>
+                    <input type="text" placeholder="Name" defaultValue={user.name}/>
+                    <h5>Email</h5>
+                    <input type="text" placeholder="Email" defaultValue={user.email}/>
                 </div>
-                <Button onClick={logOut}>Log out</Button>
+                <Button className={'button-theme mt-5'} onClick={logOut}>Log out</Button>
             </div>
         }
     </div>
