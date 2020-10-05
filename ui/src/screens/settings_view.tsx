@@ -45,7 +45,7 @@ function SettingsView() {
         {isLoading ?
             <LabLoader isLoading={isLoading}/>
             :
-            <div className={'page'} style={{width: actualWidth}}>
+            <div className={'page pl-2 pr-2'} style={{width: actualWidth}}>
                 <div className={'text-center'}>
                     <Image className={'image-style'}
                            src={user.picture ? user.picture : DEFAULT_IMAGE}
