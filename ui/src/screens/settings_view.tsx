@@ -45,12 +45,12 @@ function SettingsView() {
         {isLoading ?
             <LabLoader isLoading={isLoading}/>
             :
-            <div className={'page pl-2 pr-2'} style={{width: actualWidth}}>
+            <div className={'page pl-1 pr-1'} style={{width: actualWidth}}>
                 <div className={'text-center'}>
                     <Image className={'image-style'}
                            src={user.picture ? user.picture : DEFAULT_IMAGE}
                            roundedCircle/>
-                    <h6 className={'mt-3'}> Your token : {user.labml_token}</h6>
+                    <h6 className={'mt-3'}>Your token: {user.labml_token}</h6>
                 </div>
                 <div className={'mt-5'}>
                     <h5>Name</h5>
