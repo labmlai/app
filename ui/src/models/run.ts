@@ -12,7 +12,6 @@ export interface RunStatusModel {
 
 export interface StatusModel {
     run_uuid: string
-    start_time: number
     last_updated_time: number
     status: RunStatusModel
 }
@@ -21,6 +20,7 @@ export interface RunModel {
     run_uuid: string
     name: string
     comment: string
+    start_time: number
     configs: ConfigModel[]
 }
 
@@ -46,13 +46,11 @@ export class RunStatus {
 
 export class Status {
     uuid: string
-    start_time: number
     last_updated_time: number
     status: RunStatus
 
     constructor(status: StatusModel) {
         this.uuid = status.run_uuid
-        this.start_time = status.start_time
         this.last_updated_time = status.last_updated_time
         this.status = new RunStatus(status.status)
     }
@@ -71,12 +69,14 @@ export class Run {
     uuid: string
     name: string
     comment: string
+    start_time: number
     configs: Config[]
 
     constructor(run: RunModel) {
         this.uuid = run.run_uuid
         this.name = run.name
         this.comment = run.comment
+        this.start_time = run.start_time
         this.configs = []
         for (let c of run.configs) {
             this.configs.push(new Config(c))

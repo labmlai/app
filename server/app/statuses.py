@@ -8,7 +8,6 @@ from typing import Dict, Union
 from labml import monit
 
 from .enums import Enums
-
 from . import settings
 
 
@@ -33,9 +32,9 @@ class RunStatus:
 class Status:
     def __init__(self, *,
                  run_uuid: str,
-                 start_time: float = None,
                  last_updated_time: float = None,
                  status: Union[RunStatus, Dict] = None,
+                 **kwargs
                  ):
         if isinstance(status, dict):
             status = RunStatus(**status)
@@ -44,14 +43,12 @@ class Status:
             status = RunStatus(**{"status": Enums.RUN_IN_PROGRESS, "details": None, "time": last_updated_time})
 
         self.run_uuid = run_uuid
-        self.start_time = start_time
         self.last_updated_time = last_updated_time
         self.status = status
 
     def to_dict(self) -> Dict:
         return {
             'run_uuid': self.run_uuid,
-            'start_time': self.start_time,
             'last_updated_time': self.last_updated_time,
             'status': self.status.to_dict()
         }
@@ -103,7 +100,7 @@ def get_or_create(run_uuid: str) -> Status:
     path = Path(settings.DATA_PATH / 'runs' / f'{run_uuid}.status.json')
     if not path.exists():
         time_now = time.time()
-        status = Status(run_uuid=run_uuid, start_time=time_now, last_updated_time=time_now)
+        status = Status(run_uuid=run_uuid, last_updated_time=time_now)
         status.save()
 
         _STATUS[status.run_uuid] = status

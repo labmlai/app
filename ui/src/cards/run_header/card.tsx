@@ -56,7 +56,7 @@ function Card(props: CardProps) {
                 <h3>{run.name}</h3>
                 <h5>{run.comment}</h5>
                 <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.uuid}</div>
-                <div className={'start-time'}>Started {formatTime(status.start_time)}</div>
+                <div className={'start-time'}>Started {formatTime(run.start_time)}</div>
             </div>
         </div>
     } else {

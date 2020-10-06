@@ -1,5 +1,6 @@
 import json
 import math
+import time
 from glob import glob
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Union
@@ -200,6 +201,7 @@ class Run:
                  labml_token: str = '',
                  name: str = '',
                  comment: str = '',
+                 start_time: float = None,
                  configs: Dict[str, any] = None,
                  tracking: List[Dict[str, any]] = None,
                  **kwargs
@@ -213,6 +215,7 @@ class Run:
         self.configs = configs
         self.comment = comment
         self.name = name
+        self.start_time = start_time
         self.run_uuid = run_uuid
         self.labml_token = labml_token
         self.step = 0
@@ -227,6 +230,7 @@ class Run:
             'run_uuid': self.run_uuid,
             'labml_token': self.labml_token,
             'name': self.name,
+            'start_time': self.start_time,
             'comment': self.comment,
             'configs': self.configs,
         }
@@ -237,6 +241,7 @@ class Run:
             'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
+            'start_time': self.start_time,
             'configs': configs,
         }
 
@@ -320,7 +325,8 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
 
     path = Path(settings.DATA_PATH / 'runs' / f'{run_uuid}.json')
     if not path.exists():
-        run = Run(run_uuid=run_uuid, labml_token=labml_token)
+        time_now = time.time()
+        run = Run(run_uuid=run_uuid, labml_token=labml_token, start_time=time_now)
         run.save()
 
         _RUNS[run.run_uuid] = run

@@ -75,7 +75,7 @@ def save() -> None:
 
 
 _USERS: Dict[str, User] = {}
-_AUTH_O_SUBS: Dict[str, User] = {}
+_AUTH_O_EMAILS: Dict[str, User] = {}
 
 
 def _initialize() -> None:
@@ -93,8 +93,8 @@ def _initialize() -> None:
         user = User(**data)
         _USERS[user.labml_token] = user
 
-        if user.auth_o_info and user.auth_o_info.sub:
-            _AUTH_O_SUBS[user.auth_o_info.sub] = user
+        if user.auth_o_info and user.auth_o_info.email:
+            _AUTH_O_EMAILS[user.auth_o_info.email] = user
 
 
 with monit.section("Load users"):
@@ -106,12 +106,12 @@ def get(labml_token: str) -> User:
 
 
 def get_or_create_auth_o_user(auth_o_info: AuthOInfo) -> User:
-    sub = auth_o_info.sub
-    if sub and sub in _AUTH_O_SUBS:
-        return _AUTH_O_SUBS[sub]
+    email = auth_o_info.email
+    if email and email in _AUTH_O_EMAILS:
+        return _AUTH_O_EMAILS[email]
 
     user = User.from_auth_o(labml_token=generate_token(), auth_o_info=auth_o_info)
-    _AUTH_O_SUBS[sub] = user
+    _AUTH_O_EMAILS[email] = user
     _USERS[user.labml_token] = user
     save()
 
