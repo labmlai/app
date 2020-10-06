@@ -36,7 +36,7 @@ class Session:
     def is_auth(self) -> bool:
         return self.labml_token is not '' and self.expiration > time.time()
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict:
         return {
             'session_id': self.session_id,
             'expiration': self.expiration,
@@ -52,13 +52,13 @@ class Session:
 _SESSIONS: Dict[str, Session] = {}
 
 
-def save():
+def save() -> None:
     sessions = [session.to_dict() for session in _SESSIONS.values()]
     with open(str(settings.DATA_PATH / 'sessions.json'), 'w') as f:
         json.dump(sessions, f, indent=4)
 
 
-def _initialize():
+def _initialize() -> None:
     path = Path(settings.DATA_PATH / 'sessions.json')
     if not path.exists():
         return

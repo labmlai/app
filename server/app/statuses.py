@@ -22,7 +22,7 @@ class RunStatus:
         self.details = details
         self.time = time
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         return {
             'status': self.status,
             'details': self.details,
@@ -48,7 +48,7 @@ class Status:
         self.last_updated_time = last_updated_time
         self.status = status
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         return {
             'run_uuid': self.run_uuid,
             'start_time': self.start_time,
@@ -56,7 +56,7 @@ class Status:
             'status': self.status.to_dict()
         }
 
-    def update(self, data: Dict[str, any]):
+    def update(self, data: Dict[str, any]) -> None:
         self.last_updated_time = time.time()
 
         status = data.get('status', {})
@@ -67,7 +67,7 @@ class Status:
 
         self.save()
 
-    def save(self):
+    def save(self) -> None:
         data = self.to_dict()
         with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.status.json'), 'w') as f:
             json.dump(data, f, indent=4)
@@ -76,14 +76,14 @@ class Status:
 _STATUS: Dict[str, Status] = {}
 
 
-def get_status(run_uuid: str):
+def get_status(run_uuid: str) -> Union[None, Status]:
     if run_uuid in _STATUS:
         return _STATUS[run_uuid]
 
     return None
 
 
-def _initialize():
+def _initialize() -> None:
     runs_path = Path(settings.DATA_PATH / 'runs')
     if not runs_path.exists():
         runs_path.mkdir(parents=True)
@@ -96,7 +96,7 @@ def _initialize():
                 _STATUS[status.run_uuid] = status
 
 
-def get_or_create(run_uuid: str):
+def get_or_create(run_uuid: str) -> Status:
     if run_uuid in _STATUS:
         return _STATUS[run_uuid]
 

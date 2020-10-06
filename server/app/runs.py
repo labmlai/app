@@ -2,7 +2,7 @@ import json
 import math
 from glob import glob
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Union
 
 import numpy as np
 from labml import monit
@@ -219,10 +219,10 @@ class Run:
         self.errors = []
 
     @property
-    def url(self):
+    def url(self) -> str:
         return f'{settings.WEB_URL}/run?run_uuid={self.run_uuid}'
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
         return {
             'run_uuid': self.run_uuid,
             'labml_token': self.labml_token,
@@ -231,7 +231,7 @@ class Run:
             'configs': self.configs,
         }
 
-    def get_data(self):
+    def get_data(self) -> Dict:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         return {
             'run_uuid': self.run_uuid,
@@ -240,7 +240,7 @@ class Run:
             'configs': configs,
         }
 
-    def get_tracking(self):
+    def get_tracking(self) -> List:
         res = []
 
         for k, s in self.tracking.items():
@@ -255,7 +255,7 @@ class Run:
 
         return res
 
-    def update(self, data: Dict[str, any]):
+    def update(self, data: Dict[str, any]) -> None:
         if not self.name:
             self.name = data.get('name', '')
         if not self.comment:
@@ -265,31 +265,31 @@ class Run:
 
         self.save()
 
-    def track(self, data: Dict[str, SeriesModel]):
+    def track(self, data: Dict[str, SeriesModel]) -> None:
         for ind, series in data.items():
             self._update_series(ind, series)
             self.step = max(self.step, series['step'][-1])
 
         self.save_tracking()
 
-    def _update_series(self, ind: str, series: SeriesModel):
+    def _update_series(self, ind: str, series: SeriesModel) -> None:
         if ind not in self.tracking:
             self.tracking[ind] = Series()
 
         self.tracking[ind].update(series['step'], series['value'])
 
-    def save(self):
+    def save(self) -> None:
         data = self.to_dict()
         with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.json'), 'w') as f:
             json.dump(data, f, indent=4)
 
-    def save_tracking(self):
+    def save_tracking(self) -> None:
         data = {k: s.to_dict() for k, s in self.tracking.items()}
         data['step'] = self.step
         with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'w') as f:
             json.dump(data, f, indent=4)
 
-    def load_tracking(self):
+    def load_tracking(self) -> None:
         try:
             with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'r') as f:
                 data = json.load(f)
@@ -307,14 +307,14 @@ class Run:
 _RUNS: Dict[str, Run] = {}
 
 
-def get_run(run_uuid: str):
+def get_run(run_uuid: str) -> Union[None, Run]:
     if run_uuid in _RUNS:
         return _RUNS[run_uuid]
 
     return None
 
 
-def get_or_create(run_uuid: str, labml_token: str = ''):
+def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
     if run_uuid in _RUNS:
         return _RUNS[run_uuid]
 
@@ -336,7 +336,7 @@ def get_or_create(run_uuid: str, labml_token: str = ''):
     return run
 
 
-def get_runs(labml_token: str):
+def get_runs(labml_token: str) -> List:
     res = []
     for run_uuid, run in _RUNS.items():
         if run.labml_token == labml_token:
@@ -347,7 +347,7 @@ def get_runs(labml_token: str):
     return res
 
 
-def _initialize():
+def _initialize() -> None:
     runs_path = Path(settings.DATA_PATH / 'runs')
     if not runs_path.exists():
         runs_path.mkdir(parents=True)

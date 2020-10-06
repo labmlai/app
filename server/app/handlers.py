@@ -1,6 +1,8 @@
 import typing
 import flask
 import werkzeug.wrappers
+
+from typing import Any
 from flask import jsonify, request, make_response, redirect
 
 from . import statuses
@@ -20,11 +22,11 @@ def get_session() -> sessions.Session:
     return sessions.get_or_create(session_id)
 
 
-def default():
+def default() -> Any:
     return make_response(redirect(settings.WEB_URL))
 
 
-def sign_in():
+def sign_in() -> Any:
     json = request.json
 
     auth_o_info = users.AuthOInfo(**json)
@@ -43,7 +45,7 @@ def sign_in():
     return response
 
 
-def sign_out():
+def sign_out() -> Any:
     session_id = request.cookies.get('session_id')
     session = sessions.get_or_create(session_id)
 
@@ -57,7 +59,7 @@ def sign_out():
     return response
 
 
-def update_run():
+def update_run() -> Any:
     labml_token = request.args.get('labml_token')
 
     user = users.get(labml_token=labml_token)
@@ -82,7 +84,7 @@ def update_run():
 
 
 @login_required
-def get_run(run_uuid: str):
+def get_run(run_uuid: str) -> Any:
     run_data = {}
     run = runs.get_run(run_uuid)
     if run:
@@ -94,7 +96,7 @@ def get_run(run_uuid: str):
 
 
 @login_required
-def get_status(run_uuid: str):
+def get_status(run_uuid: str) -> Any:
     status_data = {}
     status = statuses.get_status(run_uuid)
     if status:
@@ -107,7 +109,7 @@ def get_status(run_uuid: str):
 
 @login_required
 @is_runs_permitted
-def get_runs(labml_token: str):
+def get_runs(labml_token: str) -> Any:
     session = get_session()
 
     if labml_token:
@@ -123,7 +125,7 @@ def get_runs(labml_token: str):
 
 
 @login_required
-def get_user():
+def get_user() -> Any:
     session = get_session()
 
     print('user', session.labml_token)
@@ -133,7 +135,7 @@ def get_user():
 
 
 @login_required
-def get_tracking(run_uuid: str):
+def get_tracking(run_uuid: str) -> Any:
     track_data = []
     run = runs.get_run(run_uuid)
     if run:

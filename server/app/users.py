@@ -26,7 +26,7 @@ class AuthOInfo:
         self.picture = picture
         self.email_verified = email_verified
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict:
         return {
             'sub': self.sub,
             'email': self.email,
@@ -49,14 +49,14 @@ class User:
         self.auth_o_info = auth_o_info
         self.is_sharable = is_sharable
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict:
         return {
             'labml_token': self.labml_token,
             'is_sharable': self.is_sharable,
             'auth_o_info': self.auth_o_info.to_dict(),
         }
 
-    def to_data(self) -> dict:
+    def to_data(self) -> Dict:
         return {
             'labml_token': self.labml_token,
             'is_sharable': self.is_sharable,
@@ -68,7 +68,7 @@ class User:
         return cls(labml_token=labml_token, auth_o_info=auth_o_info)
 
 
-def save():
+def save() -> None:
     users = [user.to_dict() for user in _USERS.values()]
     with open(str(settings.DATA_PATH / 'users.json'), 'w') as f:
         json.dump(users, f, indent=4)
@@ -78,7 +78,7 @@ _USERS: Dict[str, User] = {}
 _AUTH_O_SUBS: Dict[str, User] = {}
 
 
-def _initialize():
+def _initialize() -> None:
     path = Path(settings.DATA_PATH / 'users.json')
     if not path.exists():
         return
