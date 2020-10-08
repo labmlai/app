@@ -10,7 +10,6 @@ interface RunsListProps {
     location: any
 }
 
-
 function RunsListView(props: RunsListProps) {
     const [isLoading, setIsLoading] = useState(true)
     const [runs, setRuns] = useState<RunListModel[]>([])
@@ -26,9 +25,6 @@ function RunsListView(props: RunsListProps) {
                     setLabMlToken(res.data.labml_token)
                     setIsLoading(false)
                 }
-            })
-            .catch((err) => {
-                console.log(err)
             })
     }, [])
 

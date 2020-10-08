@@ -6,12 +6,14 @@ import {useHistory, useLocation} from "react-router-dom"
 import {UserModel} from "../models/user"
 
 import NETWORK from '../network'
-import {Alert} from "react-bootstrap";
+import {useErrorHandler} from "react-error-boundary";
 
 
 function LoginView() {
     const history = useHistory()
     const location = useLocation()
+    const handleError = useErrorHandler()
+
     const {from}: any = location.state || {from: {pathname: "/login"}}
 
     const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
@@ -43,20 +45,21 @@ function LoginView() {
                         } else {
                             history.push('/home')
                         }
+                    } else {
+                        handleError(Error('unsuccessful login attempt'))
                     }
                 })
+            }
+
+            if (!isLoading && error) {
+                handleError(error)
             }
         },
         [isLoading]
     )
 
     return <div>
-        {
-            error ?
-                <Alert variant={'danger'}>{error}</Alert>
-                :
-                <LabLoader isLoading={isLoading}/>
-        }
+        <LabLoader isLoading={isLoading}/>
     </div>
 }
 

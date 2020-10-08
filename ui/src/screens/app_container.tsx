@@ -12,8 +12,8 @@ import ReactGA from 'react-ga'
 import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/metrics/card"
 
-
 import NETWORK from '../network'
+import {useErrorHandler} from "react-error-boundary";
 
 /* TODO: Get this from configs */
 ReactGA.initialize('UA-164228270-01');
@@ -21,9 +21,10 @@ ReactGA.initialize('UA-164228270-01');
 function AppContainer() {
     const uri = window.location.pathname + window.location.search
 
-    ReactGA.pageview(uri)
-
     const history = useHistory()
+    const handleError = useErrorHandler()
+
+    ReactGA.pageview(uri)
 
     NETWORK.axiosInstance.interceptors.response.use(function (response: any) {
         return response
@@ -31,8 +32,9 @@ function AppContainer() {
         if (error.response.status === 403) {
             localStorage.setItem('uri', uri)
             history.push(`/login`)
+        } else {
+            handleError(error)
         }
-        /* TODO: Handle different types of errors here*/
 
         return Promise.reject(error)
     })

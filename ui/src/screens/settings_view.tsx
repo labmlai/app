@@ -1,12 +1,15 @@
 import React, {useEffect, useState} from "react"
-import {Image, Form, Col, Button} from "react-bootstrap"
 
-import './settings_view.scss'
+import {Image, Button} from "react-bootstrap"
+import {useAuth0} from "@auth0/auth0-react";
+import {useErrorHandler} from "react-error-boundary";
+
 import NETWORK from "../network";
 import {LabLoader} from "../components/loader"
 import useWindowDimensions from "../utils/window_dimensions";
 import {User} from "../models/user";
-import {useAuth0} from "@auth0/auth0-react";
+
+import './settings_view.scss'
 
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
@@ -16,6 +19,7 @@ function SettingsView() {
     const [isLoading, setIsLoading] = useState(true)
 
     const {logout} = useAuth0();
+    const handleError = useErrorHandler()
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -28,15 +32,14 @@ function SettingsView() {
                     setIsLoading(false)
                 }
             })
-            .catch((err) => {
-                console.log(err)
-            })
     }, [])
 
     function logOut() {
         NETWORK.sign_out().then((res) => {
             if (res.data.is_successful) {
                 logout({returnTo: window.location.origin})
+            } else {
+                handleError(Error('unsuccessful logout attempt'))
             }
         })
     }
