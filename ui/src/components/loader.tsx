@@ -11,8 +11,8 @@ export function LabLoader(props: LabLoaderProps) {
         <Loader
             type="Bars"
             color="#eb6134"
-            height={100}
-            width={100}
+            height={75}
+            width={75}
             visible={props.isLoading}
         />
     </div>

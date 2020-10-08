@@ -1,7 +1,7 @@
 import React, {useEffect} from "react"
 import {useAuth0} from "@auth0/auth0-react"
 import {LabLoader} from "../components/loader"
-import {useHistory} from "react-router-dom"
+import {useHistory, useLocation} from "react-router-dom"
 
 import {UserModel} from "../models/user"
 
@@ -11,7 +11,10 @@ import {Alert} from "react-bootstrap";
 
 function LoginView() {
     const history = useHistory()
-    const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0();
+    const location = useLocation()
+    const {from}: any = location.state || {from: {pathname: "/login"}}
+
+    const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
 
     useEffect(() => {
             if (!isLoading && !isAuthenticated) {
@@ -32,6 +35,8 @@ function LoginView() {
                     if (res.data.is_successful) {
                         const uri: string = localStorage.getItem('uri')!
                         localStorage.removeItem('uri')
+
+                        history.replace(from)
 
                         if (uri) {
                             history.push(uri)
