@@ -46,7 +46,7 @@ function LoginView() {
                             history.push('/home')
                         }
                     } else {
-                        handleError(Error('unsuccessful login attempt'))
+                        handleError(Error('error in login'))
                     }
                 })
             }

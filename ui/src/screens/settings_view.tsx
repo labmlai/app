@@ -39,7 +39,7 @@ function SettingsView() {
             if (res.data.is_successful) {
                 logout({returnTo: window.location.origin})
             } else {
-                handleError(Error('unsuccessful logout attempt'))
+                handleError(Error('error in logout'))
             }
         })
     }
