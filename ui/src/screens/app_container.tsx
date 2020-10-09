@@ -32,6 +32,8 @@ function AppContainer() {
         if (error.response.status === 403) {
             localStorage.setItem('uri', uri)
             history.push(`/login`)
+        } else if (error.response.status === 400) {
+            history.push(`/404`)
         } else {
             handleError(error)
         }

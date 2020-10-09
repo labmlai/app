@@ -86,25 +86,37 @@ def update_run() -> Any:
 @login_required
 def get_run(run_uuid: str) -> Any:
     run_data = {}
+    status_code = 400
+
     run = runs.get_run(run_uuid)
     if run:
         run_data = run.get_data()
+        status_code = 200
+
+    response = make_response(jsonify(run_data))
+    response.status_code = status_code
 
     print('run', run_uuid)
 
-    return jsonify(run_data)
+    return response
 
 
 @login_required
 def get_status(run_uuid: str) -> Any:
     status_data = {}
+    status_code = 400
+
     status = statuses.get_status(run_uuid)
     if status:
         status_data = status.to_dict()
+        status_code = 200
+
+    response = make_response(jsonify(status_data))
+    response.status_code = status_code
 
     print('status', run_uuid)
 
-    return jsonify(status_data)
+    return response
 
 
 @login_required
@@ -137,13 +149,19 @@ def get_user() -> Any:
 @login_required
 def get_tracking(run_uuid: str) -> Any:
     track_data = []
+    status_code = 400
+
     run = runs.get_run(run_uuid)
     if run:
         track_data = run.get_tracking()
+        status_code = 200
 
     print('tracking', run_uuid)
 
-    return jsonify(track_data)
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
 
 
 def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
