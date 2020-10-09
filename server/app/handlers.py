@@ -131,7 +131,7 @@ def get_runs(labml_token: str) -> Any:
 
     print('runs', labml_token)
 
-    runs_list = sorted(runs.get_runs(labml_token), key=lambda i: i['start_time'])
+    runs_list = sorted(runs.get_runs(labml_token), key=lambda i: i['start_time'], reverse=True)
 
     return jsonify({'runs': runs_list, 'labml_token': labml_token})
 
