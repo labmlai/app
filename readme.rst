@@ -25,8 +25,10 @@ How to use it?
 3. Start pushing updates to the app  `with two lines of code <http://lab-ml.com/guide/tracker.html>`_.
 
 
-Example
-~~~~~~~
+Examples
+~~~~~~~~
+
+1. Pytorch
 
 .. code-block:: python
 
@@ -37,6 +39,17 @@ Example
 		loss, accuracy = train()
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 		
+2. Keras
+
+.. code-block:: python
+
+	from labml import experiment
+        from labml.utils.keras import LabMLKerasCallback
+
+	with experiment.record(name='MNIST Keras', token: 'TOKEN from web.lab-ml.com'):
+            model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test),callbacks=[LabMLKerasCallback()], verbose=None)
+                  
+	
 		
 **Try our Pytorch sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
 
