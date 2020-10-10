@@ -28,7 +28,7 @@ How to use it?
 Examples
 ~~~~~~~~
 
-1. Pytorch
+**1. Pytorch**
 
 .. code-block:: python
 
@@ -39,7 +39,10 @@ Examples
 		loss, accuracy = train()
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 		
-2. Keras
+**Try our Pytorch sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
+
+		
+**2. Keras**
 
 .. code-block:: python
 
@@ -49,9 +52,6 @@ Examples
 	with experiment.record(name='MNIST Keras', token: 'TOKEN from web.lab-ml.com'):
             model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test),callbacks=[LabMLKerasCallback()], verbose=None)
                   
-	
-		
-**Try our Pytorch sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
 
 **Try our Keras sample Google Colab code** `here <https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone>`_.
 
