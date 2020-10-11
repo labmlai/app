@@ -1,5 +1,5 @@
-Setup instructions
-~~~~~~~~~~~~~~~~~~
+Running Your Own Server Instructions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Requirements: Python 3.7 and npm installed in your machine.
 
