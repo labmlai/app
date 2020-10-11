@@ -1,7 +1,7 @@
-						LabML App
-						=========
-						Monitor ML/DL model training on mobile phones
-						---------------------------------------------
+LabML App
+=========
+Monitor ML/DL model training on mobile phones
+---------------------------------------------
 
 
 .. image:: https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png
