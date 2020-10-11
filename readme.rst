@@ -2,6 +2,8 @@
     :target: https://badge.fury.io/py/labml
 .. image:: https://pepy.tech/badge/labml
     :target: https://pepy.tech/project/labml
+.. image:: https://img.shields.io/badge/slack-chat-green.svg?logo=slack
+    :target: https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/
 
 
 LabML App - Monitor ML model training on mobile phones
