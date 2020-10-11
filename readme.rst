@@ -1,3 +1,9 @@
+.. image:: https://badge.fury.io/py/labml.svg
+    :target: https://badge.fury.io/py/labml
+.. image:: https://pepy.tech/badge/labml
+    :target: https://pepy.tech/project/labml
+
+
 LabML App - Monitor ML model training on mobile phones
 ======================================================
 
