@@ -1,7 +1,7 @@
-LabML App
-=========
-Monitor ML/DL model training on mobile phones
----------------------------------------------
+						LabML App
+						=========
+						Monitor ML/DL model training on mobile phones
+						---------------------------------------------
 
 
 .. image:: https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png
@@ -65,7 +65,7 @@ Examples
 
 .. code-block:: python
 
-	from labml import experiment
+    from labml import experiment
     from labml.utils.keras import LabMLKerasCallback
 
     with experiment.record(name='sample', exp_conf=conf, token: 'TOKEN from web.lab-ml.com'):
