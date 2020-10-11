@@ -1,4 +1,3 @@
-.. class:: center
 .. image:: https://badge.fury.io/py/labml.svg
 	   :target: https://badge.fury.io/py/labml
 .. image:: https://pepy.tech/badge/labml
@@ -51,7 +50,7 @@ Examples
 		loss, accuracy = train()
 		tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 		
-**Try our Pytorch sample Google Colab code** `here <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ **and Kaggle Notebook** `here <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
+`Google Colab <https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing>`_ and  `Kaggle Notebook <https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone>`_.
 
 		
 **2. Keras**
