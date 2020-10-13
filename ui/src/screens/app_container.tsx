@@ -29,7 +29,9 @@ function AppContainer() {
     NETWORK.axiosInstance.interceptors.response.use(function (response: any) {
         return response
     }, function (error: any) {
-        if (error.response.status === 403) {
+        if (error == undefined || error.response == undefined) {
+            console.log('undefined error or response')
+        } else if (error.response.status === 403) {
             localStorage.setItem('uri', uri)
             history.push(`/login`)
         } else if (error.response.status === 400) {
