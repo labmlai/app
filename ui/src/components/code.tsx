@@ -17,8 +17,12 @@ export function Code(props: CodeProps) {
     return <div>
         <LabLoader isLoading={true}/>
         <div className={'text-center'}>
-            <h5 className={'text-dark mt-5'}>You don't have any experiments</h5>
-            <p className={'text-secondary'}>Start monitoring your models by adding just two lines of code, here is an example</p>
+            <h3 className={'text-dark mt-5'}>You don't have any experiments</h3>
+            <h5 className={'text-dark mt-3'}><a href={'https://web.lab-ml.com/runs?labml_token=samples'}
+                                                target="_blank"> Check our sample experiments list</a></h5>
+            <h6>or</h6>
+            <h6 className={'text-secondary'}>Start monitoring your models by adding just two lines of code, here is an
+                example</h6>
         </div>
         <div className={'mt-3 bg-light container-sm mb-3'}>
             <code className={"text-secondary"}>
