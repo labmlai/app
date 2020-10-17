@@ -1,7 +1,7 @@
 import time
 from uuid import uuid4
 
-from labml_db import Model, Key
+from labml_db import Model, Key, Index
 
 from .user import User
 
@@ -19,7 +19,10 @@ class Session(Model['Session']):
 
     @classmethod
     def defaults(cls):
-        return dict(session_id=generate_session_id(), expiration=Session.get_expiration(), run_status=None)
+        return dict(session_id=generate_session_id(),
+                    expiration=Session.get_expiration(),
+                    user=None
+                    )
 
     @staticmethod
     def get_expiration() -> float:
@@ -27,4 +30,21 @@ class Session(Model['Session']):
 
     @property
     def is_auth(self) -> bool:
-        return self.user.load().email is not '' and self.expiration > time.time()
+        return self.user is not None and self.expiration > time.time()
+
+
+class SessionIndex(Index['Session']):
+    pass
+
+
+def get_or_create(session_id: str) -> Session:
+    session_key = SessionIndex.get(session_id)
+
+    if not session_key:
+        session = Session()
+        session.save()
+        SessionIndex.set(session.session_id, session.key)
+
+        return session
+
+    return session_key.load()
