@@ -41,11 +41,13 @@ def get_or_create(run_uuid: str) -> Status:
         time_now = time.time()
 
         run_status = RunStatus(time=time_now)
-        status = Status(run_uuid=run_uuid, last_updated_time=time_now, run_status=run_status)
+        status = Status(run_uuid=run_uuid,
+                        last_updated_time=time_now,
+                        run_status=run_status)
         status.save()
         run_status.save()
 
-        StatusIndex.set(run_uuid, status.key)
+        StatusIndex.set(status.run_uuid, status.key)
 
         return status
 
