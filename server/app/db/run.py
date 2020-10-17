@@ -1,12 +1,13 @@
 import math
+import time
 import numpy as np
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union
 from uuid import uuid4
 
-from labml_db import Model, Key
+from labml_db import Model, Key, Index
 
-from .user import Project
+from . import user
 from .. import settings
 
 
@@ -28,7 +29,11 @@ class Series(Model['Series']):
 
     @classmethod
     def defaults(cls):
-        return dict(step=[], last_step=[], value=[], step_gap=0)
+        return dict(step=[],
+                    last_step=[],
+                    value=[],
+                    step_gap=0
+                    )
 
     @property
     def last_value(self):
@@ -184,7 +189,6 @@ class Run(Model['Run']):
     comment: str
     start_time: float
     run_uuid: str
-    project: Key[Project]
     tracking: Dict[str, Key[Series]]
     configs: Dict[str, any]
     step: int
@@ -192,8 +196,15 @@ class Run(Model['Run']):
 
     @classmethod
     def defaults(cls):
-        return dict(name='', comment='', start_time=None, run_uuid=generate_run_uuid(), project=None, tracking={},
-                    configs={}, step=0, errors=[])
+        return dict(name='',
+                    comment='',
+                    start_time=None,
+                    run_uuid='',
+                    tracking={},
+                    configs={},
+                    step=0,
+                    errors=[]
+                    )
 
     @property
     def url(self) -> str:
@@ -236,3 +247,45 @@ class Run(Model['Run']):
         s = self.tracking[ind].load()
         s.update_series(series['step'], series['value'])
         s.save()
+
+
+class RunIndex(Index['RUn']):
+    pass
+
+
+def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
+    project = user.get_project(labml_token)
+
+    if run_uuid in project.runs:
+        return project.runs[run_uuid].load()
+
+    time_now = time.time()
+    run = Run(run_uuid=run_uuid,
+              start_time=time_now
+              )
+    project.runs[run.run_uuid] = run.key
+
+    run.save()
+    project.save()
+
+    RunIndex.set(run.run_uuid, run.key)
+
+    return run
+
+
+def get_runs(labml_token: str) -> List:
+    res = []
+    project = user.get_project(labml_token)
+    for run_uuid, run_key in project.runs.items():
+        res.append(run_key.load())
+
+    return res
+
+
+def get_run(run_uuid: str) -> Union[None, Run]:
+    run_key = RunIndex.get(run_uuid)
+
+    if run_key:
+        return run_key.load()
+
+    return None

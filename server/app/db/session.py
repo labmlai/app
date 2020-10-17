@@ -42,7 +42,9 @@ def get_or_create(session_id: str) -> Session:
 
     if not session_key:
         session = Session()
+
         session.save()
+
         SessionIndex.set(session.session_id, session.key)
 
         return session

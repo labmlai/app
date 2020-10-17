@@ -14,7 +14,8 @@ class RunStatus(Model['RunStatusModel']):
     def defaults(cls):
         return dict(status=Enums.RUN_IN_PROGRESS,
                     details=None,
-                    time=None)
+                    time=None
+                    )
 
 
 class Status(Model['Status']):
@@ -43,7 +44,8 @@ def get_or_create(run_uuid: str) -> Status:
         run_status = RunStatus(time=time_now)
         status = Status(run_uuid=run_uuid,
                         last_updated_time=time_now,
-                        run_status=run_status)
+                        run_status=run_status
+                        )
         status.save()
         run_status.save()
 

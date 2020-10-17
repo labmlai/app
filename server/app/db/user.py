@@ -1,5 +1,5 @@
 from uuid import uuid4
-from typing import List, NamedTuple
+from typing import List, NamedTuple, Dict
 
 from labml_db import Model, Key, Index
 
@@ -14,11 +14,15 @@ class Project(Model['Project']):
     labml_token: str
     is_sharable: str
     name: str
-    runs: List[Key[Run]]
+    runs: Dict[str, Key[Run]]
 
     @classmethod
     def defaults(cls):
-        return dict(name='', is_sharable=False, labml_token=generate_token(), runs=[])
+        return dict(name='',
+                    is_sharable=False,
+                    labml_token=generate_token(),
+                    runs=[]
+                    )
 
 
 class ProjectIndex(Index['Project']):
@@ -35,7 +39,13 @@ class User(Model['User']):
 
     @classmethod
     def defaults(cls):
-        return dict(name='', sub='', email='', picture='', email_verified=False, projects=[])
+        return dict(name='',
+                    sub='',
+                    email='',
+                    picture='',
+                    email_verified=False,
+                    projects=[]
+                    )
 
 
 class UserIndex(Index['User']):
@@ -64,6 +74,8 @@ def get_or_create_user(info: AuthOInfo) -> User:
                     )
 
         user.save()
+        project.save()
+
         UserIndex.set(user.email, user.key)
         ProjectIndex.set(project.labml_token, project.key)
 
