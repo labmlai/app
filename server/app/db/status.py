@@ -13,7 +13,7 @@ class RunStatus(Model['RunStatusModel']):
 
     @classmethod
     def defaults(cls):
-        return dict(status=Enums.RUN_IN_PROGRESS,
+        return dict(status='',
                     details=None,
                     time=None
                     )
@@ -73,7 +73,7 @@ def get_or_create(run_uuid: str) -> Status:
     if not status_key:
         time_now = time.time()
 
-        run_status = RunStatus(time=time_now)
+        run_status = RunStatus(status=Enums.RUN_IN_PROGRESS, time=time_now)
         status = Status(run_uuid=run_uuid,
                         last_updated_time=time_now,
                         run_status=run_status.key

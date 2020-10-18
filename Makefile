@@ -3,6 +3,8 @@
 
 setup: ## install server and ui dependencies
 	pip install pipenv
+	sudo apt-get update
+	sudo apt-get install npm
 	npm install --prefix ./ui
 	cd server && pipenv install --ignore-pipfile
 
