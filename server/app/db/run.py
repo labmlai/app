@@ -192,7 +192,7 @@ class Run(Model['Run']):
     tracking: Dict[str, Key[Series]]
     configs: Dict[str, any]
     step: int
-    errors = List[str]
+    errors: List[str]
 
     @classmethod
     def defaults(cls):

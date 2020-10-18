@@ -12,6 +12,10 @@ def generate_session_id() -> str:
     return uuid4().hex
 
 
+def get_expiration() -> float:
+    return time.time() + EXPIRATION_DELAY
+
+
 class Session(Model['Session']):
     session_id: str
     expiration: float
@@ -20,13 +24,9 @@ class Session(Model['Session']):
     @classmethod
     def defaults(cls):
         return dict(session_id=generate_session_id(),
-                    expiration=Session.get_expiration(),
+                    expiration=get_expiration(),
                     user=None
                     )
-
-    @staticmethod
-    def get_expiration() -> float:
-        return time.time() + EXPIRATION_DELAY
 
     @property
     def is_auth(self) -> bool:
