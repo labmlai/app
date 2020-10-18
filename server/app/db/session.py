@@ -8,11 +8,11 @@ from .user import User
 EXPIRATION_DELAY = 60 * 60 * 24 * 30
 
 
-def generate_session_id() -> str:
+def gen_session_id() -> str:
     return uuid4().hex
 
 
-def get_expiration() -> float:
+def gen_expiration() -> float:
     return time.time() + EXPIRATION_DELAY
 
 
@@ -23,8 +23,8 @@ class Session(Model['Session']):
 
     @classmethod
     def defaults(cls):
-        return dict(session_id=generate_session_id(),
-                    expiration=get_expiration(),
+        return dict(session_id='',
+                    expiration='',
                     user=None
                     )
 
@@ -41,7 +41,9 @@ def get_or_create(session_id: str) -> Session:
     session_key = SessionIndex.get(session_id)
 
     if not session_key:
-        session = Session()
+        session = Session(session_id=gen_session_id(),
+                          expiration=gen_expiration()
+                          )
 
         session.save()
 

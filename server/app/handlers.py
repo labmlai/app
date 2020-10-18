@@ -44,6 +44,8 @@ def sign_in() -> Any:
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
 
+    print('sign_in', u.key)
+
     return response
 
 
@@ -146,7 +148,7 @@ def get_user() -> Any:
     print('user', s.key)
     u = s.user.load()
 
-    return jsonify(u.to_dict())
+    return jsonify(u.get_data())
 
 
 @login_required

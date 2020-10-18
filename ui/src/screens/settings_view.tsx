@@ -53,7 +53,7 @@ function SettingsView() {
                     <Image className={'image-style'}
                            src={user.picture ? user.picture : DEFAULT_IMAGE}
                            roundedCircle/>
-                    <h6 className={'mt-3'}>Your token: {user.labml_token}</h6>
+                    <h6 className={'mt-3'}>Your token: {user.default_project}</h6>
                 </div>
                 <div className={'mt-5'}>
                     <h5>Name</h5>

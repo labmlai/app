@@ -2,29 +2,29 @@ export interface UserModel {
     sub: string
     email: string
     name: string
-    email_verified: boolean
     picture: string
-    labml_token: string
-    is_sharable: boolean
+    email_verified: boolean
+    projects: object
+    default_project: object
 }
 
 export class User {
     sub: string
     email: string
     name: string
-    email_verified: boolean
     picture: string
-    labml_token: string
-    is_sharable: boolean
+    email_verified: boolean
+    projects: object
+    default_project: object
 
 
     constructor(user: UserModel) {
         this.sub = user.sub
         this.email = user.email
         this.name = user.name
-        this.email_verified = user.email_verified
         this.picture = user.picture
-        this.labml_token = user.labml_token
-        this.is_sharable = user.is_sharable
+        this.email_verified = user.email_verified
+        this.projects = user.projects
+        this.default_project = user.default_project
     }
 }

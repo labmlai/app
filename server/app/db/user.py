@@ -20,8 +20,8 @@ class Project(Model['Project']):
     def defaults(cls):
         return dict(name='',
                     is_sharable=False,
-                    labml_token=generate_token(),
-                    runs=[]
+                    labml_token='',
+                    runs={}
                     )
 
     def get_runs(self) -> List:
@@ -58,6 +58,15 @@ class User(Model['User']):
     def default_project(self):
         return self.projects[0].load()
 
+    def get_data(self):
+        return {
+            'name': self.name,
+            'email': self.email,
+            'picture': self.picture,
+            'projects': [p.load().labml_token for p in self.projects],
+            'default_project': self.default_project.labml_token
+        }
+
 
 class UserIndex(Index['User']):
     pass
@@ -75,7 +84,7 @@ def get_or_create_user(info: AuthOInfo) -> User:
     user_key = UserIndex.get(info.email)
 
     if not user_key:
-        project = Project()
+        project = Project(labml_token=generate_token())
         user = User(name=info.name,
                     sub=info.sub,
                     email=info.email,
