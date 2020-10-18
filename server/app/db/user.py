@@ -1,5 +1,5 @@
 from uuid import uuid4
-from typing import List, NamedTuple, Dict
+from typing import List, NamedTuple, Dict, Union
 
 from labml_db import Model, Key, Index
 
@@ -24,6 +24,13 @@ class Project(Model['Project']):
                     runs=[]
                     )
 
+    def get_runs(self) -> List:
+        res = []
+        for run_uuid, run_key in self.runs.items():
+            res.append(run_key.load())
+
+        return res
+
 
 class ProjectIndex(Index['Project']):
     pass
@@ -46,6 +53,10 @@ class User(Model['User']):
                     email_verified=False,
                     projects=[]
                     )
+
+    @property
+    def default_project(self):
+        return self.projects[0].load()
 
 
 class UserIndex(Index['User']):
@@ -84,7 +95,10 @@ def get_or_create_user(info: AuthOInfo) -> User:
     return user_key.load()
 
 
-def get_project(labml_token: str) -> Project:
+def get_project(labml_token: str) -> Union[None, Project]:
     project_key = ProjectIndex.get(labml_token)
 
-    return project_key.load()
+    if project_key:
+        return project_key.load()
+
+    return None
