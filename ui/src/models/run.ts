@@ -13,7 +13,7 @@ export interface RunStatusModel {
 export interface StatusModel {
     run_uuid: string
     last_updated_time: number
-    status: RunStatusModel
+    run_status: RunStatusModel
 }
 
 export interface RunModel {
@@ -47,16 +47,16 @@ export class RunStatus {
 export class Status {
     uuid: string
     last_updated_time: number
-    status: RunStatus
+    run_status: RunStatus
 
     constructor(status: StatusModel) {
         this.uuid = status.run_uuid
         this.last_updated_time = status.last_updated_time
-        this.status = new RunStatus(status.status)
+        this.run_status = new RunStatus(status.run_status)
     }
 
     get isRunning() {
-        if (this.status.status === 'in progress') {
+        if (this.run_status.status === 'in progress') {
             let timeDiff = (Date.now() / 1000 - this.last_updated_time) / 60
             return timeDiff <= 15
         } else {

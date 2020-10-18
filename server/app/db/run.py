@@ -252,7 +252,11 @@ class Run(Model['Run']):
 
     def _update_series(self, ind: str, series: SeriesModel) -> None:
         if ind not in self.tracking:
-            self.tracking[ind] = Series().key
+            s = Series()
+            s.save()
+
+            self.tracking[ind] = s.key
+            self.save()
 
         s = self.tracking[ind].load()
         s.update_series(series['step'], series['value'])
