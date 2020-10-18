@@ -58,7 +58,7 @@ class User(Model['User']):
     def default_project(self):
         return self.projects[0].load()
 
-    def get_data(self):
+    def get_data(self) -> Dict[str, any]:
         return {
             'name': self.name,
             'email': self.email,

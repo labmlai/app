@@ -44,7 +44,6 @@ def get_or_create(session_id: str) -> Session:
         session = Session(session_id=gen_session_id(),
                           expiration=gen_expiration()
                           )
-
         session.save()
 
         SessionIndex.set(session.session_id, session.key)

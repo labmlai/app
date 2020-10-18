@@ -31,7 +31,7 @@ class Status(Model['Status']):
                     run_status=None
                     )
 
-    def get_data(self) -> Dict:
+    def get_data(self) -> Dict[str, any]:
         return {
             'run_uuid': self.run_uuid,
             'last_updated_time': self.last_updated_time,

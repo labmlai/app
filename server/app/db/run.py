@@ -36,18 +36,18 @@ class Series(Model['Series']):
                     )
 
     @property
-    def last_value(self):
+    def last_value(self) -> float:
         return self.value[-1]
 
     @property
-    def summary(self):
+    def summary(self) -> Dict[str, List[float]]:
         return {
             'step': self.last_step,
             'value': self.value,
             'smoothed': self.smooth_45()
         }
 
-    def update_series(self, steps: List[float], values: List[float]):
+    def update_series(self, steps: List[float], values: List[float]) -> None:
         self.step += steps.copy()
         self.value += values.copy()
         self.last_step += steps.copy()
@@ -57,7 +57,7 @@ class Series(Model['Series']):
             self.step_gap *= 2
             self.merge()
 
-    def _find_gap(self):
+    def _find_gap(self) -> None:
         if self.step_gap:
             return
         assert len(self) > 1
@@ -66,7 +66,7 @@ class Series(Model['Series']):
         gap = last_step[1:] - last_step[:-1]
         self.step_gap = gap.max().item()
 
-    def merge(self):
+    def merge(self) -> None:
         if len(self) == 1:
             return
 
@@ -220,7 +220,7 @@ class Run(Model['Run']):
 
         self.save()
 
-    def get_data(self) -> Dict:
+    def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         return {
             'run_uuid': self.run_uuid,
