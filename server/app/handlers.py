@@ -53,13 +53,14 @@ def sign_out() -> Any:
     session_id = request.cookies.get('session_id')
     s = session.get_or_create(session_id)
 
-    s.user = ''
-    s.save()
+    session.delete(s)
 
     response = make_response(jsonify({'is_successful': True}))
 
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
+
+    print('sign_out', s.session_id)
 
     return response
 

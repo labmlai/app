@@ -52,3 +52,8 @@ def get_or_create(session_id: str) -> Session:
         return session
 
     return session_key.load()
+
+
+def delete(session: Session) -> None:
+    SessionIndex.delete(session.session_id)
+    session.delete()
