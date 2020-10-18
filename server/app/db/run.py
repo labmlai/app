@@ -210,6 +210,16 @@ class Run(Model['Run']):
     def url(self) -> str:
         return f'{settings.WEB_URL}/run?run_uuid={self.run_uuid}'
 
+    def update_run(self, data: Dict[str, any]) -> None:
+        if not self.name:
+            self.name = data.get('name', '')
+        if not self.comment:
+            self.comment = data.get('comment', '')
+        if not self.configs:
+            self.configs.update(data.get('configs', {}))
+
+        self.save()
+
     def get_data(self) -> Dict:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         return {
@@ -249,7 +259,7 @@ class Run(Model['Run']):
         s.save()
 
 
-class RunIndex(Index['RUn']):
+class RunIndex(Index['Run']):
     pass
 
 

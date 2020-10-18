@@ -78,7 +78,7 @@ def update_run() -> Any:
     r = run.get_or_create(run_uuid, labml_token)
     s = status.get_or_create(run_uuid)
 
-    r.update(json)
+    r.update_run(json)
     s.update_time_status(json)
     if 'track' in json:
         r.track(json['track'])
@@ -144,9 +144,9 @@ def get_user() -> Any:
     s = get_session()
 
     print('user', s.key)
-    user = s.user.load()
+    u = s.user.load()
 
-    return jsonify(user.to_dict())
+    return jsonify(u.to_dict())
 
 
 @login_required
