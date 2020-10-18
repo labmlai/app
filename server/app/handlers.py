@@ -135,11 +135,14 @@ def get_runs(labml_token: str) -> Any:
     else:
         runs_list = s.user.load().default_project.get_runs()
 
-    print('runs', labml_token)
+    res = []
+    for r in runs_list:
+        s = status.get_status(r.run_uuid)
+        res.append({**r.get_data(), **s.get_data()})
 
-    runs_list = sorted(runs_list, key=lambda i: i['start_time'], reverse=True)
+    res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
-    return jsonify({'runs': runs_list, 'labml_token': labml_token})
+    return jsonify({'runs': res, 'labml_token': labml_token})
 
 
 @login_required

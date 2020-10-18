@@ -24,7 +24,7 @@ class Project(Model['Project']):
                     runs={}
                     )
 
-    def get_runs(self) -> List:
+    def get_runs(self) -> List[Run]:
         res = []
         for run_uuid, run_key in self.runs.items():
             res.append(run_key.load())

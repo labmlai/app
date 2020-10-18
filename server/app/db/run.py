@@ -287,7 +287,7 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
     return run
 
 
-def get_runs(labml_token: str) -> List:
+def get_runs(labml_token: str) -> List[Run]:
     res = []
     project = user.get_project(labml_token)
     for run_uuid, run_key in project.runs.items():
