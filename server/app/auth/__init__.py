@@ -3,8 +3,8 @@ import functools
 import werkzeug.wrappers
 from flask import request, make_response
 
-from .. import users
-from .. import sessions
+from ..db import user
+from ..db import session
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -30,8 +30,8 @@ def is_runs_permitted(func):
     def wrapper(*args, **kwargs):
         labml_token = kwargs.get('labml_token', '')
 
-        user = users.get(labml_token)
-        if user and user.is_sharable:
+        p = user.get_project(labml_token)
+        if p and p.is_sharable:
             return func(*args, **kwargs)
 
         kwargs['labml_token'] = ''
@@ -45,16 +45,16 @@ def login_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         session_id = request.cookies.get('session_id')
-        session = sessions.get_or_create(session_id)
-        if session.is_auth:
+        s = session.get_or_create(session_id)
+        if s.is_auth:
             return func(*args, **kwargs)
         else:
             response = make_response()
             response.status_code = 403
 
-            print(session_id, session.session_id)
-            if session_id != session.session_id:
-                response.set_cookie('session_id', session.session_id)
+            print(session_id, s.session_id)
+            if session_id != s.session_id:
+                response.set_cookie('session_id', s.session_id)
 
             return response
 

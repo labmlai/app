@@ -5,10 +5,11 @@ import werkzeug.wrappers
 from typing import Any
 from flask import jsonify, request, make_response, redirect
 
-from . import statuses
-from . import users
-from . import sessions
-from . import runs
+from .db import user
+from .db import status
+from .db import session
+from .db import run
+
 from . import settings
 
 from .auth import login_required, is_runs_permitted
@@ -16,10 +17,10 @@ from .auth import login_required, is_runs_permitted
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
-def get_session() -> sessions.Session:
+def get_session() -> session.Session:
     session_id = request.cookies.get('session_id')
 
-    return sessions.get_or_create(session_id)
+    return session.get_or_create(session_id)
 
 
 def default() -> Any:
@@ -29,32 +30,37 @@ def default() -> Any:
 def sign_in() -> Any:
     json = request.json
 
-    auth_o_info = users.AuthOInfo(**json)
-    user = users.get_or_create_auth_o_user(auth_o_info)
+    info = user.AuthOInfo(**json)
+    u = user.get_or_create_user(info)
 
     session_id = request.cookies.get('session_id')
-    session = sessions.get_or_create(session_id)
+    s = session.get_or_create(session_id)
 
-    session.update({'labml_token': user.labml_token})
+    s.user = u.key
+    s.save()
 
     response = make_response(jsonify({'is_successful': True}))
 
-    if session_id != session.session_id:
-        response.set_cookie('session_id', session.session_id)
+    if session_id != s.session_id:
+        response.set_cookie('session_id', s.session_id)
+
+    print('sign_in', u.key)
 
     return response
 
 
 def sign_out() -> Any:
     session_id = request.cookies.get('session_id')
-    session = sessions.get_or_create(session_id)
+    s = session.get_or_create(session_id)
 
-    session.update({'labml_token': ''})
+    session.delete(s)
 
     response = make_response(jsonify({'is_successful': True}))
 
-    if session_id != session.session_id:
-        response.set_cookie('session_id', session.session_id)
+    if session_id != s.session_id:
+        response.set_cookie('session_id', s.session_id)
+
+    print('sign_out', s.session_id)
 
     return response
 
@@ -62,8 +68,8 @@ def sign_out() -> Any:
 def update_run() -> Any:
     labml_token = request.args.get('labml_token')
 
-    user = users.get(labml_token=labml_token)
-    if not user:
+    p = user.get_project(labml_token=labml_token)
+    if not p:
         return jsonify({'errors': [{'error': 'invalid_labml_token',
                                     'message': 'The labml_token sent to the api is not valid.  '
                                                'Please create a valid token at https://web.lab-ml.com'}],
@@ -72,15 +78,15 @@ def update_run() -> Any:
     json = request.json
 
     run_uuid = json.get('run_uuid', '')
-    run = runs.get_or_create(run_uuid, labml_token)
-    status = statuses.get_or_create(run_uuid)
+    r = run.get_or_create(run_uuid, labml_token)
+    s = status.get_or_create(run_uuid)
 
-    run.update(json)
-    status.update(json)
+    r.update_run(json)
+    s.update_time_status(json)
     if 'track' in json:
-        run.track(json['track'])
+        r.track(json['track'])
 
-    return jsonify({'errors': run.errors, 'url': run.url})
+    return jsonify({'errors': r.errors, 'url': r.url})
 
 
 @login_required
@@ -88,9 +94,9 @@ def get_run(run_uuid: str) -> Any:
     run_data = {}
     status_code = 400
 
-    run = runs.get_run(run_uuid)
+    r = run.get_run(run_uuid)
     if run:
-        run_data = run.get_data()
+        run_data = r.get_data()
         status_code = 200
 
     response = make_response(jsonify(run_data))
@@ -106,9 +112,9 @@ def get_status(run_uuid: str) -> Any:
     status_data = {}
     status_code = 400
 
-    status = statuses.get_status(run_uuid)
-    if status:
-        status_data = status.to_dict()
+    s = status.get_status(run_uuid)
+    if s:
+        status_data = s.get_data()
         status_code = 200
 
     response = make_response(jsonify(status_data))
@@ -122,28 +128,31 @@ def get_status(run_uuid: str) -> Any:
 @login_required
 @is_runs_permitted
 def get_runs(labml_token: str) -> Any:
-    session = get_session()
+    s = get_session()
 
     if labml_token:
-        labml_token = labml_token
+        runs_list = run.get_runs(labml_token)
     else:
-        labml_token = session.labml_token
+        runs_list = s.user.load().default_project.get_runs()
 
-    print('runs', labml_token)
+    res = []
+    for r in runs_list:
+        s = status.get_status(r.run_uuid)
+        res.append({**r.get_data(), **s.get_data()})
 
-    runs_list = sorted(runs.get_runs(labml_token), key=lambda i: i['start_time'], reverse=True)
+    res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
-    return jsonify({'runs': runs_list, 'labml_token': labml_token})
+    return jsonify({'runs': res, 'labml_token': labml_token})
 
 
 @login_required
 def get_user() -> Any:
-    session = get_session()
+    s = get_session()
 
-    print('user', session.labml_token)
-    user = users.get(session.labml_token)
+    print('user', s.key)
+    u = s.user.load()
 
-    return jsonify(user.to_data())
+    return jsonify(u.get_data())
 
 
 @login_required
@@ -151,9 +160,9 @@ def get_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    run = runs.get_run(run_uuid)
+    r = run.get_run(run_uuid)
     if run:
-        track_data = run.get_tracking()
+        track_data = r.get_tracking()
         status_code = 200
 
     print('tracking', run_uuid)

@@ -1,15 +1,19 @@
-import json
 import math
 import time
-from glob import glob
-from pathlib import Path
-from typing import Dict, List, Any, Optional, Union
-
 import numpy as np
-from labml import monit
 
-from . import statuses
-from . import settings
+from typing import Dict, List, Optional, Any, Union
+from uuid import uuid4
+
+from labml_db import Model, Key, Index
+
+from . import user
+from .. import settings
+
+
+def generate_run_uuid() -> str:
+    return uuid4().hex
+
 
 MAX_BUFFER_LENGTH = 1024
 SMOOTH_POINTS = 50
@@ -17,23 +21,33 @@ MIN_SMOOTH_POINTS = 1
 OUTLIER_MARGIN = 0.04
 
 
-class Series:
+class Series(Model['Series']):
     step: List[float]
     last_step: List[float]
     value: List[float]
     step_gap: float
 
-    def __init__(self):
-        self.step = []
-        self.last_step = []
-        self.value = []
-        self.step_gap = 0
+    @classmethod
+    def defaults(cls):
+        return dict(step=[],
+                    last_step=[],
+                    value=[],
+                    step_gap=0
+                    )
 
     @property
-    def last_value(self):
+    def last_value(self) -> float:
         return self.value[-1]
 
-    def update(self, steps: List[float], values: List[float]):
+    @property
+    def summary(self) -> Dict[str, List[float]]:
+        return {
+            'step': self.last_step,
+            'value': self.value,
+            'smoothed': self.smooth_45()
+        }
+
+    def update_series(self, steps: List[float], values: List[float]) -> None:
         self.step += steps.copy()
         self.value += values.copy()
         self.last_step += steps.copy()
@@ -43,7 +57,7 @@ class Series:
             self.step_gap *= 2
             self.merge()
 
-    def _find_gap(self):
+    def _find_gap(self) -> None:
         if self.step_gap:
             return
         assert len(self) > 1
@@ -52,7 +66,7 @@ class Series:
         gap = last_step[1:] - last_step[:-1]
         self.step_gap = gap.max().item()
 
-    def merge(self):
+    def merge(self) -> None:
         if len(self) == 1:
             return
 
@@ -85,14 +99,6 @@ class Series:
 
     def __len__(self):
         return len(self.last_step)
-
-    @property
-    def summary(self):
-        return {
-            'step': self.last_step,
-            'value': self.value,
-            'smoothed': self.smooth_45()
-        }
 
     def get_extent(self, is_remove_outliers: bool):
         if len(self.value) == 0:
@@ -174,68 +180,47 @@ class Series:
 
         return smoothed
 
-    def to_dict(self):
-        return {
-            'step': self.step,
-            'last_step': self.last_step,
-            'value': self.value
-        }
 
-    def load(self, data):
-        self.step = data['step']
-        self.last_step = data['last_step']
-        self.value = data['value']
-
-
-# class SeriesModel(TypedDict):
-#     step: List[float]
-#     value: List[float]
 SeriesModel = Dict[str, List[float]]
 
 
-class Run:
-    tracking: Dict[str, Series]
+class Run(Model['Run']):
+    name: str
+    comment: str
+    start_time: float
+    run_uuid: str
+    tracking: Dict[str, Key[Series]]
+    configs: Dict[str, any]
+    step: int
+    errors: List[str]
 
-    def __init__(self, *,
-                 run_uuid: str,
-                 labml_token: str = '',
-                 name: str = '',
-                 comment: str = '',
-                 start_time: float = None,
-                 configs: Dict[str, any] = None,
-                 tracking: List[Dict[str, any]] = None,
-                 **kwargs
-                 ):
-        if configs is None:
-            configs = {}
-        if tracking is None:
-            tracking = {}
-
-        self.tracking = tracking
-        self.configs = configs
-        self.comment = comment
-        self.name = name
-        self.start_time = start_time
-        self.run_uuid = run_uuid
-        self.labml_token = labml_token
-        self.step = 0
-        self.errors = []
+    @classmethod
+    def defaults(cls):
+        return dict(name='',
+                    comment='',
+                    start_time=None,
+                    run_uuid='',
+                    tracking={},
+                    configs={},
+                    step=0,
+                    errors=[]
+                    )
 
     @property
     def url(self) -> str:
         return f'{settings.WEB_URL}/run?run_uuid={self.run_uuid}'
 
-    def to_dict(self) -> Dict:
-        return {
-            'run_uuid': self.run_uuid,
-            'labml_token': self.labml_token,
-            'name': self.name,
-            'start_time': self.start_time,
-            'comment': self.comment,
-            'configs': self.configs,
-        }
+    def update_run(self, data: Dict[str, any]) -> None:
+        if not self.name:
+            self.name = data.get('name', '')
+        if not self.comment:
+            self.comment = data.get('comment', '')
+        if not self.configs:
+            self.configs.update(data.get('configs', {}))
 
-    def get_data(self) -> Dict:
+        self.save()
+
+    def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         return {
             'run_uuid': self.run_uuid,
@@ -249,7 +234,7 @@ class Run:
         res = []
 
         for k, s in self.tracking.items():
-            series: Dict[str, Any] = s.summary
+            series: Dict[str, Any] = s.load().summary
             name = k.split('.')
             if name[-1] == 'mean':
                 name = name[:-1]
@@ -260,115 +245,61 @@ class Run:
 
         return res
 
-    def update(self, data: Dict[str, any]) -> None:
-        if not self.name:
-            self.name = data.get('name', '')
-        if not self.comment:
-            self.comment = data.get('comment', '')
-
-        self.configs.update(data.get('configs', {}))
-
-        self.save()
-
     def track(self, data: Dict[str, SeriesModel]) -> None:
         for ind, series in data.items():
-            self._update_series(ind, series)
             self.step = max(self.step, series['step'][-1])
-
-        self.save_tracking()
+            self._update_series(ind, series)
 
     def _update_series(self, ind: str, series: SeriesModel) -> None:
         if ind not in self.tracking:
-            self.tracking[ind] = Series()
+            s = Series()
+            s.save()
 
-        self.tracking[ind].update(series['step'], series['value'])
+            self.tracking[ind] = s.key
+            self.save()
 
-    def save(self) -> None:
-        data = self.to_dict()
-        with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.json'), 'w') as f:
-            json.dump(data, f, indent=4)
-
-    def save_tracking(self) -> None:
-        data = {k: s.to_dict() for k, s in self.tracking.items()}
-        data['step'] = self.step
-        with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'w') as f:
-            json.dump(data, f, indent=4)
-
-    def load_tracking(self) -> None:
-        try:
-            with open(str(settings.DATA_PATH / 'runs' / f'{self.run_uuid}.tracking.json'), 'r') as f:
-                data = json.load(f)
-
-            self.step = data['step']
-            del data['step']
-
-            for k, s in data.items():
-                self.tracking[k] = Series()
-                self.tracking[k].load(s)
-        except FileNotFoundError as e:
-            print(f'file not found{e.filename}')
+        s = self.tracking[ind].load()
+        s.update_series(series['step'], series['value'])
+        s.save()
 
 
-_RUNS: Dict[str, Run] = {}
-
-
-def get_run(run_uuid: str) -> Union[None, Run]:
-    if run_uuid in _RUNS:
-        return _RUNS[run_uuid]
-
-    return None
+class RunIndex(Index['Run']):
+    pass
 
 
 def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
-    if run_uuid in _RUNS:
-        return _RUNS[run_uuid]
+    project = user.get_project(labml_token)
 
-    path = Path(settings.DATA_PATH / 'runs' / f'{run_uuid}.json')
-    if not path.exists():
-        time_now = time.time()
-        run = Run(run_uuid=run_uuid, labml_token=labml_token, start_time=time_now)
-        run.save()
+    if run_uuid in project.runs:
+        return project.runs[run_uuid].load()
 
-        _RUNS[run.run_uuid] = run
-        return run
+    time_now = time.time()
+    run = Run(run_uuid=run_uuid,
+              start_time=time_now
+              )
+    project.runs[run.run_uuid] = run.key
 
-    with open(str(path), 'r') as f:
-        data = json.load(f)
+    run.save()
+    project.save()
 
-    run = Run(**data)
-    run.load_tracking()
-    _RUNS[run.run_uuid] = run
+    RunIndex.set(run.run_uuid, run.key)
 
     return run
 
 
-def get_runs(labml_token: str) -> List:
+def get_runs(labml_token: str) -> List[Run]:
     res = []
-    for run_uuid, run in _RUNS.items():
-        if run.labml_token == labml_token:
-            status = statuses.get_status(run.run_uuid)
-            # TODO create a model for this
-            res.append({**run.get_data(), **status.to_dict()})
+    project = user.get_project(labml_token)
+    for run_uuid, run_key in project.runs.items():
+        res.append(run_key.load())
 
     return res
 
 
-def _initialize() -> None:
-    runs_path = Path(settings.DATA_PATH / 'runs')
-    if not runs_path.exists():
-        runs_path.mkdir(parents=True)
+def get_run(run_uuid: str) -> Union[None, Run]:
+    run_key = RunIndex.get(run_uuid)
 
-    for f_name in glob(f'{runs_path}/*.json'):
-        if 'tracking' in f_name or 'status' in f_name:
-            continue
+    if run_key:
+        return run_key.load()
 
-        with open(f_name, 'r') as f:
-            data = json.load(f)
-
-        run = Run(**data)
-        run.load_tracking()
-        _RUNS[run.run_uuid] = run
-
-
-with monit.section("Initialize runs"):
-    _initialize()
+    return None

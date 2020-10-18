@@ -25,7 +25,7 @@ function RunsListItem(props: RunsListItemProps) {
     }}
     >
         <div>
-            <StatusView status={run.status} lastUpdatedTime={run.last_updated_time}/>
+            <StatusView status={run.run_status} lastUpdatedTime={run.last_updated_time}/>
             <p>Started on {formatTime(run.start_time)}</p>
             <h5>{run.name}</h5>
             <h6>{run.comment}</h6>

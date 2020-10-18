@@ -52,7 +52,7 @@ function Card(props: CardProps) {
         }
         runView = <div>
             <div className={'run-info'}>
-                <StatusView status={status.status} lastUpdatedTime={status.last_updated_time}/>
+                <StatusView status={status.run_status} lastUpdatedTime={status.last_updated_time}/>
                 <h3>{run.name}</h3>
                 <h5>{run.comment}</h5>
                 <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.uuid}</div>

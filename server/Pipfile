@@ -21,6 +21,7 @@ selenium = "*"
 numpy = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
 google-api-python-client = "*"
+labml-db = "*"
 
 [requires]
 python_version = "3.7"
