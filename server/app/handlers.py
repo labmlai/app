@@ -133,7 +133,9 @@ def get_runs(labml_token: str) -> Any:
     if labml_token:
         runs_list = run.get_runs(labml_token)
     else:
-        runs_list = s.user.load().default_project.get_runs()
+        default_project = s.user.load().default_project
+        labml_token = default_project.labml_token
+        runs_list = default_project.get_runs()
 
     res = []
     for r in runs_list:
