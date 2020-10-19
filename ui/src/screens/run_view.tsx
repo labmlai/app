@@ -2,7 +2,8 @@ import React, {useCallback, useState} from "react"
 
 import "./run_view.scss"
 import ConfigsCard from "../cards/configs/card"
-import MetricsCard from "../cards/metrics/card"
+import MetricCard from "../cards/tracks/metric/card"
+import ModelCard from "../cards/tracks/model/card"
 import RunHeaderCard from "../cards/run_header/card"
 import useWindowDimensions from "../utils/window_dimensions";
 import {Alert} from "react-bootstrap";
@@ -46,8 +47,10 @@ function RunView(props: RunProps) {
                             errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}
                           errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
-        <MetricsCard.Card uuid={runUUID} width={actualWidth}
-                          errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
+        <MetricCard.Card uuid={runUUID} width={actualWidth}
+                         errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
+        <ModelCard.Card uuid={runUUID} width={actualWidth}
+                        errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
         <div className={'footer-copyright text-center'}>
             <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
             <span> | </span>

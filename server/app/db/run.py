@@ -32,7 +32,7 @@ class Series(Model['Series']):
         return dict(step=[],
                     last_step=[],
                     value=[],
-                    step_gap=0
+                    step_gap=0,
                     )
 
     @property
@@ -190,6 +190,7 @@ class Run(Model['Run']):
     start_time: float
     run_uuid: str
     tracking: Dict[str, Key[Series]]
+    is_model_params: Dict[str, bool]
     configs: Dict[str, any]
     step: int
     errors: List[str]
@@ -202,6 +203,7 @@ class Run(Model['Run']):
                     run_uuid='',
                     tracking={},
                     configs={},
+                    is_model_params={},
                     step=0,
                     errors=[]
                     )
@@ -230,16 +232,17 @@ class Run(Model['Run']):
             'configs': configs,
         }
 
-    def get_tracking(self) -> List:
+    def get_tracking(self, is_model_pram: bool) -> List:
         res = []
 
         for k, s in self.tracking.items():
-            series: Dict[str, Any] = s.load().summary
-            name = k.split('.')
-            if name[-1] == 'mean':
-                name = name[:-1]
-            series['name'] = '.'.join(name)
-            res.append(series)
+            if self.is_model_params[k] == is_model_pram:
+                series: Dict[str, Any] = s.load().summary
+                name = k.split('.')
+                if name[-1] == 'mean':
+                    name = name[:-1]
+                series['name'] = '.'.join(name)
+                res.append(series)
 
         res.sort(key=lambda s: s['name'])
 
@@ -256,6 +259,12 @@ class Run(Model['Run']):
             s.save()
 
             self.tracking[ind] = s.key
+
+            if ind.startswith('grad.model'):
+                self.is_model_params[ind] = True
+            else:
+                self.is_model_params[ind] = False
+
             self.save()
 
         s = self.tracking[ind].load()

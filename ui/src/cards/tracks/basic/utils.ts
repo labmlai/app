@@ -1,4 +1,4 @@
-import {PointValue, SeriesModel} from "../../models/run";
+import {PointValue, SeriesModel} from "../../../models/run";
 import * as d3 from "d3";
 import {OUTLIER_MARGIN} from "./constants";
 

@@ -16,8 +16,12 @@ class NETWORK {
         return this.axiosInstance.get(`/status/${run_uuid}`)
     }
 
-    static async get_tracking(run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/track/${run_uuid}`, {})
+    static async get_metric_tracking(run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/metric_track/${run_uuid}`, {})
+    }
+
+    static async get_model_tracking(run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/model_track/${run_uuid}`, {})
     }
 
     static async get_runs(labml_token: string | null): Promise<any> {
