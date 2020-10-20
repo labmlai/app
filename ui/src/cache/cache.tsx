@@ -64,9 +64,13 @@ class RunCache {
     private lastUpdated: number
     private run!: Run
     private status!: Status
-    private tracking!: SeriesModel[]
+    private metricsTracking!: SeriesModel[]
+    private gradsTracking!: SeriesModel[]
+    private paramsTracking!: SeriesModel[]
     private runPromise = new BroadcastPromise<RunModel>()
-    private trackingPromise = new BroadcastPromise<SeriesModel[]>()
+    private metricsTrackingPromise = new BroadcastPromise<SeriesModel[]>()
+    private gradsTrackingPromise = new BroadcastPromise<SeriesModel[]>()
+    private paramsTrackingPromise = new BroadcastPromise<SeriesModel[]>()
     private statusPromise = new BroadcastPromise<StatusModel>()
 
     constructor(uuid: string) {
@@ -88,9 +92,23 @@ class RunCache {
         })
     }
 
-    private async loadTracking(): Promise<SeriesModel[]> {
-        return this.trackingPromise.create(async () => {
-            let res = await NETWORK.get_tracking(this.uuid)
+    private async loadMetricsTracking(): Promise<SeriesModel[]> {
+        return this.metricsTrackingPromise.create(async () => {
+            let res = await NETWORK.get_metrics_tracking(this.uuid)
+            return res.data
+        })
+    }
+
+    private async loadGradsTracking(): Promise<SeriesModel[]> {
+        return this.gradsTrackingPromise.create(async () => {
+            let res = await NETWORK.get_grads_tracking(this.uuid)
+            return res.data
+        })
+    }
+
+    private async loadParamsTracking(): Promise<SeriesModel[]> {
+        return this.paramsTrackingPromise.create(async () => {
+            let res = await NETWORK.get_params_tracking(this.uuid)
             return res.data
         })
     }
@@ -111,25 +129,44 @@ class RunCache {
         return this.status
     }
 
+    private isTrackingTimeOut(): boolean {
+        return (new Date()).getTime() - this.lastUpdated > TRACKING_TIMEOUT
+    }
 
-    async getTracking(): Promise<SeriesModel[]> {
+    async getMetricsTracking(): Promise<SeriesModel[]> {
         await this.getRun()
 
-        if (this.tracking == null) {
-            this.tracking = await this.loadTracking()
+        if (this.metricsTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+            this.metricsTracking = await this.loadMetricsTracking()
             this.lastUpdated = (new Date()).getTime()
             this.status = new Status(await this.loadStatus())
         }
 
-        if (this.status.isRunning) {
-            if ((new Date()).getTime() - this.lastUpdated > TRACKING_TIMEOUT) {
-                this.tracking = await this.loadTracking()
-                this.status = new Status(await this.loadStatus())
-                this.lastUpdated = (new Date()).getTime()
-            }
+        return this.metricsTracking
+    }
+
+    async getGradsTracking(): Promise<SeriesModel[]> {
+        await this.getRun()
+
+        if (this.gradsTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+            this.gradsTracking = await this.loadGradsTracking()
+            this.lastUpdated = (new Date()).getTime()
+            this.status = new Status(await this.loadStatus())
         }
 
-        return this.tracking
+        return this.gradsTracking
+    }
+
+    async getParamsTracking(): Promise<SeriesModel[]> {
+        await this.getRun()
+
+        if (this.paramsTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+            this.paramsTracking = await this.loadParamsTracking()
+            this.lastUpdated = (new Date()).getTime()
+            this.status = new Status(await this.loadStatus())
+        }
+
+        return this.paramsTracking
     }
 }
 

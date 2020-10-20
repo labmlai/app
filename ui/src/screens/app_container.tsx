@@ -10,7 +10,9 @@ import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
 import ReactGA from 'react-ga'
 import ConfigsCard from "../cards/configs/card"
-import MetricsCard from "../cards/metrics/card"
+import MetricsCard from "../cards/tracks/metrics/card"
+import ParamsCard from "../cards/tracks/params/card"
+import GradsCard from "../cards/tracks/grads/card"
 
 import NETWORK from '../network'
 import {useErrorHandler} from "react-error-boundary";
@@ -50,6 +52,8 @@ function AppContainer() {
                 <Route path="/run" component={RunView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
                 <Route path="/metrics" component={MetricsCard.View}/>
+                <Route path="/grads" component={GradsCard.View}/>
+                <Route path="/params" component={ParamsCard.View}/>
                 <Route path="/home" component={TabsView}/>
                 <Route path="/login" component={LoginView}/>
                 <Route path="/runs" component={RunsView}/>

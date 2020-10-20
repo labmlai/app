@@ -86,6 +86,8 @@ def update_run() -> Any:
     if 'track' in json:
         r.track(json['track'])
 
+    print('update_run', labml_token)
+
     return jsonify({'errors': r.errors, 'url': r.url})
 
 
@@ -160,13 +162,49 @@ def get_user() -> Any:
 
 
 @login_required
-def get_tracking(run_uuid: str) -> Any:
+def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_tracking()
+        track_data = r.get_metrics_tracking()
+        status_code = 200
+
+    print('tracking', run_uuid)
+
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
+
+
+@login_required
+def get_params_tracking(run_uuid: str) -> Any:
+    track_data = []
+    status_code = 400
+
+    r = run.get_run(run_uuid)
+    if run:
+        track_data = r.get_params_tracking()
+        status_code = 200
+
+    print('tracking', run_uuid)
+
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
+
+
+@login_required
+def get_grads_tracking(run_uuid: str) -> Any:
+    track_data = []
+    status_code = 400
+
+    r = run.get_run(run_uuid)
+    if run:
+        track_data = r.get_grads_tracking()
         status_code = 200
 
     print('tracking', run_uuid)
@@ -194,7 +232,9 @@ def add_handlers(app: flask.Flask):
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_status, 'status/<run_uuid>')
-    _add(app, 'POST', get_tracking, 'track/<run_uuid>')
+    _add(app, 'POST', get_metrics_tracking, 'metrics_track/<run_uuid>')
+    _add(app, 'POST', get_grads_tracking, 'grads_track/<run_uuid>')
+    _add(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
 
     _add(app, 'POST', sign_in, 'auth/sign_in')
     _add(app, 'DELETE', sign_out, 'auth/sign_out')

@@ -1,4 +1,4 @@
-import {PointValue} from "../../models/run";
+import {PointValue} from "../../../models/run";
 import * as d3 from "d3";
 import React from "react";
 
