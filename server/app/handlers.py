@@ -86,6 +86,8 @@ def update_run() -> Any:
     if 'track' in json:
         r.track(json['track'])
 
+    print('update_run', labml_token)
+
     return jsonify({'errors': r.errors, 'url': r.url})
 
 
@@ -165,7 +167,7 @@ def get_tracking(run_uuid: str, is_model_pram: bool) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_tracking(is_model_pram=is_model_pram)
+        track_data = r.get_tracking()
         status_code = 200
 
     print('tracking', is_model_pram, run_uuid)

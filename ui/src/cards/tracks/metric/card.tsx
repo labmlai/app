@@ -36,7 +36,10 @@ function Card(props: CardProps) {
         () => {
             history.push(`/metrics?run_uuid=${props.uuid}`);
         }
-    }>{chart}</div>
+    }>
+        <h3>Metrics</h3>
+        {chart}
+    </div>
 }
 
 function View(props: ViewProps) {

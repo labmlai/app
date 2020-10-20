@@ -20,20 +20,20 @@ SMOOTH_POINTS = 50
 MIN_SMOOTH_POINTS = 1
 OUTLIER_MARGIN = 0.04
 
+SeriesDict = Dict[str, Union[List[float], float]]
 
-class Series(Model['Series']):
+
+class SeriesModel:
     step: List[float]
     last_step: List[float]
     value: List[float]
     step_gap: float
 
-    @classmethod
-    def defaults(cls):
-        return dict(step=[],
-                    last_step=[],
-                    value=[],
-                    step_gap=0,
-                    )
+    def __init__(self):
+        self.step = []
+        self.last_step = []
+        self.value = []
+        self.step_gap = 0
 
     @property
     def last_value(self) -> float:
@@ -47,7 +47,15 @@ class Series(Model['Series']):
             'smoothed': self.smooth_45()
         }
 
-    def update_series(self, steps: List[float], values: List[float]) -> None:
+    def to_data(self) -> SeriesDict:
+        return {
+            'step': self.step,
+            'value': self.value,
+            'last_step': self.last_step,
+            'step_gap': self.step_gap
+        }
+
+    def update(self, steps: List[float], values: List[float]) -> None:
         self.step += steps.copy()
         self.value += values.copy()
         self.last_step += steps.copy()
@@ -129,8 +137,6 @@ class Series(Model['Series']):
         hi = max(1, len(self.value) // MIN_SMOOTH_POINTS)
         lo = 1
 
-        # angles = [self.mean_angle(self.smooth_value(m), 0.5) for m in range(lo, hi)]
-        # print(angles)
         while lo < hi:
             m = (lo + hi) // 2
             smoothed = self.smooth_value(m)
@@ -146,7 +152,6 @@ class Series(Model['Series']):
         x_range = max(self.last_step) - min(self.last_step)
         y_extent = self.get_extent(True)
         y_range = y_extent[1] - y_extent[0]
-        # y_range = max(smoothed) - min(smoothed)
 
         if x_range < 1e-9 or y_range < 1e-9:
             return 0
@@ -180,8 +185,58 @@ class Series(Model['Series']):
 
         return smoothed
 
+    def load(self, data):
+        self.step = data['step']
+        self.last_step = data['last_step']
+        self.value = data['value']
 
-SeriesModel = Dict[str, List[float]]
+        return self
+
+
+class Series(Model['Series']):
+    tracking: Dict[str, SeriesDict]
+    is_grads: Dict[str, bool]
+    is_params: Dict[str, bool]
+    step: int
+
+    @classmethod
+    def defaults(cls):
+        return dict(tracking={},
+                    is_grads=False,
+                    is_params=False,
+                    step=0,
+                    )
+
+    def get_tracking(self) -> List:
+        res = []
+
+        for k, s in self.tracking.items():
+            series: Dict[str, Any] = SeriesModel().load(s).summary
+            name = k.split('.')
+            if name[-1] == 'mean':
+                name = name[:-1]
+            series['name'] = '.'.join(name)
+            res.append(series)
+
+        res.sort(key=lambda s: s['name'])
+
+        return res
+
+    def track(self, data: Dict[str, SeriesDict]) -> None:
+        for ind, series in data.items():
+            self.step = max(self.step, series['step'][-1])
+            self._update_series(ind, series)
+
+    def _update_series(self, ind: str, series: SeriesDict) -> None:
+        if ind not in self.tracking:
+            self.tracking[ind] = SeriesModel().to_data()
+            self.save()
+
+        s = SeriesModel().load(self.tracking[ind])
+        s.update(series['step'], series['value'])
+
+        self.tracking[ind] = s.to_data()
+        self.save()
 
 
 class Run(Model['Run']):
@@ -189,10 +244,8 @@ class Run(Model['Run']):
     comment: str
     start_time: float
     run_uuid: str
-    tracking: Dict[str, Key[Series]]
-    is_model_params: Dict[str, bool]
+    series: Key[Series]
     configs: Dict[str, any]
-    step: int
     errors: List[str]
 
     @classmethod
@@ -201,10 +254,8 @@ class Run(Model['Run']):
                     comment='',
                     start_time=None,
                     run_uuid='',
-                    tracking={},
+                    series=None,
                     configs={},
-                    is_model_params={},
-                    step=0,
                     errors=[]
                     )
 
@@ -232,44 +283,14 @@ class Run(Model['Run']):
             'configs': configs,
         }
 
-    def get_tracking(self, is_model_pram: bool) -> List:
-        res = []
+    def track(self, data: Dict[str, SeriesDict]) -> None:
+        series = self.series.load()
+        series.track(data)
 
-        for k, s in self.tracking.items():
-            if self.is_model_params[k] == is_model_pram:
-                series: Dict[str, Any] = s.load().summary
-                name = k.split('.')
-                if name[-1] == 'mean':
-                    name = name[:-1]
-                series['name'] = '.'.join(name)
-                res.append(series)
+    def get_tracking(self) -> List:
+        series = self.series.load()
 
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    def track(self, data: Dict[str, SeriesModel]) -> None:
-        for ind, series in data.items():
-            self.step = max(self.step, series['step'][-1])
-            self._update_series(ind, series)
-
-    def _update_series(self, ind: str, series: SeriesModel) -> None:
-        if ind not in self.tracking:
-            s = Series()
-            s.save()
-
-            self.tracking[ind] = s.key
-
-            if ind.startswith('grad.model'):
-                self.is_model_params[ind] = True
-            else:
-                self.is_model_params[ind] = False
-
-            self.save()
-
-        s = self.tracking[ind].load()
-        s.update_series(series['step'], series['value'])
-        s.save()
+        return series.get_tracking()
 
 
 class RunIndex(Index['Run']):
@@ -283,13 +304,16 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
         return project.runs[run_uuid].load()
 
     time_now = time.time()
+    series = Series()
     run = Run(run_uuid=run_uuid,
-              start_time=time_now
+              start_time=time_now,
+              series=series.key
               )
     project.runs[run.run_uuid] = run.key
 
     run.save()
     project.save()
+    series.save()
 
     RunIndex.set(run.run_uuid, run.key)
 

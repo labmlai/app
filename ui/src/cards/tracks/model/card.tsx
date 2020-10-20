@@ -36,7 +36,10 @@ function Card(props: CardProps) {
         () => {
             history.push(`/model?run_uuid=${props.uuid}`);
         }
-    }>{chart}</div>
+    }>
+        <h3>Model</h3>
+        {chart}
+    </div>
 }
 
 function View(props: ViewProps) {
