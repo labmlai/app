@@ -4,7 +4,7 @@ import {SeriesModel} from "../../../models/run";
 import CACHE from "../../../cache/cache";
 import {useHistory} from "react-router-dom";
 import {getTimeDiff} from "../../../components/utils";
-import {BasicView, getChart} from "../basic/card";
+import {getChart, BasicView} from "../basic/card";
 
 function Card(props: CardProps) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
@@ -14,7 +14,7 @@ function Card(props: CardProps) {
     useEffect(() => {
         async function load() {
             try {
-                setTrack(await runCache.getMetricTracking())
+                setTrack(await runCache.getGradsTracking())
                 let status = await runCache.getStatus()
                 if (!status.isRunning) {
                     clearInterval(interval)
@@ -34,10 +34,10 @@ function Card(props: CardProps) {
 
     return <div className={'labml-card labml-card-action'} onClick={
         () => {
-            history.push(`/metrics?run_uuid=${props.uuid}`);
+            history.push(`/grads?run_uuid=${props.uuid}`);
         }
     }>
-        <h3>Metrics</h3>
+        <h3>Gradients</h3>
         {chart}
     </div>
 }
@@ -50,7 +50,7 @@ function View(props: ViewProps) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await runCache.getMetricTracking())
+            setTrack(await runCache.getGradsTracking())
         }
 
         load().then()

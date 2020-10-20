@@ -195,32 +195,29 @@ class SeriesModel:
 
 class Series(Model['Series']):
     tracking: Dict[str, SeriesDict]
-    is_grads: Dict[str, bool]
-    is_params: Dict[str, bool]
+    grads: List[str]
+    params: List[str]
+    metrics: List[str]
     step: int
 
     @classmethod
     def defaults(cls):
         return dict(tracking={},
-                    is_grads=False,
-                    is_params=False,
+                    grads=[],
+                    params=[],
+                    metrics=[],
                     step=0,
                     )
 
-    def get_tracking(self) -> List:
-        res = []
+    def get_track(self, ind) -> SeriesDict:
+        s = self.tracking[ind]
+        series: Dict[str, Any] = SeriesModel().load(s).summary
+        name = ind.split('.')
+        if name[-1] == 'mean':
+            name = name[:-1]
+        series['name'] = '.'.join(name)
 
-        for k, s in self.tracking.items():
-            series: Dict[str, Any] = SeriesModel().load(s).summary
-            name = k.split('.')
-            if name[-1] == 'mean':
-                name = name[:-1]
-            series['name'] = '.'.join(name)
-            res.append(series)
-
-        res.sort(key=lambda s: s['name'])
-
-        return res
+        return series
 
     def track(self, data: Dict[str, SeriesDict]) -> None:
         for ind, series in data.items():
@@ -229,6 +226,7 @@ class Series(Model['Series']):
 
     def _update_series(self, ind: str, series: SeriesDict) -> None:
         if ind not in self.tracking:
+            self.update_type(ind)
             self.tracking[ind] = SeriesModel().to_data()
             self.save()
 
@@ -237,6 +235,14 @@ class Series(Model['Series']):
 
         self.tracking[ind] = s.to_data()
         self.save()
+
+    def update_type(self, name: str) -> None:
+        if name.startswith('grad'):
+            self.grads.append(name)
+        elif name.startswith('param'):
+            self.params.append(name)
+        else:
+            self.metrics.append(name)
 
 
 class Run(Model['Run']):
@@ -287,10 +293,38 @@ class Run(Model['Run']):
         series = self.series.load()
         series.track(data)
 
-    def get_tracking(self) -> List:
+    def get_metrics_tracking(self) -> List:
         series = self.series.load()
 
-        return series.get_tracking()
+        res = []
+        for ind in series.metrics:
+            res.append(series.get_track(ind))
+
+        res.sort(key=lambda s: s['name'])
+
+        return res
+
+    def get_grads_tracking(self) -> List:
+        series = self.series.load()
+
+        res = []
+        for ind in series.grads:
+            res.append(series.get_track(ind))
+
+        res.sort(key=lambda s: s['name'])
+
+        return res
+
+    def get_params_tracking(self) -> List:
+        series = self.series.load()
+
+        res = []
+        for ind in series.params:
+            res.append(series.get_track(ind))
+
+        res.sort(key=lambda s: s['name'])
+
+        return res
 
 
 class RunIndex(Index['Run']):

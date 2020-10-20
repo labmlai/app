@@ -161,16 +161,17 @@ def get_user() -> Any:
     return jsonify(u.get_data())
 
 
-def get_tracking(run_uuid: str, is_model_pram: bool) -> Any:
+@login_required
+def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_tracking()
+        track_data = r.get_metrics_tracking()
         status_code = 200
 
-    print('tracking', is_model_pram, run_uuid)
+    print('tracking', run_uuid)
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -179,13 +180,39 @@ def get_tracking(run_uuid: str, is_model_pram: bool) -> Any:
 
 
 @login_required
-def get_model_tracking(run_uuid: str):
-    return get_tracking(run_uuid=run_uuid, is_model_pram=True)
+def get_params_tracking(run_uuid: str) -> Any:
+    track_data = []
+    status_code = 400
+
+    r = run.get_run(run_uuid)
+    if run:
+        track_data = r.get_params_tracking()
+        status_code = 200
+
+    print('tracking', run_uuid)
+
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
 
 
 @login_required
-def get_metric_tracking(run_uuid: str):
-    return get_tracking(run_uuid=run_uuid, is_model_pram=False)
+def get_grads_tracking(run_uuid: str) -> Any:
+    track_data = []
+    status_code = 400
+
+    r = run.get_run(run_uuid)
+    if run:
+        track_data = r.get_grads_tracking()
+        status_code = 200
+
+    print('tracking', run_uuid)
+
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
 
 
 def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
@@ -205,8 +232,9 @@ def add_handlers(app: flask.Flask):
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_status, 'status/<run_uuid>')
-    _add(app, 'POST', get_metric_tracking, 'metric_track/<run_uuid>')
-    _add(app, 'POST', get_model_tracking, 'model_track/<run_uuid>')
+    _add(app, 'POST', get_metrics_tracking, 'metrics_track/<run_uuid>')
+    _add(app, 'POST', get_grads_tracking, 'grads_track/<run_uuid>')
+    _add(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
 
     _add(app, 'POST', sign_in, 'auth/sign_in')
     _add(app, 'DELETE', sign_out, 'auth/sign_out')
