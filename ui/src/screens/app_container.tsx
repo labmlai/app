@@ -13,6 +13,8 @@ import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/tracks/metrics/card"
 import ParamsCard from "../cards/tracks/params/card"
 import GradsCard from "../cards/tracks/grads/card"
+import ModulesCard from "../cards/tracks/modules/card"
+import TimesCard from "../cards/tracks/times/card"
 
 import NETWORK from '../network'
 import {useErrorHandler} from "react-error-boundary";
@@ -54,6 +56,8 @@ function AppContainer() {
                 <Route path="/metrics" component={MetricsCard.View}/>
                 <Route path="/grads" component={GradsCard.View}/>
                 <Route path="/params" component={ParamsCard.View}/>
+                <Route path="/modules" component={ModulesCard.View}/>
+                <Route path="/times" component={TimesCard.View}/>
                 <Route path="/home" component={TabsView}/>
                 <Route path="/login" component={LoginView}/>
                 <Route path="/runs" component={RunsView}/>

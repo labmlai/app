@@ -41,7 +41,6 @@ function RightAxis(props: AxisProps) {
     return <g id={id}/>
 }
 
-
 interface SeriesProps {
     series: SeriesModel[]
     plotIdx: number[]
@@ -49,6 +48,35 @@ interface SeriesProps {
     onSelect?: (i: number) => void
 }
 
+export function SparkLines(props: SeriesProps) {
+    const windowWidth = props.width
+    const margin = Math.floor(windowWidth / 64)
+
+    let track = props.series
+    for (let s of track) {
+        let res: PointValue[] = []
+        for (let i = 0; i < s.step.length; ++i) {
+            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
+        }
+        s.series = res
+    }
+
+    const stepExtent = getExtent(track.map(s => s.series), d => d.step)
+
+    const rowWidth = Math.min(450, windowWidth - 3 * margin)
+    let sparkLines = track.map((s, i) => {
+        let onClick
+        if (props.onSelect != null) {
+            onClick = props.onSelect.bind(null, i)
+        }
+        return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]}
+                          stepExtent={stepExtent} width={rowWidth} onClick={onClick}/>
+    })
+
+    return <ListGroup className={'sparkline-list'}>
+        {sparkLines}
+    </ListGroup>
+}
 
 export function LineChart(props: SeriesProps) {
     const windowWidth = props.width
@@ -86,16 +114,6 @@ export function LineChart(props: SeriesProps) {
                          color={CHART_COLORS[filteredPlotIdx[i]]} key={s.name}/>
     })
 
-    const rowWidth = Math.min(450, windowWidth - 3 * margin)
-    let list = track.map((s, i) => {
-        let onClick
-        if (props.onSelect != null) {
-            onClick = props.onSelect.bind(null, i)
-        }
-        return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]} stepExtent={stepExtent}
-                          width={rowWidth} onClick={onClick}/>
-    })
-
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div>
@@ -116,8 +134,6 @@ export function LineChart(props: SeriesProps) {
             </g>
         </svg>
 
-        <ListGroup className={'sparkline-list'}>
-            {list}
-        </ListGroup>
+        <SparkLines series={props.series} plotIdx={props.plotIdx} width={props.width} onSelect={props.onSelect}/>
     </div>
 }

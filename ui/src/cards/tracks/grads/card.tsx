@@ -4,7 +4,7 @@ import {SeriesModel} from "../../../models/run";
 import CACHE from "../../../cache/cache";
 import {useHistory} from "react-router-dom";
 import {getTimeDiff} from "../../../components/utils";
-import {getChart, BasicView} from "../basic/card";
+import {getSparkLines, BasicView} from "../basic/card";
 
 function Card(props: CardProps) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
@@ -30,7 +30,7 @@ function Card(props: CardProps) {
         return () => clearInterval(interval)
     })
 
-    let chart = getChart(track, null, props.width)
+    let chart = getSparkLines(track, null, props.width)
 
     return <div className={'labml-card labml-card-action'} onClick={
         () => {

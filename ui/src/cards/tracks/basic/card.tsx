@@ -1,4 +1,4 @@
-import {LineChart} from "./components";
+import {LineChart, SparkLines} from "./components";
 import React, {useCallback, useState} from "react";
 import {SeriesModel} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
@@ -16,6 +16,22 @@ export function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, 
             plotIdx = defaultSeriesToPlot(series)
         }
         return <LineChart key={1} series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+    } else {
+        return <LabLoader isLoading={true}/>
+    }
+}
+
+
+export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+    if (track != null) {
+        if (track.length === 0) {
+            return null
+        }
+        let series = track as SeriesModel[]
+        if (plotIdx == null) {
+            plotIdx = defaultSeriesToPlot(series)
+        }
+        return <SparkLines series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
     } else {
         return <LabLoader isLoading={true}/>
     }

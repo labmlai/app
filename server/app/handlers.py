@@ -171,7 +171,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = r.get_metrics_tracking()
         status_code = 200
 
-    print('tracking', run_uuid)
+    print('metrics_tracking', run_uuid)
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -189,7 +189,43 @@ def get_params_tracking(run_uuid: str) -> Any:
         track_data = r.get_params_tracking()
         status_code = 200
 
-    print('tracking', run_uuid)
+    print('params_tracking', run_uuid)
+
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
+
+
+@login_required
+def get_modules_tracking(run_uuid: str) -> Any:
+    track_data = []
+    status_code = 400
+
+    r = run.get_run(run_uuid)
+    if run:
+        track_data = r.get_modules_tracking()
+        status_code = 200
+
+    print('modules_tracking', run_uuid)
+
+    response = make_response(jsonify(track_data))
+    response.status_code = status_code
+
+    return response
+
+
+@login_required
+def get_times_tracking(run_uuid: str) -> Any:
+    track_data = []
+    status_code = 400
+
+    r = run.get_run(run_uuid)
+    if run:
+        track_data = r.get_times_tracking()
+        status_code = 200
+
+    print('times_tracking', run_uuid)
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -207,7 +243,7 @@ def get_grads_tracking(run_uuid: str) -> Any:
         track_data = r.get_grads_tracking()
         status_code = 200
 
-    print('tracking', run_uuid)
+    print('grads_tracking', run_uuid)
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -232,9 +268,12 @@ def add_handlers(app: flask.Flask):
 
     _add(app, 'GET', get_run, 'run/<run_uuid>')
     _add(app, 'GET', get_status, 'status/<run_uuid>')
+
     _add(app, 'POST', get_metrics_tracking, 'metrics_track/<run_uuid>')
     _add(app, 'POST', get_grads_tracking, 'grads_track/<run_uuid>')
     _add(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
+    _add(app, 'POST', get_modules_tracking, 'modules_track/<run_uuid>')
+    _add(app, 'POST', get_times_tracking, 'times_track/<run_uuid>')
 
     _add(app, 'POST', sign_in, 'auth/sign_in')
     _add(app, 'DELETE', sign_out, 'auth/sign_out')

@@ -28,6 +28,14 @@ class NETWORK {
         return this.axiosInstance.post(`/params_track/${run_uuid}`, {})
     }
 
+    static async get_modules_tracking(run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/modules_track/${run_uuid}`, {})
+    }
+
+    static async get_times_tracking(run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/times_track/${run_uuid}`, {})
+    }
+
     static async get_runs(labml_token: string | null): Promise<any> {
         return this.axiosInstance.get(`/runs/${labml_token}`, {})
     }

@@ -197,7 +197,9 @@ class Series(Model['Series']):
     tracking: Dict[str, SeriesDict]
     grads: List[str]
     params: List[str]
+    modules: List[str]
     metrics: List[str]
+    times: List[str]
     step: int
 
     @classmethod
@@ -206,6 +208,8 @@ class Series(Model['Series']):
                     grads=[],
                     params=[],
                     metrics=[],
+                    modules=[],
+                    times=[],
                     step=0,
                     )
 
@@ -237,10 +241,14 @@ class Series(Model['Series']):
         self.save()
 
     def update_type(self, name: str) -> None:
-        if name.startswith('grad'):
+        if name.startswith('grad.'):
             self.grads.append(name)
-        elif name.startswith('param'):
+        elif name.startswith('param.'):
             self.params.append(name)
+        elif name.startswith('module.'):
+            self.modules.append(name)
+        elif name.startswith('time.'):
+            self.times.append(name)
         else:
             self.metrics.append(name)
 
@@ -320,6 +328,30 @@ class Run(Model['Run']):
 
         res = []
         for ind in series.params:
+            res.append(series.get_track(ind))
+
+        res.sort(key=lambda s: s['name'])
+
+        return res
+
+    def get_modules_tracking(self) -> List:
+        series = self.series.load()
+
+        res = []
+        for ind in series.modules:
+            res.append(series.get_track(ind))
+
+        res.sort(key=lambda s: s['name'])
+
+        print(res)
+
+        return res
+
+    def get_times_tracking(self) -> List:
+        series = self.series.load()
+
+        res = []
+        for ind in series.times:
             res.append(series.get_track(ind))
 
         res.sort(key=lambda s: s['name'])

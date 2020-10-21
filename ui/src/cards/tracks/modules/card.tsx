@@ -14,7 +14,7 @@ function Card(props: CardProps) {
     useEffect(() => {
         async function load() {
             try {
-                setTrack(await runCache.getParamsTracking())
+                setTrack(await runCache.getModulesTracking())
                 let status = await runCache.getStatus()
                 if (!status.isRunning) {
                     clearInterval(interval)
@@ -34,10 +34,10 @@ function Card(props: CardProps) {
 
     return <div className={'labml-card labml-card-action'} onClick={
         () => {
-            history.push(`/params?run_uuid=${props.uuid}`);
+            history.push(`/modules?run_uuid=${props.uuid}`);
         }
     }>
-        <h3>Model Parameters</h3>
+        <h3>Module Outputs</h3>
         {chart}
     </div>
 }
@@ -50,7 +50,7 @@ function View(props: ViewProps) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await runCache.getParamsTracking())
+            setTrack(await runCache.getModulesTracking())
         }
 
         load().then()
