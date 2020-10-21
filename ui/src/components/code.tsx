@@ -19,7 +19,9 @@ export function Code(props: CodeProps) {
         <div className={'text-center'}>
             <h3 className={'text-dark mt-5'}>You don't have any experiments</h3>
             <h5 className={'text-dark mt-3'}><a href={'https://web.lab-ml.com/runs?labml_token=samples'}
-                                                target="_blank"> Check our sample experiments list</a></h5>
+                                                rel="noopener noreferrer" target="_blank"> Check our sample experiments
+                list</a></h5>
+
             <h6>or</h6>
             <h6 className={'text-secondary'}>Start monitoring your models by adding just two lines of code, here is an
                 example</h6>

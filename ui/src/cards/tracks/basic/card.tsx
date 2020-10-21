@@ -8,7 +8,7 @@ import {LabLoader} from "../../../components/loader";
 
 export function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
     if (track != null) {
-        if (track.length == 0) {
+        if (track.length === 0) {
             return null
         }
         let series = track as SeriesModel[]

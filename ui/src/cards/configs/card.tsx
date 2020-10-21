@@ -26,7 +26,7 @@ function Card(props: CardProps) {
     let configsView
     if (run != null) {
         configsView = <ConfigsView configs={run.configs} width={props.width} isHyperParamOnly={true}/>
-        if (run.configs.length == 0) {
+        if (run.configs.length === 0) {
             return null
         }
     } else {
