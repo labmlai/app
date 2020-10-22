@@ -39,7 +39,7 @@ function Card(props: CardProps) {
             history.push(`/metrics?run_uuid=${props.uuid}`);
         }
     }>
-        <h3>{ANALYSIS}</h3>
+        <h3 className={'header'}>{ANALYSIS}</h3>
         {chart}
     </div>
 }

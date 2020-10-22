@@ -40,7 +40,7 @@ function Card(props: CardProps) {
                 history.push(`/configs?run_uuid=${run.uuid}`);
             }
         }>
-            <h3>Configurations</h3>
+            <h3 className={'header'}>Configurations</h3>
             {configsView}
         </div>
     </div>
