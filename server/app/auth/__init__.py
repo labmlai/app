@@ -9,7 +9,7 @@ from ..db import session
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
-def process_parameters(func):
+def process_parameters(func) -> functools.wraps:
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         _kwargs = {}
@@ -25,7 +25,7 @@ def process_parameters(func):
 
 
 @process_parameters
-def is_runs_permitted(func):
+def is_runs_permitted(func) -> functools.wraps:
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         labml_token = kwargs.get('labml_token', '')
@@ -41,7 +41,7 @@ def is_runs_permitted(func):
     return wrapper
 
 
-def login_required(func):
+def login_required(func) -> functools.wraps:
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         session_id = request.cookies.get('session_id')

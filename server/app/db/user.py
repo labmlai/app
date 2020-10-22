@@ -55,7 +55,7 @@ class User(Model['User']):
                     )
 
     @property
-    def default_project(self):
+    def default_project(self) -> Project:
         return self.projects[0].load()
 
     def get_data(self) -> Dict[str, any]:

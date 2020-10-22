@@ -23,11 +23,11 @@ def get_session() -> session.Session:
     return session.get_or_create(session_id)
 
 
-def default() -> Any:
+def default() -> flask.Response:
     return make_response(redirect(settings.WEB_URL))
 
 
-def sign_in() -> Any:
+def sign_in() -> flask.Response:
     json = request.json
 
     info = user.AuthOInfo(**json)
@@ -49,7 +49,7 @@ def sign_in() -> Any:
     return response
 
 
-def sign_out() -> Any:
+def sign_out() -> flask.Response:
     session_id = request.cookies.get('session_id')
     s = session.get_or_create(session_id)
 
@@ -65,7 +65,7 @@ def sign_out() -> Any:
     return response
 
 
-def update_run() -> Any:
+def update_run() -> flask.Response:
     labml_token = request.args.get('labml_token')
 
     p = user.get_project(labml_token=labml_token)
@@ -92,7 +92,7 @@ def update_run() -> Any:
 
 
 @login_required
-def get_run(run_uuid: str) -> Any:
+def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
     status_code = 400
 
@@ -110,7 +110,7 @@ def get_run(run_uuid: str) -> Any:
 
 
 @login_required
-def get_status(run_uuid: str) -> Any:
+def get_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
 
@@ -129,7 +129,7 @@ def get_status(run_uuid: str) -> Any:
 
 @login_required
 @is_runs_permitted
-def get_runs(labml_token: str) -> Any:
+def get_runs(labml_token: str) -> flask.Response:
     s = get_session()
 
     if labml_token:

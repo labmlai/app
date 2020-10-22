@@ -149,7 +149,7 @@ class SeriesModel:
 
         return self.smooth_value(hi)
 
-    def mean_angle(self, smoothed: List[float], aspect_ratio: float):
+    def mean_angle(self, smoothed: List[float], aspect_ratio: float) -> Union[np.ndarray, float]:
         x_range = max(self.last_step) - min(self.last_step)
         y_extent = self.get_extent(True)
         y_range = y_extent[1] - y_extent[0]
@@ -186,7 +186,7 @@ class SeriesModel:
 
         return smoothed
 
-    def load(self, data):
+    def load(self, data) -> object:
         self.step = data['step']
         self.last_step = data['last_step']
         self.value = data['value']

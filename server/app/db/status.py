@@ -38,7 +38,7 @@ class Status(Model['Status']):
             'run_status': self.run_status.load().to_dict()
         }
 
-    def update_time_status(self, data: Dict[str, any]):
+    def update_time_status(self, data: Dict[str, any]) -> None:
         self.last_updated_time = time.time()
 
         s = data.get('status', {})
