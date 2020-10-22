@@ -46,20 +46,20 @@ export function SparkLine(props: SparkLineProps) {
         </span>
     }
     let className = 'sparkline-list-item'
-    if(props.onClick != null && props.selected >= 0) {
+    if (props.onClick != null && props.selected >= 0) {
         className += ' selected'
     }
+
     return <ListGroup.Item className={className} action={props.onClick != null} onClick={props.onClick}>
         <span style={{color: color, width: `${titleWidth}px`}}>{props.name}</span>
-        <svg className={'sparkline'}
-             height={25} width={chartWidth}>
+        <svg className={'sparkline'} height={25} width={chartWidth}>
             <g transform={`translate(${0}, 25)`}>
                 <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
             </g>
         </svg>
         {value}
-        {/*<clipPath id={`clip-${props.name}`}>*/}
-        {/*    <rect width={100} height={20}/>*/}
-        {/*</clipPath>*/}
+        <svg height={25} width={titleWidth} transform={`translate(${-0.75 * titleWidth}, 25)`}>
+            <line x1={Math.abs(last.value)} y1={0} x2={0} y2={0} style={{stroke: "red", strokeWidth: "5"}}/>
+        </svg>
     </ListGroup.Item>
 }
