@@ -40,6 +40,7 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
 
 interface TrackViewProps {
     track: SeriesModel[] | null
+    name : string
 }
 
 export function BasicView(props: TrackViewProps) {
@@ -65,6 +66,7 @@ export function BasicView(props: TrackViewProps) {
 
 
     return <div className={'page'} style={{width: actualWidth}}>
+         <h3 className={'header'}>{props.name}</h3>
         <div className={'labml-card'}>{chart}</div>
     </div>
 }

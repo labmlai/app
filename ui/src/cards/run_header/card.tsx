@@ -8,6 +8,23 @@ import {LabLoader} from "../../components/loader";
 import {StatusView} from "../../components/status";
 import "./style.scss"
 
+interface RunViewProps {
+    run: Run
+    status: Status
+}
+
+function RunView(props: RunViewProps) {
+    return <div>
+        <div className={'run-info'}>
+            <StatusView status={props.status.run_status} lastUpdatedTime={props.status.last_updated_time}/>
+            <h3>{props.run.name}</h3>
+            <h5>{props.run.comment}</h5>
+            <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}</div>
+            <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
+        </div>
+    </div>
+}
+
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as (Status | null))
@@ -50,15 +67,7 @@ function Card(props: CardProps) {
             history.push(`/404`)
             return null
         }
-        runView = <div>
-            <div className={'run-info'}>
-                <StatusView status={status.run_status} lastUpdatedTime={status.last_updated_time}/>
-                <h3>{run.name}</h3>
-                <h5>{run.comment}</h5>
-                <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.uuid}</div>
-                <div className={'start-time'}>Started {formatTime(run.start_time)}</div>
-            </div>
-        </div>
+        runView = <RunView run={run} status={status}/>
     } else {
         return <LabLoader isLoading={true}/>
     }
@@ -71,5 +80,6 @@ function Card(props: CardProps) {
 }
 
 export default {
+    RunView,
     Card
 }
