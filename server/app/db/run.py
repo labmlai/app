@@ -8,6 +8,7 @@ from uuid import uuid4
 from labml_db import Model, Key, Index
 
 from . import user
+from ..enums import Enums
 from .. import settings
 
 
@@ -219,6 +220,8 @@ class Series(Model['Series']):
         name = ind.split('.')
         if name[-1] == 'mean':
             name = name[:-1]
+        if name[0] in [Enums.GRAD, Enums.TIME, Enums.MODULE, Enums.PARAM]:
+            name = name[1:]
         series['name'] = '.'.join(name)
 
         return series
@@ -241,13 +244,13 @@ class Series(Model['Series']):
         self.save()
 
     def update_type(self, name: str) -> None:
-        if name.startswith('grad.'):
+        if name.startswith(f'{Enums.GRAD}.'):
             self.grads.append(name)
-        elif name.startswith('param.'):
+        elif name.startswith(f'{Enums.PARAM}.'):
             self.params.append(name)
-        elif name.startswith('module.'):
+        elif name.startswith(f'{Enums.MODULE}.'):
             self.modules.append(name)
-        elif name.startswith('time.'):
+        elif name.startswith(f'{Enums.TIME}.'):
             self.times.append(name)
         else:
             self.metrics.append(name)
@@ -342,8 +345,6 @@ class Run(Model['Run']):
             res.append(series.get_track(ind))
 
         res.sort(key=lambda s: s['name'])
-
-        print(res)
 
         return res
 

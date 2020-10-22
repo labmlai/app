@@ -37,7 +37,7 @@ function Card(props: CardProps) {
             history.push(`/grads?run_uuid=${props.uuid}`);
         }
     }>
-        <h3>Gradients</h3>
+        <h3>Model Gradients</h3>
         {chart}
     </div>
 }
