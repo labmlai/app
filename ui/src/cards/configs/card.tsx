@@ -1,11 +1,12 @@
 import {ConfigsView} from "./components";
 import React, {useEffect, useState} from "react";
-import {Run} from "../../models/run";
+import {Run, Status} from "../../models/run";
 import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
 import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
 import {LabLoader} from "../../components/loader";
+import RunHeaderCard from "../run_header/card";
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
@@ -50,12 +51,14 @@ function View(props: ViewProps) {
     const runUUID = params.get('run_uuid') as string
     const runCache = CACHE.get(runUUID)
     let [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
         async function load() {
             setRun(await runCache.getRun())
+            setStatus(await runCache.getStatus())
         }
 
         load().then()
@@ -69,7 +72,8 @@ function View(props: ViewProps) {
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
-        <h3 className={'header'}>Configurations</h3>
+         <RunHeaderCard.RunView run={run} status={status}/>
+        <h2 className={'header text-center'}>Configurations</h2>
         <div className={'labml-card'}>{configsView}</div>
     </div>
 }
