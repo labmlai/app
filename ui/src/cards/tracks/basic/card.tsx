@@ -1,8 +1,10 @@
 import {LineChart, SparkLines} from "./components";
-import React, {useCallback, useState} from "react";
-import {SeriesModel} from "../../../models/run";
+import React, {useCallback, useEffect, useState} from "react";
+import {Run, SeriesModel, Status} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
+import RunHeaderCard from "../../run_header/card"
+import CACHE from "../../../cache/cache";
 import {LabLoader} from "../../../components/loader";
 
 
@@ -39,14 +41,28 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
 
 
 interface TrackViewProps {
+    runUUID: string
     track: SeriesModel[] | null
-    name : string
+    name: string
 }
 
 export function BasicView(props: TrackViewProps) {
+    const runCache = CACHE.get(props.runUUID)
+    const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
+
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
+
+    useEffect(() => {
+        async function load() {
+            setRun(await runCache.getRun())
+            setStatus(await runCache.getStatus())
+        }
+
+        load().then()
+    })
 
     let toggleChart = useCallback((idx: number) => {
         if (plotIdx[idx] >= 0) {
@@ -66,7 +82,8 @@ export function BasicView(props: TrackViewProps) {
 
 
     return <div className={'page'} style={{width: actualWidth}}>
-         <h3 className={'header'}>{props.name}</h3>
+        <RunHeaderCard.RunView run={run} status={status}/>
+        <h2 className={'header text-center'}>{props.name}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
 }

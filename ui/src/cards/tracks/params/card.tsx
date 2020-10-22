@@ -58,7 +58,7 @@ function View(props: ViewProps) {
         load().then()
     })
 
-    return <BasicView track={track} name={ANALYSIS}/>
+    return <BasicView track={track} name={ANALYSIS} runUUID={runUUID}/>
 }
 
 export default {

@@ -6,7 +6,7 @@ import {useHistory} from "react-router-dom";
 import {getTimeDiff} from "../../../components/utils";
 import {BasicView, getSparkLines} from "../basic/card";
 
-const ANALYSIS = 'Time'
+const ANALYSIS = 'Time Tracking'
 
 function Card(props: CardProps) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
@@ -58,7 +58,7 @@ function View(props: ViewProps) {
         load().then()
     })
 
-    return <BasicView track={track} name={ANALYSIS}/>
+    return <BasicView track={track} name={ANALYSIS} runUUID={runUUID}/>
 }
 
 export default {

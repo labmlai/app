@@ -2,7 +2,6 @@ import {CardProps} from "../types";
 import React, {useEffect, useState} from "react";
 import {Run, Status} from "../../models/run";
 import CACHE from "../../cache/cache"
-import {useHistory} from "react-router-dom";
 import {formatTime, getTimeDiff} from "../../components/utils";
 import {LabLoader} from "../../components/loader";
 import {StatusView} from "../../components/status";
@@ -14,22 +13,32 @@ interface RunViewProps {
 }
 
 function RunView(props: RunViewProps) {
-    return <div>
-        <div className={'run-info'}>
-            <StatusView status={props.status.run_status} lastUpdatedTime={props.status.last_updated_time}/>
-            <h3>{props.run.name}</h3>
-            <h5>{props.run.comment}</h5>
-            <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}</div>
-            <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
+
+    let runView = null
+    if (props.run != null && props.status != null) {
+        runView = <div>
+            <div className={'run-info'}>
+                <StatusView status={props.status.run_status} lastUpdatedTime={props.status.last_updated_time}/>
+                <h3>{props.run.name}</h3>
+                <h5>{props.run.comment}</h5>
+                <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}
+                </div>
+                <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
+            </div>
         </div>
+    } else {
+        return <LabLoader isLoading={true}/>
+    }
+
+    return <div className={'labml-card'}>
+        {runView}
     </div>
 }
 
 function Card(props: CardProps) {
-    let [run, setRun] = useState(null as unknown as Run)
-    const [status, setStatus] = useState(null as (Status | null))
+    const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
     const runCache = CACHE.get(props.uuid)
-    const history = useHistory();
 
     useEffect(() => {
         async function load() {
@@ -61,21 +70,8 @@ function Card(props: CardProps) {
         return () => clearInterval(interval)
     })
 
-    let runView = null
-    if (run != null && status != null) {
-        if (Object.keys(run).length === 0) {
-            history.push(`/404`)
-            return null
-        }
-        runView = <RunView run={run} status={status}/>
-    } else {
-        return <LabLoader isLoading={true}/>
-    }
-
     return <div>
-        <div className={'labml-card'}>
-            {runView}
-        </div>
+        <RunView run={run} status={status}/>
     </div>
 }
 
