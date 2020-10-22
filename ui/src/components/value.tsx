@@ -26,7 +26,7 @@ export function formatInt(value: number) {
     return numberWithCommas(str)
 }
 
-export function FormattedValue(props: {value: any}) {
+export function FormattedValue(props: { value: any }) {
     let value = props.value
 
     if (typeof value === 'boolean') {
@@ -54,4 +54,8 @@ export function FormattedValue(props: {value: any}) {
     } else {
         return <span className={'unknown'}>{value}</span>
     }
+}
+
+export function scaleValue(value: number, minValue: number, maxValue: number, rangeMin: number, rangeMax: number) {
+    return (rangeMax - rangeMin) * (value - minValue) / (maxValue - minValue) + rangeMin
 }

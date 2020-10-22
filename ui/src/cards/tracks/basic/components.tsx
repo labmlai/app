@@ -5,7 +5,7 @@ import {PointValue, SeriesModel} from "../../../models/run";
 import {ListGroup} from "react-bootstrap"
 import {CHART_COLORS} from "./constants";
 import {LinePlot} from "./line_plot";
-import {getExtent, getScale} from "./utils";
+import {getExtent, getScale, toPointValues} from "./utils";
 import {SparkLine} from "./sparkline";
 
 
@@ -52,14 +52,16 @@ export function SparkLines(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
-    let track = props.series
+    let track = toPointValues(props.series)
+
+    let lastValues: number[] = []
     for (let s of track) {
-        let res: PointValue[] = []
-        for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
-        }
-        s.series = res
+        let series = s.series
+        lastValues.push(series[series.length - 1].value)
     }
+
+    let maxLastValue = Math.max(...lastValues)
+    let minLastValue = Math.min(...lastValues)
 
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
 
@@ -70,7 +72,8 @@ export function SparkLines(props: SeriesProps) {
             onClick = props.onSelect.bind(null, i)
         }
         return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]}
-                          stepExtent={stepExtent} width={rowWidth} onClick={onClick}/>
+                          stepExtent={stepExtent} width={rowWidth} onClick={onClick} minLastValue={minLastValue}
+                          maxLastValue={maxLastValue}/>
     })
 
     return <ListGroup className={'sparkline-list'}>
@@ -85,14 +88,7 @@ export function LineChart(props: SeriesProps) {
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
 
-    let track = props.series
-    for (let s of track) {
-        let res: PointValue[] = []
-        for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
-        }
-        s.series = res
-    }
+    let track = toPointValues(props.series)
 
     if (track.length === 0) {
         return <div/>
