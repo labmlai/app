@@ -64,7 +64,7 @@ export function SparkLine(props: SparkLineProps) {
             </g>
         </svg>
         {value}
-        <svg height={25} width={lineWidth} transform={`translate(${-0.75 * titleWidth}, 25)`}>
+        <svg className={'sparkline'} height={25} width={lineWidth} transform={`translate(${-0.75 * titleWidth}, 25)`}>
             <line x1={0} y1={0} x2={lastValue} y2={0}
                   style={{stroke: last.value > 0 ? "green" :"lightgreen", strokeWidth: "5"}}/>
         </svg>
