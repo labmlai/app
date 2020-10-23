@@ -68,8 +68,8 @@ export function pickHex(weight: number) {
     let w1: number = weight
     let w2: number = 1 - w1
 
-    const color1 = [58, 58, 56]
-    const color2 = [182, 182, 179]
+    const color1 = [53, 88, 108]
+    const color2 = [89, 149, 183]
 
     let rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
         Math.round(color1[1] * w1 + color2[1] * w2),
