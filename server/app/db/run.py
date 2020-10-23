@@ -8,6 +8,7 @@ from uuid import uuid4
 from labml_db import Model, Key, Index
 
 from . import user
+from .status import create_status, Status
 from ..enums import Enums
 from .. import settings
 
@@ -261,6 +262,7 @@ class Run(Model['Run']):
     comment: str
     start_time: float
     run_uuid: str
+    status: Key[Status]
     series: Key[Series]
     configs: Dict[str, any]
     errors: List[str]
@@ -272,6 +274,7 @@ class Run(Model['Run']):
                     start_time=None,
                     run_uuid='',
                     series=None,
+                    status=None,
                     configs={},
                     errors=[]
                     )
@@ -377,10 +380,13 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
         return project.runs[run_uuid].load()
 
     time_now = time.time()
+
     series = Series()
+    status = create_status()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
-              series=series.key
+              series=series.key,
+              status=status.key
               )
     project.runs[run.run_uuid] = run.key
 

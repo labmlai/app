@@ -79,7 +79,7 @@ def update_run() -> flask.Response:
 
     run_uuid = json.get('run_uuid', '')
     r = run.get_or_create(run_uuid, labml_token)
-    s = status.get_or_create(run_uuid)
+    s = r.status.load()
 
     r.update_run(json)
     s.update_time_status(json)

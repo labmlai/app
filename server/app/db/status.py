@@ -1,9 +1,10 @@
 import time
 from typing import Dict, Union
 
-from labml_db import Model, Index, Key
+from labml_db import Model, Key
 
 from ..enums import Enums
+from . import run
 
 
 class RunStatus(Model['RunStatusModel']):
@@ -20,20 +21,17 @@ class RunStatus(Model['RunStatusModel']):
 
 
 class Status(Model['Status']):
-    run_uuid: str
     last_updated_time: float
     run_status: Key[RunStatus]
 
     @classmethod
     def defaults(cls):
-        return dict(run_uuid='',
-                    last_updated_time=None,
+        return dict(last_updated_time=None,
                     run_status=None
                     )
 
     def get_data(self) -> Dict[str, any]:
         return {
-            'run_uuid': self.run_uuid,
             'last_updated_time': self.last_updated_time,
             'run_status': self.run_status.load().to_dict()
         }
@@ -54,35 +52,23 @@ class Status(Model['Status']):
         self.save()
 
 
-class StatusIndex(Index['Status']):
-    pass
-
-
 def get_status(run_uuid: str) -> Union[None, Status]:
-    status_key = StatusIndex.get(run_uuid)
+    r = run.get_run(run_uuid)
 
-    if status_key:
-        return status_key.load()
+    if run:
+        return r.status.load()
 
     return None
 
 
-def get_or_create(run_uuid: str) -> Status:
-    status_key = StatusIndex.get(run_uuid)
+def create_status() -> Status:
+    time_now = time.time()
 
-    if not status_key:
-        time_now = time.time()
+    run_status = RunStatus(status=Enums.RUN_IN_PROGRESS, time=time_now)
+    status = Status(last_updated_time=time_now,
+                    run_status=run_status.key
+                    )
+    status.save()
+    run_status.save()
 
-        run_status = RunStatus(status=Enums.RUN_IN_PROGRESS, time=time_now)
-        status = Status(run_uuid=run_uuid,
-                        last_updated_time=time_now,
-                        run_status=run_status.key
-                        )
-        status.save()
-        run_status.save()
-
-        StatusIndex.set(status.run_uuid, status.key)
-
-        return status
-
-    return status_key.load()
+    return status

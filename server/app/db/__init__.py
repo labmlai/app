@@ -3,7 +3,7 @@ from pathlib import Path
 from labml_db import Model, Index, FileDbDriver, JsonSerializer, FileIndexDbDriver, YamlSerializer
 
 from .user import Project, ProjectIndex, User, UserIndex
-from .status import Status, RunStatus, StatusIndex
+from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex, Series
 
@@ -25,6 +25,5 @@ Index.set_db_drivers([
     FileIndexDbDriver(YamlSerializer(), ProjectIndex, Path(f'{DATA_PATH}/ProjectIndex.yaml')),
     FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/UserIndex.yaml')),
     FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/SessionIndex.yaml')),
-    FileIndexDbDriver(YamlSerializer(), StatusIndex, Path(f'{DATA_PATH}/StatusIndex.yaml')),
     FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
 ])
