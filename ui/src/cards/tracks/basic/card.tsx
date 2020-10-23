@@ -6,6 +6,7 @@ import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"
 import CACHE from "../../../cache/cache";
 import {LabLoader} from "../../../components/loader";
+import {BackButton} from "../../../components/back_button"
 
 
 export function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
@@ -82,6 +83,7 @@ export function BasicView(props: TrackViewProps) {
 
 
     return <div className={'page'} style={{width: actualWidth}}>
+        <BackButton/>
         <RunHeaderCard.RunView run={run} status={status}/>
         <h2 className={'header text-center'}>{props.name}</h2>
         <div className={'labml-card'}>{chart}</div>

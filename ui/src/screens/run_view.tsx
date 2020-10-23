@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from "react"
 
 import "./run_view.scss"
+import {BackButton} from "../components/back_button"
 import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/tracks/metrics/card"
 import GradsCard from "../cards/tracks/grads/card"
@@ -45,6 +46,7 @@ function RunView(props: RunProps) {
 
     return <div className={'run page'} style={{width: actualWidth}}>
         {errorElem}
+        <BackButton/>
         {lastUpdatedElem}
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}
                             errorCallback={errorCallback} lastUpdatedCallback={lastUpdatedCallback}/>
