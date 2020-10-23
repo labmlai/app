@@ -7,6 +7,7 @@ import useWindowDimensions from "../../utils/window_dimensions";
 import {CardProps, ViewProps} from "../types";
 import {LabLoader} from "../../components/loader";
 import RunHeaderCard from "../run_header/card";
+import {BackButton} from "../../components/back_button"
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
@@ -72,7 +73,8 @@ function View(props: ViewProps) {
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
-         <RunHeaderCard.RunView run={run} status={status}/>
+        <BackButton/>
+        <RunHeaderCard.RunView run={run} status={status}/>
         <h2 className={'header text-center'}>Configurations</h2>
         <div className={'labml-card'}>{configsView}</div>
     </div>
