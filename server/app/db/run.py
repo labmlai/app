@@ -307,60 +307,23 @@ class Run(Model['Run']):
         series = self.series.load()
         series.track(data)
 
-    def get_metrics_tracking(self) -> List:
+    def get_tracking(self, track_type: str = '') -> List:
         series = self.series.load()
 
         res = []
-        for ind in series.metrics:
-            res.append(series.get_track(ind))
+        if track_type == Enums.TIME:
+            tracks = series.times
+        elif track_type == Enums.GRAD:
+            tracks = series.grads
+        elif track_type == Enums.PARAM:
+            tracks = series.params
+        elif track_type == Enums.MODULE:
+            tracks = series.modules
+        else:
+            tracks = series.metrics
 
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    def get_times_tracking(self) -> List:
-        series = self.series.load()
-
-        res = []
-        for ind in series.times:
-            res.append(series.get_track(ind))
-
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    def get_grads_tracking(self) -> List:
-        series = self.series.load()
-
-        res = []
-        for ind in series.grads:
-            if 'l2' not in ind:
-                continue
-            res.append(series.get_track(ind))
-
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    def get_params_tracking(self) -> List:
-        series = self.series.load()
-
-        res = []
-        for ind in series.params:
-            if 'l2' not in ind:
-                continue
-            res.append(series.get_track(ind))
-
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    def get_modules_tracking(self) -> List:
-        series = self.series.load()
-
-        res = []
-        for ind in series.modules:
-            if 'l2' not in ind:
+        for ind in tracks:
+            if track_type in [Enums.MODULE, Enums.PARAM, Enums.GRAD] and 'l2' not in ind:
                 continue
             res.append(series.get_track(ind))
 

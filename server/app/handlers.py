@@ -10,6 +10,7 @@ from .db import status
 from .db import session
 from .db import run
 
+from .enums import Enums
 from . import settings
 
 from .auth import login_required, is_runs_permitted
@@ -168,7 +169,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_metrics_tracking()
+        track_data = r.get_tracking()
         status_code = 200
 
     print('metrics_tracking', run_uuid)
@@ -186,7 +187,7 @@ def get_params_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_params_tracking()
+        track_data = r.get_tracking(Enums.PARAM)
         status_code = 200
 
     print('params_tracking', run_uuid)
@@ -204,7 +205,7 @@ def get_modules_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_modules_tracking()
+        track_data = r.get_tracking(Enums.MODULE)
         status_code = 200
 
     print('modules_tracking', run_uuid)
@@ -222,7 +223,7 @@ def get_times_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_times_tracking()
+        track_data = r.get_tracking(Enums.TIME)
         status_code = 200
 
     print('times_tracking', run_uuid)
@@ -240,7 +241,7 @@ def get_grads_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_grads_tracking()
+        track_data = r.get_tracking(Enums.GRAD)
         status_code = 200
 
     print('grads_tracking', run_uuid)
