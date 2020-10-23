@@ -186,7 +186,7 @@ class SeriesModel:
 
         return smoothed
 
-    def load(self, data) -> object:
+    def load(self, data):
         self.step = data['step']
         self.last_step = data['last_step']
         self.value = data['value']
@@ -315,11 +315,24 @@ class Run(Model['Run']):
 
         return res
 
+    def get_times_tracking(self) -> List:
+        series = self.series.load()
+
+        res = []
+        for ind in series.times:
+            res.append(series.get_track(ind))
+
+        res.sort(key=lambda s: s['name'])
+
+        return res
+
     def get_grads_tracking(self) -> List:
         series = self.series.load()
 
         res = []
         for ind in series.grads:
+            if 'l2' not in ind:
+                continue
             res.append(series.get_track(ind))
 
         res.sort(key=lambda s: s['name'])
@@ -331,6 +344,8 @@ class Run(Model['Run']):
 
         res = []
         for ind in series.params:
+            if 'l2' not in ind:
+                continue
             res.append(series.get_track(ind))
 
         res.sort(key=lambda s: s['name'])
@@ -342,17 +357,8 @@ class Run(Model['Run']):
 
         res = []
         for ind in series.modules:
-            res.append(series.get_track(ind))
-
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    def get_times_tracking(self) -> List:
-        series = self.series.load()
-
-        res = []
-        for ind in series.times:
+            if 'l2' not in ind:
+                continue
             res.append(series.get_track(ind))
 
         res.sort(key=lambda s: s['name'])
