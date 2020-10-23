@@ -13,7 +13,6 @@ interface RunViewProps {
 }
 
 function RunView(props: RunViewProps) {
-
     let runView = null
     if (props.run != null && props.status != null) {
         runView = <div>

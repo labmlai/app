@@ -31,9 +31,12 @@ class Status(Model['Status']):
                     )
 
     def get_data(self) -> Dict[str, any]:
+        run_status = self.run_status.load().to_dict()
+        run_status['status'] = self.get_actual_status(run_status.get('status', ''))
+
         return {
             'last_updated_time': self.last_updated_time,
-            'run_status': self.run_status.load().to_dict()
+            'run_status': run_status
         }
 
     def update_time_status(self, data: Dict[str, any]) -> None:
@@ -50,6 +53,22 @@ class Status(Model['Status']):
             run_status.save()
 
         self.save()
+
+    def get_actual_status(self, status: str) -> str:
+        not_responding = False
+
+        if status == Enums.RUN_IN_PROGRESS:
+            if self.last_updated_time is not None:
+                time_diff = (time.time() - self.last_updated_time) / 60
+                if time_diff > 15:
+                    not_responding = True
+
+        if not_responding:
+            return Enums.RUN_NOT_RESPONDING
+        elif status == '':
+            return Enums.RUN_UNKNOWN
+        else:
+            return status
 
 
 def get_status(run_uuid: str) -> Union[None, Status]:
