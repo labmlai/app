@@ -29,7 +29,7 @@ function RunsListView(props: RunsListProps) {
     }, [])
 
     useEffect(() => {
-        document.title = "LabML: Runs list"
+        document.title = "LabML: Home"
     }, [labMlToken])
 
     return <div>
