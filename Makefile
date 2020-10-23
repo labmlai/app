@@ -27,4 +27,3 @@ help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
 
-rsync -zravuKLt --perms --executability -e "ssh -o  StrictHostKeyChecking=no -i /Users/nipunwijerathne/keys/labml.pem" ./ ubuntu@ec2-3-138-163-159.us-east-2.compute.amazonaws.com:~/labml/app/ui/build/
