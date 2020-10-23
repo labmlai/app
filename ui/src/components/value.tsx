@@ -42,11 +42,11 @@ export function FormattedValue(props: { value: any }) {
     } else if (value instanceof Array) {
         let elements = [<span key={'start'} className={'subtle'}>{'['}</span>]
 
-        for(let i = 0; i < value.length; ++i) {
+        for (let i = 0; i < value.length; ++i) {
             if (i > 0) {
                 elements.push(<span key={`sep_${i}`} className={'subtle'}>{', '}</span>)
             }
-            elements.push(<FormattedValue key={i} value={value[i]}/> )
+            elements.push(<FormattedValue key={i} value={value[i]}/>)
         }
 
         elements.push(<span key={'end'} className={'subtle'}>{']'}</span>)
@@ -56,6 +56,25 @@ export function FormattedValue(props: { value: any }) {
     }
 }
 
-export function scaleValue(value: number, minValue: number, maxValue: number, rangeMin: number, rangeMax: number) {
-    return (rangeMax - rangeMin) * (value - minValue) / (maxValue - minValue) + rangeMin
+export function scaleValue(value: number, minValue: number, maxValue: number) {
+    value = Math.abs(value)
+    minValue = Math.abs(minValue)
+    maxValue = Math.abs(maxValue)
+
+    return (value - minValue) / (maxValue - minValue)
 }
+
+export function pickHex(weight: number) {
+    let w1: number = weight
+    let w2: number = 1 - w1
+
+    const color1 = [58, 58, 56]
+    const color2 = [182, 182, 179]
+
+    let rgb = [Math.round(color1[0] * w1 + color2[0] * w2),
+        Math.round(color1[1] * w1 + color2[1] * w2),
+        Math.round(color1[2] * w1 + color2[2] * w2)]
+
+    return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
+}
+

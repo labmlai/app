@@ -1,5 +1,5 @@
 import {PointValue} from "../../../models/run";
-import {formatFixed, scaleValue} from "../../../components/value";
+import {formatFixed, scaleValue, pickHex} from "../../../components/value";
 import {ListGroup} from "react-bootstrap";
 import React from "react";
 import {getExtent, getScale} from "./utils";
@@ -25,26 +25,29 @@ export function SparkLine(props: SparkLineProps) {
 
     const titleWidth = Math.min(150, Math.round(props.width * .375))
     const chartWidth = props.width - titleWidth * 2
-    const lineWidth = 25
 
     const s = props.series
     const yScale = getScale(getExtent([s], d => d.value, true), -25)
     const xScale = getScale(props.stepExtent, chartWidth)
 
     const last = s[s.length - 1]
+
+    let lastValue = scaleValue(last.value, props.minLastValue, props.maxLastValue)
+    let valueColor = pickHex(lastValue)
+
     let value
     if (Math.abs(last.value - last.smoothed) > last.value / 1e6) {
         value = <span className={'value'} style={{width: `${titleWidth}px`}}>
-            <span className={'value-secondary'} key={'value'}>
+            <span className={'value-secondary'} key={'value'} style={{color: valueColor}}>
                 {formatFixed(last.value, 6)}
             </span>
-            <span className={'value-primary'} key={'smoothed'}>
+            <span className={'value-primary'} key={'smoothed'} style={{color: valueColor}}>
                 {formatFixed(last.smoothed, 6)}
             </span>
         </span>
     } else {
         value = <span className={'value primary-only'} style={{width: `${titleWidth}px`}}>
-            <span className={'value-primary'} key={'value'}>
+            <span className={'value-primary'} key={'value'} style={{color: valueColor}}>
                 {formatFixed(last.value, 6)}
             </span>
         </span>
@@ -54,8 +57,6 @@ export function SparkLine(props: SparkLineProps) {
         className += ' selected'
     }
 
-    let lastValue = scaleValue(last.value, props.minLastValue, props.maxLastValue, 0, lineWidth)
-
     return <ListGroup.Item className={className} action={props.onClick != null} onClick={props.onClick}>
         <span style={{color: color, width: `${titleWidth}px`}}>{props.name}</span>
         <svg className={'sparkline'} height={25} width={chartWidth}>
@@ -64,9 +65,5 @@ export function SparkLine(props: SparkLineProps) {
             </g>
         </svg>
         {value}
-        <svg className={'sparkline'} height={25} width={lineWidth} transform={`translate(${-0.75 * titleWidth}, 25)`}>
-            <line x1={0} y1={0} x2={lastValue} y2={0}
-                  style={{stroke: last.value > 0 ? "green" :"lightgreen", strokeWidth: "5"}}/>
-        </svg>
     </ListGroup.Item>
 }
