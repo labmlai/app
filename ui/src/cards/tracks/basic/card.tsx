@@ -41,13 +41,13 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
 }
 
 
-interface TrackViewProps {
+interface BasicViewProps {
     runUUID: string
     track: SeriesModel[] | null
     name: string
 }
 
-export function BasicView(props: TrackViewProps) {
+export function BasicView(props: BasicViewProps) {
     const runCache = CACHE.get(props.runUUID)
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
