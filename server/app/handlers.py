@@ -92,6 +92,17 @@ def update_run() -> flask.Response:
     return jsonify({'errors': r.errors, 'url': r.url})
 
 
+def set_run(run_uuid: str) -> flask.Response:
+    data = request.json
+
+    r = run.get_run(run_uuid)
+    r.update_preferences(data)
+
+    print('update_preferences', run_uuid)
+
+    return jsonify({'errors': r.errors})
+
+
 @login_required
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
@@ -275,6 +286,8 @@ def add_handlers(app: flask.Flask):
     _add(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
     _add(app, 'POST', get_modules_tracking, 'modules_track/<run_uuid>')
     _add(app, 'POST', get_times_tracking, 'times_track/<run_uuid>')
+
+    _add(app, 'POST', set_run, 'run/<run_uuid>')
 
     _add(app, 'POST', sign_in, 'auth/sign_in')
     _add(app, 'DELETE', sign_out, 'auth/sign_out')

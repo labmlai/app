@@ -51,6 +51,10 @@ class NETWORK {
     static async sign_out(): Promise<any> {
         return this.axiosInstance.delete(`/auth/sign_out`)
     }
+
+    static async update_run(data: object, run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/run/${run_uuid}`, data)
+    }
 }
 
 export default NETWORK

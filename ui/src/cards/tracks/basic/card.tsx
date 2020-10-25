@@ -60,6 +60,13 @@ export function BasicView(props: BasicViewProps) {
         async function load() {
             setRun(await runCache.getRun())
             setStatus(await runCache.getStatus())
+
+            if (run) {
+                let preferences = run.preferences[run.name]
+                if (preferences) {
+                    setPlotIdx(preferences)
+                }
+            }
         }
 
         load().then()
@@ -72,6 +79,9 @@ export function BasicView(props: BasicViewProps) {
             plotIdx[idx] = Math.max(...plotIdx) + 1
         }
         setPlotIdx(new Array<number>(...plotIdx))
+
+        run.preferences[run.name] = plotIdx
+        runCache.setRun(run).then()
     }, [plotIdx])
 
 

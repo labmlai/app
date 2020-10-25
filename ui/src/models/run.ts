@@ -22,6 +22,7 @@ export interface RunModel {
     comment: string
     start_time: number
     configs: ConfigModel[]
+    preferences: object
 }
 
 export interface SeriesModel {
@@ -71,6 +72,7 @@ export class Run {
     comment: string
     start_time: number
     configs: Config[]
+    preferences: any
 
     constructor(run: RunModel) {
         this.uuid = run.run_uuid
@@ -81,6 +83,7 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c))
         }
+        this.preferences = run.preferences
     }
 }
 

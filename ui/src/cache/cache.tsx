@@ -139,6 +139,13 @@ class RunCache {
         return this.run
     }
 
+    async setRun(run: Run): Promise<Run> {
+        this.run = run
+        await NETWORK.update_run(run.preferences, run.uuid)
+
+        return run
+    }
+
     async getStatus(): Promise<Status> {
         if (this.status == null) {
             this.status = new Status(await this.loadStatus())

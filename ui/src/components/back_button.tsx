@@ -4,10 +4,22 @@ import {useHistory} from "react-router-dom"
 
 import './back_button.scss'
 
-export function BackButton() {
+interface BasicViewProps {
+    onButtonClick?: () => void
+}
+
+export function BackButton(props: BasicViewProps) {
     const history = useHistory()
 
+    function onBackButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+
+        history.goBack()
+    }
+
     return <div className={'mt-2'}>
-        <button onClick={history.goBack} className={'back_button'}>{'<Back'}</button>
+        <button onClick={onBackButtonClick} className={'back_button'}>{'<Back'}</button>
     </div>
 }

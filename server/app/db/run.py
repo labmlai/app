@@ -265,6 +265,7 @@ class Run(Model['Run']):
     status: Key[Status]
     series: Key[Series]
     configs: Dict[str, any]
+    preferences: Dict[str, List[int]]
     errors: List[str]
 
     @classmethod
@@ -276,6 +277,7 @@ class Run(Model['Run']):
                     series=None,
                     status=None,
                     configs={},
+                    preferences={},
                     errors=[]
                     )
 
@@ -293,6 +295,13 @@ class Run(Model['Run']):
 
         self.save()
 
+    def update_preferences(self, data: Dict[str, any]) -> None:
+        for k, v in data.items():
+            if v:
+                self.preferences[k] = v
+
+        self.save()
+
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         return {
@@ -301,6 +310,7 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
+            'preferences': self.preferences
         }
 
     def track(self, data: Dict[str, SeriesDict]) -> None:
