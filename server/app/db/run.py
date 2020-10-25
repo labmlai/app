@@ -2,7 +2,7 @@ import math
 import time
 import numpy as np
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any, Union, NamedTuple
 from uuid import uuid4
 
 from labml_db import Model, Key, Index
@@ -197,21 +197,11 @@ class SeriesModel:
 
 class Series(Model['Series']):
     tracking: Dict[str, SeriesDict]
-    grads: List[str]
-    params: List[str]
-    modules: List[str]
-    metrics: List[str]
-    times: List[str]
     step: int
 
     @classmethod
     def defaults(cls):
         return dict(tracking={},
-                    grads=[],
-                    params=[],
-                    metrics=[],
-                    modules=[],
-                    times=[],
                     step=0,
                     )
 
@@ -234,7 +224,6 @@ class Series(Model['Series']):
 
     def _update_series(self, ind: str, series: SeriesDict) -> None:
         if ind not in self.tracking:
-            self.update_type(ind)
             self.tracking[ind] = SeriesModel().to_data()
             self.save()
 
@@ -244,17 +233,12 @@ class Series(Model['Series']):
         self.tracking[ind] = s.to_data()
         self.save()
 
-    def update_type(self, name: str) -> None:
-        if name.startswith(f'{Enums.GRAD}.'):
-            self.grads.append(name)
-        elif name.startswith(f'{Enums.PARAM}.'):
-            self.params.append(name)
-        elif name.startswith(f'{Enums.MODULE}.'):
-            self.modules.append(name)
-        elif name.startswith(f'{Enums.TIME}.'):
-            self.times.append(name)
-        else:
-            self.metrics.append(name)
+
+class CardInfo(NamedTuple):
+    class_name: str
+    name: str
+    is_print: str
+    queue_size: int = 0
 
 
 class Run(Model['Run']):
@@ -265,6 +249,8 @@ class Run(Model['Run']):
     status: Key[Status]
     series: Key[Series]
     configs: Dict[str, any]
+    wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
+    indicators: Dict[str, Dict[str, Union[str, bool]]]
     preferences: Dict[str, List[int]]
     errors: List[str]
 
@@ -277,6 +263,8 @@ class Run(Model['Run']):
                     series=None,
                     status=None,
                     configs={},
+                    wildcard_indicators=[],
+                    indicators=[],
                     preferences={},
                     errors=[]
                     )
@@ -292,6 +280,10 @@ class Run(Model['Run']):
             self.comment = data.get('comment', '')
         if not self.configs:
             self.configs.update(data.get('configs', {}))
+        if not self.indicators:
+            self.indicators = data.get('indicators', {})
+        if not self.wildcard_indicators:
+            self.wildcard_indicators = data.get('wildcard_indicators', {})
 
         self.save()
 
@@ -317,25 +309,36 @@ class Run(Model['Run']):
         series = self.series.load()
         series.track(data)
 
-    def get_tracking(self, track_type: str = '') -> List:
+    def get_tracking(self, track_type: str) -> List:
+        indicators = self.indicators
         series = self.series.load()
 
         res = []
         if track_type == Enums.TIME:
-            tracks = series.times
+            tracks = [v for k, v in indicators.items() if k.startswith(Enums.TIME)]
         elif track_type == Enums.GRAD:
-            tracks = series.grads
+            tracks = [v for k, v in indicators.items() if k.startswith(Enums.GRAD)]
         elif track_type == Enums.PARAM:
-            tracks = series.params
+            tracks = [v for k, v in indicators.items() if k.startswith(Enums.PARAM)]
         elif track_type == Enums.MODULE:
-            tracks = series.modules
+            tracks = [v for k, v in indicators.items() if k.startswith(Enums.MODULE)]
         else:
-            tracks = series.metrics
+            tracks = [k for k in series.tracking.keys() if
+                      not k.startswith((Enums.MODULE, Enums.PARAM, Enums.GRAD, Enums.TIME))]
 
         for ind in tracks:
-            if track_type in [Enums.MODULE, Enums.PARAM, Enums.GRAD] and 'l2' not in ind:
-                continue
-            res.append(series.get_track(ind))
+            if track_type == Enums.METRIC:
+                track = ind
+            else:
+                info = CardInfo(**ind)
+                track = info.name
+
+                if track_type in [Enums.MODULE, Enums.PARAM, Enums.GRAD] and 'l2' not in track:
+                    continue
+                if not info.is_print:
+                    continue
+
+            res.append(series.get_track(track))
 
         res.sort(key=lambda s: s['name'])
 

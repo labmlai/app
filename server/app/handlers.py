@@ -180,7 +180,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if run:
-        track_data = r.get_tracking()
+        track_data = r.get_tracking(Enums.METRIC)
         status_code = 200
 
     print('metrics_tracking', run_uuid)

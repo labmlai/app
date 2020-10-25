@@ -10,5 +10,4 @@ class Enums:
     PARAM = 'param'
     MODULE = 'module'
     TIME = 'time'
-
-
+    METRIC = 'metric'
