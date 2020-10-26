@@ -114,10 +114,6 @@ def claim_run(run_uuid: str, run_key=Key[run.Run]) -> None:
         default_project.runs[run_uuid] = run_key
         default_project.save()
 
-        float_project = user.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
-        float_project.runs.pop(run_uuid)
-        float_project.save()
-
 
 @login_required
 def get_run(run_uuid: str) -> flask.Response:
