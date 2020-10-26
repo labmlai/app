@@ -5,6 +5,8 @@ import werkzeug.wrappers
 from typing import Any
 from flask import jsonify, request, make_response, redirect
 
+from labml_db import Key
+
 from .db import user
 from .db import status
 from .db import session
@@ -13,15 +15,9 @@ from .db import run
 from .enums import Enums
 from . import settings
 
-from .auth import login_required, is_runs_permitted
+from .auth import login_required, is_runs_permitted, get_session
 
 request = typing.cast(werkzeug.wrappers.Request, request)
-
-
-def get_session() -> session.Session:
-    session_id = request.cookies.get('session_id')
-
-    return session.get_or_create(session_id)
 
 
 def default() -> flask.Response:
@@ -67,14 +63,17 @@ def sign_out() -> flask.Response:
 
 
 def update_run() -> flask.Response:
+    success = True
+    error = {}
+
     labml_token = request.args.get('labml_token')
 
     p = user.get_project(labml_token=labml_token)
     if not p:
-        return jsonify({'errors': [{'error': 'invalid_labml_token',
-                                    'message': 'The labml_token sent to the api is not valid.  '
-                                               'Please create a valid token at https://web.lab-ml.com'}],
-                        'success': False})
+        labml_token = settings.FLOAT_PROJECT_TOKEN
+        error = {'error': 'invalid_labml_token',
+                 'message': 'The labml_token sent to the api is not valid.  '
+                            'Please create a valid token at https://web.lab-ml.com'}
 
     json = request.json
 
@@ -87,9 +86,13 @@ def update_run() -> flask.Response:
     if 'track' in json:
         r.track(json['track'])
 
+    if error:
+        success = False
+        r.errors.append(error)
+
     print('update_run', labml_token)
 
-    return jsonify({'errors': r.errors, 'url': r.url})
+    return jsonify({'errors': r.errors, 'url': r.url, 'success': success})
 
 
 def set_run(run_uuid: str) -> flask.Response:
@@ -103,6 +106,19 @@ def set_run(run_uuid: str) -> flask.Response:
     return jsonify({'errors': r.errors})
 
 
+def claim_run(run_uuid: str, run_key=Key[run.Run]) -> None:
+    s = get_session()
+
+    default_project = s.user.load().default_project
+    if run_uuid not in default_project.runs:
+        default_project.runs[run_uuid] = run_key
+        default_project.save()
+
+        float_project = user.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+        float_project.runs.pop(run_uuid)
+        float_project.save()
+
+
 @login_required
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
@@ -112,6 +128,8 @@ def get_run(run_uuid: str) -> flask.Response:
     if run:
         run_data = r.get_data()
         status_code = 200
+
+        claim_run(run_uuid, r.key)
 
     response = make_response(jsonify(run_data))
     response.status_code = status_code

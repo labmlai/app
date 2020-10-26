@@ -72,21 +72,25 @@ function RunView(props: RunProps) {
         <MetricsCard.Card uuid={runUUID} width={actualWidth}
                           errorCallback={errorCallback}
                           lastUpdatedCallback={lastUpdatedCallback}/>
-        {run && run.wildcard_indicators.grad.is_print && <GradsCard.Card uuid={runUUID} width={actualWidth}
-                                                                         errorCallback={errorCallback}
-                                                                         lastUpdatedCallback={lastUpdatedCallback}/>
+        {run && run.wildcard_indicators.grad && run.wildcard_indicators.grad.is_print &&
+        <GradsCard.Card uuid={runUUID} width={actualWidth}
+                        errorCallback={errorCallback}
+                        lastUpdatedCallback={lastUpdatedCallback}/>
         }
-        {run && run.wildcard_indicators.param.is_print && <ParamsCard.Card uuid={runUUID} width={actualWidth}
-                                                                           errorCallback={errorCallback}
-                                                                           lastUpdatedCallback={lastUpdatedCallback}/>
+        {run && run.wildcard_indicators.param && run.wildcard_indicators.param.is_print &&
+        <ParamsCard.Card uuid={runUUID} width={actualWidth}
+                         errorCallback={errorCallback}
+                         lastUpdatedCallback={lastUpdatedCallback}/>
         }
-        {run && run.wildcard_indicators.module.is_print && <ModulesCard.Card uuid={runUUID} width={actualWidth}
-                                                                             errorCallback={errorCallback}
-                                                                             lastUpdatedCallback={lastUpdatedCallback}/>
+        {run && run.wildcard_indicators.module && run.wildcard_indicators.module.is_print &&
+        <ModulesCard.Card uuid={runUUID} width={actualWidth}
+                          errorCallback={errorCallback}
+                          lastUpdatedCallback={lastUpdatedCallback}/>
         }
-        {run && run.wildcard_indicators.time.is_print && <TimesCard.Card uuid={runUUID} width={actualWidth}
-                                                                         errorCallback={errorCallback}
-                                                                         lastUpdatedCallback={lastUpdatedCallback}/>
+        {run && run.wildcard_indicators.time && run.wildcard_indicators.time.is_print &&
+        <TimesCard.Card uuid={runUUID} width={actualWidth}
+                        errorCallback={errorCallback}
+                        lastUpdatedCallback={lastUpdatedCallback}/>
         }
         <div className={'footer-copyright text-center'}>
             <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>

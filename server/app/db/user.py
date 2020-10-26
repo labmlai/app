@@ -4,6 +4,7 @@ from typing import List, NamedTuple, Dict, Union
 from labml_db import Model, Key, Index
 
 from .run import Run
+from .. import settings
 
 
 def generate_token() -> str:
@@ -12,7 +13,7 @@ def generate_token() -> str:
 
 class Project(Model['Project']):
     labml_token: str
-    is_sharable: str
+    is_sharable: float
     name: str
     runs: Dict[str, Key[Run]]
 
@@ -111,3 +112,15 @@ def get_project(labml_token: str) -> Union[None, Project]:
         return project_key.load()
 
     return None
+
+
+def create_float_project() -> None:
+    project_key = ProjectIndex.get(settings.FLOAT_PROJECT_TOKEN)
+
+    if not project_key:
+        project = Project(labml_token=settings.FLOAT_PROJECT_TOKEN,
+                          name='floating_experiments',
+                          is_sharable=True
+                          )
+        ProjectIndex.set(project.labml_token, project.key)
+        project.save()

@@ -9,6 +9,12 @@ from ..db import session
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
+def get_session() -> session.Session:
+    session_id = request.cookies.get('session_id')
+
+    return session.get_or_create(session_id)
+
+
 def process_parameters(func) -> functools.wraps:
     @functools.wraps(func)
     def wrapper(*args, **kwargs):

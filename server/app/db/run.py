@@ -252,7 +252,7 @@ class Run(Model['Run']):
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
     preferences: Dict[str, List[int]]
-    errors: List[str]
+    errors: List[Dict[str, str]]
 
     @classmethod
     def defaults(cls):
