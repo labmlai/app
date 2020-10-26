@@ -237,7 +237,7 @@ class Series(Model['Series']):
 class CardInfo(NamedTuple):
     class_name: str
     name: str
-    is_print: str
+    is_print: bool
     queue_size: int = 0
 
 
@@ -263,8 +263,8 @@ class Run(Model['Run']):
                     series=None,
                     status=None,
                     configs={},
-                    wildcard_indicators=[],
-                    indicators=[],
+                    wildcard_indicators={},
+                    indicators={},
                     preferences={},
                     errors=[]
                     )
@@ -302,8 +302,25 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
-            'preferences': self.preferences
+            'preferences': self.preferences,
+            'wildcard_indicators': self.prep_wildcard_indicators()
         }
+
+    def prep_wildcard_indicators(self):
+        res = {}
+        for k, v in self.wildcard_indicators.items():
+            if Enums.TIME in k:
+                res[Enums.TIME] = v
+            elif Enums.GRAD in k:
+                res[Enums.GRAD] = v
+            elif Enums.MODULE in k:
+                res[Enums.MODULE] = v
+            elif Enums.PARAM in k:
+                res[Enums.PARAM] = v
+            else:
+                res[Enums.METRIC] = v
+
+        return res
 
     def track(self, data: Dict[str, SeriesDict]) -> None:
         series = self.series.load()

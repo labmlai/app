@@ -16,6 +16,20 @@ export interface StatusModel {
     run_status: RunStatusModel
 }
 
+export interface CardInfo {
+    name: string
+    class_name: string
+    is_print: boolean
+}
+
+export interface WildcardIndicators {
+    param: CardInfo
+    module: CardInfo
+    time: CardInfo
+    grad: CardInfo
+    metric: CardInfo
+}
+
 export interface RunModel {
     run_uuid: string
     name: string
@@ -23,6 +37,7 @@ export interface RunModel {
     start_time: number
     configs: ConfigModel[]
     preferences: object
+    wildcard_indicators: WildcardIndicators
 }
 
 export interface SeriesModel {
@@ -73,6 +88,7 @@ export class Run {
     start_time: number
     configs: Config[]
     preferences: any
+    wildcard_indicators: WildcardIndicators
 
     constructor(run: RunModel) {
         this.uuid = run.run_uuid
@@ -84,6 +100,7 @@ export class Run {
             this.configs.push(new Config(c))
         }
         this.preferences = run.preferences
+        this.wildcard_indicators = run.wildcard_indicators
     }
 }
 
