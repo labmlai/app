@@ -314,14 +314,8 @@ class Run(Model['Run']):
         series = self.series.load()
 
         res = []
-        if track_type == Enums.TIME:
-            tracks = [v for k, v in indicators.items() if k.startswith(Enums.TIME)]
-        elif track_type == Enums.GRAD:
-            tracks = [v for k, v in indicators.items() if k.startswith(Enums.GRAD)]
-        elif track_type == Enums.PARAM:
-            tracks = [v for k, v in indicators.items() if k.startswith(Enums.PARAM)]
-        elif track_type == Enums.MODULE:
-            tracks = [v for k, v in indicators.items() if k.startswith(Enums.MODULE)]
+        if track_type != Enums.METRIC:
+            tracks = [CardInfo(**v) for k, v in indicators.items() if k.startswith(track_type)]
         else:
             tracks = [k for k in series.tracking.keys() if
                       not k.startswith((Enums.MODULE, Enums.PARAM, Enums.GRAD, Enums.TIME))]
@@ -330,12 +324,11 @@ class Run(Model['Run']):
             if track_type == Enums.METRIC:
                 track = ind
             else:
-                info = CardInfo(**ind)
-                track = info.name
+                track = ind.name
 
-                if track_type in [Enums.MODULE, Enums.PARAM, Enums.GRAD] and 'l2' not in track:
+                if track_type != Enums.TIME and 'l2' not in track:
                     continue
-                if not info.is_print:
+                if not ind.is_print:
                     continue
 
             res.append(series.get_track(track))
