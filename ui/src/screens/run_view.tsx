@@ -53,7 +53,6 @@ function RunView(props: RunProps) {
     useEffect(() => {
         async function load() {
             setRun(await runCache.getRun())
-
         }
 
         load().then()

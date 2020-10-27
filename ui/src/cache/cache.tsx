@@ -159,9 +159,7 @@ class RunCache {
     }
 
     async getMetricsTracking(): Promise<SeriesModel[]> {
-        await this.getRun()
-
-        if (this.metricsTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+        if (this.metricsTracking == null || (this.status.isRunning && this.isTrackingTimeOut())) {
             this.metricsTracking = await this.loadMetricsTracking()
             this.lastUpdated = (new Date()).getTime()
             this.status = new Status(await this.loadStatus())
@@ -171,9 +169,7 @@ class RunCache {
     }
 
     async getGradsTracking(): Promise<SeriesModel[]> {
-        await this.getRun()
-
-        if (this.gradsTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+        if (this.gradsTracking == null || (this.status.isRunning && this.isTrackingTimeOut())) {
             this.gradsTracking = await this.loadGradsTracking()
             this.lastUpdated = (new Date()).getTime()
             this.status = new Status(await this.loadStatus())
@@ -183,9 +179,7 @@ class RunCache {
     }
 
     async getParamsTracking(): Promise<SeriesModel[]> {
-        await this.getRun()
-
-        if (this.paramsTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+        if (this.paramsTracking == null || (this.status.isRunning && this.isTrackingTimeOut())) {
             this.paramsTracking = await this.loadParamsTracking()
             this.lastUpdated = (new Date()).getTime()
             this.status = new Status(await this.loadStatus())
@@ -195,9 +189,7 @@ class RunCache {
     }
 
     async getModulesTracking(): Promise<SeriesModel[]> {
-        await this.getRun()
-
-        if (this.modulesTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+        if (this.modulesTracking == null || (this.status.isRunning && this.isTrackingTimeOut())) {
             this.modulesTracking = await this.loadModulesTracking()
             this.lastUpdated = (new Date()).getTime()
             this.status = new Status(await this.loadStatus())
@@ -207,9 +199,7 @@ class RunCache {
     }
 
     async getTimesTracking(): Promise<SeriesModel[]> {
-        await this.getRun()
-
-        if (this.timesTracking == null || this.status.isRunning && this.isTrackingTimeOut()) {
+        if (this.timesTracking == null || (this.status.isRunning && this.isTrackingTimeOut())) {
             this.timesTracking = await this.loadTimesTracking()
             this.lastUpdated = (new Date()).getTime()
             this.status = new Status(await this.loadStatus())

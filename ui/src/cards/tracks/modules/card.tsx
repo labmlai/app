@@ -1,64 +1,30 @@
-import {CardProps, ViewProps} from "../../types";
-import React, {useEffect, useState} from "react";
-import {SeriesModel} from "../../../models/run";
-import CACHE from "../../../cache/cache";
-import {useHistory} from "react-router-dom";
-import {getTimeDiff} from "../../../components/utils";
-import {BasicView, getSparkLines} from "../basic/card";
+import {CardProps} from "../../types";
+import React from "react";
+import {useLocation} from "react-router-dom";
+import {BasicCard, BasicView} from "../basic/card";
 
 const ANALYSIS = 'Module Outputs'
+const URL = 'modules'
+const TRACKING_NAME = 'getModulesTracking'
 
 function Card(props: CardProps) {
-    const [track, setTrack] = useState(null as (SeriesModel[] | null))
-    const runCache = CACHE.get(props.uuid)
-    const history = useHistory();
+    return <BasicCard tracking_name={TRACKING_NAME}
+                      name={ANALYSIS}
+                      uuid={props.uuid}
+                      url={URL}
+                      isChartView={false}
+                      errorCallback={props.errorCallback}
+                      lastUpdatedCallback={props.lastUpdatedCallback}
+                      width={props.width}/>
 
-    useEffect(() => {
-        async function load() {
-            try {
-                setTrack(await runCache.getModulesTracking())
-                let status = await runCache.getStatus()
-                if (!status.isRunning) {
-                    clearInterval(interval)
-                }
-                props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
-            } catch (e) {
-                props.errorCallback(`${e}`)
-            }
-        }
-
-        load().then()
-        let interval = setInterval(load, 2 * 60 * 1000)
-        return () => clearInterval(interval)
-    })
-
-    let chart = getSparkLines(track, null, props.width)
-
-    return <div className={'labml-card labml-card-action'} onClick={
-        () => {
-            history.push(`/modules?run_uuid=${props.uuid}`);
-        }
-    }>
-        <h3 className={'header'}>{ANALYSIS}</h3>
-        {chart}
-    </div>
 }
 
-function View(props: ViewProps) {
-    const params = new URLSearchParams(props.location.search)
-    const runUUID = params.get('run_uuid') as string
-    const runCache = CACHE.get(runUUID)
-    const [track, setTrack] = useState(null as unknown as SeriesModel[])
+function View() {
+    const location = useLocation()
 
-    useEffect(() => {
-        async function load() {
-            setTrack(await runCache.getModulesTracking())
-        }
-
-        load().then()
-    })
-
-    return <BasicView track={track} name={ANALYSIS} runUUID={runUUID}/>
+    return <BasicView tracking_name={TRACKING_NAME}
+                      name={ANALYSIS}
+                      location={location}/>
 }
 
 export default {

@@ -9,3 +9,7 @@ export interface ViewProps {
     location: any
 }
 
+export interface BasicProps {
+    tracking_name: "getMetricsTracking" | "getGradsTracking" | "getParamsTracking" | "getModulesTracking" | "getTimesTracking"
+    name: string
+}
