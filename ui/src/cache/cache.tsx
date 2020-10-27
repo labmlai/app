@@ -1,5 +1,6 @@
 import NETWORK from "../network";
-import {Run, RunModel, SeriesModel, Status, StatusModel} from "../models/run";
+import {Run, RunModel, SeriesModel, Status, StatusModel, RunListItem, RunListItemModel} from "../models/run";
+import {User, UserModel} from "../models/user";
 
 const TRACKING_TIMEOUT = 60 * 1000
 
@@ -209,19 +210,85 @@ class RunCache {
     }
 }
 
+class UserCache {
+    private user!: User
+    private userPromise = new BroadcastPromise<UserModel>()
+
+    constructor() {
+    }
+
+    private async loadUser(): Promise<UserModel> {
+        return this.userPromise.create(async () => {
+            let res = await NETWORK.get_user()
+            return res.data
+        })
+    }
+
+    async getUser(): Promise<User> {
+        if (this.user == null) {
+            this.user = new User(await this.loadUser())
+        }
+
+        return this.user
+    }
+}
+
+class RunsCache {
+    private runs!: RunListItem[]
+    private runsPromise = new BroadcastPromise<RunListItemModel[]>()
+
+    constructor() {
+    }
+
+    private async loadRuns(): Promise<RunListItemModel[]> {
+        return this.runsPromise.create(async () => {
+            let res = await NETWORK.get_runs(null)
+            return res.data
+        })
+    }
+
+    async getRuns(): Promise<RunListItem[]> {
+        if (this.runs == null) {
+            this.runs = await this.loadRuns()
+        }
+
+        return this.runs
+    }
+}
+
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
+    private user: UserCache | null
+    private runsList: RunsCache | null
 
     constructor() {
         this.runs = {}
+        this.user = null
+        this.runsList = null
     }
 
-    get(uuid: string) {
+    get_run(uuid: string) {
         if (this.runs[uuid] == null) {
             this.runs[uuid] = new RunCache(uuid)
         }
 
         return this.runs[uuid]
+    }
+
+    get_user() {
+        if (this.user == null) {
+            this.user = new UserCache()
+        }
+
+        return this.user
+    }
+
+    get_runs() {
+        if (this.runsList == null) {
+            this.runsList = new RunsCache()
+        }
+
+        return this.runsList
     }
 }
 

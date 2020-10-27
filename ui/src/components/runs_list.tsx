@@ -2,18 +2,18 @@ import React from "react"
 import {useHistory} from "react-router-dom";
 import "./runs_list.scss"
 import {ListGroup} from "react-bootstrap"
-import {RunListModel} from "../models/run"
+import {RunListItemModel} from "../models/run"
 import {formatTime} from "./utils";
 import {StatusView} from "./status";
 
 
 interface RunsListProps {
-    runs: RunListModel[]
+    runs: RunListItemModel[]
 }
 
 interface RunsListItemProps {
     idx: number
-    run: RunListModel
+    run: RunListItemModel
 }
 
 function RunsListItem(props: RunsListItemProps) {

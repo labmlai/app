@@ -28,7 +28,7 @@ function RunView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
 
-    const runCache = CACHE.get(runUUID)
+    const runCache = CACHE.get_run(runUUID)
 
     const actualWidth = Math.min(800, windowWidth)
 

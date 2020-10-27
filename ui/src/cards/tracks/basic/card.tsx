@@ -51,7 +51,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 
 export function BasicCard(props: BasicCardProps) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
-    const runCache = CACHE.get(props.uuid)
+    const runCache = CACHE.get_run(props.uuid)
     const history = useHistory();
 
     useEffect(() => {
@@ -98,7 +98,7 @@ export function BasicView(props: BasicViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
 
-    const runCache = CACHE.get(runUUID)
+    const runCache = CACHE.get_run(runUUID)
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
@@ -112,7 +112,7 @@ export function BasicView(props: BasicViewProps) {
         async function load() {
             setTrack(await runCache[props.tracking_name]())
             let currentStatus = await runCache.getStatus()
-            if (!currentStatus.isRunning) {
+            if (currentStatus && !currentStatus.isRunning) {
                 clearInterval(interval)
             }
             setLastUpdated(getTimeDiff(currentStatus.last_updated_time))

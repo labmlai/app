@@ -10,13 +10,15 @@ import useWindowDimensions from "../utils/window_dimensions";
 import {User} from "../models/user";
 
 import './settings_view.scss'
-
+import CACHE from "../cache/cache";
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 
 function SettingsView() {
     let [user, setUser] = useState(null as unknown as User)
     const [isLoading, setIsLoading] = useState(true)
+
+    const userCache = CACHE.get_user()
 
     const {logout} = useAuth0();
     const handleError = useErrorHandler()
@@ -25,13 +27,15 @@ function SettingsView() {
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
-        NETWORK.get_user()
-            .then((res) => {
-                if (res) {
-                    setUser(res.data)
-                    setIsLoading(false)
-                }
-            })
+        async function load() {
+            let currentUser = await userCache.getUser()
+            if (currentUser) {
+                setUser(currentUser)
+                setIsLoading(false)
+            }
+        }
+
+        load().then()
     }, [])
 
     function logOut() {

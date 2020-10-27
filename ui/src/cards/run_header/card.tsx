@@ -37,7 +37,7 @@ function RunView(props: RunViewProps) {
 function Card(props: CardProps) {
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
-    const runCache = CACHE.get(props.uuid)
+    const runCache = CACHE.get_run(props.uuid)
 
     useEffect(() => {
         async function load() {
