@@ -111,8 +111,10 @@ def claim_run(run_uuid: str, run_key=Key[run.Run]) -> None:
 
     default_project = s.user.load().default_project
     if run_uuid not in default_project.runs:
-        default_project.runs[run_uuid] = run_key
-        default_project.save()
+        float_project = user.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+        if run_uuid in float_project.runs:
+            default_project.runs[run_uuid] = run_key
+            default_project.save()
 
 
 @login_required
