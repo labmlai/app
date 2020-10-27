@@ -46,7 +46,7 @@ function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null, wi
 
 interface BasicCardProps extends BasicProps, CardProps {
     url: string
-    isChartView :boolean
+    isChartView: boolean
 }
 
 export function BasicCard(props: BasicCardProps) {
@@ -80,7 +80,6 @@ export function BasicCard(props: BasicCardProps) {
         card = getSparkLines(track, null, props.width)
     }
 
-
     return <div className={'labml-card labml-card-action'} onClick={
         () => {
             history.push(`/${props.url}?run_uuid=${props.uuid}`);
@@ -103,6 +102,7 @@ export function BasicView(props: BasicViewProps) {
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
+    const [lastUpdated, setLastUpdated] = useState(null as (string | null))
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const {width: windowWidth} = useWindowDimensions()
@@ -111,8 +111,23 @@ export function BasicView(props: BasicViewProps) {
     useEffect(() => {
         async function load() {
             setTrack(await runCache[props.tracking_name]())
+            let currentStatus = await runCache.getStatus()
+            if (!currentStatus.isRunning) {
+                clearInterval(interval)
+            }
+            setLastUpdated(getTimeDiff(currentStatus.last_updated_time))
+
+            setStatus(currentStatus)
+        }
+
+        load().then()
+        let interval = setInterval(load, 2 * 60 * 1000)
+        return () => clearInterval(interval)
+    })
+
+    useEffect(() => {
+        async function load() {
             setRun(await runCache.getRun())
-            setStatus(await runCache.getStatus())
 
             if (run) {
                 let preferences = run.preferences[props.name]
@@ -144,9 +159,9 @@ export function BasicView(props: BasicViewProps) {
 
     let chart = getChart(track, plotIdx, actualWidth, toggleChart)
 
-
     return <div className={'page'} style={{width: actualWidth}}>
         <BackButton/>
+        <div className={'last-updated'}>Last updated {lastUpdated}</div>
         <RunHeaderCard.RunView run={run} status={status}/>
         <h2 className={'header text-center'}>{props.name}</h2>
         <div className={'labml-card'}>{chart}</div>
