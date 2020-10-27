@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react"
 
-import NETWORK from '../network'
 import {RunsList} from "../components/runs_list"
 import {Code} from "../components/code"
 import {LabLoader} from "../components/loader"
 import {RunListItemModel} from "../models/run"
+import CACHE from "../cache/cache";
 
 interface RunsListProps {
     location: any
@@ -17,15 +17,19 @@ function RunsListView(props: RunsListProps) {
 
     const params = new URLSearchParams(props.location.search)
 
+    const runListCache = CACHE.getRunsList()
+
     useEffect(() => {
-        NETWORK.get_runs(params.get('labml_token'))
-            .then((res) => {
-                if (res) {
-                    setRuns(res.data.runs)
-                    setLabMlToken(res.data.labml_token)
-                    setIsLoading(false)
-                }
-            })
+        async function load() {
+            let currentRunsList = await runListCache.getRunsList(params.get('labml_token'))
+            if (currentRunsList) {
+                setRuns(currentRunsList.runs)
+                setLabMlToken(currentRunsList.labml_token)
+                setIsLoading(false)
+            }
+        }
+
+        load().then()
     }, [])
 
     useEffect(() => {

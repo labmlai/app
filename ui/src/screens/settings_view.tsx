@@ -18,7 +18,7 @@ function SettingsView() {
     let [user, setUser] = useState(null as unknown as User)
     const [isLoading, setIsLoading] = useState(true)
 
-    const userCache = CACHE.get_user()
+    const userCache = CACHE.getUser()
 
     const {logout} = useAuth0();
     const handleError = useErrorHandler()

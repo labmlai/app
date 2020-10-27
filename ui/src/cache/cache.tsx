@@ -1,5 +1,5 @@
 import NETWORK from "../network";
-import {Run, RunModel, SeriesModel, Status, StatusModel, RunListItem, RunListItemModel} from "../models/run";
+import {Run, RunModel, SeriesModel, Status, StatusModel, RunsList, RunsListModel} from "../models/run";
 import {User, UserModel} from "../models/user";
 
 const TRACKING_TIMEOUT = 60 * 1000
@@ -233,33 +233,37 @@ class UserCache {
     }
 }
 
-class RunsCache {
-    private runs!: RunListItem[]
-    private runsPromise = new BroadcastPromise<RunListItemModel[]>()
+class RunsListCache {
+    private runsList!: RunsList
+    private runsListPromise = new BroadcastPromise<RunsListModel>()
 
     constructor() {
     }
 
-    private async loadRuns(): Promise<RunListItemModel[]> {
-        return this.runsPromise.create(async () => {
-            let res = await NETWORK.get_runs(null)
+    private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
+        return this.runsListPromise.create(async () => {
+            let res = await NETWORK.get_runs(labml_token)
             return res.data
         })
     }
 
-    async getRuns(): Promise<RunListItem[]> {
-        if (this.runs == null) {
-            this.runs = await this.loadRuns()
+    async getRunsList(labml_token: string | null): Promise<RunsList> {
+        if (labml_token) {
+            return await this.loadRuns(labml_token)
         }
 
-        return this.runs
+        if (this.runsList == null) {
+            this.runsList = await this.loadRuns(null)
+        }
+
+        return this.runsList
     }
 }
 
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private user: UserCache | null
-    private runsList: RunsCache | null
+    private runsList: RunsListCache | null
 
     constructor() {
         this.runs = {}
@@ -267,7 +271,7 @@ class Cache {
         this.runsList = null
     }
 
-    get_run(uuid: string) {
+    getRun(uuid: string) {
         if (this.runs[uuid] == null) {
             this.runs[uuid] = new RunCache(uuid)
         }
@@ -275,7 +279,7 @@ class Cache {
         return this.runs[uuid]
     }
 
-    get_user() {
+    getUser() {
         if (this.user == null) {
             this.user = new UserCache()
         }
@@ -283,9 +287,9 @@ class Cache {
         return this.user
     }
 
-    get_runs() {
+    getRunsList() {
         if (this.runsList == null) {
-            this.runsList = new RunsCache()
+            this.runsList = new RunsListCache()
         }
 
         return this.runsList

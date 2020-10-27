@@ -10,6 +10,11 @@ export interface RunListItemModel {
     start_time: number
 }
 
+export interface RunsListModel {
+    runs: RunListItemModel[]
+    labml_token: string
+}
+
 export interface RunStatusModel {
     status: string
     details: string
@@ -131,5 +136,18 @@ export class RunListItem {
         this.start_time = run_list_item.start_time
         this.last_updated_time = run_list_item.last_updated_time
         this.run_status = new RunStatus(run_list_item.run_status)
+    }
+}
+
+export class RunsList {
+    runs: RunListItemModel[]
+    labml_token: string
+
+    constructor(runs_list: RunsListModel) {
+        this.runs = []
+        for (let r of runs_list.runs) {
+            this.runs.push(new RunListItem(r))
+        }
+        this.labml_token = runs_list.labml_token
     }
 }

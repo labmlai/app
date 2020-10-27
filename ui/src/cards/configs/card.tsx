@@ -11,7 +11,7 @@ import {BackButton} from "../../components/back_button"
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
-    const runCache = CACHE.get_run(props.uuid)
+    const runCache = CACHE.getRun(props.uuid)
     const history = useHistory();
 
     useEffect(() => {
@@ -50,7 +50,7 @@ function Card(props: CardProps) {
 function View(props: ViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
-    const runCache = CACHE.get_run(runUUID)
+    const runCache = CACHE.getRun(runUUID)
     let [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
     const {width: windowWidth} = useWindowDimensions()
