@@ -6,6 +6,7 @@ import {BasicCard, BasicView} from "../basic/card";
 const ANALYSIS = 'Module Outputs'
 const URL = 'modules'
 const TRACKING_NAME = 'getModulesTracking'
+const SERIES_PREFERENCE = 'modules'
 
 function Card(props: CardProps) {
     return <BasicCard tracking_name={TRACKING_NAME}
@@ -24,6 +25,7 @@ function View() {
 
     return <BasicView tracking_name={TRACKING_NAME}
                       name={ANALYSIS}
+                      series_preference={SERIES_PREFERENCE}
                       location={location}/>
 }
 

@@ -22,8 +22,8 @@ export function Code(props: CodeProps) {
                                                 rel="noopener noreferrer" target="_blank"> Check our sample experiments
                 list</a></h5>
 
-            <h6>or</h6>
-            <h6 className={'text-secondary'}>Start monitoring your models by adding just two lines of code, here is an
+            <h6 >or</h6>
+            <h6 className={'text-dark font-weight-bolder'}>Start monitoring your models by adding just two lines of code, here is an
                 example</h6>
         </div>
         <div className={'mt-3 bg-light container-sm mb-3'}>
@@ -32,10 +32,10 @@ export function Code(props: CodeProps) {
                     from numpy.random import random<br/>
                     from labml import tracker, experiment
                 </p>
-                <p className={'mt-3'}>
+                <p className={'mt-4'}>
                     conf = {"{'batch_size': 20}"}<br/>
                 </p>
-                <p className={'mt-5'}>
+                <p className={'mt-4'}>
                     <span>
                         def train(n: int):<br/>
                      </span>
@@ -44,7 +44,7 @@ export function Code(props: CodeProps) {
                         <Tab/><Tab/><Tab/>random() / 10
                     </span>
                 </p>
-                <p className={'mt-5'}>
+                <p className={'mt-4'}>
                     <span className={'font-weight-bolder text-dark'}>
                         with experiment.record(name='sample', exp_conf=conf, <br/>
                         <Tab/><Tab/><Tab/>token='{props.labMlToken}'):<br/>

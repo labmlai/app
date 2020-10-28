@@ -241,6 +241,14 @@ class CardInfo(NamedTuple):
     queue_size: int = 0
 
 
+class SeriesPreferences(NamedTuple):
+    metrics: List[int]
+    params: List[int]
+    modules: List[int]
+    times: List[int]
+    grads: List[int]
+
+
 class Run(Model['Run']):
     name: str
     comment: str
@@ -251,7 +259,7 @@ class Run(Model['Run']):
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
-    preferences: Dict[str, List[int]]
+    series_preferences: Dict[str, List[int]]
     errors: List[Dict[str, str]]
 
     @classmethod
@@ -265,7 +273,7 @@ class Run(Model['Run']):
                     configs={},
                     wildcard_indicators={},
                     indicators={},
-                    preferences={},
+                    series_preferences={},
                     errors=[]
                     )
 
@@ -290,7 +298,7 @@ class Run(Model['Run']):
     def update_preferences(self, data: Dict[str, any]) -> None:
         for k, v in data.items():
             if v:
-                self.preferences[k] = v
+                self.series_preferences[k] = v
 
         self.save()
 
@@ -302,7 +310,7 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
-            'preferences': self.preferences,
+            'series_preferences': self.series_preferences,
             'wildcard_indicators': self.prep_wildcard_indicators()
         }
 

@@ -6,6 +6,7 @@ import {BasicCard, BasicView} from "../basic/card";
 const ANALYSIS = 'Model Metrics'
 const URL = 'metrics'
 const TRACKING_NAME = 'getMetricsTracking'
+const SERIES_PREFERENCE = 'metrics'
 
 
 function Card(props: CardProps) {
@@ -25,6 +26,7 @@ function View() {
 
     return <BasicView tracking_name={TRACKING_NAME}
                       name={ANALYSIS}
+                      series_preference={SERIES_PREFERENCE}
                       location={location}/>
 }
 

@@ -92,6 +92,7 @@ export function BasicCard(props: BasicCardProps) {
 
 
 interface BasicViewProps extends BasicProps, ViewProps {
+
 }
 
 export function BasicView(props: BasicViewProps) {
@@ -130,7 +131,7 @@ export function BasicView(props: BasicViewProps) {
             setRun(await runCache.getRun())
 
             if (run) {
-                let preferences = run.preferences[props.name]
+                let preferences = run.series_preferences[props.series_preference]
                 if (preferences) {
                     setPlotIdx(preferences)
                 }
@@ -148,7 +149,7 @@ export function BasicView(props: BasicViewProps) {
         }
         setPlotIdx(new Array<number>(...plotIdx))
 
-        run.preferences[props.name] = plotIdx
+        run.series_preferences[props.series_preference] = plotIdx
         runCache.setRun(run).then()
     }, [plotIdx])
 

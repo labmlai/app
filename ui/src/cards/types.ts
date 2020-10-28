@@ -7,6 +7,7 @@ export interface CardProps {
 
 export interface ViewProps {
     location: any
+    series_preference: "metrics" | "params" | "modules" | "times" | "grads"
 }
 
 export interface BasicProps {

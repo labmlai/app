@@ -41,13 +41,21 @@ export interface WildcardIndicators {
     metric: CardInfo
 }
 
+export interface SeriesPreferences {
+    metrics: number[]
+    params: number[]
+    modules: number[]
+    times: number[]
+    grads: number[]
+}
+
 export interface RunModel {
     run_uuid: string
     name: string
     comment: string
     start_time: number
     configs: ConfigModel[]
-    preferences: object
+    series_preferences: SeriesPreferences
     wildcard_indicators: WildcardIndicators
 }
 
@@ -98,14 +106,16 @@ export class Status {
     }
 }
 
+
 export class Run {
     uuid: string
     name: string
     comment: string
     start_time: number
     configs: Config[]
-    preferences: any
+    series_preferences: SeriesPreferences
     wildcard_indicators: WildcardIndicators
+
 
     constructor(run: RunModel) {
         this.uuid = run.run_uuid
@@ -116,7 +126,7 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c))
         }
-        this.preferences = run.preferences
+        this.series_preferences = run.series_preferences
         this.wildcard_indicators = run.wildcard_indicators
     }
 }
