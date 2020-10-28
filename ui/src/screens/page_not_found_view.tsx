@@ -1,11 +1,18 @@
 import React from 'react'
 import Lottie from 'lottie-react-web'
 import animation from '../assets/lottie/Chemical.json'
+import {Button} from "react-bootstrap"
 import useWindowDimensions from "../utils/window_dimensions";
+import {useHistory} from "react-router-dom";
 
 
 function PageNotFound() {
+    const history = useHistory()
     const {width: windowWidth} = useWindowDimensions()
+
+    function onButtonClick() {
+            history.push('/home')
+    }
 
     return <div className={'container'}>
         <div className={'text-center mt-5'}>
@@ -16,6 +23,7 @@ function PageNotFound() {
                         animationData: animation
                     }}
             />
+            <Button className='button-theme' onClick={onButtonClick}>Go to Home</Button>
         </div>
     </div>
 }
