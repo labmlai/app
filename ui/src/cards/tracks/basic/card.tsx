@@ -82,7 +82,7 @@ export function BasicCard(props: BasicCardProps) {
 
     return <div className={'labml-card labml-card-action'} onClick={
         () => {
-            history.push(`/${props.url}?run_uuid=${props.uuid}`);
+            history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
         }
     }>
         <h3 className={'header'}>{props.name}</h3>
@@ -147,6 +147,7 @@ export function BasicView(props: BasicViewProps) {
                 runCache.setRun(run).then()
             }
         }
+
         window.addEventListener('beforeunload', updateRun)
 
         return () => {

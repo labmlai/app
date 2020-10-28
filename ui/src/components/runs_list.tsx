@@ -21,7 +21,7 @@ function RunsListItem(props: RunsListItemProps) {
 
     const run = props.run
     return <ListGroup.Item action className={'runs-list-item'} onClick={() => {
-        history.push(`/run?run_uuid=${run.run_uuid}`);
+        history.push(`/run?run_uuid=${run.run_uuid}`, history.location.pathname);
     }}
     >
         <div>

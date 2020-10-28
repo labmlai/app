@@ -1,6 +1,6 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 
-import {useHistory} from "react-router-dom"
+import {useHistory, useLocation} from "react-router-dom"
 
 import './back_button.scss'
 
@@ -10,16 +10,38 @@ interface BasicViewProps {
 
 export function BackButton(props: BasicViewProps) {
     const history = useHistory()
+    const location = useLocation()
+
+    const [isPrevious, setIsPrevious] = useState(false)
+    const [text, setText] = useState('')
+
+    useEffect(() => {
+        setText('Home')
+
+        let previous_path = location.state
+        if (previous_path) {
+            if (previous_path === '/run') {
+                setText('Run')
+            }
+            setIsPrevious(true)
+        }
+
+    }, [])
+
 
     function onBackButtonClick() {
         if (props.onButtonClick) {
             props.onButtonClick()
         }
 
-        history.goBack()
+        if (isPrevious) {
+            history.goBack()
+        } else {
+            history.push('/home')
+        }
     }
 
     return <div className={'mt-2'}>
-        <button onClick={onBackButtonClick} className={'back_button'}>{'<Back'}</button>
+        <button onClick={onBackButtonClick} className={'back_button'}>{`<${text}`}</button>
     </div>
 }
