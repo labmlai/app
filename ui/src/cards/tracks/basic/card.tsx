@@ -134,12 +134,18 @@ export function BasicView(props: BasicViewProps) {
                 let preferences = run.series_preferences[props.series_preference]
                 if (preferences) {
                     setPlotIdx(preferences)
+                } else if (track) {
+                    let res: number[] = []
+                    for (let i = 0; i < track.length; i++) {
+                        res.push(i)
+                    }
+                    setPlotIdx(res)
                 }
             }
         }
 
         load().then()
-    })
+    }, [track, run])
 
     useEffect(() => {
         function updateRun() {
