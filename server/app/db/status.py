@@ -74,7 +74,7 @@ class Status(Model['Status']):
 def get_status(run_uuid: str) -> Union[None, Status]:
     r = run.get_run(run_uuid)
 
-    if run:
+    if r:
         return r.status.load()
 
     return None
