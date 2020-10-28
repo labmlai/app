@@ -123,7 +123,7 @@ def get_run(run_uuid: str) -> flask.Response:
     status_code = 400
 
     r = run.get_run(run_uuid)
-    if run:
+    if r:
         run_data = r.get_data()
         status_code = 200
 
