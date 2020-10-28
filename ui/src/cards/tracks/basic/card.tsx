@@ -141,6 +141,20 @@ export function BasicView(props: BasicViewProps) {
         load().then()
     })
 
+    useEffect(() => {
+        function updateRun() {
+            if (run) {
+                runCache.setRun(run).then()
+            }
+        }
+        window.addEventListener('beforeunload', updateRun)
+
+        return () => {
+            updateRun()
+            window.removeEventListener('beforeunload', updateRun)
+        }
+    }, [run])
+
     let toggleChart = useCallback((idx: number) => {
         if (plotIdx[idx] >= 0) {
             plotIdx[idx] = -1
@@ -148,9 +162,7 @@ export function BasicView(props: BasicViewProps) {
             plotIdx[idx] = Math.max(...plotIdx) + 1
         }
         setPlotIdx(new Array<number>(...plotIdx))
-
         run.series_preferences[props.series_preference] = plotIdx
-        runCache.setRun(run).then()
     }, [plotIdx])
 
 
