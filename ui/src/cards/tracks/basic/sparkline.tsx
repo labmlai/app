@@ -1,5 +1,5 @@
 import {PointValue} from "../../../models/run";
-import {formatFixed, scaleValue, pickHex} from "../../../components/value";
+import {formatFixed, pickHex, scaleValue} from "../../../components/value";
 import {ListGroup} from "react-bootstrap";
 import React from "react";
 import {getExtent, getScale} from "./utils";
@@ -58,12 +58,14 @@ export function SparkLine(props: SparkLineProps) {
     }
 
     return <ListGroup.Item className={className} action={props.onClick != null} onClick={props.onClick}>
-        <span style={{color: color, width: `${titleWidth}px`}}>{props.name}</span>
-        <svg className={'sparkline'} height={25} width={chartWidth}>
-            <g transform={`translate(${0}, 25)`}>
-                <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
-            </g>
-        </svg>
-        {value}
+        <div className={'sparkline-content'} style={{width: `${titleWidth * 2 + chartWidth}px`}}>
+            <span style={{color: color, width: `${titleWidth}px`}}>{props.name}</span>
+            <svg className={'sparkline'} height={25} width={chartWidth}>
+                <g transform={`translate(${0}, 25)`}>
+                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
+                </g>
+            </svg>
+            {value}
+        </div>
     </ListGroup.Item>
 }
