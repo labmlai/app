@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 
-import {Image, Button} from "react-bootstrap"
+import {Button, Form, Image} from "react-bootstrap"
 import {useAuth0} from "@auth0/auth0-react";
 import {useErrorHandler} from "react-error-boundary";
 
@@ -57,13 +57,22 @@ function SettingsView() {
                     <Image className={'image-style'}
                            src={user.picture ? user.picture : DEFAULT_IMAGE}
                            roundedCircle/>
-                    <h6 className={'mt-3'}>Your token: {user.default_project}</h6>
                 </div>
                 <div className={'mt-5'}>
-                    <h5>Name</h5>
-                    <input type="text" placeholder="Name" defaultValue={user.name}/>
-                    <h5>Email</h5>
-                    <input type="text" placeholder="Email" defaultValue={user.email}/>
+                    <Form>
+                        <Form.Group controlId="token">
+                            <Form.Label>Token</Form.Label>
+                            <Form.Control type="text" value={`${user.default_project}`} disabled={true}/>
+                        </Form.Group>
+                        <Form.Group controlId="name">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control type="name" value={user.name} disabled={true}/>
+                        </Form.Group>
+                        <Form.Group controlId="email">
+                            <Form.Label>Email</Form.Label>
+                            <Form.Control type="email" value={user.email} disabled={true}/>
+                        </Form.Group>
+                    </Form>
                 </div>
                 <Button className={'mt-5'} onClick={logOut}>Log out</Button>
             </div>
