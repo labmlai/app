@@ -15,12 +15,14 @@ function TabsView() {
 
     return <div>
         <Tab.Container defaultActiveKey="second">
-            <div className={'flex-container'}>
+            <div className={'flex-container tab-view'}>
                 <Nav.Link eventKey="second"  className={'tab'}>
                     <FontAwesomeIcon icon={faHome}/>
+                    <span>Home</span>
                 </Nav.Link>
                 <Nav.Link eventKey="first" className={'tab'}>
                     <FontAwesomeIcon icon={faUserCircle}/>
+                    <span>User</span>
                 </Nav.Link>
             </div>
             <Tab.Content>

@@ -1,16 +1,15 @@
 
 .flex-container {
-  background-color: lightsalmon;
-  text-align: center;
-  opacity: 0.5;
-
-  .tab {
+  .tab.nav-link {
     display: inline-block;
-    color: black;
-    font-size: 1.5em;
+    span {
+      margin-left: 5px;
+    }
   }
 }
 
-
+.flex-container.tab-view {
+  text-align: center;
+}
 
 
