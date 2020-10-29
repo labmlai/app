@@ -3,7 +3,7 @@ import React from "react";
 import {useLocation} from "react-router-dom";
 import {BasicCard, BasicView} from "../basic/card";
 
-const ANALYSIS = 'Model Metrics'
+const ANALYSIS = 'Metrics - L2 Norm'
 const URL = 'metrics'
 const TRACKING_NAME = 'getMetricsTracking'
 const SERIES_PREFERENCE = 'metrics'

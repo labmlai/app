@@ -3,7 +3,7 @@ import React from "react";
 import {useLocation} from "react-router-dom";
 import {BasicView, BasicCard} from "../basic/card";
 
-const ANALYSIS = 'Model Gradients'
+const ANALYSIS = 'Gradients - L2 Norm'
 const URL = 'grads'
 const TRACKING_NAME = 'getGradsTracking'
 const SERIES_PREFERENCE = 'grads'

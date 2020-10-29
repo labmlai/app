@@ -208,7 +208,7 @@ class Series(Model['Series']):
         s = self.tracking[ind]
         series: Dict[str, Any] = SeriesModel().load(s).summary
         name = ind.split('.')
-        if name[-1] == 'mean':
+        if name[-1] in ['mean', 'l2', 'l1']:
             name = name[:-1]
         if name[0] in [Enums.GRAD, Enums.TIME, Enums.MODULE, Enums.PARAM]:
             name = name[1:]
