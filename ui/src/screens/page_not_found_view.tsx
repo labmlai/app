@@ -11,19 +11,17 @@ function PageNotFound() {
     const {width: windowWidth} = useWindowDimensions()
 
     function onButtonClick() {
-            history.push('/home')
+        history.push('/home')
     }
 
     return <div className={'container'}>
         <div className={'text-center mt-5'}>
-            <h1 className={'display-1 text-danger'}>404</h1>
-            <h1 className={'text-primary'}>ERROR - LAB EXPLOSION</h1>
-            <Lottie style={{width: Math.min(windowWidth, 500), margin: '0 auto'}}
-                    options={{
-                        animationData: animation
-                    }}
-            />
-            <Button className='button-theme' onClick={onButtonClick}>Go to Home</Button>
+            <div style={{width: Math.min(windowWidth, 500), margin: '0 auto'}}>
+                <Lottie options={{animationData: animation}}/>
+            </div>
+            <h1 className={'text-danger'}>404 - Not found error</h1>
+            <h3>Page your are looking for was not found</h3>
+            <Button onClick={onButtonClick}>Go to Home</Button>
         </div>
     </div>
 }

@@ -65,7 +65,7 @@ function SettingsView() {
                     <h5>Email</h5>
                     <input type="text" placeholder="Email" defaultValue={user.email}/>
                 </div>
-                <Button className={'button-theme mt-5'} onClick={logOut}>Log out</Button>
+                <Button className={'mt-5'} onClick={logOut}>Log out</Button>
             </div>
         }
     </div>
