@@ -36,10 +36,8 @@ function AppContainer() {
             } else if (isLoading) {
             } else if (!isAuthenticated) {
                 let uri = location.pathname + location.search
-                console.log('loginWithRedirect', uri)
                 loginWithRedirect({appState: {returnTo: uri}}).then()
             } else if (isAuthenticated && !loggedIn) {
-                console.log('login location', location)
                 let data = {} as UserModel
 
                 data.name = user.name
@@ -50,7 +48,6 @@ function AppContainer() {
 
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
-                        console.log('logged in')
                         setLoggedIn(true)
                         // const uri: string = localStorage.getItem('uri')!
                         // localStorage.removeItem('uri')
@@ -90,17 +87,17 @@ function AppContainer() {
         <main>
             <Switch>
                 <Route path="/404" component={PageNotFound}/>
-                {loggedIn && <Route path="/run" component={RunView}/>}
-                {loggedIn && <Route path="/configs" component={ConfigsCard.View}/>}
-                {loggedIn && <Route path="/metrics" component={MetricsCard.View}/>}
-                {loggedIn && <Route path="/grads" component={GradsCard.View}/>}
-                {loggedIn && <Route path="/params" component={ParamsCard.View}/>}
-                {loggedIn && <Route path="/modules" component={ModulesCard.View}/>}
-                {loggedIn && <Route path="/times" component={TimesCard.View}/>}
-                {loggedIn && <Route path="/home" component={TabsView}/>}
-                {loggedIn && <Route path="/runs" component={RunsView}/>}
-                {loggedIn && <Route path="/"><Redirect to="/home"/></Route>}
-                {!loggedIn && <Route path="/"><Redirect to="/login"/></Route>}
+                <Route path="/run" component={RunView}/>
+                <Route path="/configs" component={ConfigsCard.View}/>
+                <Route path="/metrics" component={MetricsCard.View}/>
+                <Route path="/grads" component={GradsCard.View}/>
+                <Route path="/params" component={ParamsCard.View}/>
+                <Route path="/modules" component={ModulesCard.View}/>
+                <Route path="/times" component={TimesCard.View}/>
+                <Route path="/home" component={TabsView}/>
+                <Route path="/runs" component={RunsView}/>
+                <Route path="/"><Redirect to="/home"/></Route>
+                <Route path="/"><Redirect to="/login"/></Route>
             </Switch>
         </main>
     );

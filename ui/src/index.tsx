@@ -39,7 +39,6 @@ const Auth0ProviderWithHistory = (props: ProviderProps) => {
     const history = useHistory()
 
     const onRedirectCallback = useCallback((appState: any) => {
-        console.log('redirect callback', appState, history)
         history.push(appState?.returnTo || window.location.pathname);
     }, [history])
 
