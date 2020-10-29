@@ -1,6 +1,6 @@
 import {LineChart, SparkLines} from "./components";
 import React, {useCallback, useEffect, useState} from "react";
-import {Run, SeriesModel, Status} from "../../../models/run";
+import {Run, SeriesModel} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"

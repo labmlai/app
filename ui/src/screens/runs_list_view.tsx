@@ -17,9 +17,9 @@ function RunsListView(props: RunsListProps) {
 
     const params = new URLSearchParams(props.location.search)
 
-    const runListCache = CACHE.getRunsList()
-
     useEffect(() => {
+        const runListCache = CACHE.getRunsList()
+
         async function load() {
             let currentRunsList = await runListCache.getRunsList(params.get('labml_token'))
             if (currentRunsList) {
@@ -30,7 +30,7 @@ function RunsListView(props: RunsListProps) {
         }
 
         load().then()
-    }, [])
+    }, [params])
 
     useEffect(() => {
         document.title = "LabML: Home"

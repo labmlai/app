@@ -1,6 +1,6 @@
 import {ConfigsView} from "./components";
 import React, {useCallback, useEffect, useState} from "react";
-import {Run, Status} from "../../models/run";
+import {Run} from "../../models/run";
 import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
 import useWindowDimensions from "../../utils/window_dimensions";

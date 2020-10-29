@@ -18,8 +18,6 @@ function SettingsView() {
     let [user, setUser] = useState(null as unknown as User)
     const [isLoading, setIsLoading] = useState(true)
 
-    const userCache = CACHE.getUser()
-
     const {logout} = useAuth0();
     const handleError = useErrorHandler()
 
@@ -27,6 +25,8 @@ function SettingsView() {
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
+        const userCache = CACHE.getUser()
+
         async function load() {
             let currentUser = await userCache.getUser()
             if (currentUser) {

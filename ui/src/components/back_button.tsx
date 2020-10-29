@@ -28,7 +28,7 @@ export function BackButton(props: BasicViewProps) {
             setIsPrevious(true)
         }
 
-    }, [])
+    }, [location])
 
 
     function onBackButtonClick() {

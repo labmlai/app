@@ -223,9 +223,6 @@ class UserCache {
     private user!: User
     private userPromise = new BroadcastPromise<UserModel>()
 
-    constructor() {
-    }
-
     private async loadUser(): Promise<UserModel> {
         return this.userPromise.create(async () => {
             let res = await NETWORK.get_user()
@@ -245,9 +242,6 @@ class UserCache {
 class RunsListCache {
     private runsList!: RunsList
     private runsListPromise = new BroadcastPromise<RunsListModel>()
-
-    constructor() {
-    }
 
     private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
         return this.runsListPromise.create(async () => {
