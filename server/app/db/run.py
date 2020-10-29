@@ -1,16 +1,15 @@
 import math
 import time
-import numpy as np
-
 from typing import Dict, List, Optional, Any, Union, NamedTuple
 from uuid import uuid4
 
-from labml_db import Model, Key, Index
+import numpy as np
 
+from labml_db import Model, Key, Index
 from . import user
 from .status import create_status, Status
-from ..enums import Enums
 from .. import settings
+from ..enums import Enums
 
 
 def generate_run_uuid() -> str:
@@ -363,6 +362,15 @@ class Run(Model['Run']):
 
 class RunIndex(Index['Run']):
     pass
+
+
+def get(run_uuid: str, labml_token: str = '') -> Optional[Run]:
+    project = user.get_project(labml_token)
+
+    if run_uuid in project.runs:
+        return project.runs[run_uuid].load()
+    else:
+        return None
 
 
 def get_or_create(run_uuid: str, labml_token: str = '') -> Run:

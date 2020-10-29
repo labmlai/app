@@ -71,20 +71,21 @@ def update_run() -> flask.Response:
     p = user.get_project(labml_token=labml_token)
     if not p:
         labml_token = settings.FLOAT_PROJECT_TOKEN
+
+    run_uuid = request.json.get('run_uuid', '')
+    r = run.get(run_uuid, labml_token)
+    if not r and not p:
         error = {'error': 'invalid_labml_token',
                  'message': 'The labml_token sent to the api is not valid.  '
                             'Please create a valid token at https://web.lab-ml.com'}
 
-    json = request.json
-
-    run_uuid = json.get('run_uuid', '')
     r = run.get_or_create(run_uuid, labml_token)
     s = r.status.load()
 
-    r.update_run(json)
-    s.update_time_status(json)
-    if 'track' in json:
-        r.track(json['track'])
+    r.update_run(request.json)
+    s.update_time_status(request.json)
+    if 'track' in request.json:
+        r.track(request.json['track'])
 
     if error:
         success = False
