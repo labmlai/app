@@ -57,7 +57,7 @@ body {
   h3 {
     color: #7f8c8d;
     font-size: 1rem;
-    padding: 0 10px
+    padding: 0 10px;
   }
 }
 
@@ -76,6 +76,13 @@ body {
   h3.header {
     color: dimgrey;
     font-size: 1rem;
+    padding: 0 10px;
+    text-align: center;
+  }
+
+  h2.header {
+    color: dimgrey;
+    font-size: 1.2rem;
     padding: 0 10px;
     text-align: center;
   }
