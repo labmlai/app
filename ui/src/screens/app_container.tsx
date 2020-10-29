@@ -2,7 +2,6 @@ import React, {useEffect, useState} from "react"
 
 import {Redirect, Route, Switch, useHistory, useLocation} from "react-router-dom"
 
-import LoginView from "../screens/login_view"
 import RunView from "./run_view"
 import PageNotFound from "./page_not_found_view"
 import TabsView from "./tabs_view"
@@ -15,42 +14,54 @@ import GradsCard from "../cards/tracks/grads/card"
 import ModulesCard from "../cards/tracks/modules/card"
 import TimesCard from "../cards/tracks/times/card"
 import {useErrorHandler} from "react-error-boundary";
-import {APP_STATE} from "../app_state";
 import NETWORK from "../network";
+import {useAuth0} from "@auth0/auth0-react";
+import {LabLoader} from "../components/loader";
+import {UserModel} from "../models/user";
 
 /* TODO: Get this from configs */
 ReactGA.initialize('UA-164228270-01');
-
-const loginNotRequiredPaths = ['/login', '/404']
-
-function shouldLoggedInCheck(uri: string) {
-    for (let p of loginNotRequiredPaths) {
-        if (uri.startsWith(p)) {
-            return false
-        }
-    }
-
-    return true
-}
-
 
 function AppContainer() {
     const location = useLocation()
     const handleError = useErrorHandler()
     const history = useHistory()
 
+    const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
     let [loggedIn, setLoggedIn] = useState(false)
 
     useEffect(() => {
-        setLoggedIn(APP_STATE.isLoggedIn())
-        APP_STATE.onLoginChanged(state => {
-                setLoggedIn(state)
+            if (error) {
+                handleError(error)
+            } else if (isLoading) {
+            } else if (!isAuthenticated) {
+                let uri = location.pathname + location.search
+                console.log('loginWithRedirect', uri)
+                loginWithRedirect({appState: {returnTo: uri}}).then()
+            } else if (isAuthenticated && !loggedIn) {
+                console.log('login location', location)
+                let data = {} as UserModel
+
+                data.name = user.name
+                data.email = user.email
+                data.sub = user.sub
+                data.email_verified = user.email_verified
+                data.picture = user.picture
+
+                NETWORK.sign_in(data).then((res) => {
+                    if (res.data.is_successful) {
+                        console.log('logged in')
+                        setLoggedIn(true)
+                        // const uri: string = localStorage.getItem('uri')!
+                        // localStorage.removeItem('uri')
+                    } else {
+                        handleError(Error('error in login'))
+                    }
+                })
             }
-        )
-        if (!loggedIn && location.pathname != '/login') {
-            localStorage.setItem('uri', location.pathname + location.search)
-        }
-    }, [loggedIn, location])
+        },
+        [loggedIn, isLoading, user, isAuthenticated, handleError, location, error, loginWithRedirect]
+    )
 
     useEffect(() => {
         ReactGA.pageview(location.pathname + location.search)
@@ -60,8 +71,7 @@ function AppContainer() {
         if (error === undefined || error.response === undefined) {
             console.log('undefined error or response')
         } else if (error.response.status === 403) {
-            APP_STATE.setLoggedIn(false)
-            history.replace(`/login`)
+            setLoggedIn(false)
         } else if (error.response.status === 400) {
             history.push(`/404`)
         } else {
@@ -71,11 +81,15 @@ function AppContainer() {
         return error
     }
 
+    if (!loggedIn) {
+        return <div>
+            <LabLoader/>
+        </div>
+    }
     return (
         <main>
             <Switch>
                 <Route path="/404" component={PageNotFound}/>
-                <Route path="/login" component={LoginView}/>
                 {loggedIn && <Route path="/run" component={RunView}/>}
                 {loggedIn && <Route path="/configs" component={ConfigsCard.View}/>}
                 {loggedIn && <Route path="/metrics" component={MetricsCard.View}/>}

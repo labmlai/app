@@ -50,7 +50,7 @@ function SettingsView() {
 
     return <div>
         {isLoading ?
-            <LabLoader isLoading={isLoading}/>
+            <LabLoader/>
             :
             <div className={'page pl-1 pr-1'} style={{width: actualWidth}}>
                 <div className={'text-center'}>

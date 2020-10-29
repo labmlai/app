@@ -7,7 +7,7 @@ import RunHeaderCard from "../../run_header/card"
 import CACHE from "../../../cache/cache";
 import {LabLoader} from "../../../components/loader";
 import {BackButton} from "../../../components/back_button"
-import {CardProps, ViewProps, BasicProps} from "../../types";
+import {BasicProps, CardProps, ViewProps} from "../../types";
 import {useHistory} from "react-router-dom";
 import {Alert} from "react-bootstrap";
 
@@ -23,7 +23,7 @@ function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: 
         }
         return <LineChart key={1} series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
     } else {
-        return <LabLoader isLoading={true}/>
+        return <LabLoader/>
     }
 }
 
@@ -39,7 +39,7 @@ function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null, wi
         }
         return <SparkLines series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
     } else {
-        return <LabLoader isLoading={true}/>
+        return <LabLoader/>
     }
 }
 
@@ -140,7 +140,7 @@ export function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, run])
+    }, [track, run, runCache, props.series_preference])
 
     useEffect(() => {
         function updateRun() {
@@ -155,7 +155,7 @@ export function BasicView(props: BasicViewProps) {
             updateRun()
             window.removeEventListener('beforeunload', updateRun)
         }
-    }, [run])
+    }, [run, runCache])
 
     let toggleChart = useCallback((idx: number) => {
         if (plotIdx[idx] >= 0) {
@@ -165,7 +165,7 @@ export function BasicView(props: BasicViewProps) {
         }
         setPlotIdx(new Array<number>(...plotIdx))
         run.series_preferences[props.series_preference] = plotIdx
-    }, [plotIdx])
+    }, [plotIdx, run, props.series_preference])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {

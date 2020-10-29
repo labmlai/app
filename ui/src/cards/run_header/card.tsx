@@ -26,11 +26,11 @@ function RunView(props: RunViewProps) {
             </div>
         </div>
     } else {
-        return <LabLoader isLoading={true}/>
+        return <LabLoader/>
     }
 
     return <div className={'labml-card'}>
-         <div className={'last-updated'}>Last updated {getTimeDiff(props.status.last_updated_time)}</div>
+        <div className={'last-updated'}>Last updated {getTimeDiff(props.status.last_updated_time)}</div>
         {runView}
     </div>
 }

@@ -33,7 +33,7 @@ function Card(props: CardProps) {
             return null
         }
     } else {
-        configsView = <LabLoader isLoading={true}/>
+        configsView = <LabLoader/>
     }
 
     return <div>
@@ -69,7 +69,7 @@ function View(props: ViewProps) {
     if (run != null) {
         configsView = <ConfigsView configs={run.configs} width={actualWidth} isHyperParamOnly={false}/>
     } else {
-        configsView = <LabLoader isLoading={true}/>
+        configsView = <LabLoader/>
     }
 
     let errorCallback = useCallback((message: string) => {
