@@ -195,7 +195,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
     status_code = 400
 
     r = run.get_run(run_uuid)
-    if run:
+    if r:
         track_data = r.get_tracking(Enums.METRIC)
         status_code = 200
 
@@ -213,7 +213,7 @@ def get_params_tracking(run_uuid: str) -> Any:
     status_code = 400
 
     r = run.get_run(run_uuid)
-    if run:
+    if r:
         track_data = r.get_tracking(Enums.PARAM)
         status_code = 200
 
@@ -231,7 +231,7 @@ def get_modules_tracking(run_uuid: str) -> Any:
     status_code = 400
 
     r = run.get_run(run_uuid)
-    if run:
+    if r:
         track_data = r.get_tracking(Enums.MODULE)
         status_code = 200
 
@@ -249,7 +249,7 @@ def get_times_tracking(run_uuid: str) -> Any:
     status_code = 400
 
     r = run.get_run(run_uuid)
-    if run:
+    if r:
         track_data = r.get_tracking(Enums.TIME)
         status_code = 200
 
@@ -267,7 +267,7 @@ def get_grads_tracking(run_uuid: str) -> Any:
     status_code = 400
 
     r = run.get_run(run_uuid)
-    if run:
+    if r:
         track_data = r.get_tracking(Enums.GRAD)
         status_code = 200
 

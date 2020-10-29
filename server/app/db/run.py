@@ -353,8 +353,6 @@ class Run(Model['Run']):
 
                 if track_type != Enums.TIME and 'l2' not in track:
                     continue
-                if not ind.is_print:
-                    continue
 
             res.append(series.get_track(track))
 
