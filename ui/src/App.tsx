@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.scss';
 import './neumorphism.scss'
-import {BrowserRouter as Router, Switch, Route} from "react-router-dom"
+import {BrowserRouter as Router} from "react-router-dom"
 
 import {Alert} from "react-bootstrap";
 import {ErrorBoundary} from "react-error-boundary"
@@ -19,9 +19,7 @@ function App() {
     return (
         <ErrorBoundary FallbackComponent={ErrorFallback}>
             <Router>
-                <Switch>
-                    <Route path="/" component={AppContainer}/>
-                </Switch>
+                <AppContainer/>
             </Router>
         </ErrorBoundary>
     );

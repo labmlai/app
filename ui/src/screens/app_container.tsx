@@ -1,7 +1,6 @@
-import React from "react"
+import React, {useEffect, useState} from "react"
 
-import {Route, Switch, Redirect} from "react-router-dom"
-import {useHistory} from "react-router-dom"
+import {Redirect, Route, Switch, useHistory, useLocation} from "react-router-dom"
 
 import LoginView from "../screens/login_view"
 import RunView from "./run_view"
@@ -15,53 +14,79 @@ import ParamsCard from "../cards/tracks/params/card"
 import GradsCard from "../cards/tracks/grads/card"
 import ModulesCard from "../cards/tracks/modules/card"
 import TimesCard from "../cards/tracks/times/card"
-
-import NETWORK from '../network'
 import {useErrorHandler} from "react-error-boundary";
+import {APP_STATE} from "../app_state";
+import NETWORK from "../network";
 
 /* TODO: Get this from configs */
 ReactGA.initialize('UA-164228270-01');
 
+const loginNotRequiredPaths = ['/login', '/404']
+
+function shouldLoggedInCheck(uri: string) {
+    for (let p of loginNotRequiredPaths) {
+        if (uri.startsWith(p)) {
+            return false
+        }
+    }
+
+    return true
+}
+
+
 function AppContainer() {
-    const uri = window.location.pathname + window.location.search
-
-    const history = useHistory()
+    const location = useLocation()
     const handleError = useErrorHandler()
+    const history = useHistory()
 
-    ReactGA.pageview(uri)
+    let [loggedIn, setLoggedIn] = useState(false)
 
-    NETWORK.axiosInstance.interceptors.response.use(function (response: any) {
-        return response
-    }, function (error: any) {
+    useEffect(() => {
+        setLoggedIn(APP_STATE.isLoggedIn())
+        APP_STATE.onLoginChanged(state => {
+                setLoggedIn(state)
+            }
+        )
+        if (!loggedIn && location.pathname != '/login') {
+            localStorage.setItem('uri', location.pathname + location.search)
+        }
+    }, [loggedIn, location])
+
+    useEffect(() => {
+        ReactGA.pageview(location.pathname + location.search)
+    }, [location])
+
+    NETWORK.handleError = function (error: any) {
         if (error === undefined || error.response === undefined) {
             console.log('undefined error or response')
         } else if (error.response.status === 403) {
-            localStorage.setItem('uri', uri)
-            history.push(`/login`)
+            APP_STATE.setLoggedIn(false)
+            history.replace(`/login`)
         } else if (error.response.status === 400) {
             history.push(`/404`)
         } else {
             handleError(error)
         }
 
-        return Promise.reject(error)
-    })
+        return error
+    }
 
     return (
         <main>
             <Switch>
                 <Route path="/404" component={PageNotFound}/>
-                <Route path="/run" component={RunView}/>
-                <Route path="/configs" component={ConfigsCard.View}/>
-                <Route path="/metrics" component={MetricsCard.View}/>
-                <Route path="/grads" component={GradsCard.View}/>
-                <Route path="/params" component={ParamsCard.View}/>
-                <Route path="/modules" component={ModulesCard.View}/>
-                <Route path="/times" component={TimesCard.View}/>
-                <Route path="/home" component={TabsView}/>
                 <Route path="/login" component={LoginView}/>
-                <Route path="/runs" component={RunsView}/>
-                <Route path="/"><Redirect to="/home"/></Route>
+                {loggedIn && <Route path="/run" component={RunView}/>}
+                {loggedIn && <Route path="/configs" component={ConfigsCard.View}/>}
+                {loggedIn && <Route path="/metrics" component={MetricsCard.View}/>}
+                {loggedIn && <Route path="/grads" component={GradsCard.View}/>}
+                {loggedIn && <Route path="/params" component={ParamsCard.View}/>}
+                {loggedIn && <Route path="/modules" component={ModulesCard.View}/>}
+                {loggedIn && <Route path="/times" component={TimesCard.View}/>}
+                {loggedIn && <Route path="/home" component={TabsView}/>}
+                {loggedIn && <Route path="/runs" component={RunsView}/>}
+                {loggedIn && <Route path="/"><Redirect to="/home"/></Route>}
+                {!loggedIn && <Route path="/"><Redirect to="/login"/></Route>}
             </Switch>
         </main>
     );

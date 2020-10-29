@@ -7,6 +7,7 @@ import {UserModel} from "../models/user"
 
 import NETWORK from '../network'
 import {useErrorHandler} from "react-error-boundary";
+import {APP_STATE} from "../app_state";
 
 
 function LoginView() {
@@ -19,12 +20,14 @@ function LoginView() {
     const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
 
     useEffect(() => {
-            if (!isLoading && !isAuthenticated) {
-                loginWithRedirect().then((res) => {
-                })
+        console.log(isLoading, isAuthenticated)
+            if (APP_STATE.isLoggedIn()) {
+                history.replace('/home')
             }
-
-            if (!isLoading && isAuthenticated) {
+            else if (!isLoading && !isAuthenticated) {
+                loginWithRedirect().then()
+            }
+            else if (!isLoading && isAuthenticated) {
                 let data = {} as UserModel
 
                 data.name = user.name
@@ -35,27 +38,25 @@ function LoginView() {
 
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
+                        APP_STATE.setLoggedIn(true)
                         const uri: string = localStorage.getItem('uri')!
                         localStorage.removeItem('uri')
 
-                        history.replace(from)
-
                         if (uri) {
-                            history.push(uri)
+                            history.replace(uri)
                         } else {
-                            history.push('/home')
+                            history.replace('/home')
                         }
                     } else {
                         handleError(Error('error in login'))
                     }
                 })
             }
-
-            if (!isLoading && error) {
+            else if (!isLoading && error) {
                 handleError(error)
             }
         },
-        [isLoading]
+        [isLoading, isAuthenticated]
     )
 
     return <div>
