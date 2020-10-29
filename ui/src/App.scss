@@ -80,9 +80,11 @@ body {
 
   h3.header {
     color: #34495e;
-    font-size: 1rem;
-    padding: 0 10px;
+    font-size: 0.9rem;
+    padding: 0 10px 3px 0;
     text-align: center;
+    text-transform: uppercase;
+    border-bottom: 1px solid #ddd;
   }
 
   h2.header {
