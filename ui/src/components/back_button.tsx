@@ -3,6 +3,9 @@ import React, {useEffect, useState} from "react"
 import {useHistory, useLocation} from "react-router-dom"
 
 import './back_button.scss'
+import {Nav, Tab} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 
 interface BasicViewProps {
     onButtonClick?: () => void
@@ -41,7 +44,10 @@ export function BackButton(props: BasicViewProps) {
         }
     }
 
-    return <div className={'mt-2'}>
-        <button onClick={onBackButtonClick} className={'back_button'}>{`<${text}`}</button>
+    return <div className={'flex-container'}>
+        <Nav.Link eventKey="second"  className={'tab'} onClick={onBackButtonClick}>
+            <FontAwesomeIcon icon={faChevronLeft}/>
+            <span>{text}</span>
+        </Nav.Link>
     </div>
 }
