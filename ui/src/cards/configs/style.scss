@@ -3,14 +3,18 @@ $hoverColor: #f5f6fa;
 $subtleColor: #718093;
 $iconColor: #fbc531; // #487eb0;
 
-$monoFont: monospace;
-
-$tableEven: #ecf0f1;
+$tableEven: #ddd;
 $tableSelected: #151b18;
 $tableHighlight: #b2bec3;
 $tableConfig: #fbc531;
 $tableValue: #4cd137;
 
+$keyFontSize: 0.8rem;
+
+@mixin mono {
+  font-family: monospace;
+  font-size: 1rem;
+}
 
 .info_list {
   > span {
@@ -39,7 +43,7 @@ $tableValue: #4cd137;
 
   &.mono {
     span.value {
-      font-family: $monoFont;
+      @include mono();
     }
   }
 
@@ -49,7 +53,7 @@ $tableValue: #4cd137;
 }
 
 .configs {
-  font-size: 10px;
+  font-size: $keyFontSize;
 
   .ignored {
     display: none;
@@ -104,17 +108,17 @@ $tableValue: #4cd137;
     .computed {
       //font-weight: bold;
       margin-right: 5px;
-      font-family: $monoFont;
+      @include mono();
     }
 
     .option {
       margin-right: 5px;
-      font-family: $monoFont;
+      @include mono();
       color: #c0392b;
     }
 
     .options {
-      font-family: $monoFont;
+      @include mono();
 
       > span {
         font-style: italic;
@@ -165,12 +169,9 @@ $tableValue: #4cd137;
 
 .configs {
   .info_list {
-    &:nth-child(even) {
-      background: none;
-    }
-
-    &:nth-child(odd) {
-      background: $tableEven;
+    border-bottom: 1px solid #ddd;
+    &:last-child {
+      border-bottom: none;
     }
   }
 }

@@ -132,7 +132,7 @@ function ConfigItemView(props: ConfigItemProps) {
     }
 
     let key = prefix + conf.name
-    if(props.isHyperParamOnly) {
+    if (props.isHyperParamOnly) {
         key = conf.key
     }
     return <div className={classes.join(' ')}>
@@ -162,12 +162,24 @@ export function ConfigsView(props: ConfigsProps) {
         else return 0
     })
 
+    let count = configs.length
+    if (props.isHyperParamOnly) {
+        count = configs.filter((c) => {
+            return !(c.order < 0 ||
+            (!c.isExplicitlySpecified && !c.isHyperparam))
+        }).length
+    }
+
     let style = {
         width: `${props.width}px`
     }
+    let items = configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}
+                                                   width={props.width}
+                                                   isHyperParamOnly={props.isHyperParamOnly}/>)
+    if (count === 0 && props.isHyperParamOnly) {
+        items = [<div className={'info'}>Default configurations</div>]
+    }
     return <div className={"configs block collapsed"} style={style}>
-        {configs.map((c) => <ConfigItemView key={c.key} config={c} configs={configs}
-                                            width={props.width}
-                                            isHyperParamOnly={props.isHyperParamOnly}/>)}
+        {items}
     </div>
 }
