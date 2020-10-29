@@ -110,6 +110,10 @@ export function BasicView(props: BasicViewProps) {
     useEffect(() => {
         async function load() {
             setTrack(await runCache[props.tracking_name]())
+            let status = await runCache.getStatus()
+            if (!status.isRunning) {
+                clearInterval(interval)
+            }
         }
 
         load().then()
