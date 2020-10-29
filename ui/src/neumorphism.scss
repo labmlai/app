@@ -1,6 +1,10 @@
 .labml-card {
-  box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
   background-color: #eee;
+  box-shadow: none;
+
+  &.labml-card-action {
+    box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+  }
 
   .sparkline-list.list-group {
     .list-group-item {
