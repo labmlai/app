@@ -141,7 +141,6 @@ class RunCache {
     }
 
     async setRun(run: Run): Promise<Run> {
-        this.run = run
         await NETWORK.update_run(run.series_preferences, run.uuid)
 
         return run
