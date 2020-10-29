@@ -1,5 +1,5 @@
 import {ConfigsView} from "./components";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Run, Status} from "../../models/run";
 import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
@@ -8,6 +8,7 @@ import {CardProps, ViewProps} from "../types";
 import {LabLoader} from "../../components/loader";
 import RunHeaderCard from "../run_header/card";
 import {BackButton} from "../../components/back_button"
+import {Alert} from "react-bootstrap";
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
@@ -38,7 +39,7 @@ function Card(props: CardProps) {
     return <div>
         <div className={'labml-card labml-card-action'} onClick={
             () => {
-                history.push(`/configs?run_uuid=${run.uuid}`);
+                history.push(`/configs?run_uuid=${run.uuid}`, history.location.pathname);
             }
         }>
             <h3 className={'header'}>Configurations</h3>
@@ -52,14 +53,13 @@ function View(props: ViewProps) {
     const runUUID = params.get('run_uuid') as string
     const runCache = CACHE.getRun(runUUID)
     let [run, setRun] = useState(null as unknown as Run)
-    const [status, setStatus] = useState(null as unknown as Status)
+    const [error, setError] = useState(null as (string | null))
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
         async function load() {
             setRun(await runCache.getRun())
-            setStatus(await runCache.getStatus())
         }
 
         load().then()
@@ -72,9 +72,19 @@ function View(props: ViewProps) {
         configsView = <LabLoader isLoading={true}/>
     }
 
+    let errorCallback = useCallback((message: string) => {
+        setError(message)
+    }, [])
+
+    let errorElem = null
+    if (error != null) {
+        errorElem = <Alert variant={'danger'}>{error}</Alert>
+    }
+
     return <div className={'page'} style={{width: actualWidth}}>
+        {errorElem}
         <BackButton/>
-        <RunHeaderCard.RunView run={run} status={status}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
         <h2 className={'header text-center'}>Configurations</h2>
         <div className={'labml-card'}>{configsView}</div>
     </div>

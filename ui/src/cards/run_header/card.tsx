@@ -30,6 +30,7 @@ function RunView(props: RunViewProps) {
     }
 
     return <div className={'labml-card'}>
+         <div className={'last-updated'}>Last updated {getTimeDiff(props.status.last_updated_time)}</div>
         {runView}
     </div>
 }
@@ -46,7 +47,6 @@ function Card(props: CardProps) {
             let run = await runCache.getRun()
             document.title = `LabML: ${run.name.trim()}`
             setRun(run)
-            props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
         }
 
         load().then()
@@ -62,7 +62,6 @@ function Card(props: CardProps) {
             if (!status.isRunning) {
                 clearInterval(interval)
             }
-            props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
         }
 
         let interval = setInterval(loadStatus, 1000)
@@ -75,6 +74,5 @@ function Card(props: CardProps) {
 }
 
 export default {
-    RunView,
     Card
 }

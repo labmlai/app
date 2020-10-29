@@ -9,7 +9,7 @@ import {LabLoader} from "../../../components/loader";
 import {BackButton} from "../../../components/back_button"
 import {CardProps, ViewProps, BasicProps} from "../../types";
 import {useHistory} from "react-router-dom";
-import {getTimeDiff} from "../../../components/utils";
+import {Alert} from "react-bootstrap";
 
 
 function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
@@ -62,7 +62,6 @@ export function BasicCard(props: BasicCardProps) {
                 if (!status.isRunning) {
                     clearInterval(interval)
                 }
-                props.lastUpdatedCallback(getTimeDiff(status.last_updated_time))
             } catch (e) {
                 props.errorCallback(`${e}`)
             }
@@ -101,9 +100,8 @@ export function BasicView(props: BasicViewProps) {
 
     const runCache = CACHE.getRun(runUUID)
     const [run, setRun] = useState(null as unknown as Run)
-    const [status, setStatus] = useState(null as unknown as Status)
+    const [error, setError] = useState(null as (string | null))
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
-    const [lastUpdated, setLastUpdated] = useState(null as (string | null))
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const {width: windowWidth} = useWindowDimensions()
@@ -112,13 +110,6 @@ export function BasicView(props: BasicViewProps) {
     useEffect(() => {
         async function load() {
             setTrack(await runCache[props.tracking_name]())
-            let currentStatus = await runCache.getStatus()
-            if (currentStatus && !currentStatus.isRunning) {
-                clearInterval(interval)
-            }
-            setLastUpdated(getTimeDiff(currentStatus.last_updated_time))
-
-            setStatus(currentStatus)
         }
 
         load().then()
@@ -179,10 +170,19 @@ export function BasicView(props: BasicViewProps) {
 
     let chart = getChart(track, plotIdx, actualWidth, toggleChart)
 
+    let errorCallback = useCallback((message: string) => {
+        setError(message)
+    }, [])
+
+    let errorElem = null
+    if (error != null) {
+        errorElem = <Alert variant={'danger'}>{error}</Alert>
+    }
+
     return <div className={'page'} style={{width: actualWidth}}>
+        {errorElem}
         <BackButton/>
-        <div className={'last-updated'}>Last updated {lastUpdated}</div>
-        <RunHeaderCard.RunView run={run} status={status}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
         <h2 className={'header text-center'}>{props.name}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
