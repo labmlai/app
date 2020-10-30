@@ -15,10 +15,14 @@ interface RunViewProps {
 
 function RunView(props: RunViewProps) {
     let runView = null
-    if (props.run != null && props.status != null) {
+
+    if (props.run != null && props.status != null && props.lastUpdated != null) {
         runView = <div>
+            <div
+                className={'last-updated'}>{props.status.isRunning ? 'Last Updated':'Last Recorded'} {props.lastUpdated}
+            </div>
             <div className={'run-info'}>
-                <StatusView status={props.status.run_status} lastUpdatedTime={props.status.last_updated_time}/>
+                <StatusView status={props.status.run_status}/>
                 <h3>{props.run.name}</h3>
                 <h5>{props.run.comment}</h5>
                 <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}
@@ -31,8 +35,6 @@ function RunView(props: RunViewProps) {
     }
 
     return <div className={'labml-card'}>
-        {props.lastUpdated && props.status.isRunning &&
-        <div className={'last-updated'}>Last updated {props.lastUpdated}</div>}
         {runView}
     </div>
 }
@@ -62,9 +64,11 @@ function Card(props: CardProps) {
         async function loadStatus() {
             let status = await runCache.getStatus()
             setStatus(status)
-            setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
             if (!status.isRunning) {
                 clearInterval(interval)
+                setLastUpdated(getTimeDiff(status.last_updated_time))
+            } else {
+                setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
             }
         }
 
