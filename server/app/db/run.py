@@ -23,6 +23,8 @@ OUTLIER_MARGIN = 0.04
 
 SeriesDict = Dict[str, Union[List[float], float]]
 
+INDICATORS = [Enums.GRAD, Enums.PARAM, Enums.TIME, Enums.MODULE, Enums.METRIC]
+
 
 class SeriesModel:
     step: List[float]
@@ -197,14 +199,16 @@ class SeriesModel:
 class Series(Model['Series']):
     tracking: Dict[str, SeriesDict]
     step: int
+    types: Dict[str, List[str]]
 
     @classmethod
     def defaults(cls):
         return dict(tracking={},
                     step=0,
+                    types={}
                     )
 
-    def get_track(self, ind) -> SeriesDict:
+    def get_track(self, ind: str) -> SeriesDict:
         s = self.tracking[ind]
         series: Dict[str, Any] = SeriesModel().load(s).summary
         name = ind.split('.')
@@ -224,6 +228,7 @@ class Series(Model['Series']):
     def _update_series(self, ind: str, series: SeriesDict) -> None:
         if ind not in self.tracking:
             self.tracking[ind] = SeriesModel().to_data()
+            self.update_type(ind)
             self.save()
 
         s = SeriesModel().load(self.tracking[ind])
@@ -231,6 +236,13 @@ class Series(Model['Series']):
 
         self.tracking[ind] = s.to_data()
         self.save()
+
+    def update_type(self, name: str) -> None:
+        ind_type = name.split('.')[0]
+        if ind_type in self.types.keys():
+            self.types[ind_type].append(name)
+        else:
+            self.types[Enums.METRIC].append(name)
 
 
 class CardInfo(NamedTuple):
@@ -303,6 +315,7 @@ class Run(Model['Run']):
 
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
+        series = self.series.load()
         return {
             'run_uuid': self.run_uuid,
             'name': self.name,
@@ -310,49 +323,22 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'configs': configs,
             'series_preferences': self.series_preferences,
-            'wildcard_indicators': self.prep_wildcard_indicators()
+            'indicator_types': series.types
         }
-
-    def prep_wildcard_indicators(self):
-        res = {}
-        for k, v in self.wildcard_indicators.items():
-            if Enums.TIME in k:
-                res[Enums.TIME] = v
-            elif Enums.GRAD in k:
-                res[Enums.GRAD] = v
-            elif Enums.MODULE in k:
-                res[Enums.MODULE] = v
-            elif Enums.PARAM in k:
-                res[Enums.PARAM] = v
-            else:
-                res[Enums.METRIC] = v
-
-        return res
 
     def track(self, data: Dict[str, SeriesDict]) -> None:
         series = self.series.load()
         series.track(data)
 
     def get_tracking(self, track_type: str) -> List:
-        indicators = self.indicators
         series = self.series.load()
 
         res = []
-        if track_type != Enums.METRIC:
-            tracks = [CardInfo(**v) for k, v in indicators.items() if k.startswith(track_type)]
-        else:
-            tracks = [k for k in series.tracking.keys() if
-                      not k.startswith((Enums.MODULE, Enums.PARAM, Enums.GRAD, Enums.TIME))]
-
-        for ind in tracks:
-            if track_type == Enums.METRIC:
-                track = ind
-            else:
-                track = ind.name
-
-                if track_type != Enums.TIME and 'l2' not in track:
+        tracks = series.types[track_type]
+        for track in tracks:
+            if track_type not in [Enums.METRIC, Enums.TIME]:
+                if 'l2' not in track:
                     continue
-
             res.append(series.get_track(track))
 
         res.sort(key=lambda s: s['name'])
@@ -381,7 +367,7 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
 
     time_now = time.time()
 
-    series = Series()
+    series = Series(types={ind: [] for ind in INDICATORS})
     status = create_status()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,

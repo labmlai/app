@@ -91,7 +91,7 @@ def update_run() -> flask.Response:
         success = False
         r.errors.append(error)
 
-    print('update_run', labml_token)
+    print('update_run', run_uuid)
 
     return jsonify({'errors': r.errors, 'url': r.url, 'success': success})
 

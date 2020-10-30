@@ -10,6 +10,7 @@ import "./style.scss"
 interface RunViewProps {
     run: Run
     status: Status
+    lastUpdated: string | null
 }
 
 function RunView(props: RunViewProps) {
@@ -30,7 +31,8 @@ function RunView(props: RunViewProps) {
     }
 
     return <div className={'labml-card'}>
-        <div className={'last-updated'}>Last updated {getTimeDiff(props.status.last_updated_time)}</div>
+        {props.lastUpdated && props.status.isRunning &&
+        <div className={'last-updated'}>Last updated {props.lastUpdated}</div>}
         {runView}
     </div>
 }
@@ -38,6 +40,7 @@ function RunView(props: RunViewProps) {
 function Card(props: CardProps) {
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
+    const [lastUpdated, setLastUpdated] = useState(null as (string | null))
     const runCache = CACHE.getRun(props.uuid)
 
     useEffect(() => {
@@ -59,6 +62,7 @@ function Card(props: CardProps) {
         async function loadStatus() {
             let status = await runCache.getStatus()
             setStatus(status)
+            setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
             if (!status.isRunning) {
                 clearInterval(interval)
             }
@@ -69,7 +73,7 @@ function Card(props: CardProps) {
     })
 
     return <div>
-        <RunView run={run} status={status}/>
+        <RunView run={run} status={status} lastUpdated={lastUpdated}/>
     </div>
 }
 

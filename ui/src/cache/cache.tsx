@@ -217,6 +217,10 @@ class RunCache {
 
         return this.timesTracking
     }
+
+    public getLastUpdated(){
+        return this.lastUpdated
+    }
 }
 
 class UserCache {

@@ -49,8 +49,6 @@ function AppContainer() {
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
                         setLoggedIn(true)
-                        // const uri: string = localStorage.getItem('uri')!
-                        // localStorage.removeItem('uri')
                     } else {
                         handleError(Error('error in login'))
                     }

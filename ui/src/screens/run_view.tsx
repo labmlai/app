@@ -57,19 +57,19 @@ function RunView(props: RunProps) {
                           errorCallback={errorCallback}/>
         <MetricsCard.Card uuid={runUUID} width={actualWidth}
                           errorCallback={errorCallback}/>
-        {run && run.wildcard_indicators.grad &&
+        {run && run.indicator_types.grad.length > 0 &&
         <GradsCard.Card uuid={runUUID} width={actualWidth}
                         errorCallback={errorCallback}/>
         }
-        {run && run.wildcard_indicators.param &&
+        {run && run.indicator_types.param.length > 0 &&
         <ParamsCard.Card uuid={runUUID} width={actualWidth}
                          errorCallback={errorCallback}/>
         }
-        {run && run.wildcard_indicators.module &&
+        {run && run.indicator_types.module.length > 0 &&
         <ModulesCard.Card uuid={runUUID} width={actualWidth}
                           errorCallback={errorCallback}/>
         }
-        {run && run.wildcard_indicators.time &&
+        {run && run.indicator_types.time.length > 0 &&
         <TimesCard.Card uuid={runUUID} width={actualWidth}
                         errorCallback={errorCallback}/>
         }

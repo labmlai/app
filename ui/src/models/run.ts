@@ -27,18 +27,12 @@ export interface StatusModel {
     run_status: RunStatusModel
 }
 
-export interface CardInfo {
-    name: string
-    class_name: string
-    is_print: boolean
-}
-
-export interface WildcardIndicators {
-    param: CardInfo
-    module: CardInfo
-    time: CardInfo
-    grad: CardInfo
-    metric: CardInfo
+export interface IndicatorTypes {
+    param: string[]
+    module: string[]
+    time: string[]
+    grad: string[]
+    metric: string[]
 }
 
 export interface SeriesPreferences {
@@ -56,7 +50,7 @@ export interface RunModel {
     start_time: number
     configs: ConfigModel[]
     series_preferences: SeriesPreferences
-    wildcard_indicators: WildcardIndicators
+    indicator_types: IndicatorTypes
 }
 
 export interface PointValue {
@@ -114,7 +108,7 @@ export class Run {
     start_time: number
     configs: Config[]
     series_preferences: SeriesPreferences
-    wildcard_indicators: WildcardIndicators
+     indicator_types: IndicatorTypes
 
 
     constructor(run: RunModel) {
@@ -127,7 +121,7 @@ export class Run {
             this.configs.push(new Config(c))
         }
         this.series_preferences = run.series_preferences
-        this.wildcard_indicators = run.wildcard_indicators
+        this.indicator_types = run.indicator_types
     }
 }
 

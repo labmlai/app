@@ -7,7 +7,7 @@ export function formatTime(time: number): string {
 
 
 export function getTimeDiff(timestamp: number): string {
-    let timeDiff = (Date.now() / 1000 - timestamp) / 60
+    let timeDiff = (Date.now() / 1000 - timestamp / 1000) / 60
 
     if (timeDiff < 1) {
         return "less than a minute ago"
