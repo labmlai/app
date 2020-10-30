@@ -10,7 +10,7 @@ interface CodeProps {
 
 function Tab() {
     return <span>
-        &nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;
     </span>
 }
 

@@ -17,9 +17,11 @@ function RunView(props: RunViewProps) {
     let runView = null
 
     if (props.run != null && props.status != null && props.lastUpdated != null) {
+        let lastRecorded = props.status.last_updated_time
+
         runView = <div>
-            <div
-                className={'last-updated'}>{props.status.isRunning ? 'Last Updated':'Last Recorded'} {props.lastUpdated}
+            <div className={'last-updated'}>
+                  Last Recorded {props.status.isRunning ? getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}
             </div>
             <div className={'run-info'}>
                 <StatusView status={props.status.run_status}/>
@@ -29,6 +31,10 @@ function RunView(props: RunViewProps) {
                 </div>
                 <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
             </div>
+            {
+                props.status.isRunning &&
+                <div className={'last-updated text-info'}>{props.lastUpdated}</div>
+            }
         </div>
     } else {
         return <LabLoader/>
@@ -64,11 +70,9 @@ function Card(props: CardProps) {
         async function loadStatus() {
             let status = await runCache.getStatus()
             setStatus(status)
+            setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
             if (!status.isRunning) {
                 clearInterval(interval)
-                setLastUpdated(getTimeDiff(status.last_updated_time))
-            } else {
-                setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
             }
         }
 

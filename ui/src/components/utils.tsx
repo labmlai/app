@@ -10,9 +10,9 @@ export function getTimeDiff(timestamp: number): string {
     let timeDiff = (Date.now() / 1000 - timestamp / 1000)
 
     if (timeDiff < 60) {
-        return `${Math.round(timeDiff)} secs ago`
+        return `${Math.round(timeDiff)}s ago`
     } else if (timeDiff < 600) {
-        return `${Math.floor(timeDiff / 60)} minutes and ${Math.round(timeDiff % 60)} secs ago`
+        return `${Math.floor(timeDiff / 60)}m and ${Math.round(timeDiff % 60)}s ago`
     } else {
         return formatTime(timestamp)
     }

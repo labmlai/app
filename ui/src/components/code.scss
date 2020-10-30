@@ -6,27 +6,28 @@
   color: orangered;
 }
 
-.value{
+.value {
   color: dodgerblue;
 }
 
-.string{
+.string {
   color: greenyellow;
 }
 
-.built-ins{
+.built-ins {
   color: mediumpurple;
 }
 
-.method{
+.method {
   color: yellow;
 }
 
-.bold{
+.bold {
   font-weight: bolder;
 }
 
 .container {
-    width: 600px;
-    margin: 0 auto;
+  width: 500px;
+  margin: 0 auto;
+  padding-left: 5px !important;
 }
