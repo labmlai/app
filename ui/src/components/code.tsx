@@ -27,7 +27,7 @@ export function Code(props: CodeProps) {
             <h6 className={'text-dark font-weight-bolder'}>Start monitoring your models by adding just two lines of
                 code, here is an example</h6>
         </div>
-        <div className={'mt-3 bg-dark container-sm mb-3 pt-1 pb-1'}>
+        <div className={'mt-3 bg-dark container mb-3 pt-1 pb-1'}>
             <code className={"text-white"}>
                 <p>
                     <span className={"key-word"}>from</span> numpy.random
