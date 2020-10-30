@@ -10,13 +10,13 @@ import "./style.scss"
 interface RunViewProps {
     run: Run
     status: Status
-    lastUpdated: number | null
+    lastUpdated: string | null
 }
 
 function RunView(props: RunViewProps) {
     let runView = null
 
-    if (props.run != null && props.status != null && props.lastUpdated != null && props.lastUpdated > 0) {
+    if (props.run != null && props.status != null && (!props.status.isRunning || props.lastUpdated != null)) {
         let lastRecorded = props.status.last_updated_time
 
         runView = <div>
@@ -33,7 +33,7 @@ function RunView(props: RunViewProps) {
             </div>
             {
                 props.status.isRunning &&
-                <div className={'last-updated text-info'}>{getTimeDiff(props.lastUpdated)}</div>
+                <div className={'last-updated text-info'}>{props.lastUpdated}</div>
             }
         </div>
     } else {
@@ -48,7 +48,7 @@ function RunView(props: RunViewProps) {
 function Card(props: CardProps) {
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
-    const [lastUpdated, setLastUpdated] = useState(null as (number | null))
+    const [lastUpdated, setLastUpdated] = useState(null as (string | null))
     const runCache = CACHE.getRun(props.uuid)
 
     useEffect(() => {
@@ -59,7 +59,9 @@ function Card(props: CardProps) {
             document.title = `LabML: ${run.name.trim()}`
             setRun(run)
             let lastUpdated = runCache.getLastUpdated()
-            setLastUpdated(lastUpdated)
+            if (status && status.isRunning && lastUpdated > 0) {
+                setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
+            }
         }
 
         load().then()
@@ -71,8 +73,8 @@ function Card(props: CardProps) {
     useEffect(() => {
         async function loadStatus() {
             let status = await runCache.getStatus()
-            setLastUpdated(runCache.getLastUpdated())
             setStatus(status)
+            setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
             if (!status.isRunning) {
                 clearInterval(interval)
             }
