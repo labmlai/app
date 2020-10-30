@@ -1,5 +1,5 @@
 import {LineChart, SparkLines} from "./components";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState, forwardRef, useImperativeHandle} from "react";
 import {Run, SeriesModel} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
@@ -49,10 +49,24 @@ interface BasicCardProps extends BasicProps, CardProps {
     isChartView: boolean
 }
 
-export function BasicCard(props: BasicCardProps) {
+function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const runCache = CACHE.getRun(props.uuid)
-    const history = useHistory();
+    const history = useHistory()
+
+    async function load() {
+        try {
+            setTrack(await runCache[props.tracking_name](true))
+        } catch (e) {
+            props.errorCallback(`${e}`)
+        }
+    }
+
+    useImperativeHandle(ref, () => ({
+        refresh: () => {
+            load().then()
+        }
+    }))
 
     useEffect(() => {
         async function load() {
@@ -94,7 +108,7 @@ interface BasicViewProps extends BasicProps, ViewProps {
 
 }
 
-export function BasicView(props: BasicViewProps) {
+function BasicView(props: BasicViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
 
@@ -192,3 +206,9 @@ export function BasicView(props: BasicViewProps) {
     </div>
 }
 
+let BasicCard = forwardRef(Card)
+
+export {
+    BasicView,
+    BasicCard
+}

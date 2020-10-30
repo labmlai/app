@@ -4,6 +4,10 @@ export interface CardProps {
     errorCallback: (message: string) => void
 }
 
+export interface SeriesCardProps extends CardProps {
+    refreshRef: any
+}
+
 export interface ViewProps {
     location: any
     series_preference: "metrics" | "params" | "modules" | "times" | "grads"

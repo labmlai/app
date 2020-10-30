@@ -1,4 +1,6 @@
-import React, {useCallback, useEffect, useState} from "react"
+import React, {useCallback, useEffect, useState, useRef} from "react"
+
+import {Button} from "react-bootstrap"
 
 import "./run_view.scss"
 import {BackButton} from "../components/back_button"
@@ -11,7 +13,7 @@ import TimesCard from "../cards/tracks/times/card"
 import RunHeaderCard from "../cards/run_header/card"
 import useWindowDimensions from "../utils/window_dimensions";
 import {Alert} from "react-bootstrap";
-import {Run} from "../models/run";
+import {Run, Status} from "../models/run";
 import CACHE from "../cache/cache";
 
 
@@ -21,15 +23,20 @@ interface RunProps {
 
 function RunView(props: RunProps) {
     const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
     const [error, setError] = useState(null as (string | null))
     const {width: windowWidth} = useWindowDimensions()
 
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
-
     const runCache = CACHE.getRun(runUUID)
-
     const actualWidth = Math.min(800, windowWidth)
+
+    const timeRefreshRef = useRef(null) as any
+    const metricRefreshRef = useRef(null) as any
+    const gradRefreshRef = useRef(null) as any
+    const paramRefreshRef = useRef(null) as any
+    const moduleRefreshRef = useRef(null) as any
 
     let errorCallback = useCallback((message: string) => {
         setError(message)
@@ -43,35 +50,58 @@ function RunView(props: RunProps) {
     useEffect(() => {
         async function load() {
             setRun(await runCache.getRun())
+            setStatus(await runCache.getStatus())
         }
 
         load().then()
     })
+
+    function onRefresh() {
+        if (metricRefreshRef.current) {
+            metricRefreshRef.current.refresh()
+        }
+        if (gradRefreshRef.current) {
+            gradRefreshRef.current.refresh()
+        }
+        if (paramRefreshRef.current) {
+            paramRefreshRef.current.refresh()
+        }
+        if (moduleRefreshRef.current) {
+            moduleRefreshRef.current.refresh()
+        }
+        if (timeRefreshRef.current) {
+            timeRefreshRef.current.refresh()
+        }
+    }
+
 
     return <div className={'run page'} style={{width: actualWidth}}>
         {errorElem}
         <BackButton/>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}
                             errorCallback={errorCallback}/>
+        {status && status.isRunning &&
+        <Button className={'refresh'} onClick={onRefresh}>Refresh</Button>
+        }
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}
                           errorCallback={errorCallback}/>
         <MetricsCard.Card uuid={runUUID} width={actualWidth}
-                          errorCallback={errorCallback}/>
+                          errorCallback={errorCallback} refreshRef={metricRefreshRef}/>
         {run && run.indicator_types.grad.length > 0 &&
         <GradsCard.Card uuid={runUUID} width={actualWidth}
-                        errorCallback={errorCallback}/>
+                        errorCallback={errorCallback} refreshRef={gradRefreshRef}/>
         }
         {run && run.indicator_types.param.length > 0 &&
         <ParamsCard.Card uuid={runUUID} width={actualWidth}
-                         errorCallback={errorCallback}/>
+                         errorCallback={errorCallback} refreshRef={paramRefreshRef}/>
         }
         {run && run.indicator_types.module.length > 0 &&
         <ModulesCard.Card uuid={runUUID} width={actualWidth}
-                          errorCallback={errorCallback}/>
+                          errorCallback={errorCallback} refreshRef={moduleRefreshRef}/>
         }
         {run && run.indicator_types.time.length > 0 &&
         <TimesCard.Card uuid={runUUID} width={actualWidth}
-                        errorCallback={errorCallback}/>
+                        errorCallback={errorCallback} refreshRef={timeRefreshRef}/>
         }
         <div className={'footer-copyright text-center'}>
             <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>

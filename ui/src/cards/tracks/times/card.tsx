@@ -1,4 +1,4 @@
-import {CardProps} from "../../types";
+import {SeriesCardProps} from "../../types";
 import React from "react";
 import {useLocation} from "react-router-dom";
 import {BasicCard, BasicView} from "../basic/card";
@@ -8,12 +8,13 @@ const URL = 'times'
 const TRACKING_NAME = 'getTimesTracking'
 const SERIES_PREFERENCE = 'times'
 
-function Card(props: CardProps) {
+function Card(props: SeriesCardProps) {
     return <BasicCard tracking_name={TRACKING_NAME}
                       name={ANALYSIS}
                       uuid={props.uuid}
                       url={URL}
                       isChartView={false}
+                      ref={props.refreshRef}
                       errorCallback={props.errorCallback}
                       width={props.width}/>
 
