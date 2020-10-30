@@ -14,6 +14,7 @@ from .db import run
 
 from .enums import Enums
 from . import settings
+from .logs.logger import LOGGER
 
 from .auth import login_required, is_runs_permitted, get_session
 
@@ -41,7 +42,7 @@ def sign_in() -> flask.Response:
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
 
-    print('sign_in', u.key)
+    LOGGER.info(f'sign_in, user: {u.key}')
 
     return response
 
@@ -57,7 +58,7 @@ def sign_out() -> flask.Response:
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
 
-    print('sign_out', s.session_id)
+    LOGGER.info(f'sign_out, session_id: {s.session_id}')
 
     return response
 
@@ -91,7 +92,7 @@ def update_run() -> flask.Response:
         success = False
         r.errors.append(error)
 
-    print('update_run', run_uuid)
+    LOGGER.info(f'update_run, run_uuid: {run_uuid}')
 
     return jsonify({'errors': r.errors, 'url': r.url, 'success': success})
 
@@ -102,7 +103,7 @@ def set_run(run_uuid: str) -> flask.Response:
     r = run.get_run(run_uuid)
     r.update_preferences(data)
 
-    print('update_preferences', run_uuid)
+    LOGGER.info(f'update_preferences, run_uuid: {run_uuid}')
 
     return jsonify({'errors': r.errors})
 
@@ -133,7 +134,7 @@ def get_run(run_uuid: str) -> flask.Response:
     response = make_response(jsonify(run_data))
     response.status_code = status_code
 
-    print('run', run_uuid)
+    LOGGER.info(f'run, run_uuid: {run_uuid}')
 
     return response
 
@@ -151,7 +152,7 @@ def get_status(run_uuid: str) -> flask.Response:
     response = make_response(jsonify(status_data))
     response.status_code = status_code
 
-    print('status', run_uuid)
+    LOGGER.info(f'status, run_uuid: {run_uuid}')
 
     return response
 
@@ -175,7 +176,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
-    print('runs', labml_token)
+    LOGGER.info(f'runs, labml_token : {labml_token}')
 
     return jsonify({'runs': res, 'labml_token': labml_token})
 
@@ -184,8 +185,8 @@ def get_runs(labml_token: str) -> flask.Response:
 def get_user() -> Any:
     s = get_session()
 
-    print('user', s.key)
     u = s.user.load()
+    LOGGER.info(f'get_user, user : {u.key}')
 
     return jsonify(u.get_data())
 
@@ -200,7 +201,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.METRIC)
         status_code = 200
 
-    print('metrics_tracking', run_uuid)
+    LOGGER.info(f'metrics_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -218,7 +219,7 @@ def get_params_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.PARAM)
         status_code = 200
 
-    print('params_tracking', run_uuid)
+    LOGGER.info(f'params_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -236,7 +237,7 @@ def get_modules_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.MODULE)
         status_code = 200
 
-    print('modules_tracking', run_uuid)
+    LOGGER.info(f'modules_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -254,7 +255,7 @@ def get_times_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.TIME)
         status_code = 200
 
-    print('times_tracking', run_uuid)
+    LOGGER.info(f'times_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -272,7 +273,7 @@ def get_grads_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.GRAD)
         status_code = 200
 
-    print('grads_tracking', run_uuid)
+    LOGGER.info(f'grads_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code

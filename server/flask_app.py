@@ -1,4 +1,5 @@
 import warnings
+import logging
 
 from time import strftime
 from flask import Flask, request, make_response, redirect
@@ -6,7 +7,7 @@ from flask_cors import CORS, cross_origin
 
 from app import handlers
 from app import settings
-from logs.logger import LOGGER
+from app.logs.logger import LOGGER
 
 if settings.SENTRY_DSN:
     try:
@@ -23,10 +24,14 @@ if settings.SENTRY_DSN:
 
 
 def create_app():
+    # disable flask logger
+    log = logging.getLogger('werkzeug')
+    log.setLevel(logging.ERROR)
+
     _app = Flask(__name__)
 
     def run_on_start():
-        print('initializing')
+        LOGGER.info('initializing app')
 
     run_on_start()
 
@@ -51,7 +56,7 @@ def rest(handler, path):
 @app.before_request
 def before_request():
     timestamp = strftime('[%Y-%b-%d %H:%M]')
-    LOGGER.info(f'time: {timestamp}, uri: {request.full_path} body: {request.get_data()}')
+    LOGGER.debug(f'time: {timestamp}, uri: {request.full_path} body: {request.get_data()}')
 
 
 if __name__ == '__main__':

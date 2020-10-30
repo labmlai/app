@@ -9,6 +9,31 @@ _LOG_PATH = 'app.log'
 _MAX_BYTES = 100000
 
 
+class CustomFormatter(logging.Formatter):
+    """Logging Formatter to add colors and count warning / errors"""
+
+    grey = "\x1b[38;21m"
+    blue = "\x1b[36;21m"
+    yellow = "\x1b[33;21m"
+    red = "\x1b[31;21m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+
+    FORMATS = {
+        logging.DEBUG: grey + format + reset,
+        logging.INFO: blue + format + reset,
+        logging.WARNING: yellow + format + reset,
+        logging.ERROR: red + format + reset,
+        logging.CRITICAL: bold_red + format + reset
+    }
+
+    def format(self, record):
+        log_fmt = self.FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+
 class Logger(object):
     _instance = None
 
@@ -18,14 +43,14 @@ class Logger(object):
             cls._instance.logger = logging.getLogger()
             cls._instance.logger.setLevel(logging.INFO)
 
-            cls._instance.logger.addHandler(cls._instance._init_file_handler())
+            cls._instance.logger.addHandler(cls._instance._init_streaming_handler())
 
         return cls._instance
 
     @staticmethod
     def _init_streaming_handler():
         streaming = StreamHandler()
-        streaming.setFormatter(_LOG_FORMATTER)
+        streaming.setFormatter(CustomFormatter())
 
         return streaming
 
