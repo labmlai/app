@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react"
 
 import {useHistory, useLocation} from "react-router-dom"
 
-import {Button, Nav} from "react-bootstrap";
+import {Nav} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faChevronLeft} from "@fortawesome/free-solid-svg-icons"
+import {faChevronLeft, faSync} from "@fortawesome/free-solid-svg-icons"
 
 import "./util_buttons.scss"
 
@@ -45,12 +45,10 @@ export function BackButton(props: ButtonProps) {
         }
     }
 
-    return <div className={'flex-container'}>
-        <Nav.Link eventKey="second" className={'tab'} onClick={onBackButtonClick}>
-            <FontAwesomeIcon icon={faChevronLeft}/>
-            <span>{text}</span>
-        </Nav.Link>
-    </div>
+    return <Nav.Link className={'tab'} onClick={onBackButtonClick}>
+        <FontAwesomeIcon icon={faChevronLeft}/>
+        <span>{text}</span>
+    </Nav.Link>
 }
 
 export function RefreshButton(props: ButtonProps) {
@@ -60,5 +58,7 @@ export function RefreshButton(props: ButtonProps) {
         }
     }
 
-    return <Button className={'refresh'} onClick={onRefreshButtonClick}>Refresh</Button>
+    return <Nav.Link className={'tab refresh float-right'} onClick={onRefreshButtonClick}>
+        <FontAwesomeIcon icon={faSync}/>
+    </Nav.Link>
 }

@@ -68,7 +68,9 @@ function View(props: ViewProps) {
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
-        <BackButton/>
+        <div className={'flex-container'}>
+            <BackButton/>
+        </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         <h2 className={'header text-center'}>Configurations</h2>
         <div className={'labml-card'}>{configsView}</div>

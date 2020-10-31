@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 import {BackButton, RefreshButton} from "../components/util_buttons"
 import ConfigsCard from "../cards/configs/card"
@@ -64,11 +64,11 @@ function RunView(props: RunProps) {
 
 
     return <div className={'run page'} style={{width: actualWidth}}>
-        <BackButton/>
+        <div className={'flex-container'}>
+            <BackButton/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+        </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
-        {status && status.isRunning &&
-        <RefreshButton onButtonClick={onRefresh}/>
-        }
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
         <MetricsCard.Card uuid={runUUID} width={actualWidth} refreshRef={metricRefreshRef}/>
 

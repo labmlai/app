@@ -1,5 +1,5 @@
 import {LineChart, SparkLines} from "./components";
-import React, {useCallback, useEffect, useState, forwardRef, useImperativeHandle} from "react";
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from "react";
 import {Run, SeriesModel, Status} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
@@ -201,7 +201,9 @@ function BasicView(props: BasicViewProps) {
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
-        <BackButton/>
+        <div className={'flex-container'}>
+            <BackButton/>
+        </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         {status && status.isRunning &&
         <RefreshButton onButtonClick={onRefresh}/>
