@@ -5,7 +5,7 @@ from labml_db import Model, Index, FileDbDriver, JsonSerializer, FileIndexDbDriv
 from .user import Project, ProjectIndex, User, UserIndex, create_float_project
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
-from .run import Run, RunIndex, Series
+from .run import Run, RunIndex, Series, RunPreferences
 
 from .. import settings
 
@@ -19,6 +19,7 @@ Model.set_db_drivers([
     FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
     FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
     FileDbDriver(JsonSerializer(), Series, Path(f'{DATA_PATH}/Series')),
+    FileDbDriver(JsonSerializer(), RunPreferences, Path(f'{DATA_PATH}/RunPreferences')),
 ])
 
 Index.set_db_drivers([
@@ -27,6 +28,5 @@ Index.set_db_drivers([
     FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/SessionIndex.yaml')),
     FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
 ])
-
 
 create_float_project()

@@ -252,12 +252,20 @@ class CardInfo(NamedTuple):
     queue_size: int = 0
 
 
-class SeriesPreferences(NamedTuple):
-    metrics: List[int]
-    params: List[int]
-    modules: List[int]
-    times: List[int]
-    grads: List[int]
+class RunPreferences(Model['RunPreferences']):
+    series_preferences: Dict[str, List[int]]
+
+    @classmethod
+    def defaults(cls):
+        return dict(series_preferences={}
+                    )
+
+    def update_preferences(self, data: Dict[str, any]) -> None:
+        for k, v in data.items():
+            if v:
+                self.series_preferences[k] = v
+
+        self.save()
 
 
 class Run(Model['Run']):
@@ -267,10 +275,10 @@ class Run(Model['Run']):
     run_uuid: str
     status: Key[Status]
     series: Key[Series]
+    run_preferences: Key[RunPreferences]
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
-    series_preferences: Dict[str, List[int]]
     errors: List[Dict[str, str]]
 
     @classmethod
@@ -281,10 +289,10 @@ class Run(Model['Run']):
                     run_uuid='',
                     series=None,
                     status=None,
+                    run_preferences=None,
                     configs={},
                     wildcard_indicators={},
                     indicators={},
-                    series_preferences={},
                     errors=[]
                     )
 
@@ -307,21 +315,20 @@ class Run(Model['Run']):
         self.save()
 
     def update_preferences(self, data: Dict[str, any]) -> None:
-        for k, v in data.items():
-            if v:
-                self.series_preferences[k] = v
-
-        self.save()
+        rp = self.run_preferences.load()
+        rp.update_preferences(data)
 
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
+        rp = self.run_preferences.load()
+
         return {
             'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
-            'series_preferences': self.series_preferences,
+            'series_preferences': rp.series_preferences,
             'indicator_types': self.get_indicator_types()
         }
 
@@ -388,14 +395,17 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
 
     series = Series(types={ind: [] for ind in INDICATORS})
     status = create_status()
+    run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               series=series.key,
-              status=status.key
+              status=status.key,
+              run_preferences=run_preferences.key
               )
     project.runs[run.run_uuid] = run.key
 
     run.save()
+    run_preferences.save()
     project.save()
     series.save()
 
