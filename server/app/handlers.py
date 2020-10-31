@@ -172,7 +172,8 @@ def get_runs(labml_token: str) -> flask.Response:
     res = []
     for r in runs_list:
         s = status.get_status(r.run_uuid)
-        res.append({**r.get_data(), **s.get_data()})
+        if r.run_uuid:
+            res.append({**r.get_data(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
