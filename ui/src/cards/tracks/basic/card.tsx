@@ -10,6 +10,7 @@ import {BackButton, RefreshButton} from "../../../components/util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../types";
 import {useHistory} from "react-router-dom";
 import {useErrorHandler} from "react-error-boundary";
+import mixpanel from "mixpanel-browser";
 
 
 function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
@@ -131,6 +132,7 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.name});
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)

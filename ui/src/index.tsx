@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
+import mixpanel from 'mixpanel-browser';
 
 import React, {ReactElement, useCallback} from 'react'
 import ReactDOM from 'react-dom'
@@ -15,6 +16,8 @@ import {Alert} from "react-bootstrap";
 import {ErrorBoundary} from "react-error-boundary"
 
 import AppContainer from './screens/app_container'
+
+mixpanel.init("7e19de9c3c68ba5a897f19837042a826")
 
 
 if (process.env.REACT_APP_SENTRY_DSN) {

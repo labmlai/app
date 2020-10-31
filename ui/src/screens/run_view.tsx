@@ -13,6 +13,7 @@ import {Run, Status} from "../models/run"
 import CACHE from "../cache/cache"
 
 import "./run_view.scss"
+import mixpanel from "mixpanel-browser";
 
 
 interface RunProps {
@@ -41,8 +42,10 @@ function RunView(props: RunProps) {
             setStatus(await runCache.getStatus())
         }
 
+        mixpanel.track('Run View', {uuid: runUUID});
+
         load().then()
-    })
+    }, [runCache])
 
     function onRefresh() {
         if (metricRefreshRef.current) {

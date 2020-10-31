@@ -4,9 +4,11 @@ import animation from '../assets/lottie/Chemical.json'
 import {Button} from "react-bootstrap"
 import useWindowDimensions from "../utils/window_dimensions";
 import {useHistory} from "react-router-dom";
+import mixpanel from "mixpanel-browser";
 
 
 function PageNotFound() {
+    mixpanel.track('404')
     const history = useHistory()
     const {width: windowWidth} = useWindowDimensions()
 

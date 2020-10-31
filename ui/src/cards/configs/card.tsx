@@ -8,6 +8,7 @@ import {CardProps, ViewProps} from "../types"
 import {LabLoader} from "../../components/loader"
 import RunHeaderCard from "../run_header/card"
 import {BackButton} from "../../components/util_buttons"
+import mixpanel from "mixpanel-browser";
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
@@ -57,6 +58,7 @@ function View(props: ViewProps) {
             setRun(await runCache.getRun())
         }
 
+        mixpanel.track('Configs View', {uuid: runUUID});
         load().then()
     })
 

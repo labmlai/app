@@ -6,7 +6,6 @@ import RunView from "./run_view"
 import PageNotFound from "./page_not_found_view"
 import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
-import ReactGA from 'react-ga'
 import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/tracks/metrics/card"
 import ParamsCard from "../cards/tracks/params/card"
@@ -18,9 +17,7 @@ import NETWORK from "../network";
 import {useAuth0} from "@auth0/auth0-react";
 import {LabLoader} from "../components/loader";
 import {UserModel} from "../models/user";
-
-/* TODO: Get this from configs */
-ReactGA.initialize('UA-164228270-01');
+import mixpanel from "mixpanel-browser";
 
 function AppContainer() {
     const location = useLocation()
@@ -40,6 +37,13 @@ function AppContainer() {
             } else if (isAuthenticated && !loggedIn) {
                 let data = {} as UserModel
 
+                mixpanel.identify(user.sub);
+                mixpanel.people.set({
+                    $first_name: user.first_name,
+                    $last_name: user.last_name,
+                    $email: user.email
+                })
+
                 data.name = user.name
                 data.email = user.email
                 data.sub = user.sub
@@ -49,8 +53,11 @@ function AppContainer() {
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
                         setLoggedIn(true)
+                        console.log('login')
+                        mixpanel.track('Successful login');
                     } else {
                         handleError(Error('error in login'))
+                        mixpanel.track('Login failed');
                     }
                 })
             }
@@ -58,16 +65,14 @@ function AppContainer() {
         [loggedIn, isLoading, user, isAuthenticated, handleError, location, error, loginWithRedirect]
     )
 
-    useEffect(() => {
-        ReactGA.pageview(location.pathname + location.search)
-    }, [location])
-
     NETWORK.handleError = function (error: any) {
         if (error === undefined || error.response === undefined) {
             console.log('undefined error or response')
         } else if (error.response.status === 403) {
             setLoggedIn(false)
+            mixpanel.track('unauthorized');
         } else if (error.response.status === 400) {
+            mixpanel.track('404', {path: location.pathname + location.search});
             history.push(`/404`)
         } else {
             handleError(error)
