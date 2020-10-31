@@ -1,12 +1,12 @@
 import {LineChart, SparkLines} from "./components";
 import React, {useCallback, useEffect, useState, forwardRef, useImperativeHandle} from "react";
-import {Run, SeriesModel} from "../../../models/run";
+import {Run, SeriesModel, Status} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"
 import CACHE from "../../../cache/cache";
 import {LabLoader} from "../../../components/loader";
-import {BackButton} from "../../../components/back_button"
+import {BackButton, RefreshButton} from "../../../components/util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../types";
 import {useHistory} from "react-router-dom";
 import {useErrorHandler} from "react-error-boundary";
@@ -115,6 +115,7 @@ function BasicView(props: BasicViewProps) {
 
     const runCache = CACHE.getRun(runUUID)
     const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
@@ -138,6 +139,7 @@ function BasicView(props: BasicViewProps) {
     useEffect(() => {
         async function load() {
             setRun(await runCache.getRun())
+            setStatus(await runCache.getStatus())
 
             if (run) {
                 let preferences = run.series_preferences[props.series_preference]
@@ -190,9 +192,20 @@ function BasicView(props: BasicViewProps) {
 
     let chart = getChart(track, plotIdx, actualWidth, toggleChart)
 
+    async function load() {
+        setTrack(await runCache[props.tracking_name](true))
+    }
+
+    function onRefresh() {
+        load().then()
+    }
+
     return <div className={'page'} style={{width: actualWidth}}>
         <BackButton/>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
+        {status && status.isRunning &&
+        <RefreshButton onButtonClick={onRefresh}/>
+        }
         <h2 className={'header text-center'}>{props.name}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>

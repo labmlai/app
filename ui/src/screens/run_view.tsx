@@ -1,9 +1,6 @@
 import React, {useEffect, useState, useRef} from "react"
 
-import {Button} from "react-bootstrap"
-
-import "./run_view.scss"
-import {BackButton} from "../components/back_button"
+import {BackButton, RefreshButton} from "../components/util_buttons"
 import ConfigsCard from "../cards/configs/card"
 import MetricsCard from "../cards/tracks/metrics/card"
 import GradsCard from "../cards/tracks/grads/card"
@@ -11,9 +8,11 @@ import ParamsCard from "../cards/tracks/params/card"
 import ModulesCard from "../cards/tracks/modules/card"
 import TimesCard from "../cards/tracks/times/card"
 import RunHeaderCard from "../cards/run_header/card"
-import useWindowDimensions from "../utils/window_dimensions";
-import {Run, Status} from "../models/run";
-import CACHE from "../cache/cache";
+import useWindowDimensions from "../utils/window_dimensions"
+import {Run, Status} from "../models/run"
+import CACHE from "../cache/cache"
+
+import "./run_view.scss"
 
 
 interface RunProps {
@@ -68,7 +67,7 @@ function RunView(props: RunProps) {
         <BackButton/>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         {status && status.isRunning &&
-        <Button className={'refresh'} onClick={onRefresh}>Refresh</Button>
+        <RefreshButton onButtonClick={onRefresh}/>
         }
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
 

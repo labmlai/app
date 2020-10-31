@@ -1,13 +1,13 @@
-import {ConfigsView} from "./components";
-import React, {useEffect, useState} from "react";
-import {Run} from "../../models/run";
+import {ConfigsView} from "./components"
+import React, {useEffect, useState} from "react"
+import {Run} from "../../models/run"
 import CACHE from "../../cache/cache"
-import {useHistory} from "react-router-dom";
-import useWindowDimensions from "../../utils/window_dimensions";
-import {CardProps, ViewProps} from "../types";
-import {LabLoader} from "../../components/loader";
-import RunHeaderCard from "../run_header/card";
-import {BackButton} from "../../components/back_button"
+import {useHistory} from "react-router-dom"
+import useWindowDimensions from "../../utils/window_dimensions"
+import {CardProps, ViewProps} from "../types"
+import {LabLoader} from "../../components/loader"
+import RunHeaderCard from "../run_header/card"
+import {BackButton} from "../../components/util_buttons"
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)

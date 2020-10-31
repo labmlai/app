@@ -2,15 +2,17 @@ import React, {useEffect, useState} from "react"
 
 import {useHistory, useLocation} from "react-router-dom"
 
-import {Nav} from "react-bootstrap";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
+import {Button, Nav} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faChevronLeft} from "@fortawesome/free-solid-svg-icons"
 
-interface BasicViewProps {
+import "./util_buttons.scss"
+
+interface ButtonProps {
     onButtonClick?: () => void
 }
 
-export function BackButton(props: BasicViewProps) {
+export function BackButton(props: ButtonProps) {
     const history = useHistory()
     const location = useLocation()
 
@@ -49,4 +51,14 @@ export function BackButton(props: BasicViewProps) {
             <span>{text}</span>
         </Nav.Link>
     </div>
+}
+
+export function RefreshButton(props: ButtonProps) {
+    function onRefreshButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+    }
+
+    return <Button className={'refresh'} onClick={onRefreshButtonClick}>Refresh</Button>
 }
