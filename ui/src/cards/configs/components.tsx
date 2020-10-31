@@ -177,7 +177,7 @@ export function ConfigsView(props: ConfigsProps) {
                                                    width={props.width}
                                                    isHyperParamOnly={props.isHyperParamOnly}/>)
     if (count === 0 && props.isHyperParamOnly) {
-        items = [<div className={'info'}>Default configurations</div>]
+        items = [<div className={'info'} key={1}>Default configurations</div>]
     }
     return <div className={"configs block collapsed"} style={style}>
         {items}
