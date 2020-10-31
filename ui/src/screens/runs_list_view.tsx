@@ -41,7 +41,7 @@ function RunsListView(props: RunsListProps) {
             if (isLoading) {
                 return <LabLoader/>
             } else if (runs.length === 0) {
-                return <Code labMlToken={labMlToken}/>
+                return <Code/>
             } else {
                 return <RunsList runs={runs}/>
             }
