@@ -16,7 +16,6 @@ function Card(props: SeriesCardProps) {
                       url={URL}
                       ref={props.refreshRef}
                       isChartView={true}
-                      errorCallback={props.errorCallback}
                       width={props.width}/>
 
 }

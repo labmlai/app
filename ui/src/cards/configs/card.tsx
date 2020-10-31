@@ -1,5 +1,5 @@
 import {ConfigsView} from "./components";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Run} from "../../models/run";
 import CACHE from "../../cache/cache"
 import {useHistory} from "react-router-dom";
@@ -8,12 +8,11 @@ import {CardProps, ViewProps} from "../types";
 import {LabLoader} from "../../components/loader";
 import RunHeaderCard from "../run_header/card";
 import {BackButton} from "../../components/back_button"
-import {Alert} from "react-bootstrap";
 
 function Card(props: CardProps) {
     let [run, setRun] = useState(null as unknown as Run)
     const runCache = CACHE.getRun(props.uuid)
-    const history = useHistory();
+    const history = useHistory()
 
     useEffect(() => {
         async function load() {
@@ -21,9 +20,6 @@ function Card(props: CardProps) {
         }
 
         load().then()
-            .catch((e) => {
-                props.errorCallback(`${e}`)
-            })
     })
 
     let configsView
@@ -53,7 +49,6 @@ function View(props: ViewProps) {
     const runUUID = params.get('run_uuid') as string
     const runCache = CACHE.getRun(runUUID)
     let [run, setRun] = useState(null as unknown as Run)
-    const [error, setError] = useState(null as (string | null))
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
@@ -72,19 +67,9 @@ function View(props: ViewProps) {
         configsView = <LabLoader/>
     }
 
-    let errorCallback = useCallback((message: string) => {
-        setError(message)
-    }, [])
-
-    let errorElem = null
-    if (error != null) {
-        errorElem = <Alert variant={'danger'}>{error}</Alert>
-    }
-
     return <div className={'page'} style={{width: actualWidth}}>
-        {errorElem}
         <BackButton/>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         <h2 className={'header text-center'}>Configurations</h2>
         <div className={'labml-card'}>{configsView}</div>
     </div>

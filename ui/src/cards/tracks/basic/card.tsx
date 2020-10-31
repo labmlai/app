@@ -9,7 +9,7 @@ import {LabLoader} from "../../../components/loader";
 import {BackButton} from "../../../components/back_button"
 import {BasicProps, CardProps, ViewProps} from "../../types";
 import {useHistory} from "react-router-dom";
-import {Alert} from "react-bootstrap";
+import {useErrorHandler} from "react-error-boundary";
 
 
 function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
@@ -53,12 +53,13 @@ function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const runCache = CACHE.getRun(props.uuid)
     const history = useHistory()
+    const handleError = useErrorHandler()
 
     async function load() {
         try {
             setTrack(await runCache[props.tracking_name](true))
         } catch (e) {
-            props.errorCallback(`${e}`)
+            handleError(e)
         }
     }
 
@@ -77,7 +78,7 @@ function Card(props: BasicCardProps, ref: any) {
                     clearInterval(interval)
                 }
             } catch (e) {
-                props.errorCallback(`${e}`)
+                handleError(e)
             }
         }
 
@@ -114,7 +115,6 @@ function BasicView(props: BasicViewProps) {
 
     const runCache = CACHE.getRun(runUUID)
     const [run, setRun] = useState(null as unknown as Run)
-    const [error, setError] = useState(null as (string | null))
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
@@ -171,6 +171,7 @@ function BasicView(props: BasicViewProps) {
         }
     }, [run, runCache])
 
+
     let toggleChart = useCallback((idx: number) => {
         if (plotIdx[idx] >= 0) {
             plotIdx[idx] = -1
@@ -179,6 +180,7 @@ function BasicView(props: BasicViewProps) {
         }
         setPlotIdx(new Array<number>(...plotIdx))
         run.series_preferences[props.series_preference] = plotIdx
+
     }, [plotIdx, run, props.series_preference])
 
 
@@ -188,19 +190,9 @@ function BasicView(props: BasicViewProps) {
 
     let chart = getChart(track, plotIdx, actualWidth, toggleChart)
 
-    let errorCallback = useCallback((message: string) => {
-        setError(message)
-    }, [])
-
-    let errorElem = null
-    if (error != null) {
-        errorElem = <Alert variant={'danger'}>{error}</Alert>
-    }
-
     return <div className={'page'} style={{width: actualWidth}}>
-        {errorElem}
         <BackButton/>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} errorCallback={errorCallback}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         <h2 className={'header text-center'}>{props.name}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>

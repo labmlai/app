@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState, useRef} from "react"
+import React, {useEffect, useState, useRef} from "react"
 
 import {Button} from "react-bootstrap"
 
@@ -12,7 +12,6 @@ import ModulesCard from "../cards/tracks/modules/card"
 import TimesCard from "../cards/tracks/times/card"
 import RunHeaderCard from "../cards/run_header/card"
 import useWindowDimensions from "../utils/window_dimensions";
-import {Alert} from "react-bootstrap";
 import {Run, Status} from "../models/run";
 import CACHE from "../cache/cache";
 
@@ -24,7 +23,6 @@ interface RunProps {
 function RunView(props: RunProps) {
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
-    const [error, setError] = useState(null as (string | null))
     const {width: windowWidth} = useWindowDimensions()
 
     const params = new URLSearchParams(props.location.search)
@@ -37,15 +35,6 @@ function RunView(props: RunProps) {
     const gradRefreshRef = useRef(null) as any
     const paramRefreshRef = useRef(null) as any
     const moduleRefreshRef = useRef(null) as any
-
-    let errorCallback = useCallback((message: string) => {
-        setError(message)
-    }, [])
-
-    let errorElem = null
-    if (error != null) {
-        errorElem = <Alert variant={'danger'}>{error}</Alert>
-    }
 
     useEffect(() => {
         async function load() {
@@ -76,32 +65,25 @@ function RunView(props: RunProps) {
 
 
     return <div className={'run page'} style={{width: actualWidth}}>
-        {errorElem}
         <BackButton/>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}
-                            errorCallback={errorCallback}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         {status && status.isRunning &&
         <Button className={'refresh'} onClick={onRefresh}>Refresh</Button>
         }
-        <ConfigsCard.Card uuid={runUUID} width={actualWidth}
-                          errorCallback={errorCallback}/>
-        <MetricsCard.Card uuid={runUUID} width={actualWidth}
-                          errorCallback={errorCallback} refreshRef={metricRefreshRef}/>
+        <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
+
+        <MetricsCard.Card uuid={runUUID} width={actualWidth} refreshRef={metricRefreshRef}/>
         {run && run.indicator_types.grad.length > 0 &&
-        <GradsCard.Card uuid={runUUID} width={actualWidth}
-                        errorCallback={errorCallback} refreshRef={gradRefreshRef}/>
+        <GradsCard.Card uuid={runUUID} width={actualWidth} refreshRef={gradRefreshRef}/>
         }
         {run && run.indicator_types.param.length > 0 &&
-        <ParamsCard.Card uuid={runUUID} width={actualWidth}
-                         errorCallback={errorCallback} refreshRef={paramRefreshRef}/>
+        <ParamsCard.Card uuid={runUUID} width={actualWidth} refreshRef={paramRefreshRef}/>
         }
         {run && run.indicator_types.module.length > 0 &&
-        <ModulesCard.Card uuid={runUUID} width={actualWidth}
-                          errorCallback={errorCallback} refreshRef={moduleRefreshRef}/>
+        <ModulesCard.Card uuid={runUUID} width={actualWidth} refreshRef={moduleRefreshRef}/>
         }
         {run && run.indicator_types.time.length > 0 &&
-        <TimesCard.Card uuid={runUUID} width={actualWidth}
-                        errorCallback={errorCallback} refreshRef={timeRefreshRef}/>
+        <TimesCard.Card uuid={runUUID} width={actualWidth} refreshRef={timeRefreshRef}/>
         }
         <div className={'footer-copyright text-center'}>
             <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>

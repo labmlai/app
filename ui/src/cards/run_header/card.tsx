@@ -65,9 +65,6 @@ function Card(props: CardProps) {
         }
 
         load().then()
-            .catch((e) => {
-                props.errorCallback(`${e}`)
-            })
     })
 
     useEffect(() => {
