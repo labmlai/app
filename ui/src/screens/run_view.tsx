@@ -70,20 +70,21 @@ function RunView(props: RunProps) {
         <RefreshButton onButtonClick={onRefresh}/>
         }
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
-
         <MetricsCard.Card uuid={runUUID} width={actualWidth} refreshRef={metricRefreshRef}/>
-        {run && run.indicator_types.grad.length > 0 &&
+
+        {run && run.indicator_types.grad &&
         <GradsCard.Card uuid={runUUID} width={actualWidth} refreshRef={gradRefreshRef}/>
         }
-        {run && run.indicator_types.param.length > 0 &&
+        {run && run.indicator_types.param &&
         <ParamsCard.Card uuid={runUUID} width={actualWidth} refreshRef={paramRefreshRef}/>
         }
-        {run && run.indicator_types.module.length > 0 &&
+        {run && run.indicator_types.module &&
         <ModulesCard.Card uuid={runUUID} width={actualWidth} refreshRef={moduleRefreshRef}/>
         }
-        {run && run.indicator_types.time.length > 0 &&
+        {run && run.indicator_types.time &&
         <TimesCard.Card uuid={runUUID} width={actualWidth} refreshRef={timeRefreshRef}/>
         }
+
         <div className={'footer-copyright text-center'}>
             <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
             <span> | </span>

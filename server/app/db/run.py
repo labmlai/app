@@ -315,7 +315,6 @@ class Run(Model['Run']):
 
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
-        series = self.series.load()
         return {
             'run_uuid': self.run_uuid,
             'name': self.name,
@@ -323,8 +322,28 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'configs': configs,
             'series_preferences': self.series_preferences,
-            'indicator_types': series.types
+            'indicator_types': self.get_indicator_types()
         }
+
+    def get_summary(self) -> Dict[str, str]:
+        return {
+            'run_uuid': self.run_uuid,
+            'name': self.name,
+            'comment': self.comment,
+            'start_time': self.start_time,
+        }
+
+    def get_indicator_types(self):
+        indicator_types = {ind: False for ind in INDICATORS}
+
+        for ind in self.indicators:
+            ind_type = ind.split('.')[0]
+            if ind_type in indicator_types.keys():
+                indicator_types[ind_type] = True
+            else:
+                indicator_types[Enums.METRIC] = True
+
+        return indicator_types
 
     def track(self, data: Dict[str, SeriesDict]) -> None:
         series = self.series.load()

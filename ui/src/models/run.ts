@@ -28,11 +28,11 @@ export interface StatusModel {
 }
 
 export interface IndicatorTypes {
-    param: string[]
-    module: string[]
-    time: string[]
-    grad: string[]
-    metric: string[]
+    param: boolean
+    module: boolean
+    time: boolean
+    grad: boolean
+    metric: boolean
 }
 
 export interface SeriesPreferences {
@@ -108,7 +108,7 @@ export class Run {
     start_time: number
     configs: Config[]
     series_preferences: SeriesPreferences
-     indicator_types: IndicatorTypes
+    indicator_types: IndicatorTypes
 
 
     constructor(run: RunModel) {
