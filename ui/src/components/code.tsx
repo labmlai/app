@@ -38,7 +38,7 @@ export function PyTorchCode() {
             </div>
             <div>
                 <Tab/>loss = <span className={"value"}>0.999</span>
-                <span>** n + random() / </span><span className={"value"}>10</span>
+                <span> ** n + random() / </span><span className={"value"}>10</span>
             </div>
             <div>
                 <Tab/>accuracy = <span className={"value"}>1</span> - <span className={"value"}>0.999</span>
