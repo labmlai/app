@@ -2,14 +2,12 @@ import React, {useState} from "react"
 import {Nav} from "react-bootstrap"
 import RunsListView from "../screens/runs_list_view";
 import SettingsView from "../screens/settings_view";
-import {useLocation} from "react-router-dom"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faHome, faUserCircle} from "@fortawesome/free-solid-svg-icons";
 
 import './tabs_view.scss'
 
 function TabsView() {
-    const location = useLocation()
     const [isRunsList, setIsRunsList] = useState(true)
 
 
@@ -32,7 +30,7 @@ function TabsView() {
                 <span>User</span>
             </Nav.Link>
         </div>
-        {isRunsList ? <RunsListView location={location}/> : <SettingsView/>}
+        {isRunsList ? <RunsListView/> : <SettingsView/>}
     </div>
 
 }

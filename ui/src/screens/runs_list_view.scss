@@ -1,0 +1,17 @@
+.runs-list {
+  input {
+    width: 200px;
+    padding: 0.5rem 0.25rem 0.5rem 0.25rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    transition: 0.3s;
+    border: 0.1rem solid gray;
+    flex-wrap: nowrap;
+    height: 40px;
+  }
+
+  input::placeholder {
+    text-align: center;
+  }
+}
+
