@@ -15,11 +15,6 @@ export function Code() {
         <LabLoader/>
         <div className={'text-center'}>
             <h5 className={'text-secondary mt-5'}>You don't have any experiments</h5>
-            <h6 className={'text-dark mt-3'}><a href={'https://web.lab-ml.com/runs?labml_token=samples'}
-                                                rel="noopener noreferrer" target="_blank"> Check our sample experiments
-                list</a></h6>
-
-            <h6>or</h6>
             <h6 className={'text-dark font-weight-bolder'}>Start monitoring your models by adding just two lines of
                 code, here is an example</h6>
         </div>

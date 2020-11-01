@@ -45,7 +45,7 @@ function RunView(props: RunProps) {
         mixpanel.track('Run View', {uuid: runUUID});
 
         load().then()
-    }, [runCache])
+    }, [runCache, runUUID])
 
     function onRefresh() {
         if (metricRefreshRef.current) {
