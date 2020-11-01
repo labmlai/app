@@ -14,10 +14,12 @@ export function EmptyRunsList() {
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
+        const samples_token: string = process.env.REACT_APP_SAMPLES_PROJECT_TOKEN !
+
         const runListCache = CACHE.getRunsList()
 
         async function load() {
-            let currentRunsList = await runListCache.getRunsList('samples')
+            let currentRunsList = await runListCache.getRunsList(samples_token)
             if (currentRunsList) {
                 setRuns(currentRunsList.runs)
                 setIsLoading(false)
