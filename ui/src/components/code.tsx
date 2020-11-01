@@ -8,7 +8,13 @@ function Tab() {
     </span>
 }
 
-export function Code() {
+function HalfTab() {
+    return <span>
+        &nbsp;&nbsp;
+    </span>
+}
+
+export function PyTorchCode() {
     return <div className={'code-sample bg-dark px-1 py-2 my-3'}>
         <pre className={"text-white"}>
             <div>
@@ -64,4 +70,47 @@ export function Code() {
             </div>
         </pre>
     </div>
+}
+
+export function KerasCode() {
+    return <div className={'code-sample bg-dark px-1 py-2 my-3'}>
+        <pre className={"text-white"}>
+             <div>
+                <span className={"key-word"}>from</span> labml <span className={"key-word"}>import</span>
+                <span> experiment </span><span className={"key-word"}>as</span> exp
+            </div>
+            <div>
+                <span className={"key-word"}>from</span> labml.utils.keras <span className={"key-word"}>import</span>
+                <span> LabMLKerasCallback </span>
+            </div>
+             <br/>
+            <div className={'labml-api'}>
+                <span className={"key-word"}>with</span> exp.record(
+                <span className={"param"}>name</span>=<span className={"string"}>'sample'</span>,
+                <span className={"param"}> exp_conf</span>=conf):
+            </div>
+            <div>
+                <Tab/><span className={"key-word"}>for</span> i
+                <span className={"key-word"}> in</span> <span className={"built-ins"}>range</span>(
+                <span className={"value"}>50</span>):
+            </div>
+            <div><Tab/><Tab/>model.fit(x_train,</div>
+             <div><Tab/><Tab/><Tab/><Tab/><HalfTab/>y_train,</div>
+             <div>
+                <Tab/><Tab/><Tab/><Tab/><HalfTab/><span className={"param"}>epochs</span>=conf[<span
+                 className={"string"}>'epochs'</span>],
+            </div>
+            <div>
+                <Tab/><Tab/><Tab/><Tab/><HalfTab/><span className={"param"}>validation_data</span>=(x_test, y_test),
+            </div>
+             <div className={'labml-api'}>
+                <Tab/><Tab/><Tab/><Tab/><HalfTab/><span className={"param"}>callbacks</span>=[LabMLKerasCallback()],
+            </div>
+            <div>
+                <Tab/><Tab/><Tab/><Tab/><HalfTab/><span className={"param"}>verbose</span>=<span
+                className={"key-word"}>None</span>)
+            </div>
+        </pre>
+    </div>
+
 }
