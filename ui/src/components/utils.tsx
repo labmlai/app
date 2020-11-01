@@ -14,7 +14,7 @@ export function getTimeDiff(timestamp: number): string {
     } else if (timeDiff < 600) {
         return `${Math.floor(timeDiff / 60)}m and ${Math.round(timeDiff % 60)}s ago`
     } else {
-        return formatTime(timestamp)
+        return formatTime(timestamp/1000)
     }
 }
 
