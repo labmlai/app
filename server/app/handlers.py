@@ -76,9 +76,9 @@ def update_run() -> flask.Response:
     run_uuid = request.json.get('run_uuid', '')
     r = run.get(run_uuid, labml_token)
     if not r and not p:
-        error = {'error': 'invalid_labml_token',
-                 'message': 'The labml_token sent to the api is not valid.  '
-                            'Please create a valid token at https://web.lab-ml.com'}
+        error = {'error': 'invalid or empty labml_token',
+                 'message': 'Please create a valid token at https://web.lab-ml.com'
+                            'Click on the experiment link to monitor the experiment and add it to your experiments list.'}
 
     r = run.get_or_create(run_uuid, labml_token)
     s = r.status.load()
