@@ -7,3 +7,4 @@ WEB_URL = 'https://web.lab-ml.com'
 DATA_PATH = PurePath('/xxx/xxx/data')
 SENTRY_DSN = 'XXX'
 FLOAT_PROJECT_TOKEN = 'XXXX'
+SAMPLES_PROJECT_TOKEN = 'XXX'
