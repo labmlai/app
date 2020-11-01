@@ -124,3 +124,15 @@ def create_float_project() -> None:
                           )
         ProjectIndex.set(project.labml_token, project.key)
         project.save()
+
+
+def create_samples_project() -> None:
+    project_key = ProjectIndex.get(settings.SAMPLES_PROJECT_TOKEN)
+
+    if not project_key:
+        project = Project(labml_token=settings.SAMPLES_PROJECT_TOKEN,
+                          name='sample_experiments',
+                          is_sharable=True
+                          )
+        ProjectIndex.set(project.labml_token, project.key)
+        project.save()

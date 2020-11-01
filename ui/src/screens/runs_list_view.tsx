@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 
 import {RunsList} from "../components/runs_list"
-import {Code} from "../components/code"
+import {EmptyRunsList} from "../components/empty_runs_list"
 import {LabLoader} from "../components/loader"
 import {RunListItemModel} from "../models/run"
 import CACHE from "../cache/cache";
@@ -41,7 +41,7 @@ function RunsListView(props: RunsListProps) {
             if (isLoading) {
                 return <LabLoader/>
             } else if (runs.length === 0) {
-                return <Code/>
+                return <EmptyRunsList/>
             } else {
                 return <RunsList runs={runs}/>
             }
