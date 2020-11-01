@@ -1,32 +1,40 @@
-.key-word {
-  color: coral;
-}
+.code-sample {
+  box-shadow: 3px 3px 6px #666, -3px -3px 6px #999;
 
-.param {
-  color: orangered;
-}
+  pre {
+    max-width: 400px;
+    margin: 0 auto;
+    div {
+      opacity: 0.5;
 
-.value {
-  color: dodgerblue;
-}
+      &.labml-api {
+        font-weight: bolder;
+        opacity: 1.0;
+      }
+    }
 
-.string {
-  color: greenyellow;
-}
+    .key-word {
+      color: coral;
+    }
 
-.built-ins {
-  color: mediumpurple;
-}
+    .param {
+      color: orangered;
+    }
 
-.method {
-  color: yellow;
-}
+    .value {
+      color: dodgerblue;
+    }
 
-.bold {
-  font-weight: bolder;
-}
+    .string {
+      color: greenyellow;
+    }
 
-.container {
-  margin: 0 auto;
-  padding-left: 5px !important;
+    .built-ins {
+      color: mediumpurple;
+    }
+
+    .method {
+      color: yellow;
+    }
+  }
 }

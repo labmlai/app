@@ -32,14 +32,13 @@ export function EmptyRunsList() {
 
     return <div>
         <div className={'text-center'}>
-            <h6 className={'mt-5 title'}>You don't have any experiments</h6>
-            <h6 className={'text-info mt-5'}>Start monitoring your models by adding just two lines of
-                code, here is an example</h6>
+            <h5 className={'mt-4 px-1'}>You will see your experiments here</h5>
+            <p className={'px-1'}>Start monitoring your models by adding just two lines of
+                code:</p>
         </div>
         <Code/>
-        <div className={'text-center mb-5'}>
-            <h6>or</h6>
-            <h6 className={'title'}>Sample experiments</h6>
+        <div className={'text-center my-4'}>
+            <h5 className={'title'}>Sample experiments</h5>
         </div>
         {isLoading ? <LabLoader/> : <RunsList runs={runs}/>}
         <div className={'mt-5'}>
