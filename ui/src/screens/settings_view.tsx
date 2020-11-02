@@ -54,7 +54,7 @@ function SettingsView() {
             :
             <div className={'page pl-1 pr-1'} style={{width: actualWidth}}>
                 <div className={'text-center'}>
-                    <Image className={'image-style'}
+                    <Image className={'image-style mt-2'}
                            src={user.picture ? user.picture : DEFAULT_IMAGE}
                            roundedCircle/>
                 </div>

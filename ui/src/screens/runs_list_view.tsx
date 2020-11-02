@@ -70,20 +70,19 @@ function RunsListView() {
             } else {
                 return <div className={'runs-list'}>
                     {/*TODO: Change later to simple html & css*/}
-                    <InputGroup className="my-3 px-2">
-                        <InputGroup.Prepend>
-                            <InputGroup.Text id="basic-addon1">
-                                <FontAwesomeIcon icon={faSearch}/>
-                            </InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <FormControl
-                            ref={inputElement}
-                            onChange={handleChannelChange}
-                            placeholder="Search"
-                            aria-label="Search"
-                            aria-describedby="basic-addon1"
-                        />
-                    </InputGroup>
+                    <div className={"search-container my-3 px-2"}>
+                        <div className={"search-content"}>
+                            <span className={'icon'}><FontAwesomeIcon icon={faSearch}/></span>
+                            <input
+                                ref={inputElement}
+                                onChange={handleChannelChange}
+                                type={"search"}
+                                placeholder={"Search"}
+                                aria-label="Search"
+                            />
+                        </div>
+                    </div>
+
                     <RunsList runs={runs}/>
                 </div>
             }
