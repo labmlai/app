@@ -7,7 +7,6 @@ import {RunListItemModel} from "../models/run"
 import CACHE from "../cache/cache";
 
 import './runs_list_view.scss'
-import {FormControl, InputGroup} from "react-bootstrap";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSearch} from "@fortawesome/free-solid-svg-icons";
 
