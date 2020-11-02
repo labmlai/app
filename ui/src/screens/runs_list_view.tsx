@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 import {RunsList} from "../components/runs_list"
 import {EmptyRunsList} from "../components/empty_runs_list"
@@ -7,6 +7,9 @@ import {RunListItemModel} from "../models/run"
 import CACHE from "../cache/cache";
 
 import './runs_list_view.scss'
+import {FormControl, InputGroup} from "react-bootstrap";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSearch} from "@fortawesome/free-solid-svg-icons";
 
 
 function RunsListView() {
@@ -66,8 +69,21 @@ function RunsListView() {
                 return <EmptyRunsList/>
             } else {
                 return <div className={'runs-list'}>
-                    <input className={'mb-3 ml-3 mt-3'} ref={inputElement} onChange={handleChannelChange}
-                           placeholder={'Search in Experiments'}/>
+                    {/*TODO: Change later to simple html & css*/}
+                    <InputGroup className="my-3 px-2">
+                        <InputGroup.Prepend>
+                            <InputGroup.Text id="basic-addon1">
+                                <FontAwesomeIcon icon={faSearch}/>
+                            </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <FormControl
+                            ref={inputElement}
+                            onChange={handleChannelChange}
+                            placeholder="Search"
+                            aria-label="Search"
+                            aria-describedby="basic-addon1"
+                        />
+                    </InputGroup>
                     <RunsList runs={runs}/>
                 </div>
             }
