@@ -1,3 +1,4 @@
+import sys
 import typing
 import flask
 import werkzeug.wrappers
@@ -92,7 +93,7 @@ def update_run() -> flask.Response:
         success = False
         r.errors.append(error)
 
-    LOGGER.info(f'update_run, run_uuid: {run_uuid}')
+    LOGGER.info(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json))/1024} Kb')
 
     return jsonify({'errors': r.errors, 'url': r.url, 'success': success})
 
