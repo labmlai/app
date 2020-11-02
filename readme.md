@@ -3,7 +3,7 @@
 <h2>Monitor machine learning model training on mobile phones</h2>
 
 <img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
-<br/>
+
 <!-- DO NOT ADD CONDA DOWNLOADS... README CHANGES MUST BE APPROVED BY EDEN OR WILL -->
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
@@ -11,7 +11,6 @@
 [![Conda](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
 
 <img src="https://github.com/lab-ml/app/blob/master/images/app.gif" alt=""/>
-<br/>
 </div>
 
 This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?run_uuid=347ff5e21c1511eb9452acde48001122).
