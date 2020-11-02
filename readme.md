@@ -1,4 +1,4 @@
-<div align="center">
+<div align="center" style="margin-bottom: 10px;">
 <h1>LabML App</h1>
 <h2>Monitor machine learning model training on mobile phones</h2>
 
