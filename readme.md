@@ -10,7 +10,7 @@
 [![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 [![Conda](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
 
-<img src="https://github.com/lab-ml/app/blob/master/images/app.gif" alt=""/>
+<img src="https://github.com/lab-ml/app/blob/master/images/mobile-app.gif" alt=""/>
 </div>
 
 This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?run_uuid=347ff5e21c1511eb9452acde48001122).
