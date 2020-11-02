@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 
 from app import handlers
 from app import settings
-from app.logs.logger import LOGGER
+from app.logs import logger
 
 if settings.SENTRY_DSN:
     try:
@@ -32,7 +32,7 @@ def create_app():
     _app = Flask(__name__)
 
     def run_on_start():
-        LOGGER.info('initializing app')
+        logger.info('initializing app')
 
     run_on_start()
 
@@ -58,13 +58,17 @@ def rest(handler, path):
 def before_request():
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     g.request_start_time = time.time()
-    LOGGER.debug(f'time: {timestamp} uri: {request.full_path}')
+    logger.debug(f'time: {timestamp} uri: {request.full_path}')
 
 
 @app.after_request
 def after_request_func(response):
-    request_time = "%.5fs" % (time.time() - g.request_start_time)
-    LOGGER.info(f'uri: {request.full_path} request_time: {request_time}')
+    request_time = time.time() - g.request_start_time
+
+    if request_time > 0.4:
+        logger.error(f'uri: {request.full_path} request_time: {"%.5fs" % request_time} data: {request.data}')
+    else:
+        logger.info(f'uri: {request.full_path} request_time: {"%.5fs" % request_time}')
 
     return response
 

@@ -1,7 +1,9 @@
 import time
 from functools import wraps
 
-from .logger import LOGGER
+from .logging import logger
+
+_all__ = ["logger"]
 
 
 def time_this(func):
@@ -10,7 +12,7 @@ def time_this(func):
         start = time.time()
         r = func(*args, **kwargs)
         end = time.time()
-        LOGGER.info(f'{func.__name__} : {end - start}')
+        logger.info(f'{func.__name__} : {end - start}')
         return r
 
     return wrapper
