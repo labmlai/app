@@ -182,9 +182,11 @@ function BasicView(props: BasicViewProps) {
         } else {
             plotIdx[idx] = Math.max(...plotIdx) + 1
         }
-        setPlotIdx(new Array<number>(...plotIdx))
-        run.series_preferences[props.series_preference] = plotIdx
 
+        if (plotIdx.length > 1) {
+            setPlotIdx(new Array<number>(...plotIdx))
+            run.series_preferences[props.series_preference] = plotIdx
+        }
     }, [plotIdx, run, props.series_preference])
 
 
