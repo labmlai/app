@@ -225,17 +225,17 @@ class Series(Model['Series']):
             self.step = max(self.step, series['step'][-1])
             self._update_series(ind, series)
 
+        self.save()
+
     def _update_series(self, ind: str, series: SeriesDict) -> None:
         if ind not in self.tracking:
             self.tracking[ind] = SeriesModel().to_data()
             self.update_type(ind)
-            self.save()
 
         s = SeriesModel().load(self.tracking[ind])
         s.update(series['step'], series['value'])
 
         self.tracking[ind] = s.to_data()
-        self.save()
 
     def update_type(self, name: str) -> None:
         ind_type = name.split('.')[0]
