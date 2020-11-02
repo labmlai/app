@@ -43,7 +43,7 @@ def sign_in() -> flask.Response:
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
 
-    LOGGER.info(f'sign_in, user: {u.key}')
+    LOGGER.debug(f'sign_in, user: {u.key}')
 
     return response
 
@@ -59,7 +59,7 @@ def sign_out() -> flask.Response:
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
 
-    LOGGER.info(f'sign_out, session_id: {s.session_id}')
+    LOGGER.debug(f'sign_out, session_id: {s.session_id}')
 
     return response
 
@@ -93,7 +93,7 @@ def update_run() -> flask.Response:
         success = False
         r.errors.append(error)
 
-    LOGGER.info(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json))/1024} Kb')
+    LOGGER.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     return jsonify({'errors': r.errors, 'url': r.url, 'success': success})
 
@@ -104,7 +104,7 @@ def set_run(run_uuid: str) -> flask.Response:
     r = run.get_run(run_uuid)
     r.update_preferences(data)
 
-    LOGGER.info(f'update_preferences, run_uuid: {run_uuid}')
+    LOGGER.debug(f'update_preferences, run_uuid: {run_uuid}')
 
     return jsonify({'errors': r.errors})
 
@@ -135,7 +135,7 @@ def get_run(run_uuid: str) -> flask.Response:
     response = make_response(jsonify(run_data))
     response.status_code = status_code
 
-    LOGGER.info(f'run, run_uuid: {run_uuid}')
+    LOGGER.debug(f'run, run_uuid: {run_uuid}')
 
     return response
 
@@ -153,7 +153,7 @@ def get_status(run_uuid: str) -> flask.Response:
     response = make_response(jsonify(status_data))
     response.status_code = status_code
 
-    LOGGER.info(f'status, run_uuid: {run_uuid}')
+    LOGGER.debug(f'status, run_uuid: {run_uuid}')
 
     return response
 
@@ -178,7 +178,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
-    LOGGER.info(f'runs, labml_token : {labml_token}')
+    LOGGER.debug(f'runs, labml_token : {labml_token}')
 
     return jsonify({'runs': res, 'labml_token': labml_token})
 
@@ -188,7 +188,7 @@ def get_user() -> Any:
     s = get_session()
 
     u = s.user.load()
-    LOGGER.info(f'get_user, user : {u.key}')
+    LOGGER.debug(f'get_user, user : {u.key}')
 
     return jsonify(u.get_data())
 
@@ -203,7 +203,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.METRIC)
         status_code = 200
 
-    LOGGER.info(f'metrics_tracking, run_uuid : {run_uuid}')
+    LOGGER.debug(f'metrics_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -221,7 +221,7 @@ def get_params_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.PARAM)
         status_code = 200
 
-    LOGGER.info(f'params_tracking, run_uuid : {run_uuid}')
+    LOGGER.debug(f'params_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -239,7 +239,7 @@ def get_modules_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.MODULE)
         status_code = 200
 
-    LOGGER.info(f'modules_tracking, run_uuid : {run_uuid}')
+    LOGGER.debug(f'modules_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -257,7 +257,7 @@ def get_times_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.TIME)
         status_code = 200
 
-    LOGGER.info(f'times_tracking, run_uuid : {run_uuid}')
+    LOGGER.debug(f'times_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
@@ -275,7 +275,7 @@ def get_grads_tracking(run_uuid: str) -> Any:
         track_data = r.get_tracking(Enums.GRAD)
         status_code = 200
 
-    LOGGER.info(f'grads_tracking, run_uuid : {run_uuid}')
+    LOGGER.debug(f'grads_tracking, run_uuid : {run_uuid}')
 
     response = make_response(jsonify(track_data))
     response.status_code = status_code
