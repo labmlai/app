@@ -1,8 +1,9 @@
+import time
 import warnings
 import logging
 
 from time import strftime
-from flask import Flask, request, make_response, redirect
+from flask import Flask, request, make_response, redirect, g
 from flask_cors import CORS, cross_origin
 
 from app import handlers
@@ -56,7 +57,16 @@ def rest(handler, path):
 @app.before_request
 def before_request():
     timestamp = strftime('[%Y-%b-%d %H:%M]')
-    LOGGER.debug(f'time: {timestamp}, uri: {request.full_path} body: {request.get_data()}')
+    g.request_start_time = time.time()
+    LOGGER.debug(f'time: {timestamp} uri: {request.full_path}')
+
+
+@app.after_request
+def after_request_func(response):
+    request_time = "%.5fs" % (time.time() - g.request_start_time)
+    LOGGER.info(f'uri: {request.full_path} request_time: {request_time}')
+
+    return response
 
 
 if __name__ == '__main__':
