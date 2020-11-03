@@ -11,6 +11,7 @@ interface RunViewProps {
     run: Run
     status: Status
     lastUpdated: string | null
+    isSelected: boolean
 }
 
 function RunView(props: RunViewProps) {
@@ -20,16 +21,21 @@ function RunView(props: RunViewProps) {
         let lastRecorded = props.status.last_updated_time
 
         runView = <div>
-            <div className={'last-updated'}>
+            <div className={'last-updated mb-2'}>
                 Last Recorded {props.status.isRunning ? getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}
             </div>
             <div className={'run-info'}>
                 <StatusView status={props.status.run_status}/>
                 <h3>{props.run.name}</h3>
                 <h5>{props.run.comment}</h5>
-                <div className={"run-uuid"}><span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}
+                {props.isSelected &&
+                <div>
+                    <div className={"run-uuid"}>
+                        <span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}
+                    </div>
+                    <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
                 </div>
-                <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
+                }
             </div>
             {
                 props.status.isRunning &&
@@ -40,13 +46,19 @@ function RunView(props: RunViewProps) {
         return <LabLoader/>
     }
 
-    return <div className={'labml-card'}>
+    let className = 'labml-card labml-card-action'
+    if (props.isSelected) {
+        className += ' selected'
+    }
+
+    return <div className={className}>
         {runView}
     </div>
 }
 
 function Card(props: CardProps) {
     const [run, setRun] = useState(null as unknown as Run)
+    const [isSelected, setIsSelected] = useState(false)
     const [status, setStatus] = useState(null as unknown as Status)
     const [lastUpdated, setLastUpdated] = useState(null as (string | null))
     const runCache = CACHE.getRun(props.uuid)
@@ -81,8 +93,13 @@ function Card(props: CardProps) {
         return () => clearInterval(interval)
     })
 
-    return <div>
-        <RunView run={run} status={status} lastUpdated={lastUpdated}/>
+
+    function onClick() {
+        setIsSelected(!isSelected)
+    }
+
+    return <div onClick={onClick}>
+        <RunView run={run} status={status} lastUpdated={lastUpdated} isSelected={isSelected}/>
     </div>
 }
 
