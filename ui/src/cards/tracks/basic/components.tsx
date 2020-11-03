@@ -73,7 +73,7 @@ export function SparkLines(props: SeriesProps) {
         }
         return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]}
                           stepExtent={stepExtent} width={rowWidth} onClick={onClick} minLastValue={minLastValue}
-                          maxLastValue={maxLastValue}/>
+                          maxLastValue={maxLastValue} colorIndex={i}/>
     })
 
     return <ListGroup className={'sparkline-list'}>
@@ -93,8 +93,15 @@ export function LineChart(props: SeriesProps) {
     if (track.length === 0) {
         return <div/>
     }
-    let plot = track.filter(((s, i) => props.plotIdx[i] >= 0))
-    let filteredPlotIdx = props.plotIdx.filter(s => s >= 0)
+
+    let plot: SeriesModel[] = []
+    let filteredPlotIdx: number[] = []
+    for (let i = 0; i < props.plotIdx.length; i++) {
+        if (props.plotIdx[i] >= 0) {
+            filteredPlotIdx.push(i)
+            plot.push(track[i])
+        }
+    }
     if (props.plotIdx.length > 0 && Math.max(...props.plotIdx) < 0) {
         plot = [track[0]]
         filteredPlotIdx = [0]

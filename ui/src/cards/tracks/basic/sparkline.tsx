@@ -15,12 +15,13 @@ interface SparkLineProps {
     minLastValue: number
     maxLastValue: number
     onClick?: () => void
+    colorIndex: number
 }
 
 export function SparkLine(props: SparkLineProps) {
     let color = BASE_COLOR
     if (props.selected >= 0) {
-        color = CHART_COLORS[props.selected]
+        color = CHART_COLORS[props.colorIndex]
     }
 
     const titleWidth = Math.min(150, Math.round(props.width * .375))
