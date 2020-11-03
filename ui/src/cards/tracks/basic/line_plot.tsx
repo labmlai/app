@@ -7,6 +7,7 @@ interface LinePlotProps {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
+    isChartFill?: boolean
 }
 
 export function LinePlot(props: LinePlotProps) {
@@ -35,9 +36,13 @@ export function LinePlot(props: LinePlotProps) {
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
 
-    let dFill = `M${props.xScale(series[0].step)},0L` +
-        d.substr(1) +
-        `L${props.xScale(props.series[series.length - 1].step)},0`
+    let dFill = ''
+    if (props.isChartFill) {
+        dFill = `M${props.xScale(series[0].step)},0L` +
+            d.substr(1) +
+            `L${props.xScale(props.series[series.length - 1].step)},0`
+    }
+
     let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
                          d={dFill}/>
 

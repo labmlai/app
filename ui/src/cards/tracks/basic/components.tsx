@@ -105,9 +105,14 @@ export function LineChart(props: SeriesProps) {
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
     const xScale = getScale(stepExtent, chartWidth)
 
+    let isChartFill = true
+    if (plot && plot.length > 3) {
+        isChartFill = false
+    }
+
     let lines = plot.map((s, i) => {
         return <LinePlot series={s.series} xScale={xScale} yScale={yScale}
-                         color={CHART_COLORS[filteredPlotIdx[i]]} key={s.name}/>
+                         color={CHART_COLORS[filteredPlotIdx[i]]} key={s.name} isChartFill={isChartFill}/>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
