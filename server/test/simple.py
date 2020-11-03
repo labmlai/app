@@ -1,13 +1,13 @@
-from labml import tracker, experiment
+import time
+
 from numpy.random import random
+
+from labml import tracker, experiment
 
 conf = {'batch_size': 20}
 
 with experiment.record(name='sample', exp_conf=conf, writers={'web_api'}):
     for i in range(1000):
+        time.sleep(0.2)
         values = {'loss': random()}
-        for j in range(0, 100):
-            values[f'grad.fc.{i}.l1'] = random()
-            values[f'grad.fc.{i}.l2'] = random()
-            values[f'grad.fc.{i}.mean'] = random()
         tracker.save(i, values)
