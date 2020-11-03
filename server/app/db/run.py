@@ -272,6 +272,7 @@ class Run(Model['Run']):
     name: str
     comment: str
     start_time: float
+    run_ip: str
     run_uuid: str
     status: Key[Status]
     series: Key[Series]
@@ -287,6 +288,7 @@ class Run(Model['Run']):
                     comment='',
                     start_time=None,
                     run_uuid='',
+                    run_ip='',
                     series=None,
                     status=None,
                     run_preferences=None,
@@ -385,7 +387,7 @@ def get(run_uuid: str, labml_token: str = '') -> Optional[Run]:
         return None
 
 
-def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
+def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run:
     project = user.get_project(labml_token)
 
     if run_uuid in project.runs:
@@ -398,6 +400,7 @@ def get_or_create(run_uuid: str, labml_token: str = '') -> Run:
     run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
+              run_ip=run_ip,
               series=series.key,
               status=status.key,
               run_preferences=run_preferences.key
