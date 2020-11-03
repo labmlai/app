@@ -67,8 +67,8 @@ def sign_out() -> flask.Response:
 def update_run(run_uuid: str) -> flask.Response:
     errors = []
 
-    token = request.args.get('labml_token')
-    version = request.args.get('labml_version')
+    token = request.args.get('labml_token', '')
+    version = request.json.get('labml_version', '')
 
     if version and settings.LABML_VERSION:
         if settings.LABML_VERSION > version:
