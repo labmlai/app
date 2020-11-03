@@ -64,18 +64,25 @@ def sign_out() -> flask.Response:
     return response
 
 
-def update_run(run_uuid: str) -> flask.Response:
+def update_run() -> flask.Response:
     errors = []
 
     token = request.args.get('labml_token', '')
-    version = request.json.get('labml_version', '')
+    version = request.args.get('labml_version', '')
+    run_uuid = request.args.get('run_uuid', '')
 
-    if version and settings.LABML_VERSION:
-        if settings.LABML_VERSION > version:
-            error = {'error': 'old labml version',
-                     'message': f'labml {version} is available, Please upgrade using,\n'
-                                'pip install [labml] --upgrade'}
-            errors.append(error)
+    if len(run_uuid) < 10:
+        error = {'error': 'invalid_run_uuid',
+                 'message': f'Invalid Run UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
+    if settings.LABML_VERSION > version:
+        error = {'error': 'labml_outdated',
+                 'message': f'Your labml client is outdated, please upgrade: '
+                            'pip install labml --upgrade'}
+        errors.append(error)
+        return jsonify({'errors': errors})
 
     p = user.get_project(labml_token=token)
     if not p:
@@ -83,7 +90,7 @@ def update_run(run_uuid: str) -> flask.Response:
 
     r = run.get(run_uuid, token)
     if not r and not p:
-        error = {'error': 'invalid or empty labml_token',
+        error = {'warning': 'invalid_token',
                  'message': 'Please create a valid token at https://web.lab-ml.com.\n'
                             'Click on the experiment link to monitor the experiment and '
                             'add it to your experiments list.'}
@@ -297,7 +304,7 @@ def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
 def add_handlers(app: flask.Flask):
     _add(app, 'GET', default, '/')
 
-    _add(app, 'POST', update_run, 'track/<run_uuid>')
+    _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_runs, 'runs/<labml_token>')
     _add(app, 'GET', get_user, 'user')
