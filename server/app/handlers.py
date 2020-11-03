@@ -101,7 +101,7 @@ def update_run() -> flask.Response:
     r = run.get(run_uuid, token)
     if not r and not p:
         code = 'invalid_token'
-        if not p:
+        if not token:
             code = 'empty_token'
 
         error = {'warning': code,
