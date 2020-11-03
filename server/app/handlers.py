@@ -73,7 +73,8 @@ def update_run(run_uuid: str) -> flask.Response:
     if version and settings.LABML_VERSION:
         if settings.LABML_VERSION > version:
             error = {'error': 'old labml version',
-                     'message': f'labml {version} is available, Please upgrade.'}
+                     'message': f'labml {version} is available, Please upgrade using,\n'
+                                'pip install [labml] --upgrade'}
             errors.append(error)
 
     p = user.get_project(labml_token=token)
