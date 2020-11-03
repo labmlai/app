@@ -22,6 +22,16 @@ from .auth import login_required, is_runs_permitted, get_session
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
+def check_version(user_v, new_v):
+    for uv, nw in zip(user_v.split('.'), new_v.split('.')):
+        if int(nw) == int(uv):
+            continue
+        elif int(nw) > int(uv):
+            return True
+        else:
+            return False
+
+
 def default() -> flask.Response:
     return make_response(redirect(settings.WEB_URL))
 
@@ -77,7 +87,7 @@ def update_run() -> flask.Response:
         errors.append(error)
         return jsonify({'errors': errors})
 
-    if settings.LABML_VERSION > version:
+    if check_version(version, settings.LABML_VERSION):
         error = {'error': 'labml_outdated',
                  'message': f'Your labml client is outdated, please upgrade: '
                             'pip install labml --upgrade'}
@@ -90,7 +100,11 @@ def update_run() -> flask.Response:
 
     r = run.get(run_uuid, token)
     if not r and not p:
-        error = {'warning': 'invalid_token',
+        code = 'invalid_token'
+        if not p:
+            code = 'empty_token'
+
+        error = {'warning': code,
                  'message': 'Please create a valid token at https://web.lab-ml.com.\n'
                             'Click on the experiment link to monitor the experiment and '
                             'add it to your experiments list.'}
