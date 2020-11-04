@@ -4,11 +4,11 @@ from uuid import uuid4
 
 from labml_db import Model, Key, Index
 from . import user
+from .series_collection import SeriesCollection
 from .status import create_status, Status
 from .. import settings
 from ..analyses.series import SeriesModel
 from ..enums import Enums
-from .series_collection import SeriesCollection
 
 INDICATORS = [Enums.GRAD, Enums.PARAM, Enums.TIME, Enums.MODULE, Enums.METRIC]
 
@@ -29,8 +29,7 @@ class RunPreferences(Model['RunPreferences']):
 
     @classmethod
     def defaults(cls):
-        return dict(series_preferences={}
-                    )
+        return dict(series_preferences={})
 
     def update_preferences(self, data: Dict[str, any]) -> None:
         for k, v in data.items():
