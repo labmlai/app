@@ -1,8 +1,8 @@
+import logging
 import time
 import warnings
-import logging
-
 from time import strftime
+
 from flask import Flask, request, make_response, redirect, g
 from flask_cors import CORS, cross_origin
 
@@ -48,9 +48,8 @@ handlers.add_handlers(app)
 
 
 @cross_origin()
-@app.route('/', defaults={'path': '', 'handler': ''})
-@app.route('/<handler>/<path:path>')
-def rest(handler, path):
+@app.route('/<path:path>')
+def not_found(path):
     return make_response(redirect(settings.WEB_URL))
 
 
