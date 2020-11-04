@@ -1,9 +1,9 @@
 # Reference: https://github.com/benoitc/gunicorn/blob/master/examples/example_config.py
-import os
-import multiprocessing
+# import os
+# import multiprocessing
 
-_ROOT = os.path.dirname(os.path.abspath("__file__"))
-_ETC = os.path.join(_ROOT, 'etc')
+# _ROOT = os.path.dirname(os.path.abspath("__file__"))
+# _ETC = os.path.join(_ROOT, 'etc')
 
 loglevel = 'info'
 
