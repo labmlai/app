@@ -117,11 +117,11 @@
         },
         "labml-db": {
             "hashes": [
-                "sha256:dbb1b03031854a08965d8971ceb50f80eab00a7640267d0d5beb3f0ad76820d3",
-                "sha256:f096e72996e33bd4982d2239620d0a3dff8ac02807150d0b1f9867db503ec099"
+                "sha256:220e0dc6d1114bf4008144c3830c2a9bf9e8d951561092a2d6a1f78845a13436",
+                "sha256:29ae22e1852a2127041c0760d3b9aed92085a30b69edf1e112b188e0936e6d8d"
             ],
             "index": "pypi",
-            "version": "==0.0.4"
+            "version": "==0.0.5"
         },
         "markupsafe": {
             "hashes": [
@@ -242,7 +242,7 @@
                 "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259",
                 "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"
             ],
-            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2'",
             "version": "==1.15.0"
         },
         "smmap": {

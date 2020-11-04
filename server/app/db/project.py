@@ -41,24 +41,12 @@ def get_project(labml_token: str) -> Union[None, Project]:
     return None
 
 
-def create_float_project() -> None:
-    project_key = ProjectIndex.get(settings.FLOAT_PROJECT_TOKEN)
+def create_project(labml_token: str, name: str):
+    project_key = ProjectIndex.get(labml_token)
 
     if not project_key:
-        project = Project(labml_token=settings.FLOAT_PROJECT_TOKEN,
-                          name='floating_experiments',
-                          is_sharable=True
-                          )
-        ProjectIndex.set(project.labml_token, project.key)
-        project.save()
-
-
-def create_samples_project() -> None:
-    project_key = ProjectIndex.get(settings.SAMPLES_PROJECT_TOKEN)
-
-    if not project_key:
-        project = Project(labml_token=settings.SAMPLES_PROJECT_TOKEN,
-                          name='sample_experiments',
+        project = Project(labml_token=labml_token,
+                          name=name,
                           is_sharable=True
                           )
         ProjectIndex.set(project.labml_token, project.key)

@@ -1,8 +1,13 @@
 from pathlib import Path
 
-from labml_db import Model, Index, FileDbDriver, JsonSerializer, FileIndexDbDriver, YamlSerializer
+from labml_db import Model, Index
+from labml_db.driver.file import FileDbDriver
+from labml_db.index_driver.file import FileIndexDbDriver
+from labml_db.serializer.pickle import PickleSerializer
+from labml_db.serializer.json import JsonSerializer
+from labml_db.serializer.yaml import YamlSerializer
 
-from .project import Project, ProjectIndex, create_float_project, create_samples_project
+from .project import Project, ProjectIndex, create_project
 from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
@@ -14,13 +19,13 @@ from .. import settings
 DATA_PATH = settings.DATA_PATH
 
 Model.set_db_drivers([
-    FileDbDriver(JsonSerializer(), User, Path(f'{DATA_PATH}/user')),
-    FileDbDriver(YamlSerializer(), Project, Path(f'{DATA_PATH}/project')),
+    FileDbDriver(YamlSerializer(), User, Path(f'{DATA_PATH}/User')),
+    FileDbDriver(YamlSerializer(), Project, Path(f'{DATA_PATH}/Project')),
     FileDbDriver(JsonSerializer(), Status, Path(f'{DATA_PATH}/Status')),
     FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/RunStatus')),
     FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
     FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
-    FileDbDriver(JsonSerializer(), SeriesCollection, Path(f'{DATA_PATH}/Series')),
+    FileDbDriver(PickleSerializer(), SeriesCollection, Path(f'{DATA_PATH}/SeriesCollection')),
     FileDbDriver(JsonSerializer(), RunPreferences, Path(f'{DATA_PATH}/RunPreferences')),
 ])
 
@@ -31,5 +36,5 @@ Index.set_db_drivers([
     FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
 ])
 
-create_float_project()
-create_samples_project()
+create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
+create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
