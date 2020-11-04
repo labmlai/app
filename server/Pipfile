@@ -10,17 +10,17 @@ flake8 = "==3.7.8"
 
 [packages]
 requests = "==2.22.0"
-python-dateutil = "==2.8.1"
+#python-dateutil = "==2.8.1"
 Flask = "==1.1.1"
 gunicorn = "==20.0.4"
 flask_cors = "*"
-slackclient="*"
+#slackclient="*"
 labml="*"
-Pillow = "*"
-selenium = "*"
+#Pillow = "*"
+#selenium = "*"
 numpy = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
-google-api-python-client = "*"
+#google-api-python-client = "*"
 labml-db = "*"
 
 [requires]
