@@ -2,7 +2,7 @@ from typing import Dict, List, Any
 
 from labml_db import Model
 from ..analyses.series import SeriesModel, Series
-from ..enums import Enums
+from ..enums import SeriesEnums
 
 
 class SeriesCollection(Model['Series']):
@@ -23,7 +23,7 @@ class SeriesCollection(Model['Series']):
         name = ind.split('.')
         if name[-1] in ['mean', 'l2', 'l1']:
             name = name[:-1]
-        if name[0] in [Enums.GRAD, Enums.TIME, Enums.MODULE, Enums.PARAM]:
+        if name[0] in [SeriesEnums.GRAD, SeriesEnums.TIME, SeriesEnums.MODULE, SeriesEnums.PARAM]:
             name = name[1:]
         series['name'] = '.'.join(name)
 
@@ -51,4 +51,4 @@ class SeriesCollection(Model['Series']):
         if ind_type in self.types.keys():
             self.types[ind_type].append(name)
         else:
-            self.types[Enums.METRIC].append(name)
+            self.types[SeriesEnums.METRIC].append(name)

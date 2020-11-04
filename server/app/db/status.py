@@ -3,7 +3,7 @@ from typing import Dict, Union
 
 from labml_db import Model, Key
 
-from ..enums import Enums
+from ..enums import RunEnums
 from . import run
 
 
@@ -57,16 +57,16 @@ class Status(Model['Status']):
     def get_actual_status(self, status: str) -> str:
         not_responding = False
 
-        if status == Enums.RUN_IN_PROGRESS:
+        if status == RunEnums.RUN_IN_PROGRESS:
             if self.last_updated_time is not None:
                 time_diff = (time.time() - self.last_updated_time) / 60
                 if time_diff > 15:
                     not_responding = True
 
         if not_responding:
-            return Enums.RUN_NOT_RESPONDING
+            return RunEnums.RUN_NOT_RESPONDING
         elif status == '':
-            return Enums.RUN_UNKNOWN
+            return RunEnums.RUN_UNKNOWN
         else:
             return status
 
@@ -83,7 +83,9 @@ def get_status(run_uuid: str) -> Union[None, Status]:
 def create_status() -> Status:
     time_now = time.time()
 
-    run_status = RunStatus(status=Enums.RUN_IN_PROGRESS, time=time_now)
+    run_status = RunStatus(status=RunEnums.RUN_IN_PROGRESS,
+                           time=time_now
+                           )
     status = Status(last_updated_time=time_now,
                     run_status=run_status.key
                     )

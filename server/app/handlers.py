@@ -13,7 +13,7 @@ from .db import run
 from .db import session
 from .db import status
 from .db import user
-from .enums import Enums
+from .enums import SeriesEnums
 from .logging import logger
 from .utils import check_version
 
@@ -206,7 +206,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if r:
-        track_data = r.get_tracking(Enums.METRIC)
+        track_data = r.get_tracking(SeriesEnums.METRIC)
         status_code = 200
 
     logger.debug(f'metrics_tracking, run_uuid : {run_uuid}')
@@ -224,7 +224,7 @@ def get_params_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if r:
-        track_data = r.get_tracking(Enums.PARAM)
+        track_data = r.get_tracking(SeriesEnums.PARAM)
         status_code = 200
 
     logger.debug(f'params_tracking, run_uuid : {run_uuid}')
@@ -242,7 +242,7 @@ def get_modules_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if r:
-        track_data = r.get_tracking(Enums.MODULE)
+        track_data = r.get_tracking(SeriesEnums.MODULE)
         status_code = 200
 
     logger.debug(f'modules_tracking, run_uuid : {run_uuid}')
@@ -260,7 +260,7 @@ def get_times_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if r:
-        track_data = r.get_tracking(Enums.TIME)
+        track_data = r.get_tracking(SeriesEnums.TIME)
         status_code = 200
 
     logger.debug(f'times_tracking, run_uuid : {run_uuid}')
@@ -278,7 +278,7 @@ def get_grads_tracking(run_uuid: str) -> Any:
 
     r = run.get_run(run_uuid)
     if r:
-        track_data = r.get_tracking(Enums.GRAD)
+        track_data = r.get_tracking(SeriesEnums.GRAD)
         status_code = 200
 
     logger.debug(f'grads_tracking, run_uuid : {run_uuid}')

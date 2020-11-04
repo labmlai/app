@@ -8,9 +8,9 @@ from .series_collection import SeriesCollection
 from .status import create_status, Status
 from .. import settings
 from ..analyses.series import SeriesModel
-from ..enums import Enums
+from ..enums import SeriesEnums
 
-INDICATORS = [Enums.GRAD, Enums.PARAM, Enums.TIME, Enums.MODULE, Enums.METRIC]
+INDICATORS = [SeriesEnums.GRAD, SeriesEnums.PARAM, SeriesEnums.TIME, SeriesEnums.MODULE, SeriesEnums.METRIC]
 
 
 def generate_run_uuid() -> str:
@@ -121,7 +121,7 @@ class Run(Model['Run']):
             if ind_type in indicator_types.keys():
                 indicator_types[ind_type] = True
             else:
-                indicator_types[Enums.METRIC] = True
+                indicator_types[SeriesEnums.METRIC] = True
 
         return indicator_types
 
@@ -135,7 +135,7 @@ class Run(Model['Run']):
         res = []
         tracks = series.types[track_type]
         for track in tracks:
-            if track_type not in [Enums.METRIC, Enums.TIME]:
+            if track_type not in [SeriesEnums.METRIC, SeriesEnums.TIME]:
                 if 'l2' not in track:
                     continue
             res.append(series.get_track(track))
