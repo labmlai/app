@@ -8,7 +8,7 @@ from flask_cors import CORS, cross_origin
 
 from app import handlers
 from app import settings
-from app.logs import logger
+from app.logging import logger
 
 if settings.SENTRY_DSN:
     try:

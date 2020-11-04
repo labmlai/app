@@ -15,7 +15,7 @@ from .db import run
 
 from .enums import Enums
 from . import settings
-from .logs import logger
+from .logging import logger
 
 from .auth import login_required, check_labml_token_permission, get_session
 
