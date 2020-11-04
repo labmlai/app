@@ -1,5 +1,4 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './index.css'
 import mixpanel from 'mixpanel-browser';
 
 import React, {ReactElement, useCallback} from 'react'
