@@ -290,26 +290,30 @@ def get_grads_tracking(run_uuid: str) -> Any:
     return response
 
 
-def _add(app: flask.Flask, method: str, func: typing.Callable, url: str):
-    app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
+def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
+    app.add_url_rule(f'/api/v1/server/{url}', view_func=func, methods=[method])
+
+
+def _add_ui(app: flask.Flask, method: str, func: typing.Callable, url: str):
+    app.add_url_rule(f'/api/v1/ui/{url}', view_func=func, methods=[method])
 
 
 def add_handlers(app: flask.Flask):
-    _add(app, 'POST', update_run, 'track')
+    _add_server(app, 'POST', update_run, 'track')
 
-    _add(app, 'GET', get_runs, 'runs/<labml_token>')
-    _add(app, 'GET', get_user, 'user')
+    _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
+    _add_ui(app, 'GET', get_user, 'user')
 
-    _add(app, 'GET', get_run, 'run/<run_uuid>')
-    _add(app, 'GET', get_status, 'status/<run_uuid>')
+    _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
+    _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
 
-    _add(app, 'POST', get_metrics_tracking, 'metrics_track/<run_uuid>')
-    _add(app, 'POST', get_grads_tracking, 'grads_track/<run_uuid>')
-    _add(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
-    _add(app, 'POST', get_modules_tracking, 'modules_track/<run_uuid>')
-    _add(app, 'POST', get_times_tracking, 'times_track/<run_uuid>')
+    _add_ui(app, 'POST', get_metrics_tracking, 'metrics_track/<run_uuid>')
+    _add_ui(app, 'POST', get_grads_tracking, 'grads_track/<run_uuid>')
+    _add_ui(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
+    _add_ui(app, 'POST', get_modules_tracking, 'modules_track/<run_uuid>')
+    _add_ui(app, 'POST', get_times_tracking, 'times_track/<run_uuid>')
 
-    _add(app, 'POST', set_run, 'run/<run_uuid>')
+    _add_ui(app, 'POST', set_run, 'run/<run_uuid>')
 
-    _add(app, 'POST', sign_in, 'auth/sign_in')
-    _add(app, 'DELETE', sign_out, 'auth/sign_out')
+    _add_ui(app, 'POST', sign_in, 'auth/sign_in')
+    _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
