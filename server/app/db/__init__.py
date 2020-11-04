@@ -5,7 +5,8 @@ from labml_db import Model, Index, FileDbDriver, JsonSerializer, FileIndexDbDriv
 from .user import Project, ProjectIndex, User, UserIndex, create_float_project, create_samples_project
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
-from .run import Run, RunIndex, Series, RunPreferences
+from .run import Run, RunIndex, RunPreferences
+from .series_collection import SeriesCollection
 
 from .. import settings
 
@@ -18,7 +19,7 @@ Model.set_db_drivers([
     FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/RunStatus')),
     FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
     FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
-    FileDbDriver(JsonSerializer(), Series, Path(f'{DATA_PATH}/Series')),
+    FileDbDriver(JsonSerializer(), SeriesCollection, Path(f'{DATA_PATH}/Series')),
     FileDbDriver(JsonSerializer(), RunPreferences, Path(f'{DATA_PATH}/RunPreferences')),
 ])
 

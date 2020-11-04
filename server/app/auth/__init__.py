@@ -19,7 +19,6 @@ def get_session() -> session.Session:
 def check_labml_token_permission(func) -> functools.wraps:
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        print('perm', kwargs)
         labml_token = kwargs.get('labml_token', '')
 
         p = user.get_project(labml_token)

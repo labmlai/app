@@ -35,7 +35,7 @@ react-app-env.d.ts
 .idea/*
 !.idea/dictionaries
 
-data2/
+data/
 geckodriver
 geckodriver.log
 labml
