@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import "./style.scss"
 import {SeriesModel} from "../../../models/run";
 import {ListGroup} from "react-bootstrap"
-import {CHART_COLORS} from "./constants";
+import {getColor} from "./constants";
 import {LinePlot} from "./line_plot";
 import {getExtent, getScale, toPointValues} from "./utils";
 import {SparkLine} from "./sparkline";
@@ -64,8 +64,17 @@ export function SparkLines(props: SeriesProps) {
     let minLastValue = Math.min(...lastValues)
 
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
-
     const rowWidth = Math.min(450, windowWidth - 3 * margin)
+
+    let colorIndices: number[] = []
+    for (let i = 0; i < props.plotIdx.length; i++) {
+        if (props.plotIdx[i] >= 0) {
+            colorIndices.push(i)
+        } else {
+            colorIndices.push(-1)
+        }
+    }
+
     let sparkLines = track.map((s, i) => {
         let onClick
         if (props.onSelect != null) {
@@ -73,7 +82,7 @@ export function SparkLines(props: SeriesProps) {
         }
         return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]}
                           stepExtent={stepExtent} width={rowWidth} onClick={onClick} minLastValue={minLastValue}
-                          maxLastValue={maxLastValue} colorIndex={i}/>
+                          maxLastValue={maxLastValue} color={getColor(colorIndices[i])}/>
     })
 
     return <ListGroup className={'sparkline-list'}>
@@ -119,7 +128,7 @@ export function LineChart(props: SeriesProps) {
 
     let lines = plot.map((s, i) => {
         return <LinePlot series={s.series} xScale={xScale} yScale={yScale}
-                         color={CHART_COLORS[filteredPlotIdx[i]]} key={s.name} isChartFill={isChartFill}/>
+                         color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}/>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`

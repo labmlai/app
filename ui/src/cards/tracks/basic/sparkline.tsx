@@ -4,7 +4,7 @@ import {ListGroup} from "react-bootstrap";
 import React from "react";
 import {getExtent, getScale} from "./utils";
 import {LinePlot} from "./line_plot";
-import {BASE_COLOR, CHART_COLORS} from "./constants";
+import {BASE_COLOR} from "./constants";
 
 interface SparkLineProps {
     name: string
@@ -15,13 +15,13 @@ interface SparkLineProps {
     minLastValue: number
     maxLastValue: number
     onClick?: () => void
-    colorIndex: number
+    color: string
 }
 
 export function SparkLine(props: SparkLineProps) {
     let color = BASE_COLOR
     if (props.selected >= 0) {
-        color = CHART_COLORS[props.colorIndex]
+        color = props.color
     }
 
     const titleWidth = Math.min(150, Math.round(props.width * .375))

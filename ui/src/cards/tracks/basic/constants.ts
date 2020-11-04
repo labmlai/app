@@ -10,6 +10,10 @@ export const BASE_COLOR = '#34495e'
 //     '#16a085'
 // ]
 
+export function getColor(index: number) {
+    return CHART_COLORS[index % 10]
+}
+
 export const CHART_COLORS = [
     '#4E79A7',
     '#F28E2C',
