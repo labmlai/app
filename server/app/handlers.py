@@ -1,46 +1,27 @@
 import sys
 import typing
+from typing import Any
+
 import flask
 import werkzeug.wrappers
-
-from typing import Any
-from flask import jsonify, request, make_response, redirect
+from flask import jsonify, request, make_response
 
 from labml_db import Key
-
-from .db import user
-from .db import status
-from .db import session
-from .db import run
-
-from .enums import Enums
 from . import settings
-from .logging import logger
-
 from .auth import login_required, check_labml_token_permission, get_session
+from .db import run
+from .db import session
+from .db import status
+from .db import user
+from .enums import Enums
+from .logging import logger
+from .utils import check_version
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
-def check_version(user_v, new_v):
-    for uv, nw in zip(user_v.split('.'), new_v.split('.')):
-        if int(nw) == int(uv):
-            continue
-        elif int(nw) > int(uv):
-            return True
-        else:
-            return False
-
-
-def default() -> flask.Response:
-    return make_response(redirect(settings.WEB_URL))
-
-
 def sign_in() -> flask.Response:
-    json = request.json
-
-    info = user.AuthOInfo(**json)
-    u = user.get_or_create_user(info)
+    u = user.get_or_create_user(user.AuthOInfo(**request.json))
 
     session_id = request.cookies.get('session_id')
     s = session.get_or_create(session_id)
@@ -100,14 +81,16 @@ def update_run() -> flask.Response:
 
     r = run.get(run_uuid, token)
     if not r and not p:
-        code = 'invalid_token'
-        if not token:
-            code = 'empty_token'
-
-        error = {'warning': code,
-                 'message': 'Please create a valid token at https://web.lab-ml.com.\n'
-                            'Click on the experiment link to monitor the experiment and '
-                            'add it to your experiments list.'}
+        if token:
+            error = {'error': 'invalid_token',
+                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                                'Click on the experiment link to monitor the experiment and '
+                                'add it to your experiments list.'}
+        else:
+            error = {'warning': 'empty_token',
+                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                                'Click on the experiment link to monitor the experiment and '
+                                'add it to your experiments list.'}
         errors.append(error)
 
     r = run.get_or_create(run_uuid, token, request.remote_addr)
@@ -124,17 +107,15 @@ def update_run() -> flask.Response:
 
 
 def set_run(run_uuid: str) -> flask.Response:
-    data = request.json
-
     r = run.get_run(run_uuid)
-    r.update_preferences(data)
+    r.update_preferences(request.json)
 
     logger.debug(f'update_preferences, run_uuid: {run_uuid}')
 
     return jsonify({'errors': r.errors})
 
 
-def claim_run(run_uuid: str, run_key=Key[run.Run]) -> None:
+def claim_run(run_uuid: str, run_key: Key[run.Run]) -> None:
     s = get_session()
 
     default_project = s.user.load().default_project
@@ -308,16 +289,11 @@ def get_grads_tracking(run_uuid: str) -> Any:
     return response
 
 
-def _add(app: flask.Flask, method: str, func: typing.Callable, url: str = None):
-    if url is None:
-        url = func.__name__
-
+def _add(app: flask.Flask, method: str, func: typing.Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
 
 def add_handlers(app: flask.Flask):
-    _add(app, 'GET', default, '/')
-
     _add(app, 'POST', update_run, 'track')
 
     _add(app, 'GET', get_runs, 'runs/<labml_token>')

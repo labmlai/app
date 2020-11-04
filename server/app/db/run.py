@@ -197,7 +197,7 @@ def get_runs(labml_token: str) -> List[Run]:
     return res
 
 
-def get_run(run_uuid: str) -> Union[None, Run]:
+def get_run(run_uuid: str) -> Optional[Run]:
     run_key = RunIndex.get(run_uuid)
 
     if run_key:
