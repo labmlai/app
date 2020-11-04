@@ -13,6 +13,7 @@ from .db import run
 from .db import session
 from .db import status
 from .db import user
+from .db import project
 from .enums import SeriesEnums
 from .logging import logger
 from .utils import check_version
@@ -75,7 +76,7 @@ def update_run() -> flask.Response:
         errors.append(error)
         return jsonify({'errors': errors})
 
-    p = user.get_project(labml_token=token)
+    p = project.get_project(labml_token=token)
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
@@ -120,7 +121,7 @@ def claim_run(run_uuid: str, run_key: Key[run.Run]) -> None:
 
     default_project = s.user.load().default_project
     if run_uuid not in default_project.runs:
-        float_project = user.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+        float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
         if run_uuid in float_project.runs:
             default_project.runs[run_uuid] = run_key
             default_project.save()

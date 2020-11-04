@@ -1,9 +1,9 @@
 import time
 from typing import Dict, List, Optional, Union, NamedTuple
-from uuid import uuid4
 
 from labml_db import Model, Key, Index
-from . import user
+
+from . import project
 from .series_collection import SeriesCollection
 from .status import create_status, Status
 from .. import settings
@@ -11,10 +11,6 @@ from ..analyses.series import SeriesModel
 from ..enums import SeriesEnums
 
 INDICATORS = [SeriesEnums.GRAD, SeriesEnums.PARAM, SeriesEnums.TIME, SeriesEnums.MODULE, SeriesEnums.METRIC]
-
-
-def generate_run_uuid() -> str:
-    return uuid4().hex
 
 
 class CardInfo(NamedTuple):
@@ -150,38 +146,38 @@ class RunIndex(Index['Run']):
 
 
 def get(run_uuid: str, labml_token: str = '') -> Optional[Run]:
-    project = user.get_project(labml_token)
+    p = project.get_project(labml_token)
 
-    if run_uuid in project.runs:
-        return project.runs[run_uuid].load()
+    if run_uuid in p.runs:
+        return p.runs[run_uuid].load()
     else:
         return None
 
 
 def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run:
-    project = user.get_project(labml_token)
+    p = project.get_project(labml_token)
 
-    if run_uuid in project.runs:
-        return project.runs[run_uuid].load()
+    if run_uuid in p.runs:
+        return p.runs[run_uuid].load()
 
     time_now = time.time()
 
-    series = SeriesCollection(types={ind: [] for ind in INDICATORS})
+    sc = SeriesCollection(types={ind: [] for ind in INDICATORS})
     status = create_status()
     run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               run_ip=run_ip,
-              series=series.key,
+              series=sc.key,
               status=status.key,
               run_preferences=run_preferences.key
               )
-    project.runs[run.run_uuid] = run.key
+    p.runs[run.run_uuid] = run.key
 
     run.save()
     run_preferences.save()
-    project.save()
-    series.save()
+    p.save()
+    sc.save()
 
     RunIndex.set(run.run_uuid, run.key)
 
@@ -190,8 +186,8 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
 
 def get_runs(labml_token: str) -> List[Run]:
     res = []
-    project = user.get_project(labml_token)
-    for run_uuid, run_key in project.runs.items():
+    p = project.get_project(labml_token)
+    for run_uuid, run_key in p.runs.items():
         res.append(run_key.load())
 
     return res

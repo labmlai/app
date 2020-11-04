@@ -2,7 +2,8 @@ from pathlib import Path
 
 from labml_db import Model, Index, FileDbDriver, JsonSerializer, FileIndexDbDriver, YamlSerializer
 
-from .user import Project, ProjectIndex, User, UserIndex, create_float_project, create_samples_project
+from .project import Project, ProjectIndex, create_float_project, create_samples_project
+from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex, RunPreferences

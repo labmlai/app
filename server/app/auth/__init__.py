@@ -5,7 +5,7 @@ import werkzeug.wrappers
 from flask import request, make_response
 
 from ..db import session
-from ..db import user
+from ..db import project
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -21,7 +21,7 @@ def check_labml_token_permission(func) -> functools.wraps:
     def wrapper(*args, **kwargs):
         labml_token = kwargs.get('labml_token', '')
 
-        p = user.get_project(labml_token)
+        p = project.get_project(labml_token)
         if p and p.is_sharable:
             return func(*args, **kwargs)
 
