@@ -1,10 +1,11 @@
-import typing
 import functools
+import typing
+
 import werkzeug.wrappers
 from flask import request, make_response
 
-from ..db import user
 from ..db import session
+from ..db import user
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -15,32 +16,17 @@ def get_session() -> session.Session:
     return session.get_or_create(session_id)
 
 
-def process_parameters(func) -> functools.wraps:
+def check_labml_token_permission(func) -> functools.wraps:
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        _kwargs = {}
-        for k, v in kwargs.items():
-            if v == 'null':
-                _kwargs[k] = ''
-            else:
-                _kwargs[k] = v
-
-        return func(*args, **_kwargs)
-
-    return wrapper
-
-
-@process_parameters
-def is_runs_permitted(func) -> functools.wraps:
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+        print('perm', kwargs)
         labml_token = kwargs.get('labml_token', '')
 
         p = user.get_project(labml_token)
         if p and p.is_sharable:
             return func(*args, **kwargs)
 
-        kwargs['labml_token'] = ''
+        kwargs['labml_token'] = None
 
         return func(*args, **kwargs)
 

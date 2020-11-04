@@ -17,7 +17,7 @@ from .enums import Enums
 from . import settings
 from .logs import logger
 
-from .auth import login_required, is_runs_permitted, get_session
+from .auth import login_required, check_labml_token_permission, get_session
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -184,7 +184,7 @@ def get_status(run_uuid: str) -> flask.Response:
 
 
 @login_required
-@is_runs_permitted
+@check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
     s = get_session()
 
