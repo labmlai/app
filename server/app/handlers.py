@@ -291,11 +291,11 @@ def get_grads_tracking(run_uuid: str) -> Any:
 
 
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
-    app.add_url_rule(f'/api/v1/server/{url}', view_func=func, methods=[method])
+    app.add_url_rule(f'/api/v1/backend/{url}', view_func=func, methods=[method])
 
 
 def _add_ui(app: flask.Flask, method: str, func: typing.Callable, url: str):
-    app.add_url_rule(f'/api/v1/ui/{url}', view_func=func, methods=[method])
+    app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
 
 def add_handlers(app: flask.Flask):
