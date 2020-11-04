@@ -55,13 +55,15 @@ def not_found(path):
 
 @app.before_request
 def before_request():
+    """Save time before each request"""
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     g.request_start_time = time.time()
     logger.debug(f'time: {timestamp} uri: {request.full_path}')
 
 
 @app.after_request
-def after_request_func(response):
+def after_request(response):
+    """Calculate and log execution time"""
     request_time = time.time() - g.request_start_time
 
     if request_time > 0.4:
