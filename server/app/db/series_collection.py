@@ -38,10 +38,10 @@ class SeriesCollection(Model['Series']):
 
     def _update_series(self, ind: str, series: SeriesModel) -> None:
         if ind not in self.tracking:
-            self.tracking[ind] = SeriesModel().to_data()
+            self.tracking[ind] = Series().to_data()
             self.update_type(ind)
 
-        s = SeriesModel().load(self.tracking[ind])
+        s = Series().load(self.tracking[ind])
         s.update(series['step'], series['value'])
 
         self.tracking[ind] = s.to_data()
