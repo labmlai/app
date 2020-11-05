@@ -12,9 +12,11 @@ from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex, RunPreferences
-from .series_collection import SeriesCollection
+from ..analyses import Metrics, Parameters, TimeTracking, Gradients, Outputs
 
 from .. import settings
+
+_all__ = ["SeriesCollection"]
 
 DATA_PATH = settings.DATA_PATH
 
@@ -25,7 +27,11 @@ Model.set_db_drivers([
     FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/RunStatus')),
     FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
     FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
-    FileDbDriver(PickleSerializer(), SeriesCollection, Path(f'{DATA_PATH}/SeriesCollection')),
+    FileDbDriver(PickleSerializer(), Metrics, Path(f'{DATA_PATH}/Metrics')),
+    FileDbDriver(PickleSerializer(), Parameters, Path(f'{DATA_PATH}/Parameters')),
+    FileDbDriver(PickleSerializer(), TimeTracking, Path(f'{DATA_PATH}/TimeTracking')),
+    FileDbDriver(PickleSerializer(), Gradients, Path(f'{DATA_PATH}/Gradients')),
+    FileDbDriver(PickleSerializer(), Outputs, Path(f'{DATA_PATH}/Outputs')),
     FileDbDriver(JsonSerializer(), RunPreferences, Path(f'{DATA_PATH}/RunPreferences')),
 ])
 

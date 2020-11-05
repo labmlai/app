@@ -4,17 +4,11 @@ from typing import Dict, List, Optional, Union, NamedTuple
 from labml_db import Model, Key, Index
 
 from . import project
-from .series_collection import SeriesCollection
+from ..analyses import Analyses
 from .status import create_status, Status
 from .. import settings
 from ..analyses.series import SeriesModel
-from ..enums import SeriesEnums
-
-INDICATORS = [SeriesEnums.GRAD,
-              SeriesEnums.PARAM,
-              SeriesEnums.TIME,
-              SeriesEnums.MODULE,
-              SeriesEnums.METRIC]
+from ..enums import SeriesEnums, INDICATORS
 
 
 class CardInfo(NamedTuple):
@@ -46,7 +40,7 @@ class Run(Model['Run']):
     run_ip: str
     run_uuid: str
     status: Key[Status]
-    series: Key[SeriesCollection]
+    analyses: Dict[str, Key]
     run_preferences: Key[RunPreferences]
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -60,7 +54,7 @@ class Run(Model['Run']):
                     start_time=None,
                     run_uuid='',
                     run_ip='',
-                    series=None,
+                    analyses={},
                     status=None,
                     run_preferences=None,
                     configs={},
@@ -125,21 +119,27 @@ class Run(Model['Run']):
 
         return indicator_types
 
+    @staticmethod
+    def sort_types(data: Dict[str, SeriesModel]):
+        res = {ind: {} for ind in INDICATORS}
+        for ind, s in data.items():
+            ind_type = ind.split('.')[0]
+            if ind_type in INDICATORS:
+                res[ind_type][ind] = s
+            else:
+                res[SeriesEnums.METRIC][ind] = s
+
+        return res
+
     def track(self, data: Dict[str, SeriesModel]) -> None:
-        series = self.series.load()
-        series.track(data)
+        sorted_data = self.sort_types(data)
+        for k, sc in self.analyses.items():
+            sc.load().track(sorted_data[k])
 
     def get_tracking(self, track_type: str) -> List:
-        series = self.series.load()
+        sc = self.analyses[track_type]
 
-        res = []
-        tracks = series.types[track_type]
-        for track in tracks:
-            if track_type not in [SeriesEnums.METRIC, SeriesEnums.TIME]:
-                if 'l2' not in track:
-                    continue
-            res.append(series.get_track(track))
-
+        res = sc.load().get_tracks()
         res.sort(key=lambda s: s['name'])
 
         return res
@@ -166,13 +166,13 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
 
     time_now = time.time()
 
-    sc = SeriesCollection(types={ind: [] for ind in INDICATORS})
+    ans = Analyses.create_analyses()
     status = create_status()
     run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               run_ip=run_ip,
-              series=sc.key,
+              analyses=ans,
               status=status.key,
               run_preferences=run_preferences.key
               )
@@ -181,7 +181,6 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     run.save()
     run_preferences.save()
     p.save()
-    sc.save()
 
     RunIndex.set(run.run_uuid, run.key)
 
