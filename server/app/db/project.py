@@ -3,7 +3,6 @@ from typing import List, Dict, Union
 from labml_db import Model, Key, Index
 
 from .run import Run
-from .. import settings
 
 
 class Project(Model['Project']):

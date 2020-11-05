@@ -10,7 +10,11 @@ from .. import settings
 from ..analyses.series import SeriesModel
 from ..enums import SeriesEnums
 
-INDICATORS = [SeriesEnums.GRAD, SeriesEnums.PARAM, SeriesEnums.TIME, SeriesEnums.MODULE, SeriesEnums.METRIC]
+INDICATORS = [SeriesEnums.GRAD,
+              SeriesEnums.PARAM,
+              SeriesEnums.TIME,
+              SeriesEnums.MODULE,
+              SeriesEnums.METRIC]
 
 
 class CardInfo(NamedTuple):
