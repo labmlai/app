@@ -23,7 +23,10 @@ class SeriesCollection(Model['Series']):
         name = ind.split('.')
         if name[-1] in ['mean', 'l2', 'l1']:
             name = name[:-1]
-        if name[0] in [SeriesEnums.GRAD, SeriesEnums.TIME, SeriesEnums.MODULE, SeriesEnums.PARAM]:
+        if name[0] in [SeriesEnums.GRAD,
+                       SeriesEnums.TIME,
+                       SeriesEnums.MODULE,
+                       SeriesEnums.PARAM]:
             name = name[1:]
         series['name'] = '.'.join(name)
 
