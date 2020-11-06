@@ -7,6 +7,8 @@ import werkzeug.wrappers
 from flask import jsonify, request, make_response
 
 from labml_db import Key
+
+from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session
 from .db import run
@@ -14,7 +16,6 @@ from .db import session
 from .db import status
 from .db import user
 from .db import project
-from .enums import SeriesEnums
 from .logging import logger
 from .utils import check_version
 
@@ -100,7 +101,7 @@ def update_run() -> flask.Response:
     r.update_run(request.json)
     s.update_time_status(request.json)
     if 'track' in request.json:
-        r.track(request.json['track'])
+        AnalysisManager.track(run_uuid, request.json['track'])
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
@@ -200,96 +201,6 @@ def get_user() -> Any:
     return jsonify(u.get_data())
 
 
-@login_required
-def get_metrics_tracking(run_uuid: str) -> Any:
-    track_data = []
-    status_code = 400
-
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.METRIC)
-        status_code = 200
-
-    logger.debug(f'metrics_tracking, run_uuid : {run_uuid}')
-
-    response = make_response(jsonify(track_data))
-    response.status_code = status_code
-
-    return response
-
-
-@login_required
-def get_params_tracking(run_uuid: str) -> Any:
-    track_data = []
-    status_code = 400
-
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.PARAM)
-        status_code = 200
-
-    logger.debug(f'params_tracking, run_uuid : {run_uuid}')
-
-    response = make_response(jsonify(track_data))
-    response.status_code = status_code
-
-    return response
-
-
-@login_required
-def get_modules_tracking(run_uuid: str) -> Any:
-    track_data = []
-    status_code = 400
-
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.MODULE)
-        status_code = 200
-
-    logger.debug(f'modules_tracking, run_uuid : {run_uuid}')
-
-    response = make_response(jsonify(track_data))
-    response.status_code = status_code
-
-    return response
-
-
-@login_required
-def get_times_tracking(run_uuid: str) -> Any:
-    track_data = []
-    status_code = 400
-
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.TIME)
-        status_code = 200
-
-    logger.debug(f'times_tracking, run_uuid : {run_uuid}')
-
-    response = make_response(jsonify(track_data))
-    response.status_code = status_code
-
-    return response
-
-
-@login_required
-def get_grads_tracking(run_uuid: str) -> Any:
-    track_data = []
-    status_code = 400
-
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.GRAD)
-        status_code = 200
-
-    logger.debug(f'grads_tracking, run_uuid : {run_uuid}')
-
-    response = make_response(jsonify(track_data))
-    response.status_code = status_code
-
-    return response
-
-
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
     app.add_url_rule(f'/api/v1/backend/{url}', view_func=func, methods=[method])
 
@@ -307,13 +218,10 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
 
-    _add_ui(app, 'POST', get_metrics_tracking, 'metrics_track/<run_uuid>')
-    _add_ui(app, 'POST', get_grads_tracking, 'grads_track/<run_uuid>')
-    _add_ui(app, 'POST', get_params_tracking, 'params_track/<run_uuid>')
-    _add_ui(app, 'POST', get_modules_tracking, 'modules_track/<run_uuid>')
-    _add_ui(app, 'POST', get_times_tracking, 'times_track/<run_uuid>')
-
     _add_ui(app, 'POST', set_run, 'run/<run_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
+
+    for method, func, url in AnalysisManager.get_handlers():
+        _add_ui(app, method, login_required(func), url)

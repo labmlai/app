@@ -13,3 +13,10 @@ class SeriesEnums:
     MODULE = 'module'
     TIME = 'time'
     METRIC = 'metric'
+
+
+INDICATORS = [SeriesEnums.GRAD,
+              SeriesEnums.PARAM,
+              SeriesEnums.TIME,
+              SeriesEnums.MODULE,
+              SeriesEnums.METRIC]
