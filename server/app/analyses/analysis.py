@@ -1,6 +1,7 @@
-from typing import List, Dict, Tuple, Callable
+from typing import Dict
 
 from labml_db.serializer.pickle import PickleSerializer
+from labml_db.serializer.yaml import YamlSerializer
 from .series import SeriesModel
 
 URLS = []
@@ -32,6 +33,6 @@ class Analysis:
 
     @staticmethod
     def db_index(cls):
-        DB_INDEXES.append((PickleSerializer, cls, cls.path))
+        DB_INDEXES.append((YamlSerializer, cls, cls.path))
 
         return cls

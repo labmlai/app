@@ -1,11 +1,11 @@
 from typing import Dict
 
-from .parameters import ParametersAnalysis, ParametersModel, ParametersIndex
-from .time_tracking import TimeTrackingAnalysis, TimeTrackingModel, TimeTrackingIndex
-from .gradients import GradientsAnalysis, GradientsModel, GradientsIndex
-from .metrics import MetricsAnalysis, MetricsModel, MetricsIndex
-from .outputs import OutputsAnalysis, OutputsIndex, OutputsModel
 from . import analysis
+from .parameters import ParametersAnalysis
+from .time_tracking import TimeTrackingAnalysis
+from .gradients import GradientsAnalysis
+from .metrics import MetricsAnalysis
+from .outputs import OutputsAnalysis
 from .series import SeriesModel
 
 Analyses = [GradientsAnalysis,
