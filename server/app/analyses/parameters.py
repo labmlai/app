@@ -2,7 +2,6 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response
 from labml_db import Model, Index
-from labml_db.serializer.pickle import PickleSerializer
 
 from .analysis import Analysis
 from .series import SeriesModel
@@ -12,7 +11,6 @@ from .series_collection import SeriesCollection
 
 @Analysis.db_model
 class ParametersModel(Model['ParametersModel'], SeriesCollection):
-    type = SeriesEnums.PARAM
     path = 'Parameters'
 
 
@@ -28,7 +26,13 @@ class ParametersAnalysis(Analysis):
         self.parameters = data
 
     def track(self, data: Dict[str, SeriesModel]):
-        self.parameters.track(data)
+        res = {}
+        for ind, s in data.items():
+            ind_type = ind.split('.')[0]
+            if ind_type == SeriesEnums.PARAM:
+                res[ind] = s
+
+        self.parameters.track(res)
 
     def get_tracking(self):
         res = self.parameters.get_tracks()

@@ -11,7 +11,6 @@ from .series_collection import SeriesCollection
 
 @Analysis.db_model
 class GradientsModel(Model['GradientsModel'], SeriesCollection):
-    type = SeriesEnums.GRAD
     path = 'Gradients'
 
 
@@ -27,7 +26,13 @@ class GradientsAnalysis(Analysis):
         self.gradients = data
 
     def track(self, data: Dict[str, SeriesModel]):
-        self.gradients.track(data)
+        res: Dict[str, SeriesModel] = {}
+        for ind, s in data.items():
+            ind_type = ind.split('.')[0]
+            if ind_type == SeriesEnums.GRAD:
+                res[ind] = s
+
+        self.gradients.track(res)
 
     def get_tracking(self):
         res = self.gradients.get_tracks()

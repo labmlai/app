@@ -4,14 +4,13 @@ from flask import jsonify, make_response
 from labml_db import Model, Index
 
 from .analysis import Analysis
-from .series import SeriesModel
-from ..enums import SeriesEnums
+from .series import SeriesModel, Series
+from ..enums import INDICATORS
 from .series_collection import SeriesCollection
 
 
 @Analysis.db_model
 class MetricsModel(Model['MetricsModel'], SeriesCollection):
-    type = SeriesEnums.METRIC
     path = 'Metrics'
 
 
@@ -27,10 +26,22 @@ class MetricsAnalysis(Analysis):
         self.metrics = data
 
     def track(self, data: Dict[str, SeriesModel]):
-        self.metrics.track(data)
+        res = {}
+        for ind, s in data.items():
+            ind_type = ind.split('.')[0]
+            if ind_type not in INDICATORS:
+                res[ind] = s
+
+        self.metrics.track(res)
 
     def get_tracking(self):
-        res = self.metrics.get_tracks()
+        res = []
+        for ind, track in self.metrics.tracking.items():
+            name = ind.split('.')
+            series: Dict[str, Any] = Series().load(track).summary
+            series['name'] = '.'.join(name)
+
+            res.append(series)
 
         res.sort(key=lambda s: s['name'])
 

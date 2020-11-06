@@ -115,11 +115,7 @@ def update_run() -> flask.Response:
     r.update_run(request.json)
     s.update_time_status(request.json)
     if 'track' in request.json:
-        sorted_data = sort_types(request.json['track'])
-
-        for k, v in sorted_data.items():
-            ans = AnalysisManager.get_or_create(run_uuid, k)
-            ans.track(v)
+        AnalysisManager.track(run_uuid, request.json['track'])
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
@@ -243,4 +239,3 @@ def add_handlers(app: flask.Flask):
 
     for method, func, url in AnalysisManager.get_handlers():
         _add_ui(app, method, login_required(func), url)
-

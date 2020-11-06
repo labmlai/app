@@ -1,26 +1,25 @@
+from typing import Dict
+
 from .parameters import ParametersAnalysis, ParametersModel, ParametersIndex
 from .time_tracking import TimeTrackingAnalysis, TimeTrackingModel, TimeTrackingIndex
 from .gradients import GradientsAnalysis, GradientsModel, GradientsIndex
 from .metrics import MetricsAnalysis, MetricsModel, MetricsIndex
 from .outputs import OutputsAnalysis, OutputsIndex, OutputsModel
 from . import analysis
+from .series import SeriesModel
 
-from ..enums import SeriesEnums
+Analyses = [GradientsAnalysis,
+            OutputsAnalysis,
+            ParametersAnalysis,
+            TimeTrackingAnalysis,
+            MetricsAnalysis]
 
 
 class AnalysisManager:
     @staticmethod
-    def get_or_create(run_uuid: str, ans: str):
-        if ans == SeriesEnums.GRAD:
-            return GradientsAnalysis.get_or_create(run_uuid)
-        elif ans == SeriesEnums.MODULE:
-            return OutputsAnalysis.get_or_create(run_uuid)
-        elif ans == SeriesEnums.PARAM:
-            return ParametersAnalysis.get_or_create(run_uuid)
-        elif ans == SeriesEnums.TIME:
-            return TimeTrackingAnalysis.get_or_create(run_uuid)
-        else:
-            return MetricsAnalysis.get_or_create(run_uuid)
+    def track(run_uuid: str, data: Dict[str, SeriesModel]):
+        for ans in Analyses:
+            ans.get_or_create(run_uuid).track(data)
 
     @staticmethod
     def get_handlers():

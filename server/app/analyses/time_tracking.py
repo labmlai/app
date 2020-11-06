@@ -2,7 +2,6 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response
 from labml_db import Model, Index
-from labml_db.serializer.pickle import PickleSerializer
 
 from .analysis import Analysis
 from .series import SeriesModel
@@ -12,7 +11,6 @@ from .series_collection import SeriesCollection
 
 @Analysis.db_model
 class TimeTrackingModel(Model['TimeTrackingModel'], SeriesCollection):
-    type = SeriesEnums.TIME
     path = 'TimeTracking'
 
 
@@ -28,7 +26,13 @@ class TimeTrackingAnalysis(Analysis):
         self.time_tracking = data
 
     def track(self, data: Dict[str, SeriesModel]):
-        self.time_tracking.track(data)
+        res = {}
+        for ind, s in data.items():
+            ind_type = ind.split('.')[0]
+            if ind_type == SeriesEnums.TIME:
+                res[ind] = s
+
+        self.time_tracking.track(res)
 
     def get_tracking(self):
         res = self.time_tracking.get_tracks()

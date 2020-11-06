@@ -7,27 +7,24 @@ from ..enums import SeriesEnums
 class SeriesCollection:
     tracking: Dict[str, SeriesModel]
     step: int
-    type: str
 
     @classmethod
     def defaults(cls):
         return dict(tracking={},
                     step=0,
-                    type=''
                     )
 
     def get_tracks(self):
         res = []
         for ind, track in self.tracking.items():
             name = ind.split('.')
-
-            if self.type not in [SeriesEnums.TIME, SeriesEnums.METRIC] and name[-1] != 'l2':
+            if name[0] != SeriesEnums.TIME and name[-1] != 'l2':
                 continue
-
-            series: Dict[str, Any] = Series().load(track).summary
-
             if name[-1] in ['mean', 'l2', 'l1']:
                 name = name[:-1]
+            name = name[1:]
+
+            series: Dict[str, Any] = Series().load(track).summary
             series['name'] = '.'.join(name)
 
             res.append(series)
