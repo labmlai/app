@@ -1,6 +1,6 @@
 import sys
 import typing
-from typing import Any, Dict
+from typing import Any
 
 import flask
 import werkzeug.wrappers
@@ -8,7 +8,6 @@ from flask import jsonify, request, make_response
 
 from labml_db import Key
 
-from .analyses.series import SeriesModel
 from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session
@@ -17,7 +16,6 @@ from .db import session
 from .db import status
 from .db import user
 from .db import project
-from .enums import SeriesEnums, INDICATORS
 from .logging import logger
 from .utils import check_version
 
