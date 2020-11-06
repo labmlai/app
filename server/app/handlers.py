@@ -1,12 +1,15 @@
 import sys
 import typing
-from typing import Any
+from typing import Any, Dict
 
 import flask
 import werkzeug.wrappers
 from flask import jsonify, request, make_response
 
 from labml_db import Key
+
+from .analyses.series import SeriesModel
+from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session
 from .db import run
@@ -14,7 +17,7 @@ from .db import session
 from .db import status
 from .db import user
 from .db import project
-from .enums import SeriesEnums
+from .enums import SeriesEnums, INDICATORS
 from .logging import logger
 from .utils import check_version
 
@@ -54,6 +57,18 @@ def sign_out() -> flask.Response:
     logger.debug(f'sign_out, session_id: {s.session_id}')
 
     return response
+
+
+def sort_types(data: Dict[str, SeriesModel]):
+    res = {ind: {} for ind in INDICATORS}
+    for ind, s in data.items():
+        ind_type = ind.split('.')[0]
+        if ind_type in INDICATORS:
+            res[ind_type][ind] = s
+        else:
+            res[SeriesEnums.METRIC][ind] = s
+
+    return res
 
 
 def update_run() -> flask.Response:
@@ -100,7 +115,11 @@ def update_run() -> flask.Response:
     r.update_run(request.json)
     s.update_time_status(request.json)
     if 'track' in request.json:
-        r.track(request.json['track'])
+        sorted_data = sort_types(request.json['track'])
+
+        for k, v in sorted_data.items():
+            ans = AnalysisManager.get_or_create(run_uuid, k)
+            ans.track(v)
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
@@ -205,9 +224,9 @@ def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.METRIC)
+    ans = AnalysisManager.get_or_create(run_uuid, SeriesEnums.METRIC)
+    if ans:
+        track_data = ans.get_tracking()
         status_code = 200
 
     logger.debug(f'metrics_tracking, run_uuid : {run_uuid}')
@@ -223,9 +242,9 @@ def get_params_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.PARAM)
+    ans = AnalysisManager.get_or_create(run_uuid, SeriesEnums.PARAM)
+    if ans:
+        track_data = ans.get_tracking()
         status_code = 200
 
     logger.debug(f'params_tracking, run_uuid : {run_uuid}')
@@ -241,9 +260,9 @@ def get_modules_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.MODULE)
+    ans = AnalysisManager.get_or_create(run_uuid, SeriesEnums.MODULE)
+    if ans:
+        track_data = ans.get_tracking()
         status_code = 200
 
     logger.debug(f'modules_tracking, run_uuid : {run_uuid}')
@@ -259,9 +278,9 @@ def get_times_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.TIME)
+    ans = AnalysisManager.get_or_create(run_uuid, SeriesEnums.TIME)
+    if ans:
+        track_data = ans.get_tracking()
         status_code = 200
 
     logger.debug(f'times_tracking, run_uuid : {run_uuid}')
@@ -277,9 +296,9 @@ def get_grads_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    r = run.get_run(run_uuid)
-    if r:
-        track_data = r.get_tracking(SeriesEnums.GRAD)
+    ans = AnalysisManager.get_or_create(run_uuid, SeriesEnums.GRAD)
+    if ans:
+        track_data = ans.get_tracking()
         status_code = 200
 
     logger.debug(f'grads_tracking, run_uuid : {run_uuid}')

@@ -1,38 +1,22 @@
-from labml_db import Model
+from .parameters import ParametersAnalysis, Parameters, ParametersIndex
+from .time_tracking import TimeTrackingAnalysis, TimeTracking, TimeTrackingIndex
+from .gradients import GradientsAnalysis, Gradients, GradientsIndex
+from .metrics import MetricsAnalysis, Metrics, MetricsIndex
+from .outputs import OutputsAnalysis, Outputs, OutputsIndex
 
-from .series_collection import SeriesCollection
-
-from ..enums import SeriesEnums, INDICATORS
+from ..enums import SeriesEnums
 
 
-class Analyses(SeriesCollection):
+class AnalysisManager:
     @staticmethod
-    def create_analyses():
-        res = {}
-        for _cls in Analyses.__subclasses__():
-            analyses = _cls()
-            if analyses.type in INDICATORS:
-                analyses.save()
-                res[analyses.type] = analyses.key
-
-        return res
-
-
-class Metrics(Model['Metrics'], Analyses):
-    type = SeriesEnums.METRIC
-
-
-class Gradients(Model['Gradients'], Analyses):
-    type = SeriesEnums.GRAD
-
-
-class Parameters(Model['Parameters'], Analyses):
-    type = SeriesEnums.PARAM
-
-
-class Outputs(Model['Output'], Analyses):
-    type = SeriesEnums.MODULE
-
-
-class TimeTracking(Model['TimeTracking'], Analyses):
-    type = SeriesEnums.TIME
+    def get_or_create(run_uuid: str, analysis: str):
+        if analysis == SeriesEnums.GRAD:
+            return GradientsAnalysis.get_or_create(run_uuid)
+        elif analysis == SeriesEnums.MODULE:
+            return OutputsAnalysis.get_or_create(run_uuid)
+        elif analysis == SeriesEnums.PARAM:
+            return ParametersAnalysis.get_or_create(run_uuid)
+        elif analysis == SeriesEnums.TIME:
+            return TimeTrackingAnalysis.get_or_create(run_uuid)
+        else:
+            return MetricsAnalysis.get_or_create(run_uuid)

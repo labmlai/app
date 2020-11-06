@@ -4,10 +4,8 @@ from typing import Dict, List, Optional, Union, NamedTuple
 from labml_db import Model, Key, Index
 
 from . import project
-from ..analyses import Analyses
 from .status import create_status, Status
 from .. import settings
-from ..analyses.series import SeriesModel
 from ..enums import SeriesEnums, INDICATORS
 
 
@@ -40,7 +38,6 @@ class Run(Model['Run']):
     run_ip: str
     run_uuid: str
     status: Key[Status]
-    analyses: Dict[str, Key]
     run_preferences: Key[RunPreferences]
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -54,7 +51,6 @@ class Run(Model['Run']):
                     start_time=None,
                     run_uuid='',
                     run_ip='',
-                    analyses={},
                     status=None,
                     run_preferences=None,
                     configs={},
@@ -119,31 +115,6 @@ class Run(Model['Run']):
 
         return indicator_types
 
-    @staticmethod
-    def sort_types(data: Dict[str, SeriesModel]):
-        res = {ind: {} for ind in INDICATORS}
-        for ind, s in data.items():
-            ind_type = ind.split('.')[0]
-            if ind_type in INDICATORS:
-                res[ind_type][ind] = s
-            else:
-                res[SeriesEnums.METRIC][ind] = s
-
-        return res
-
-    def track(self, data: Dict[str, SeriesModel]) -> None:
-        sorted_data = self.sort_types(data)
-        for k, sc in self.analyses.items():
-            sc.load().track(sorted_data[k])
-
-    def get_tracking(self, track_type: str) -> List:
-        sc = self.analyses[track_type]
-
-        res = sc.load().get_tracks()
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
 
 class RunIndex(Index['Run']):
     pass
@@ -166,13 +137,11 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
 
     time_now = time.time()
 
-    ans = Analyses.create_analyses()
     status = create_status()
     run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               run_ip=run_ip,
-              analyses=ans,
               status=status.key,
               run_preferences=run_preferences.key
               )

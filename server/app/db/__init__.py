@@ -12,7 +12,8 @@ from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex, RunPreferences
-from ..analyses import Metrics, Parameters, TimeTracking, Gradients, Outputs
+from ..analyses import Metrics, MetricsIndex, Parameters, ParametersIndex, TimeTracking, TimeTrackingIndex, Gradients, \
+    GradientsIndex, Outputs, OutputsIndex
 
 from .. import settings
 
@@ -40,6 +41,11 @@ Index.set_db_drivers([
     FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/UserIndex.yaml')),
     FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/SessionIndex.yaml')),
     FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
+    FileIndexDbDriver(YamlSerializer(), MetricsIndex, Path(f'{DATA_PATH}/MetricsIndex.yaml')),
+    FileIndexDbDriver(YamlSerializer(), ParametersIndex, Path(f'{DATA_PATH}/ParametersIndex.yaml')),
+    FileIndexDbDriver(YamlSerializer(), TimeTrackingIndex, Path(f'{DATA_PATH}/TimeTrackingIndex.yaml')),
+    FileIndexDbDriver(YamlSerializer(), GradientsIndex, Path(f'{DATA_PATH}/GradientsIndex.yaml')),
+    FileIndexDbDriver(YamlSerializer(), OutputsIndex, Path(f'{DATA_PATH}/OutputsIndex.yaml')),
 ])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
