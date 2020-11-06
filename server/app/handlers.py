@@ -59,18 +59,6 @@ def sign_out() -> flask.Response:
     return response
 
 
-def sort_types(data: Dict[str, SeriesModel]):
-    res = {ind: {} for ind in INDICATORS}
-    for ind, s in data.items():
-        ind_type = ind.split('.')[0]
-        if ind_type in INDICATORS:
-            res[ind_type][ind] = s
-        else:
-            res[SeriesEnums.METRIC][ind] = s
-
-    return res
-
-
 def update_run() -> flask.Response:
     errors = []
 
