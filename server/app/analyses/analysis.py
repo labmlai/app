@@ -2,6 +2,8 @@ from typing import List, Dict
 
 from .series import SeriesModel
 
+URLS = []
+
 
 class Analysis:
     def track(self, data: Dict[str, SeriesModel]) -> None:
@@ -13,3 +15,11 @@ class Analysis:
     @staticmethod
     def get_or_create(run_uuid: str):
         raise NotImplementedError
+
+
+def route(method: str, url: str):
+    def decorator(f):
+        URLS.append((method, f, url))
+        return f
+
+    return decorator
