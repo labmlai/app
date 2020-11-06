@@ -9,7 +9,7 @@ from flask import jsonify, request, make_response
 from labml_db import Key
 
 from .analyses.series import SeriesModel
-from .analyses import AnalysisManager, analysis
+from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session
 from .db import run
@@ -241,5 +241,6 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
 
-    for method, func, url in analysis.URLS:
+    for method, func, url in AnalysisManager.get_handlers():
         _add_ui(app, method, login_required(func), url)
+

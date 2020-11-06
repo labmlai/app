@@ -2,23 +2,27 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response
 from labml_db import Model, Index
+from labml_db.serializer.pickle import PickleSerializer
 
-from .analysis import Analysis, route
+from .analysis import Analysis
 from .series import SeriesModel
 from ..enums import SeriesEnums
 from .series_collection import SeriesCollection
 
 
-class TimeTracking(Model['TimeTracking'], SeriesCollection):
+@Analysis.db_model
+class TimeTrackingModel(Model['TimeTrackingModel'], SeriesCollection):
     type = SeriesEnums.TIME
+    path = 'TimeTracking'
 
 
+@Analysis.db_index
 class TimeTrackingIndex(Index['TimeTracking']):
-    pass
+    path = 'TimeTrackingIndex.yaml'
 
 
 class TimeTrackingAnalysis(Analysis):
-    time_tracking: TimeTracking
+    time_tracking: TimeTrackingModel
 
     def __init__(self, data):
         self.time_tracking = data
@@ -38,7 +42,7 @@ class TimeTrackingAnalysis(Analysis):
         time_key = TimeTrackingIndex.get(run_uuid)
 
         if not time_key:
-            t = TimeTracking()
+            t = TimeTrackingModel()
             t.save()
             TimeTrackingIndex.set(run_uuid, t.key)
 
@@ -47,7 +51,7 @@ class TimeTrackingAnalysis(Analysis):
         return TimeTrackingAnalysis(time_key.load())
 
 
-@route('POST', 'times_track/<run_uuid>')
+@Analysis.route('POST', 'times_track/<run_uuid>')
 def get_times_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

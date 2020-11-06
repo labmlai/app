@@ -3,22 +3,25 @@ from typing import Dict, Any
 from flask import jsonify, make_response
 from labml_db import Model, Index
 
-from .analysis import Analysis, route
+from .analysis import Analysis
 from .series import SeriesModel
 from ..enums import SeriesEnums
 from .series_collection import SeriesCollection
 
 
-class Metrics(Model['Metrics'], SeriesCollection):
+@Analysis.db_model
+class MetricsModel(Model['MetricsModel'], SeriesCollection):
     type = SeriesEnums.METRIC
+    path = 'Metrics'
 
 
+@Analysis.db_index
 class MetricsIndex(Index['Metrics']):
-    pass
+    path = 'MetricsIndex.yaml'
 
 
 class MetricsAnalysis(Analysis):
-    metrics: Metrics
+    metrics: MetricsModel
 
     def __init__(self, data):
         self.metrics = data
@@ -38,7 +41,7 @@ class MetricsAnalysis(Analysis):
         metrics_key = MetricsIndex.get(run_uuid)
 
         if not metrics_key:
-            m = Metrics()
+            m = MetricsModel()
             m.save()
             MetricsIndex.set(run_uuid, m.key)
 
@@ -47,7 +50,7 @@ class MetricsAnalysis(Analysis):
         return MetricsAnalysis(metrics_key.load())
 
 
-@route('POST', 'metrics_track/<run_uuid>')
+@Analysis.route('POST', 'metrics_track/<run_uuid>')
 def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

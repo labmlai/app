@@ -3,22 +3,25 @@ from typing import Dict, Any
 from flask import jsonify, make_response
 from labml_db import Model, Index
 
-from .analysis import Analysis, route
+from .analysis import Analysis
 from .series import SeriesModel
 from ..enums import SeriesEnums
 from .series_collection import SeriesCollection
 
 
-class Gradients(Model['Gradients'], SeriesCollection):
+@Analysis.db_model
+class GradientsModel(Model['GradientsModel'], SeriesCollection):
     type = SeriesEnums.GRAD
+    path = 'Gradients'
 
 
+@Analysis.db_index
 class GradientsIndex(Index['Gradients']):
-    pass
+    path = 'GradientsIndex.yaml'
 
 
 class GradientsAnalysis(Analysis):
-    gradients: Gradients
+    gradients: GradientsModel
 
     def __init__(self, data):
         self.gradients = data
@@ -38,7 +41,7 @@ class GradientsAnalysis(Analysis):
         gradients_key = GradientsIndex.get(run_uuid)
 
         if not gradients_key:
-            g = Gradients()
+            g = GradientsModel()
             g.save()
             GradientsIndex.set(run_uuid, g.key)
 
@@ -47,7 +50,7 @@ class GradientsAnalysis(Analysis):
         return GradientsAnalysis(gradients_key.load())
 
 
-@route('POST', 'grads_track/<run_uuid>')
+@Analysis.route('POST', 'grads_track/<run_uuid>')
 def get_grads_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

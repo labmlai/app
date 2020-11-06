@@ -2,23 +2,27 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response
 from labml_db import Model, Index
+from labml_db.serializer.pickle import PickleSerializer
 
-from .analysis import Analysis, route
+from .analysis import Analysis
 from .series import SeriesModel
 from ..enums import SeriesEnums
 from .series_collection import SeriesCollection
 
 
-class Parameters(Model['Parameters'], SeriesCollection):
+@Analysis.db_model
+class ParametersModel(Model['ParametersModel'], SeriesCollection):
     type = SeriesEnums.PARAM
+    path = 'Parameters'
 
 
+@Analysis.db_index
 class ParametersIndex(Index['Parameters']):
-    pass
+    path = 'ParametersIndex.yaml'
 
 
 class ParametersAnalysis(Analysis):
-    parameters: Parameters
+    parameters: ParametersModel
 
     def __init__(self, data):
         self.parameters = data
@@ -38,7 +42,7 @@ class ParametersAnalysis(Analysis):
         parameters_key = ParametersIndex.get(run_uuid)
 
         if not parameters_key:
-            p = Parameters()
+            p = ParametersModel()
             p.save()
             ParametersIndex.set(run_uuid, p.key)
 
@@ -47,7 +51,7 @@ class ParametersAnalysis(Analysis):
         return ParametersAnalysis(parameters_key.load())
 
 
-@route('POST', 'params_track/<run_uuid>')
+@Analysis.route('POST', 'params_track/<run_uuid>')
 def get_params_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

@@ -12,8 +12,8 @@ from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex, RunPreferences
-from ..analyses import Metrics, MetricsIndex, Parameters, ParametersIndex, TimeTracking, TimeTrackingIndex, Gradients, \
-    GradientsIndex, Outputs, OutputsIndex
+from ..analyses import MetricsModel, MetricsIndex, ParametersModel, ParametersIndex, TimeTrackingModel, \
+    TimeTrackingIndex, GradientsModel, GradientsIndex, OutputsModel, OutputsIndex
 
 from .. import settings
 
@@ -28,11 +28,11 @@ Model.set_db_drivers([
     FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/RunStatus')),
     FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
     FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
-    FileDbDriver(PickleSerializer(), Metrics, Path(f'{DATA_PATH}/Metrics')),
-    FileDbDriver(PickleSerializer(), Parameters, Path(f'{DATA_PATH}/Parameters')),
-    FileDbDriver(PickleSerializer(), TimeTracking, Path(f'{DATA_PATH}/TimeTracking')),
-    FileDbDriver(PickleSerializer(), Gradients, Path(f'{DATA_PATH}/Gradients')),
-    FileDbDriver(PickleSerializer(), Outputs, Path(f'{DATA_PATH}/Outputs')),
+    FileDbDriver(PickleSerializer(), MetricsModel, Path(f'{DATA_PATH}/Metrics')),
+    FileDbDriver(PickleSerializer(), ParametersModel, Path(f'{DATA_PATH}/Parameters')),
+    FileDbDriver(PickleSerializer(), TimeTrackingModel, Path(f'{DATA_PATH}/TimeTracking')),
+    FileDbDriver(PickleSerializer(), GradientsModel, Path(f'{DATA_PATH}/Gradients')),
+    FileDbDriver(PickleSerializer(), OutputsModel, Path(f'{DATA_PATH}/Outputs')),
     FileDbDriver(JsonSerializer(), RunPreferences, Path(f'{DATA_PATH}/RunPreferences')),
 ])
 
