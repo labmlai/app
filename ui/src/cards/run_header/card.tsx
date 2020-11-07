@@ -61,18 +61,20 @@ function Card(props: CardProps) {
     const [isSelected, setIsSelected] = useState(false)
     const [status, setStatus] = useState(null as unknown as Status)
     const [lastUpdated, setLastUpdated] = useState(null as (string | null))
+
     const runCache = CACHE.getRun(props.uuid)
+    const statusCache = CACHE.getStatus(props.uuid)
 
     useEffect(() => {
         async function load() {
-            let status = await runCache.getStatus()
+            let status = await statusCache.getStatus()
             setStatus(status)
             let run = await runCache.getRun()
             document.title = `LabML: ${run.name.trim()}`
             setRun(run)
-            let lastUpdated = runCache.getLastUpdated()
+            let lastUpdated = statusCache.getLastUpdated()
             if (status && status.isRunning && lastUpdated > 0) {
-                setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
+                setLastUpdated(getTimeDiff(statusCache.getLastUpdated()))
             }
         }
 
@@ -81,9 +83,9 @@ function Card(props: CardProps) {
 
     useEffect(() => {
         async function loadStatus() {
-            let status = await runCache.getStatus()
+            let status = await statusCache.getStatus()
             setStatus(status)
-            setLastUpdated(getTimeDiff(runCache.getLastUpdated()))
+            setLastUpdated(getTimeDiff(statusCache.getLastUpdated()))
             if (!status.isRunning) {
                 clearInterval(interval)
             }

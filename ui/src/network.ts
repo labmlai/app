@@ -33,24 +33,8 @@ class Network {
         return this.axiosInstance.get(`/status/${run_uuid}`)
     }
 
-    async get_metrics_tracking(run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/metrics_track/${run_uuid}`, {})
-    }
-
-    async get_grads_tracking(run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/grads_track/${run_uuid}`, {})
-    }
-
-    async get_params_tracking(run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/params_track/${run_uuid}`, {})
-    }
-
-    async get_modules_tracking(run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/modules_track/${run_uuid}`, {})
-    }
-
-    async get_times_tracking(run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/times_track/${run_uuid}`, {})
+    async get_tracking(url: string, run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/${url}/${run_uuid}`, {})
     }
 
     async get_runs(labml_token: string | null): Promise<any> {
@@ -61,6 +45,10 @@ class Network {
         return this.axiosInstance.get(`/user`, {})
     }
 
+    async get_preferences(run_uuid: string): Promise<any> {
+        return this.axiosInstance.get(`/preferences/${run_uuid}`, {})
+    }
+
     async sign_in(data: UserModel): Promise<any> {
         return this.axiosInstance.post(`/auth/sign_in`, data)
     }
@@ -69,8 +57,8 @@ class Network {
         return this.axiosInstance.delete(`/auth/sign_out`)
     }
 
-    async update_run(data: object, run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/run/${run_uuid}`, data)
+    async update_preferences(data: object, run_uuid: string): Promise<any> {
+        return this.axiosInstance.post(`/preferences/${run_uuid}`, data)
     }
 }
 

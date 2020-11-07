@@ -43,13 +43,16 @@ export interface SeriesPreferences {
     grads: number[]
 }
 
+export interface PreferenceModel {
+    series_preferences: SeriesPreferences
+}
+
 export interface RunModel {
     run_uuid: string
     name: string
     comment: string
     start_time: number
     configs: ConfigModel[]
-    series_preferences: SeriesPreferences
     indicator_types: IndicatorTypes
 }
 
@@ -107,7 +110,6 @@ export class Run {
     comment: string
     start_time: number
     configs: Config[]
-    series_preferences: SeriesPreferences
     indicator_types: IndicatorTypes
 
 
@@ -120,8 +122,15 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c))
         }
-        this.series_preferences = run.series_preferences
         this.indicator_types = run.indicator_types
+    }
+}
+
+export class Preference {
+    series_preferences: SeriesPreferences
+
+    constructor(preference: PreferenceModel) {
+        this.series_preferences = preference.series_preferences
     }
 }
 

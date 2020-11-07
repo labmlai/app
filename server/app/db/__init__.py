@@ -10,7 +10,8 @@ from .project import Project, ProjectIndex, create_project
 from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
-from .run import Run, RunIndex, RunPreferences
+from .run import Run, RunIndex
+from .preferences import Preferences, PreferencesIndex
 from ..analyses import AnalysisManager
 
 from .. import settings
@@ -24,7 +25,7 @@ Model.set_db_drivers([FileDbDriver(s(), m, Path(f'{DATA_PATH}/{p}')) for s, m, p
     FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/RunStatus')),
     FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
     FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
-    FileDbDriver(JsonSerializer(), RunPreferences, Path(f'{DATA_PATH}/RunPreferences')),
+    FileDbDriver(JsonSerializer(), Preferences, Path(f'{DATA_PATH}/RunPreferences')),
 ])
 
 Index.set_db_drivers(
@@ -33,6 +34,7 @@ Index.set_db_drivers(
         FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/UserIndex.yaml')),
         FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/SessionIndex.yaml')),
         FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
+        FileIndexDbDriver(YamlSerializer(), PreferencesIndex, Path(f'{DATA_PATH}/RunPreferencesIndex.yaml')),
     ])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')

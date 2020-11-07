@@ -58,16 +58,16 @@ interface RefreshButtonProps extends ButtonProps {
 }
 
 export function RefreshButton(props: RefreshButtonProps) {
-    const runCache = CACHE.getRun(props.runUUID)
+    const statusCache = CACHE.getStatus(props.runUUID)
     const [status, setStatus] = useState(null as unknown as Status)
 
     useEffect(() => {
         async function load() {
-            setStatus(await runCache.getStatus())
+            setStatus(await statusCache.getStatus())
         }
 
         load().then()
-    }, [runCache])
+    }, [statusCache])
 
 
     function onRefreshButtonClick() {

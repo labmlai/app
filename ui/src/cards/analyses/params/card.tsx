@@ -3,18 +3,18 @@ import React from "react";
 import {useLocation} from "react-router-dom";
 import {BasicCard, BasicView} from "../basic/card";
 
-const ANALYSIS = 'Outputs - L2 Norm'
-const URL = 'modules'
-const TRACKING_NAME = 'getModulesTracking'
-const SERIES_PREFERENCE = 'modules'
+const ANALYSIS_NAME = 'Parameters - L2 Norm'
+const ANALYSIS = 'params'
+const URL = 'params'
+
 
 function Card(props: SeriesCardProps) {
-    return <BasicCard tracking_name={TRACKING_NAME}
-                      name={ANALYSIS}
+    return <BasicCard analysis={ANALYSIS}
+                      name={ANALYSIS_NAME}
                       uuid={props.uuid}
-                      url={URL}
-                      ref={props.refreshRef}
+                       url={URL}
                       isChartView={false}
+                      ref={props.refreshRef}
                       width={props.width}/>
 
 }
@@ -22,9 +22,9 @@ function Card(props: SeriesCardProps) {
 function View() {
     const location = useLocation()
 
-    return <BasicView tracking_name={TRACKING_NAME}
-                      name={ANALYSIS}
-                      series_preference={SERIES_PREFERENCE}
+    return <BasicView analysis={ANALYSIS}
+                      name={ANALYSIS_NAME}
+                      series_preference={ANALYSIS}
                       location={location}/>
 }
 

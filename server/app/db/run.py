@@ -16,21 +16,6 @@ class CardInfo(NamedTuple):
     queue_size: int = 0
 
 
-class RunPreferences(Model['RunPreferences']):
-    series_preferences: Dict[str, List[int]]
-
-    @classmethod
-    def defaults(cls):
-        return dict(series_preferences={})
-
-    def update_preferences(self, data: Dict[str, any]) -> None:
-        for k, v in data.items():
-            if v:
-                self.series_preferences[k] = v
-
-        self.save()
-
-
 class Run(Model['Run']):
     name: str
     comment: str
@@ -38,7 +23,6 @@ class Run(Model['Run']):
     run_ip: str
     run_uuid: str
     status: Key[Status]
-    run_preferences: Key[RunPreferences]
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -52,7 +36,6 @@ class Run(Model['Run']):
                     run_uuid='',
                     run_ip='',
                     status=None,
-                    run_preferences=None,
                     configs={},
                     wildcard_indicators={},
                     indicators={},
@@ -77,13 +60,8 @@ class Run(Model['Run']):
 
         self.save()
 
-    def update_preferences(self, data: Dict[str, any]) -> None:
-        rp = self.run_preferences.load()
-        rp.update_preferences(data)
-
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
-        rp = self.run_preferences.load()
 
         return {
             'run_uuid': self.run_uuid,
@@ -91,7 +69,6 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
-            'series_preferences': rp.series_preferences,
             'indicator_types': self.get_indicator_types()
         }
 
@@ -138,17 +115,14 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     time_now = time.time()
 
     status = create_status()
-    run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               run_ip=run_ip,
               status=status.key,
-              run_preferences=run_preferences.key
               )
     p.runs[run.run_uuid] = run.key
 
     run.save()
-    run_preferences.save()
     p.save()
 
     RunIndex.set(run.run_uuid, run.key)

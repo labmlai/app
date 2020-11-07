@@ -7,11 +7,11 @@ import PageNotFound from "./page_not_found_view"
 import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../cards/configs/card"
-import MetricsCard from "../cards/tracks/metrics/card"
-import ParamsCard from "../cards/tracks/params/card"
-import GradsCard from "../cards/tracks/grads/card"
-import ModulesCard from "../cards/tracks/modules/card"
-import TimesCard from "../cards/tracks/times/card"
+import MetricsCard from "../cards/analyses/metrics/card"
+import ParamsCard from "../cards/analyses/params/card"
+import GradsCard from "../cards/analyses/grads/card"
+import ModulesCard from "../cards/analyses/modules/card"
+import TimesCard from "../cards/analyses/times/card"
 import {useErrorHandler} from "react-error-boundary";
 import NETWORK from "../network";
 import {useAuth0} from "@auth0/auth0-react";
@@ -53,7 +53,6 @@ function AppContainer() {
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
                         setLoggedIn(true)
-                        console.log('login')
                         mixpanel.track('Successful login');
                     } else {
                         handleError(Error('error in login'))
