@@ -33,6 +33,7 @@ def create_app():
 
     def run_on_start():
         logger.info('initializing app')
+        logger.error('sentry test: successful')
 
     run_on_start()
 
