@@ -1,4 +1,5 @@
 import logging
+import git
 import time
 import warnings
 from time import strftime
@@ -32,8 +33,11 @@ def create_app():
     _app = Flask(__name__)
 
     def run_on_start():
+        repo = git.Repo(search_parent_directories=True)
+        sha = repo.head.object.hexsha
+
         logger.info('initializing app')
-        logger.error('sentry test: successful')
+        logger.error(f'Deployed server SHA : {sha}')
 
     run_on_start()
 
