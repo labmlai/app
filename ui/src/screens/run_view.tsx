@@ -22,7 +22,6 @@ interface RunProps {
 
 function RunView(props: RunProps) {
     const [run, setRun] = useState(null as unknown as Run)
-    const [status, setStatus] = useState(null as unknown as Status)
     const {width: windowWidth} = useWindowDimensions()
 
     const params = new URLSearchParams(props.location.search)
@@ -39,7 +38,6 @@ function RunView(props: RunProps) {
     useEffect(() => {
         async function load() {
             setRun(await runCache.getRun())
-            setStatus(await runCache.getStatus())
         }
 
         mixpanel.track('Run View', {uuid: runUUID});
@@ -69,7 +67,7 @@ function RunView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>

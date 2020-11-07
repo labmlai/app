@@ -7,6 +7,8 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync} from "@fortawesome/free-solid-svg-icons"
 
 import "./util_buttons.scss"
+import {Status} from "../models/run";
+import CACHE from "../cache/cache";
 
 interface ButtonProps {
     onButtonClick?: () => void
@@ -51,14 +53,35 @@ export function BackButton(props: ButtonProps) {
     </Nav.Link>
 }
 
-export function RefreshButton(props: ButtonProps) {
+interface RefreshButtonProps extends ButtonProps {
+    runUUID: string
+}
+
+export function RefreshButton(props: RefreshButtonProps) {
+    const runCache = CACHE.getRun(props.runUUID)
+    const [status, setStatus] = useState(null as unknown as Status)
+
+    useEffect(() => {
+        async function load() {
+            setStatus(await runCache.getStatus())
+        }
+
+        load().then()
+    }, [runCache])
+
+
     function onRefreshButtonClick() {
         if (props.onButtonClick) {
             props.onButtonClick()
         }
     }
 
-    return <Nav.Link className={'tab refresh float-right'} onClick={onRefreshButtonClick}>
-        <FontAwesomeIcon icon={faSync}/>
-    </Nav.Link>
+    return <div className={'d-inline'}>
+        {status && status.isRunning &&
+        <Nav.Link className={'tab refresh float-right'} onClick={onRefreshButtonClick}>
+            <FontAwesomeIcon icon={faSync}/>
+        </Nav.Link>
+        }
+    </div>
+
 }

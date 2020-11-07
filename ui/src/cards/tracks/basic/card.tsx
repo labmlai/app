@@ -207,7 +207,7 @@ function BasicView(props: BasicViewProps) {
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
         <h2 className={'header text-center'}>{props.name}</h2>
