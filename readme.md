@@ -1,6 +1,6 @@
 <div align="center" style="margin-bottom: 100px;">
 <h1>LabML App</h1>
-<h2>Monitor machine learning model training on mobile phones</h2>
+<h2>Relax while your models are training instead of sitting in front of a computer</h2>
 
 <img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
 
