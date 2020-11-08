@@ -137,7 +137,6 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
-            console.log(await preferenceCache.getPreference())
             setPreference(await preferenceCache.getPreference())
 
             if (preference) {
