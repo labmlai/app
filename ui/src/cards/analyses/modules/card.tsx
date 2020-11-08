@@ -1,33 +1,39 @@
-import {SeriesCardProps} from "../../types";
 import React from "react";
-import {useLocation} from "react-router-dom";
-import {BasicCard, BasicView} from "../basic/card";
 
-const ANALYSIS_NAME = 'Outputs - L2 Norm'
-const ANALYSIS = 'modules'
+import {useLocation} from "react-router-dom";
+
+import {SeriesCardProps} from "../../types";
+import {BasicCard, BasicView} from "../basic/card";
+import {Analysis} from "../basic/analysis";
+
+const ANALYSIS = 'Outputs - L2 Norm'
+const CACHE = 'modules'
 const URL = 'modules'
 
-function Card(props: SeriesCardProps) {
+function AnalysisSummary(props: SeriesCardProps) {
     return <BasicCard analysis={ANALYSIS}
-                      name={ANALYSIS_NAME}
                       uuid={props.uuid}
                       url={URL}
+                      cache={CACHE}
                       ref={props.refreshRef}
                       isChartView={false}
                       width={props.width}/>
 
 }
 
-function View() {
+function AnalysisDetails() {
     const location = useLocation()
 
     return <BasicView analysis={ANALYSIS}
-                      name={ANALYSIS_NAME}
-                      series_preference={ANALYSIS}
+                      series_preference={CACHE}
+                      cache={CACHE}
                       location={location}/>
 }
 
-export default {
-    Card,
-    View
+let moduleAnalysis: Analysis = {
+    card: AnalysisSummary,
+    view: AnalysisDetails,
+    route: `/${URL}`
 }
+
+export default moduleAnalysis

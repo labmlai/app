@@ -271,11 +271,13 @@ class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly statuses: { [uuid: string]: StatusCache }
     private readonly preferences: { [uuid: string]: PreferenceCache }
+
     private readonly metrics: { [uuid: string]: MetricAnalysisCache }
     private readonly gradients: { [uuid: string]: GradientAnalysisCache }
     private readonly parameters: { [uuid: string]: ParameterAnalysisCache }
     private readonly outputs: { [uuid: string]: OutputAnalysisCache }
     private readonly timeTracking: { [uuid: string]: TimeTrackingAnalysisCache }
+
     private user: UserCache | null
     private runsList: RunsListCache | null
 

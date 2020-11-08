@@ -14,5 +14,5 @@ export interface ViewProps {
 
 export interface BasicProps {
     analysis: string
-    name: string
+    cache : string
 }

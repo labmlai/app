@@ -1,5 +1,5 @@
-import {LineChart, SparkLines} from "./components";
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from "react";
+import {LineChart, SparkLines} from "./components";
 import {Preference, SeriesModel} from "../../../models/run";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
@@ -52,7 +52,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const statusCache = CACHE.getStatus(props.uuid)
-    const analysisCache = CACHE.getTracking(props.analysis, props.uuid)
+    const analysisCache = CACHE.getTracking(props.cache, props.uuid)
     const history = useHistory()
 
     async function load() {
@@ -91,7 +91,7 @@ function Card(props: BasicCardProps, ref: any) {
             history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
         }
     }>
-        <h3 className={'header'}>{props.name}</h3>
+        <h3 className={'header'}>{props.analysis}</h3>
         {card}
     </div>
 }
@@ -106,7 +106,7 @@ function BasicView(props: BasicViewProps) {
     const runUUID = params.get('run_uuid') as string
 
     const statusCache = CACHE.getStatus(runUUID)
-    const analysisCache = CACHE.getTracking(props.analysis, runUUID)
+    const analysisCache = CACHE.getTracking(props.cache, runUUID)
     const preferenceCache = CACHE.getPreference(runUUID)
 
     const [preference, setPreference] = useState(null as unknown as Preference)
@@ -125,7 +125,7 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.name});
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.analysis});
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
@@ -202,7 +202,7 @@ function BasicView(props: BasicViewProps) {
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
-        <h2 className={'header text-center'}>{props.name}</h2>
+        <h2 className={'header text-center'}>{props.analysis}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
 }
