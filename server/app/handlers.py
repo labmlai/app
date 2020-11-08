@@ -119,15 +119,17 @@ def set_preferences(run_uuid: str) -> flask.Response:
     return jsonify({'errors': rp.errors})
 
 
-def claim_run(run_uuid: str, run_key: Key[run.Run]) -> None:
+def claim_run(run_uuid: str, r: run.Run) -> None:
     s = get_session()
 
     default_project = s.user.load().default_project
     if run_uuid not in default_project.runs:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
         if run_uuid in float_project.runs:
-            default_project.runs[run_uuid] = run_key
+            default_project.runs[run_uuid] = r.key
             default_project.save()
+            r.is_claimed = True
+            r.save()
 
 
 @login_required
@@ -140,7 +142,8 @@ def get_run(run_uuid: str) -> flask.Response:
         run_data = r.get_data()
         status_code = 200
 
-        claim_run(run_uuid, r.key)
+        if not r.is_claimed:
+            claim_run(run_uuid, r)
 
     response = make_response(jsonify(run_data))
     response.status_code = status_code

@@ -22,6 +22,7 @@ class Run(Model['Run']):
     start_time: float
     run_ip: str
     run_uuid: str
+    is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -35,6 +36,7 @@ class Run(Model['Run']):
                     start_time=None,
                     run_uuid='',
                     run_ip='',
+                    is_claimed=True,
                     status=None,
                     configs={},
                     wildcard_indicators={},
@@ -112,12 +114,17 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     if run_uuid in p.runs:
         return p.runs[run_uuid].load()
 
+    is_claimed = True
+    if labml_token == settings.FLOAT_PROJECT_TOKEN:
+        is_claimed = False
+
     time_now = time.time()
 
     status = create_status()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               run_ip=run_ip,
+              is_claimed=is_claimed,
               status=status.key,
               )
     p.runs[run.run_uuid] = run.key
