@@ -205,7 +205,6 @@ class PreferenceCache {
     async getPreference(): Promise<Preference> {
         console.log(this.preference)
         if (this.preference == null) {
-            console.log('kk')
             this.preference = new Preference(await this.loadPreferences())
         }
 
