@@ -1,6 +1,7 @@
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from "react";
 import {LineChart, SparkLines} from "./components";
-import {Preference, SeriesModel} from "../../../models/run";
+import {SeriesModel} from "../../../models/run";
+import {Preference} from "../../../models/preferences";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"
@@ -136,12 +137,13 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
+            console.log(await preferenceCache.getPreference())
             setPreference(await preferenceCache.getPreference())
 
             if (preference) {
-                let series_preferences = preference.series_preferences[props.series_preference]
-                if (series_preferences) {
-                    setPlotIdx(series_preferences)
+                let analysis_preferences = preference.getAnalysis(props.analysis)
+                if (analysis_preferences && analysis_preferences.length > 0) {
+                    setPlotIdx(analysis_preferences)
                 } else if (track) {
                     let res: number[] = []
                     for (let i = 0; i < track.length; i++) {
@@ -153,7 +155,7 @@ function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, preference, preferenceCache, props.series_preference])
+    }, [track, preference, preferenceCache, props.analysis])
 
     useEffect(() => {
         function updatePreference() {
@@ -188,9 +190,9 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.series_preferences[props.series_preference] = plotIdx
+            preference.setAnalysis(props.analysis, plotIdx)
         }
-    }, [plotIdx, preference, props.series_preference])
+    }, [plotIdx, preference, props.analysis])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {

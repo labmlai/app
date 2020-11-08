@@ -3,7 +3,7 @@ import React, {useEffect, useRef, useState} from "react"
 import {RunsList} from "../components/runs_list"
 import {EmptyRunsList} from "../components/empty_runs_list"
 import {LabLoader} from "../components/loader"
-import {RunListItemModel} from "../models/run"
+import {RunListItemModel} from "../models/run_list"
 import CACHE from "../cache/cache";
 
 import './runs_list_view.scss'
@@ -71,7 +71,9 @@ function RunsListView() {
                     {/*TODO: Change later to simple html & css*/}
                     <div className={"search-container my-3 px-2"}>
                         <div className={"search-content"}>
-                            <span className={'icon'}><FontAwesomeIcon icon={faSearch}/></span>
+                            <span className={'icon'}>
+                                <FontAwesomeIcon icon={faSearch}/>
+                            </span>
                             <input
                                 ref={inputElement}
                                 onChange={handleChannelChange}
@@ -81,7 +83,6 @@ function RunsListView() {
                             />
                         </div>
                     </div>
-
                     <RunsList runs={runs}/>
                 </div>
             }

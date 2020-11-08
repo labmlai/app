@@ -6,7 +6,7 @@ import {PyTorchCode, KerasCode} from "./code"
 import {Footer} from './footer'
 import {LabLoader} from "./loader";
 import CACHE from "../cache/cache";
-import {RunListItemModel} from "../models/run";
+import {RunListItemModel} from "../models/run_list";
 import {RunsList} from "./runs_list";
 
 import "./empty_runs_list.scss"

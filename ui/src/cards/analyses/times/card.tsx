@@ -25,7 +25,6 @@ function AnalysisDetails() {
     const location = useLocation()
 
     return <BasicView analysis={ANALYSIS}
-                      series_preference={CACHE}
                       cache={CACHE}
                       location={location}/>
 }

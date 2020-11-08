@@ -1,6 +1,7 @@
 import {CardProps} from "../types";
 import React, {useEffect, useState} from "react";
-import {Run, Status} from "../../models/run";
+import {Run} from "../../models/run";
+import {Status} from "../../models/status";
 import CACHE from "../../cache/cache"
 import {formatTime, getTimeDiff} from "../../components/utils";
 import {LabLoader} from "../../components/loader";

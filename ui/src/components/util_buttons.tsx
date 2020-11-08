@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync} from "@fortawesome/free-solid-svg-icons"
 
 import "./util_buttons.scss"
-import {Status} from "../models/run";
+import {Status} from "../models/status";
 import CACHE from "../cache/cache";
 
 interface ButtonProps {

@@ -1,44 +1,5 @@
 import {Config, ConfigModel} from "./config";
 
-
-export interface RunListItemModel {
-    run_uuid: string
-    run_status: RunStatus
-    last_updated_time: number
-    name: string
-    comment: string
-    start_time: number
-}
-
-export interface RunsListModel {
-    runs: RunListItemModel[]
-    labml_token: string
-}
-
-export interface RunStatusModel {
-    status: string
-    details: string
-    time: number
-}
-
-export interface StatusModel {
-    run_uuid: string
-    last_updated_time: number
-    run_status: RunStatusModel
-}
-
-export interface SeriesPreferences {
-    metrics: number[]
-    params: number[]
-    modules: number[]
-    times: number[]
-    grads: number[]
-}
-
-export interface PreferenceModel {
-    series_preferences: SeriesPreferences
-}
-
 export interface RunModel {
     run_uuid: string
     name: string
@@ -61,40 +22,6 @@ export interface SeriesModel {
     series: PointValue[]
 }
 
-export class RunStatus {
-    status: string
-    details: string
-    time: number
-
-    constructor(runStatus: RunStatusModel) {
-        this.status = runStatus.status
-        this.details = runStatus.details
-        this.time = runStatus.time
-    }
-}
-
-export class Status {
-    uuid: string
-    last_updated_time: number
-    run_status: RunStatus
-
-    constructor(status: StatusModel) {
-        this.uuid = status.run_uuid
-        this.last_updated_time = status.last_updated_time
-        this.run_status = new RunStatus(status.run_status)
-    }
-
-    get isRunning() {
-        if (this.run_status.status === 'in progress') {
-            let timeDiff = (Date.now() / 1000 - this.last_updated_time) / 60
-            return timeDiff <= 15
-        } else {
-            return false
-        }
-    }
-}
-
-
 export class Run {
     uuid: string
     name: string
@@ -114,41 +41,3 @@ export class Run {
     }
 }
 
-export class Preference {
-    series_preferences: SeriesPreferences
-
-    constructor(preference: PreferenceModel) {
-        this.series_preferences = preference.series_preferences
-    }
-}
-
-export class RunListItem {
-    run_uuid: string
-    run_status: RunStatus
-    last_updated_time: number
-    name: string
-    comment: string
-    start_time: number
-
-    constructor(run_list_item: RunListItemModel) {
-        this.run_uuid = run_list_item.run_uuid
-        this.name = run_list_item.name
-        this.comment = run_list_item.comment
-        this.start_time = run_list_item.start_time
-        this.last_updated_time = run_list_item.last_updated_time
-        this.run_status = new RunStatus(run_list_item.run_status)
-    }
-}
-
-export class RunsList {
-    runs: RunListItemModel[]
-    labml_token: string
-
-    constructor(runs_list: RunsListModel) {
-        this.runs = []
-        for (let r of runs_list.runs) {
-            this.runs.push(new RunListItem(r))
-        }
-        this.labml_token = runs_list.labml_token
-    }
-}

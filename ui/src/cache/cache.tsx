@@ -1,15 +1,8 @@
 import NETWORK from "../network";
-import {
-    Run,
-    RunModel,
-    SeriesModel,
-    Status,
-    StatusModel,
-    RunsList,
-    RunsListModel,
-    Preference,
-    PreferenceModel
-} from "../models/run";
+import {Run, RunModel, SeriesModel} from "../models/run";
+import {Status, StatusModel} from "../models/status";
+import {RunsList, RunsListModel} from "../models/run_list";
+import {Preference, PreferenceModel} from "../models/preferences";
 import {User, UserModel} from "../models/user";
 
 const TRACKING_TIMEOUT = 60 * 1000
@@ -204,12 +197,15 @@ class PreferenceCache {
     private async loadPreferences(): Promise<PreferenceModel> {
         return this.preferencesPromise.create(async () => {
             let res = await NETWORK.get_preferences(this.uuid)
+            console.log(res.data)
             return res.data
         })
     }
 
     async getPreference(): Promise<Preference> {
+        console.log(this.preference)
         if (this.preference == null) {
+            console.log('kk')
             this.preference = new Preference(await this.loadPreferences())
         }
 
@@ -217,7 +213,7 @@ class PreferenceCache {
     }
 
     async setPreference(preference: Preference): Promise<Preference> {
-        await NETWORK.update_preferences(preference.series_preferences, this.uuid)
+        await NETWORK.update_preferences(preference, this.uuid)
 
         return this.preference
     }
