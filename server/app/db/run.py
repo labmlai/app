@@ -6,7 +6,6 @@ from labml_db import Model, Key, Index
 from . import project
 from .status import create_status, Status
 from .. import settings
-from ..enums import SeriesEnums, INDICATORS
 
 
 class CardInfo(NamedTuple):
@@ -71,7 +70,6 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
-            'indicator_types': self.get_indicator_types()
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -81,18 +79,6 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
         }
-
-    def get_indicator_types(self):
-        indicator_types = {ind: False for ind in INDICATORS}
-
-        for ind in self.indicators:
-            ind_type = ind.split('.')[0]
-            if ind_type in indicator_types.keys():
-                indicator_types[ind_type] = True
-            else:
-                indicator_types[SeriesEnums.METRIC] = True
-
-        return indicator_types
 
 
 class RunIndex(Index['Run']):

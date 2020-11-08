@@ -27,14 +27,6 @@ export interface StatusModel {
     run_status: RunStatusModel
 }
 
-export interface IndicatorTypes {
-    param: boolean
-    module: boolean
-    time: boolean
-    grad: boolean
-    metric: boolean
-}
-
 export interface SeriesPreferences {
     metrics: number[]
     params: number[]
@@ -53,7 +45,6 @@ export interface RunModel {
     comment: string
     start_time: number
     configs: ConfigModel[]
-    indicator_types: IndicatorTypes
 }
 
 export interface PointValue {
@@ -110,8 +101,6 @@ export class Run {
     comment: string
     start_time: number
     configs: Config[]
-    indicator_types: IndicatorTypes
-
 
     constructor(run: RunModel) {
         this.uuid = run.run_uuid
@@ -122,7 +111,6 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c))
         }
-        this.indicator_types = run.indicator_types
     }
 }
 

@@ -6,8 +6,6 @@ import flask
 import werkzeug.wrappers
 from flask import jsonify, request, make_response
 
-from labml_db import Key
-
 from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session
