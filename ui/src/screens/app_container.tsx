@@ -7,11 +7,7 @@ import PageNotFound from "./page_not_found_view"
 import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../cards/configs/card"
-import MetricsCard from "../cards/tracks/metrics/card"
-import ParamsCard from "../cards/tracks/params/card"
-import GradsCard from "../cards/tracks/grads/card"
-import ModulesCard from "../cards/tracks/modules/card"
-import TimesCard from "../cards/tracks/times/card"
+import analyses from "../cards/analyses/all_analyses"
 import {useErrorHandler} from "react-error-boundary";
 import NETWORK from "../network";
 import {useAuth0} from "@auth0/auth0-react";
@@ -53,7 +49,6 @@ function AppContainer() {
                 NETWORK.sign_in(data).then((res) => {
                     if (res.data.is_successful) {
                         setLoggedIn(true)
-                        console.log('login')
                         mixpanel.track('Successful login');
                     } else {
                         handleError(Error('error in login'))
@@ -92,13 +87,11 @@ function AppContainer() {
                 <Route path="/404" component={PageNotFound}/>
                 <Route path="/run" component={RunView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
-                <Route path="/metrics" component={MetricsCard.View}/>
-                <Route path="/grads" component={GradsCard.View}/>
-                <Route path="/params" component={ParamsCard.View}/>
-                <Route path="/modules" component={ModulesCard.View}/>
-                <Route path="/times" component={TimesCard.View}/>
                 <Route path="/home" component={TabsView}/>
                 <Route path="/runs" component={RunsView}/>
+                {analyses.map((analysis, i) => {
+                    return <Route key={i} path={analysis.route} component={analysis.view}/>
+                })}
                 <Route path="/"><Redirect to="/home"/></Route>
                 <Route path="/"><Redirect to="/login"/></Route>
             </Switch>

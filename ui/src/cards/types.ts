@@ -9,10 +9,12 @@ export interface SeriesCardProps extends CardProps {
 
 export interface ViewProps {
     location: any
-    series_preference: "metrics" | "params" | "modules" | "times" | "grads"
 }
 
+let ANALYSES_INDICES: 'metrics' | 'gradients' | 'parameters' | 'outputs' | 'timeTracking'
+export {ANALYSES_INDICES}
+
 export interface BasicProps {
-    tracking_name: "getMetricsTracking" | "getGradsTracking" | "getParamsTracking" | "getModulesTracking" | "getTimesTracking"
-    name: string
+    analysisName: string
+    analysisIndex: typeof ANALYSES_INDICES
 }

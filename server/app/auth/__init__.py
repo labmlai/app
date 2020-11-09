@@ -6,6 +6,7 @@ from flask import request, make_response
 
 from ..db import session
 from ..db import project
+from ..db import user
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -49,3 +50,11 @@ def login_required(func) -> functools.wraps:
             return response
 
     return wrapper
+
+
+def get_auth_user() -> user.User:
+    s = get_session()
+
+    u = s.user.load()
+
+    return u

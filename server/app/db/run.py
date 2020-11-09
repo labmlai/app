@@ -6,7 +6,6 @@ from labml_db import Model, Key, Index
 from . import project
 from .status import create_status, Status
 from .. import settings
-from ..enums import SeriesEnums, INDICATORS
 
 
 class CardInfo(NamedTuple):
@@ -16,29 +15,14 @@ class CardInfo(NamedTuple):
     queue_size: int = 0
 
 
-class RunPreferences(Model['RunPreferences']):
-    series_preferences: Dict[str, List[int]]
-
-    @classmethod
-    def defaults(cls):
-        return dict(series_preferences={})
-
-    def update_preferences(self, data: Dict[str, any]) -> None:
-        for k, v in data.items():
-            if v:
-                self.series_preferences[k] = v
-
-        self.save()
-
-
 class Run(Model['Run']):
     name: str
     comment: str
     start_time: float
     run_ip: str
     run_uuid: str
+    is_claimed: bool
     status: Key[Status]
-    run_preferences: Key[RunPreferences]
     configs: Dict[str, any]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
@@ -51,8 +35,8 @@ class Run(Model['Run']):
                     start_time=None,
                     run_uuid='',
                     run_ip='',
+                    is_claimed=True,
                     status=None,
-                    run_preferences=None,
                     configs={},
                     wildcard_indicators={},
                     indicators={},
@@ -77,13 +61,8 @@ class Run(Model['Run']):
 
         self.save()
 
-    def update_preferences(self, data: Dict[str, any]) -> None:
-        rp = self.run_preferences.load()
-        rp.update_preferences(data)
-
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
-        rp = self.run_preferences.load()
 
         return {
             'run_uuid': self.run_uuid,
@@ -91,8 +70,6 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
             'configs': configs,
-            'series_preferences': rp.series_preferences,
-            'indicator_types': self.get_indicator_types()
         }
 
     def get_summary(self) -> Dict[str, str]:
@@ -102,18 +79,6 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
         }
-
-    def get_indicator_types(self):
-        indicator_types = {ind: False for ind in INDICATORS}
-
-        for ind in self.indicators:
-            ind_type = ind.split('.')[0]
-            if ind_type in indicator_types.keys():
-                indicator_types[ind_type] = True
-            else:
-                indicator_types[SeriesEnums.METRIC] = True
-
-        return indicator_types
 
 
 class RunIndex(Index['Run']):
@@ -135,20 +100,22 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     if run_uuid in p.runs:
         return p.runs[run_uuid].load()
 
+    is_claimed = True
+    if labml_token == settings.FLOAT_PROJECT_TOKEN:
+        is_claimed = False
+
     time_now = time.time()
 
     status = create_status()
-    run_preferences = RunPreferences()
     run = Run(run_uuid=run_uuid,
               start_time=time_now,
               run_ip=run_ip,
+              is_claimed=is_claimed,
               status=status.key,
-              run_preferences=run_preferences.key
               )
     p.runs[run.run_uuid] = run.key
 
     run.save()
-    run_preferences.save()
     p.save()
 
     RunIndex.set(run.run_uuid, run.key)

@@ -1,6 +1,7 @@
-import {LineChart, SparkLines} from "./components";
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from "react";
-import {Run, SeriesModel, Status} from "../../../models/run";
+import {LineChart, SparkLines} from "./components";
+import {SeriesModel} from "../../../models/run";
+import {Preference} from "../../../models/preferences";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"
@@ -9,7 +10,6 @@ import {LabLoader} from "../../../components/loader";
 import {BackButton, RefreshButton} from "../../../components/util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../types";
 import {useHistory} from "react-router-dom";
-import {useErrorHandler} from "react-error-boundary";
 import mixpanel from "mixpanel-browser";
 
 
@@ -46,22 +46,18 @@ function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null, wi
 
 
 interface BasicCardProps extends BasicProps, CardProps {
-    url: string
     isChartView: boolean
+    url: string
 }
 
 function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
-    const runCache = CACHE.getRun(props.uuid)
+    const statusCache = CACHE.getStatus(props.uuid)
+    const analysisCache = CACHE.getAnalysis(props.analysisIndex, props.uuid)
     const history = useHistory()
-    const handleError = useErrorHandler()
 
     async function load() {
-        try {
-            setTrack(await runCache[props.tracking_name](true))
-        } catch (e) {
-            handleError(e)
-        }
+        setTrack(await analysisCache.getTracking(true))
     }
 
     useImperativeHandle(ref, () => ({
@@ -72,14 +68,10 @@ function Card(props: BasicCardProps, ref: any) {
 
     useEffect(() => {
         async function load() {
-            try {
-                setTrack(await runCache[props.tracking_name]())
-                let status = await runCache.getStatus()
-                if (!status.isRunning) {
-                    clearInterval(interval)
-                }
-            } catch (e) {
-                handleError(e)
+            setTrack(await analysisCache.getTracking())
+            let status = await statusCache.getStatus()
+            if (!status.isRunning) {
+                clearInterval(interval)
             }
         }
 
@@ -95,13 +87,16 @@ function Card(props: BasicCardProps, ref: any) {
         card = getSparkLines(track, null, props.width)
     }
 
-    return <div className={'labml-card labml-card-action'} onClick={
+    return <div>{track && track.length > 0 &&
+    <div className={'labml-card labml-card-action'} onClick={
         () => {
             history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
         }
     }>
-        <h3 className={'header'}>{props.name}</h3>
+        <h3 className={'header'}>{props.analysisName}</h3>
         {card}
+    </div>
+    }
     </div>
 }
 
@@ -114,9 +109,11 @@ function BasicView(props: BasicViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
 
-    const runCache = CACHE.getRun(runUUID)
-    const [run, setRun] = useState(null as unknown as Run)
-    const [status, setStatus] = useState(null as unknown as Status)
+    const statusCache = CACHE.getStatus(runUUID)
+    const analysisCache = CACHE.getAnalysis(props.analysisIndex, runUUID)
+    const preferenceCache = CACHE.getPreference()
+
+    const [preference, setPreference] = useState(null as unknown as Preference)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
@@ -125,14 +122,15 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await runCache[props.tracking_name]())
-            let status = await runCache.getStatus()
+            setTrack(await analysisCache.getTracking())
+            let status = await statusCache.getStatus()
             if (!status.isRunning) {
                 clearInterval(interval)
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.name});
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.analysisName});
+
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
@@ -140,13 +138,12 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
-            setRun(await runCache.getRun())
-            setStatus(await runCache.getStatus())
+            setPreference(await preferenceCache.getPreference())
 
-            if (run) {
-                let preferences = run.series_preferences[props.series_preference]
-                if (preferences) {
-                    setPlotIdx(preferences)
+            if (preference) {
+                let analysis_preferences = preference.getAnalysis(runUUID, props.analysisIndex)
+                if (analysis_preferences && analysis_preferences.length > 0) {
+                    setPlotIdx(analysis_preferences)
                 } else if (track) {
                     let res: number[] = []
                     for (let i = 0; i < track.length; i++) {
@@ -158,22 +155,30 @@ function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, run, runCache, props.series_preference])
+    }, [track, preference, preferenceCache, props.analysisIndex, runUUID])
 
     useEffect(() => {
-        function updateRun() {
-            if (run) {
-                runCache.setRun(run).then()
+        function updatePreference() {
+            if (preference) {
+                preferenceCache.setPreference(preference).then()
             }
         }
 
-        window.addEventListener('beforeunload', updateRun)
+        window.addEventListener('beforeunload', updatePreference)
 
         return () => {
-            updateRun()
-            window.removeEventListener('beforeunload', updateRun)
+            updatePreference()
+            window.removeEventListener('beforeunload', updatePreference)
         }
-    }, [run, runCache])
+    }, [preference, preferenceCache])
+
+    async function load() {
+        setTrack(await analysisCache.getTracking(true))
+    }
+
+    function onRefresh() {
+        load().then()
+    }
 
 
     let toggleChart = useCallback((idx: number) => {
@@ -185,9 +190,9 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            run.series_preferences[props.series_preference] = plotIdx
+            preference.setAnalysis(runUUID, props.analysisIndex, plotIdx)
         }
-    }, [plotIdx, run, props.series_preference])
+    }, [plotIdx, preference, props.analysisIndex, runUUID])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {
@@ -196,21 +201,13 @@ function BasicView(props: BasicViewProps) {
 
     let chart = getChart(track, plotIdx, actualWidth, toggleChart)
 
-    async function load() {
-        setTrack(await runCache[props.tracking_name](true))
-    }
-
-    function onRefresh() {
-        load().then()
-    }
-
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
-        <h2 className={'header text-center'}>{props.name}</h2>
+        <h2 className={'header text-center'}>{props.analysisName}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
 }

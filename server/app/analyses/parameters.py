@@ -55,7 +55,7 @@ class ParametersAnalysis(Analysis):
         return ParametersAnalysis(parameters_key.load())
 
 
-@Analysis.route('POST', 'params_track/<run_uuid>')
+@Analysis.route('POST', 'parameters_track/<run_uuid>')
 def get_params_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

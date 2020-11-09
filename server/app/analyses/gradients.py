@@ -55,7 +55,7 @@ class GradientsAnalysis(Analysis):
         return GradientsAnalysis(gradients_key.load())
 
 
-@Analysis.route('POST', 'grads_track/<run_uuid>')
+@Analysis.route('POST', 'gradients_track/<run_uuid>')
 def get_grads_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

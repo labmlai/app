@@ -55,7 +55,7 @@ class OutputsAnalysis(Analysis):
         return OutputsAnalysis(outputs_key.load())
 
 
-@Analysis.route('POST', 'modules_track/<run_uuid>')
+@Analysis.route('POST', 'outputs_track/<run_uuid>')
 def get_modules_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400

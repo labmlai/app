@@ -3,6 +3,7 @@ from typing import List, NamedTuple, Dict
 from labml_db import Model, Key, Index
 
 from .project import Project, ProjectIndex
+from .preferences import Preferences
 from ..utils import gen_token
 
 
@@ -12,6 +13,7 @@ class User(Model['User']):
     email: str
     picture: str
     email_verified: bool
+    preferences: Key[Preferences]
     projects: List[Key[Project]]
 
     @classmethod
@@ -21,6 +23,7 @@ class User(Model['User']):
                     email='',
                     picture='',
                     email_verified=False,
+                    preferences=None,
                     projects=[]
                     )
 
@@ -55,16 +58,19 @@ def get_or_create_user(info: AuthOInfo) -> User:
 
     if not user_key:
         project = Project(labml_token=gen_token())
+        user_preferences = Preferences()
         user = User(name=info.name,
                     sub=info.sub,
                     email=info.email,
                     picture=info.picture,
+                    preferences=user_preferences.key,
                     email_verified=info.email_verified,
                     projects=[project.key]
                     )
 
         user.save()
         project.save()
+        user_preferences.save()
 
         UserIndex.set(user.email, user.key)
         ProjectIndex.set(project.labml_token, project.key)
