@@ -32,7 +32,7 @@ function AnalysisDetails() {
 let gradientAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
-    route: "/grads"
+    route: `/${URL}`
 }
 
 export default gradientAnalysis
