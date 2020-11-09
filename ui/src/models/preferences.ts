@@ -3,7 +3,7 @@ export interface PreferenceModel {
 }
 
 export class Preference {
-    private analyses_preferences: { [analysis: string]: any }
+    private analyses_preferences: { [uuid: string]: { [analysis: string]: any } }
 
     constructor(preference: PreferenceModel) {
         if (preference.analyses_preferences) {
@@ -13,15 +13,17 @@ export class Preference {
         }
     }
 
-    public getAnalysis(analysis: string) {
-        if (this.analyses_preferences) {
-            return this.analyses_preferences[analysis]
+    public getAnalysis(uuid: string, analysis: string) {
+        if (this.analyses_preferences[uuid]) {
+            return this.analyses_preferences[uuid][analysis]
         }
+
+        this.analyses_preferences[uuid] = {}
 
         return {}
     }
 
-    public setAnalysis(analysis: string, data: any) {
-        this.analyses_preferences[analysis] = data
+    public setAnalysis(uuid: string, analysis: string, data: any) {
+        this.analyses_preferences[uuid][analysis] = data
     }
 }

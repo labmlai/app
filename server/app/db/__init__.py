@@ -11,7 +11,7 @@ from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
-from .preferences import Preferences, PreferencesIndex
+from .preferences import Preferences
 from ..analyses import AnalysisManager
 
 from .. import settings
@@ -34,7 +34,6 @@ Index.set_db_drivers(
         FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/UserIndex.yaml')),
         FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/SessionIndex.yaml')),
         FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
-        FileIndexDbDriver(YamlSerializer(), PreferencesIndex, Path(f'{DATA_PATH}/PreferencesIndex.yaml')),
     ])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')

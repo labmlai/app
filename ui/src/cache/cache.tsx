@@ -204,18 +204,12 @@ let ANALYSES_CACHE = {
 }
 
 class PreferenceCache {
-    private readonly uuid: string
     private preference!: Preference
     private preferencesPromise = new BroadcastPromise<PreferenceModel>()
 
-    constructor(uuid: string) {
-        this.uuid = uuid
-    }
-
     private async loadPreferences(): Promise<PreferenceModel> {
         return this.preferencesPromise.create(async () => {
-            let res = await NETWORK.get_preferences(this.uuid)
-            console.log(res.data)
+            let res = await NETWORK.get_preferences()
             return res.data
         })
     }
@@ -229,7 +223,7 @@ class PreferenceCache {
     }
 
     async setPreference(preference: Preference): Promise<Preference> {
-        await NETWORK.update_preferences(preference, this.uuid)
+        await NETWORK.update_preferences(preference)
 
         return this.preference
     }
@@ -282,18 +276,18 @@ class RunsListCache {
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly statuses: { [uuid: string]: StatusCache }
-    private readonly preferences: { [uuid: string]: PreferenceCache }
     private readonly analysisCaches: { [analysis: string]: { [uuid: string]: AnalysisCache } }
 
     private user: UserCache | null
     private runsList: RunsListCache | null
+    private preferences: PreferenceCache | null
 
     constructor() {
         this.runs = {}
         this.statuses = {}
-        this.preferences = {}
         this.user = null
         this.runsList = null
+        this.preferences = null
         this.analysisCaches = {}
         for (let analysis in ANALYSES_CACHE) {
             this.analysisCaches[analysis] = {}
@@ -316,14 +310,6 @@ class Cache {
         return this.statuses[uuid]
     }
 
-    getPreference(uuid: string) {
-        if (this.preferences[uuid] == null) {
-            this.preferences[uuid] = new PreferenceCache(uuid)
-        }
-
-        return this.preferences[uuid]
-    }
-
     getUser() {
         if (this.user == null) {
             this.user = new UserCache()
@@ -339,6 +325,15 @@ class Cache {
 
         return this.runsList
     }
+
+    getPreference() {
+        if (this.preferences == null) {
+            this.preferences = new PreferenceCache()
+        }
+
+        return this.preferences
+    }
+
 
     getAnalysis(analysis: typeof ANALYSES_INDICES, uuid: string) {
         if (this.analysisCaches[analysis][uuid] == null) {

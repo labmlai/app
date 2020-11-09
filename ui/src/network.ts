@@ -45,8 +45,12 @@ class Network {
         return this.axiosInstance.get(`/user`, {})
     }
 
-    async get_preferences(run_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/preferences/${run_uuid}`, {})
+    async get_preferences(): Promise<any> {
+        return this.axiosInstance.get(`/preferences`, {})
+    }
+
+    async update_preferences(data: object): Promise<any> {
+        return this.axiosInstance.post(`/preferences`, data)
     }
 
     async sign_in(data: UserModel): Promise<any> {
@@ -55,10 +59,6 @@ class Network {
 
     async sign_out(): Promise<any> {
         return this.axiosInstance.delete(`/auth/sign_out`)
-    }
-
-    async update_preferences(data: object, run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/preferences/${run_uuid}`, data)
     }
 }
 

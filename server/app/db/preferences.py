@@ -1,10 +1,13 @@
 from typing import Dict, List, Any
 
-from labml_db import Model, Index
+from labml_db import Model
+
+PreferencesData = Dict[str, Any]
+AnalysisPreferencesData = Dict[str, Dict[str, Any]]
 
 
 class Preferences(Model['Preferences']):
-    analyses_preferences: Dict[str, Any]
+    analyses_preferences: AnalysisPreferencesData
     errors: List[Dict[str, str]]
 
     @classmethod
@@ -13,32 +16,23 @@ class Preferences(Model['Preferences']):
                     errors=[]
                     )
 
-    def update_preferences(self, data: Dict[str, Any]) -> None:
-        for k, v in data['analyses_preferences'].items():
-            if v:
-                self.analyses_preferences[k] = v
+    def update_preferences(self, data: PreferencesData) -> None:
+        if 'analyses_preferences' in data:
+            self.update_analyses_preferences(data['analyses_preferences'])
 
         self.save()
+
+    def update_analyses_preferences(self, data: AnalysisPreferencesData) -> None:
+        for run_uuid, analysis in data.items():
+            if run_uuid not in self.analyses_preferences:
+                self.analyses_preferences[run_uuid] = {}
+
+            if analysis:
+                for k, v in analysis.items():
+                    if v:
+                        self.analyses_preferences[run_uuid][k] = v
 
     def get_data(self):
         return {
             'analyses_preferences': self.analyses_preferences
         }
-
-
-class PreferencesIndex(Index['Preferences']):
-    pass
-
-
-def get_or_create(run_uuid: str) -> Preferences:
-    rp_key = PreferencesIndex.get(run_uuid)
-
-    if not rp_key:
-        rp = Preferences()
-        rp.save()
-
-        PreferencesIndex.set(run_uuid, rp.key)
-
-        return rp
-
-    return rp_key.load()

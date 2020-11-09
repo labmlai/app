@@ -8,9 +8,8 @@ from flask import jsonify, request, make_response
 
 from .analyses import AnalysisManager
 from . import settings
-from .auth import login_required, check_labml_token_permission, get_session
+from .auth import login_required, check_labml_token_permission, get_session, get_auth_user
 from .db import run
-from .db import preferences
 from .db import session
 from .db import status
 from .db import user
@@ -107,16 +106,6 @@ def update_run() -> flask.Response:
     return jsonify({'errors': errors, 'url': r.url})
 
 
-@login_required
-def set_preferences(run_uuid: str) -> flask.Response:
-    rp = preferences.get_or_create(run_uuid)
-    rp.update_preferences(request.json)
-
-    logger.debug(f'update_preferences, run_uuid: {run_uuid}')
-
-    return jsonify({'errors': rp.errors})
-
-
 def claim_run(run_uuid: str, r: run.Run) -> None:
     s = get_session()
 
@@ -170,21 +159,34 @@ def get_status(run_uuid: str) -> flask.Response:
 
 
 @login_required
-def get_preferences(run_uuid: str) -> flask.Response:
+def get_preferences() -> flask.Response:
     preferences_data = {}
     status_code = 400
 
-    rp = preferences.get_or_create(run_uuid)
-    if rp:
-        preferences_data = rp.get_data()
+    u = get_auth_user()
+    up = u.preferences.load()
+    if up:
+        preferences_data = up.get_data()
         status_code = 200
 
     response = make_response(jsonify(preferences_data))
     response.status_code = status_code
 
-    logger.debug(f'preferences, run_uuid: {run_uuid}')
+    logger.debug(f'preferences, user: {u.key}')
 
     return response
+
+
+@login_required
+def set_preferences() -> flask.Response:
+    u = get_auth_user()
+    up = u.preferences.load()
+
+    up.update_preferences(request.json)
+
+    logger.debug(f'update_preferences, user: {u.key}')
+
+    return jsonify({'errors': up.errors})
 
 
 @login_required
@@ -214,9 +216,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
 @login_required
 def get_user() -> Any:
-    s = get_session()
-
-    u = s.user.load()
+    u = get_auth_user()
     logger.debug(f'get_user, user : {u.key}')
 
     return jsonify(u.get_data())
@@ -235,12 +235,12 @@ def add_handlers(app: flask.Flask):
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'GET', get_user, 'user')
+    _add_ui(app, 'GET', get_preferences, 'preferences')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
-    _add_ui(app, 'GET', get_preferences, 'preferences/<run_uuid>')
     _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
 
-    _add_ui(app, 'POST', set_preferences, 'preferences/<run_uuid>')
+    _add_ui(app, 'POST', set_preferences, 'preferences')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')

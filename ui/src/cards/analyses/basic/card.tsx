@@ -111,7 +111,7 @@ function BasicView(props: BasicViewProps) {
 
     const statusCache = CACHE.getStatus(runUUID)
     const analysisCache = CACHE.getAnalysis(props.analysisIndex, runUUID)
-    const preferenceCache = CACHE.getPreference(runUUID)
+    const preferenceCache = CACHE.getPreference()
 
     const [preference, setPreference] = useState(null as unknown as Preference)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
@@ -130,6 +130,7 @@ function BasicView(props: BasicViewProps) {
         }
 
         mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.analysisName});
+
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
@@ -140,7 +141,7 @@ function BasicView(props: BasicViewProps) {
             setPreference(await preferenceCache.getPreference())
 
             if (preference) {
-                let analysis_preferences = preference.getAnalysis(props.analysisIndex)
+                let analysis_preferences = preference.getAnalysis(runUUID, props.analysisIndex)
                 if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx(analysis_preferences)
                 } else if (track) {
@@ -154,7 +155,7 @@ function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, preference, preferenceCache, props.analysisIndex])
+    }, [track, preference, preferenceCache, props.analysisIndex, runUUID])
 
     useEffect(() => {
         function updatePreference() {
@@ -189,9 +190,9 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.setAnalysis(props.analysisIndex, plotIdx)
+            preference.setAnalysis(runUUID, props.analysisIndex, plotIdx)
         }
-    }, [plotIdx, preference, props.analysisIndex])
+    }, [plotIdx, preference, props.analysisIndex, runUUID])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {
