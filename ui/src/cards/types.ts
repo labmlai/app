@@ -11,7 +11,10 @@ export interface ViewProps {
     location: any
 }
 
+let ANALYSES_INDICES: 'metrics' | 'gradients' | 'parameters' | 'outputs' | 'timeTracking'
+export {ANALYSES_INDICES}
+
 export interface BasicProps {
-    analysis: string
-    cache: string
+    analysisName: string
+    analysisIndex: typeof ANALYSES_INDICES
 }

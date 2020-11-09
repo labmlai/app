@@ -1,4 +1,5 @@
 import NETWORK from "../network";
+import {ANALYSES_INDICES} from "../cards/types";
 import {Run, RunModel, SeriesModel} from "../models/run";
 import {Status, StatusModel} from "../models/status";
 import {RunsList, RunsListModel} from "../models/run_list";
@@ -134,8 +135,8 @@ class AnalysisCache {
 
     constructor(uuid: string, url: string, statusCache: StatusCache) {
         this.uuid = uuid
-        this.url = url
         this.statusCache = statusCache
+        this.url = url
     }
 
 
@@ -165,25 +166,42 @@ class AnalysisCache {
 }
 
 class MetricAnalysisCache extends AnalysisCache {
-
+    constructor(uuid: string, statusCache: StatusCache) {
+        super(uuid, 'metrics_track', statusCache);
+    }
 }
 
 class GradientAnalysisCache extends AnalysisCache {
-
+    constructor(uuid: string, statusCache: StatusCache) {
+        super(uuid, 'gradients_track', statusCache);
+    }
 }
 
 class ParameterAnalysisCache extends AnalysisCache {
-
+    constructor(uuid: string, statusCache: StatusCache) {
+        super(uuid, 'parameters_track', statusCache);
+    }
 }
 
 class OutputAnalysisCache extends AnalysisCache {
-
+    constructor(uuid: string, statusCache: StatusCache) {
+        super(uuid, 'outputs_track', statusCache);
+    }
 }
 
 class TimeTrackingAnalysisCache extends AnalysisCache {
-
+    constructor(uuid: string, statusCache: StatusCache) {
+        super(uuid, 'times_track', statusCache);
+    }
 }
 
+let ANALYSES_CACHE = {
+    metrics: MetricAnalysisCache,
+    gradients: GradientAnalysisCache,
+    parameters: ParameterAnalysisCache,
+    outputs: OutputAnalysisCache,
+    timeTracking: TimeTrackingAnalysisCache
+}
 
 class PreferenceCache {
     private readonly uuid: string
@@ -265,12 +283,7 @@ class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly statuses: { [uuid: string]: StatusCache }
     private readonly preferences: { [uuid: string]: PreferenceCache }
-
-    private readonly metrics: { [uuid: string]: MetricAnalysisCache }
-    private readonly gradients: { [uuid: string]: GradientAnalysisCache }
-    private readonly parameters: { [uuid: string]: ParameterAnalysisCache }
-    private readonly outputs: { [uuid: string]: OutputAnalysisCache }
-    private readonly timeTracking: { [uuid: string]: TimeTrackingAnalysisCache }
+    private readonly analysisCaches: { [analysis: string]: { [uuid: string]: AnalysisCache } }
 
     private user: UserCache | null
     private runsList: RunsListCache | null
@@ -279,13 +292,12 @@ class Cache {
         this.runs = {}
         this.statuses = {}
         this.preferences = {}
-        this.metrics = {}
-        this.gradients = {}
-        this.parameters = {}
-        this.outputs = {}
-        this.timeTracking = {}
         this.user = null
         this.runsList = null
+        this.analysisCaches = {}
+        for (let analysis in ANALYSES_CACHE) {
+            this.analysisCaches[analysis] = {}
+        }
     }
 
     getRun(uuid: string) {
@@ -328,58 +340,12 @@ class Cache {
         return this.runsList
     }
 
-    getTracking(analysis: string, uuid: string) {
-        if (analysis === 'times') {
-            return this.getTimeTracking(uuid)
-        } else if (analysis === 'grads') {
-            return this.getGradients(uuid)
-        } else if (analysis === 'params') {
-            return this.getParameters(uuid)
-        } else if (analysis === 'modules') {
-            return this.getOutputs(uuid)
-        } else {
-            return this.getMetrics(uuid)
-        }
-    }
-
-    private getMetrics(uuid: string) {
-        if (this.metrics[uuid] == null) {
-            this.metrics[uuid] = new MetricAnalysisCache(uuid, 'metrics_track', this.getStatus(uuid))
+    getAnalysis(analysis: typeof ANALYSES_INDICES, uuid: string) {
+        if (this.analysisCaches[analysis][uuid] == null) {
+            this.analysisCaches[analysis][uuid] = new ANALYSES_CACHE[analysis](uuid, this.getStatus(uuid))
         }
 
-        return this.metrics[uuid]
-    }
-
-    private getGradients(uuid: string) {
-        if (this.gradients[uuid] == null) {
-            this.gradients[uuid] = new GradientAnalysisCache(uuid, 'grads_track', this.getStatus(uuid))
-        }
-
-        return this.gradients[uuid]
-    }
-
-    private getParameters(uuid: string) {
-        if (this.parameters[uuid] == null) {
-            this.parameters[uuid] = new ParameterAnalysisCache(uuid, 'params_track', this.getStatus(uuid))
-        }
-
-        return this.parameters[uuid]
-    }
-
-    private getOutputs(uuid: string) {
-        if (this.outputs[uuid] == null) {
-            this.outputs[uuid] = new OutputAnalysisCache(uuid, 'modules_track', this.getStatus(uuid))
-        }
-
-        return this.outputs[uuid]
-    }
-
-    private getTimeTracking(uuid: string) {
-        if (this.timeTracking[uuid] == null) {
-            this.timeTracking[uuid] = new TimeTrackingAnalysisCache(uuid, 'times_track', this.getStatus(uuid))
-        }
-
-        return this.timeTracking[uuid]
+        return this.analysisCaches[analysis][uuid]
     }
 }
 

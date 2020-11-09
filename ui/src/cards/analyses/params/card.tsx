@@ -7,15 +7,15 @@ import {Analysis} from "../basic/analysis";
 
 
 const ANALYSIS = 'Parameters - L2 Norm'
-const CACHE = 'params'
-const URL = 'params'
+const analysisIndex = 'parameters'
+const URL = 'parameters'
 
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard analysis={ANALYSIS}
+    return <BasicCard analysisName={ANALYSIS}
                       uuid={props.uuid}
                       url={URL}
-                      cache={CACHE}
+                      analysisIndex={analysisIndex}
                       ref={props.refreshRef}
                       isChartView={false}
                       width={props.width}/>
@@ -25,8 +25,8 @@ function AnalysisSummary(props: SeriesCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView analysis={ANALYSIS}
-                      cache={CACHE}
+    return <BasicView analysisName={ANALYSIS}
+                      analysisIndex={analysisIndex}
                       location={location}/>
 }
 

@@ -6,15 +6,15 @@ import {SeriesCardProps} from "../../types";
 import {BasicCard, BasicView} from "../basic/card";
 import {Analysis} from "../basic/analysis";
 
-const ANALYSIS = 'Outputs - L2 Norm'
-const CACHE = 'modules'
-const URL = 'modules'
+const ANALYSIS_NAME = 'Outputs - L2 Norm'
+const ANALYSIS_INDEX = 'outputs'
+const URL = 'outputs'
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard analysis={ANALYSIS}
+    return <BasicCard analysisName={ANALYSIS_NAME}
                       uuid={props.uuid}
                       url={URL}
-                      cache={CACHE}
+                      analysisIndex={ANALYSIS_INDEX}
                       ref={props.refreshRef}
                       isChartView={false}
                       width={props.width}/>
@@ -24,8 +24,8 @@ function AnalysisSummary(props: SeriesCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView analysis={ANALYSIS}
-                      cache={CACHE}
+    return <BasicView analysisName={ANALYSIS_NAME}
+                      analysisIndex={ANALYSIS_INDEX}
                       location={location}/>
 }
 

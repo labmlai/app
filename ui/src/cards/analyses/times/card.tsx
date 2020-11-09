@@ -7,14 +7,14 @@ import {Analysis} from "../basic/analysis";
 
 
 const ANALYSIS = 'Time Tracking'
-const CACHE = 'times'
-const URL = 'times'
+const analysisIndex = 'timeTracking'
+const URL = 'timeTracking'
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard analysis={ANALYSIS}
+    return <BasicCard analysisName={ANALYSIS}
                       uuid={props.uuid}
                       url={URL}
-                      cache={CACHE}
+                      analysisIndex={analysisIndex}
                       ref={props.refreshRef}
                       isChartView={false}
                       width={props.width}/>
@@ -24,8 +24,8 @@ function AnalysisSummary(props: SeriesCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView analysis={ANALYSIS}
-                      cache={CACHE}
+    return <BasicView analysisName={ANALYSIS}
+                      analysisIndex={analysisIndex}
                       location={location}/>
 }
 

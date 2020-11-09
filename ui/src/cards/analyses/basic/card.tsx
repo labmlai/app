@@ -53,7 +53,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const statusCache = CACHE.getStatus(props.uuid)
-    const analysisCache = CACHE.getTracking(props.cache, props.uuid)
+    const analysisCache = CACHE.getAnalysis(props.analysisIndex, props.uuid)
     const history = useHistory()
 
     async function load() {
@@ -93,7 +93,7 @@ function Card(props: BasicCardProps, ref: any) {
             history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
         }
     }>
-        <h3 className={'header'}>{props.analysis}</h3>
+        <h3 className={'header'}>{props.analysisName}</h3>
         {card}
     </div>
     }
@@ -110,7 +110,7 @@ function BasicView(props: BasicViewProps) {
     const runUUID = params.get('run_uuid') as string
 
     const statusCache = CACHE.getStatus(runUUID)
-    const analysisCache = CACHE.getTracking(props.cache, runUUID)
+    const analysisCache = CACHE.getAnalysis(props.analysisIndex, runUUID)
     const preferenceCache = CACHE.getPreference(runUUID)
 
     const [preference, setPreference] = useState(null as unknown as Preference)
@@ -129,7 +129,7 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.analysis});
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.analysisName});
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
@@ -140,7 +140,7 @@ function BasicView(props: BasicViewProps) {
             setPreference(await preferenceCache.getPreference())
 
             if (preference) {
-                let analysis_preferences = preference.getAnalysis(props.analysis)
+                let analysis_preferences = preference.getAnalysis(props.analysisIndex)
                 if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx(analysis_preferences)
                 } else if (track) {
@@ -154,7 +154,7 @@ function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, preference, preferenceCache, props.analysis])
+    }, [track, preference, preferenceCache, props.analysisIndex])
 
     useEffect(() => {
         function updatePreference() {
@@ -189,9 +189,9 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.setAnalysis(props.analysis, plotIdx)
+            preference.setAnalysis(props.analysisIndex, plotIdx)
         }
-    }, [plotIdx, preference, props.analysis])
+    }, [plotIdx, preference, props.analysisIndex])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {
@@ -206,7 +206,7 @@ function BasicView(props: BasicViewProps) {
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
-        <h2 className={'header text-center'}>{props.analysis}</h2>
+        <h2 className={'header text-center'}>{props.analysisName}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
 }
