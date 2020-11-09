@@ -164,6 +164,9 @@ def get_preferences() -> flask.Response:
     status_code = 400
 
     u = get_auth_user()
+    if not u:
+        return jsonify({})
+
     up = u.preferences.load()
     if up:
         preferences_data = up.get_data()
@@ -180,6 +183,9 @@ def get_preferences() -> flask.Response:
 @login_required
 def set_preferences() -> flask.Response:
     u = get_auth_user()
+    if not u:
+        return jsonify({})
+
     up = u.preferences.load()
 
     up.update_preferences(request.json)
