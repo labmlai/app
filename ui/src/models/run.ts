@@ -23,14 +23,14 @@ export interface SeriesModel {
 }
 
 export class Run {
-    uuid: string
+    run_uuid: string
     name: string
     comment: string
     start_time: number
     configs: Config[]
 
     constructor(run: RunModel) {
-        this.uuid = run.run_uuid
+        this.run_uuid = run.run_uuid
         this.name = run.name
         this.comment = run.comment
         this.start_time = run.start_time

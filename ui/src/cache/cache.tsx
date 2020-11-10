@@ -1,5 +1,4 @@
 import NETWORK from "../network"
-import {ANALYSES_INDICES} from "../cards/types"
 import {Run, RunModel, SeriesModel} from "../models/run"
 import {Status, StatusModel} from "../models/status"
 import {RunsList, RunsListModel} from "../models/run_list"
@@ -67,32 +66,45 @@ class BroadcastPromise<T> {
     }
 }
 
-class RunCache {
+abstract class CacheObject<T> {
+    private data!: T
+    protected broadcastPromise = new BroadcastPromise<T>()
+    private lastUsed: number
+
+    protected constructor() {
+        this.lastUsed = 0
+    }
+
+    abstract async load(): Promise<T>
+
+    async get(): Promise<T> {
+        if (this.data == null) {
+            this.data = await this.load()
+        }
+
+        this.lastUsed = new Date().getTime()
+
+        return this.data
+    }
+}
+
+class RunCache extends CacheObject<Run> {
     private readonly uuid: string
-    private run!: Run
-    private runPromise = new BroadcastPromise<RunModel>()
 
     constructor(uuid: string) {
+        super()
         this.uuid = uuid
     }
 
-    private async loadRun(): Promise<RunModel> {
-        return this.runPromise.create(async () => {
+    async load(): Promise<Run> {
+        return this.broadcastPromise.create(async () => {
             let res = await NETWORK.get_run(this.uuid)
             return res.data
         })
     }
-
-    async getRun(): Promise<Run> {
-        if (this.run == null) {
-            this.run = new Run(await this.loadRun())
-        }
-
-        return this.run
-    }
 }
 
-class StatusCache {
+export class StatusCache {
     private readonly uuid: string
     private lastUpdated: number
     private status!: Status
@@ -129,7 +141,7 @@ class StatusCache {
     }
 }
 
-class AnalysisCache {
+export class AnalysisCache {
     private readonly uuid: string
     private readonly url: string
     private statusCache: StatusCache
@@ -165,44 +177,6 @@ class AnalysisCache {
 
         return this.tracking
     }
-}
-
-class MetricAnalysisCache extends AnalysisCache {
-    constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'metrics_track', statusCache)
-    }
-}
-
-class GradientAnalysisCache extends AnalysisCache {
-    constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'gradients_track', statusCache)
-    }
-}
-
-class ParameterAnalysisCache extends AnalysisCache {
-    constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'parameters_track', statusCache)
-    }
-}
-
-class OutputAnalysisCache extends AnalysisCache {
-    constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'outputs_track', statusCache)
-    }
-}
-
-class TimeTrackingAnalysisCache extends AnalysisCache {
-    constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'times_track', statusCache)
-    }
-}
-
-let ANALYSES_CACHE = {
-    metrics: MetricAnalysisCache,
-    gradients: GradientAnalysisCache,
-    parameters: ParameterAnalysisCache,
-    outputs: OutputAnalysisCache,
-    timeTracking: TimeTrackingAnalysisCache
 }
 
 class PreferenceCache {
@@ -278,7 +252,6 @@ class RunsListCache {
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly statuses: { [uuid: string]: StatusCache }
-    private readonly analysisCaches: { [analysis: string]: { [uuid: string]: AnalysisCache } }
 
     private user: UserCache | null
     private runsList: RunsListCache | null
@@ -290,10 +263,6 @@ class Cache {
         this.user = null
         this.runsList = null
         this.preferences = null
-        this.analysisCaches = {}
-        for (let analysis in ANALYSES_CACHE) {
-            this.analysisCaches[analysis] = {}
-        }
     }
 
     getRun(uuid: string) {
@@ -334,15 +303,6 @@ class Cache {
         }
 
         return this.preferences
-    }
-
-
-    getAnalysis(analysis: typeof ANALYSES_INDICES, uuid: string) {
-        if (this.analysisCaches[analysis][uuid] == null) {
-            this.analysisCaches[analysis][uuid] = new ANALYSES_CACHE[analysis](uuid, this.getStatus(uuid))
-        }
-
-        return this.analysisCaches[analysis][uuid]
     }
 }
 

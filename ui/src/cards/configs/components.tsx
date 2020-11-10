@@ -114,7 +114,7 @@ function ConfigItemView(props: ConfigItemProps) {
             }
         }
 
-        if (!props.isHyperParamOnly) {
+        if (!props.isHyperParamOnly && conf.otherOptions) {
             otherOptionsElem = <OtherOptions options={[...conf.otherOptions]}/>
         }
 

@@ -5,16 +5,38 @@ import {useLocation} from "react-router-dom";
 import {SeriesCardProps} from "../../types";
 import {BasicCard, BasicView} from "../basic/card";
 import {Analysis} from "../basic/analysis";
+import CACHE, {AnalysisCache, StatusCache} from "../../../cache/cache";
 
 const ANALYSIS = 'Metrics'
-const ANALYSIS_INDEX = 'metrics'
 const URL = 'metrics'
+
+class MetricAnalysisCache extends AnalysisCache {
+    constructor(uuid: string, statusCache: StatusCache) {
+        super(uuid, 'metrics_track', statusCache)
+    }
+}
+
+class Cache {
+    private readonly analysisCaches: { [uuid: string]: AnalysisCache }
+
+    constructor() {
+        this.analysisCaches = {}
+    }
+
+    getAnalysis(uuid: string) {
+        if (this.analysisCaches[uuid] == null) {
+            this.analysisCaches[uuid] = new MetricAnalysisCache(uuid, CACHE.getStatus(uuid))
+        }
+
+        return this.analysisCaches[uuid]
+    }
+}
 
 
 function AnalysisSummary(props: SeriesCardProps) {
     return <BasicCard analysisName={ANALYSIS}
                       url={URL}
-                      analysisIndex={ANALYSIS_INDEX}
+                      cache={new Cache()}
                       uuid={props.uuid}
                       ref={props.refreshRef}
                       isChartView={true}
@@ -25,7 +47,7 @@ function AnalysisDetails() {
     const location = useLocation()
 
     return <BasicView analysisName={ANALYSIS}
-                      analysisIndex={ANALYSIS_INDEX}
+                      cache={new Cache()}
                       location={location}/>
 }
 

@@ -17,7 +17,7 @@ function Card(props: CardProps) {
 
     useEffect(() => {
         async function load() {
-            setRun(await runCache.getRun())
+            setRun(await runCache.get())
         }
 
         load().then()
@@ -33,10 +33,15 @@ function Card(props: CardProps) {
         configsView = <LabLoader/>
     }
 
+   if (run){
+       console.log(run)
+       console.log(run.run_uuid)
+   }
+
     return <div>
         <div className={'labml-card labml-card-action'} onClick={
             () => {
-                history.push(`/configs?run_uuid=${run.uuid}`, history.location.pathname);
+                history.push(`/configs?run_uuid=${run.run_uuid}`, history.location.pathname);
             }
         }>
             <h3 className={'header'}>Configurations</h3>
@@ -55,7 +60,7 @@ function View(props: ViewProps) {
 
     useEffect(() => {
         async function load() {
-            setRun(await runCache.getRun())
+            setRun(await runCache.get())
         }
 
         mixpanel.track('Configs View', {uuid: runUUID});

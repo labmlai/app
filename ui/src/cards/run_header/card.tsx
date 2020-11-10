@@ -32,7 +32,7 @@ function RunView(props: RunViewProps) {
                 {props.isSelected &&
                 <div>
                     <div className={"run-uuid"}>
-                        <span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.uuid}
+                        <span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.run_uuid}
                     </div>
                     <div className={'start-time'}>Started {formatTime(props.run.start_time)}</div>
                 </div>
@@ -70,7 +70,7 @@ function Card(props: CardProps) {
         async function load() {
             let status = await statusCache.getStatus()
             setStatus(status)
-            let run = await runCache.getRun()
+            let run = await runCache.get()
             document.title = `LabML: ${run.name.trim()}`
             setRun(run)
             let lastUpdated = statusCache.getLastUpdated()

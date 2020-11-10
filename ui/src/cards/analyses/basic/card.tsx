@@ -53,7 +53,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const statusCache = CACHE.getStatus(props.uuid)
-    const analysisCache = CACHE.getAnalysis(props.analysisIndex, props.uuid)
+    const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
 
     async function load() {
@@ -110,7 +110,7 @@ function BasicView(props: BasicViewProps) {
     const runUUID = params.get('run_uuid') as string
 
     const statusCache = CACHE.getStatus(runUUID)
-    const analysisCache = CACHE.getAnalysis(props.analysisIndex, runUUID)
+    const analysisCache = props.cache.getAnalysis(runUUID)
     const preferenceCache = CACHE.getPreference()
 
     const [preference, setPreference] = useState(null as unknown as Preference)
@@ -141,7 +141,7 @@ function BasicView(props: BasicViewProps) {
             setPreference(await preferenceCache.getPreference())
 
             if (preference) {
-                let analysis_preferences = preference.getAnalysis(runUUID, props.analysisIndex)
+                let analysis_preferences = preference.getAnalysis(runUUID, props.analysisName)
                 if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx(analysis_preferences)
                 } else if (track) {
@@ -155,7 +155,7 @@ function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, preference, preferenceCache, props.analysisIndex, runUUID])
+    }, [track, preference, preferenceCache, props.analysisName, runUUID])
 
     useEffect(() => {
         function updatePreference() {
@@ -190,9 +190,9 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.setAnalysis(runUUID, props.analysisIndex, plotIdx)
+            preference.setAnalysis(runUUID, props.analysisName, plotIdx)
         }
-    }, [plotIdx, preference, props.analysisIndex, runUUID])
+    }, [plotIdx, preference, props.analysisName, runUUID])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {
