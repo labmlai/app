@@ -1,2 +1,2 @@
-web_api: http://localhost:5000/api/v1/track?
+web_api: http://localhost:5000/api/v1/backend/track?
 web_api_open_browser: false

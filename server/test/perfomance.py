@@ -7,7 +7,7 @@ with experiment.record(name='sample', exp_conf=conf, writers={'web_api'}):
     for i in range(1000):
         values = {'loss': random()}
         for j in range(0, 100):
-            values[f'grad.fc.{i}.l1'] = random()
-            values[f'grad.fc.{i}.l2'] = random()
-            values[f'grad.fc.{i}.mean'] = random()
+            values[f'grad.fc.{j}.l1'] = random()
+            values[f'grad.fc.{j}.l2'] = random()
+            values[f'grad.fc.{j}.mean'] = random()
         tracker.save(i, values)
