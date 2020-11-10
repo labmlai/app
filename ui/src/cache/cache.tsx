@@ -6,7 +6,7 @@ import {RunsList, RunsListModel} from "../models/run_list"
 import {Preference, PreferenceModel} from "../models/preferences"
 import {User, UserModel} from "../models/user"
 
-const TRACKING_TIMEOUT = 60 * 1000
+const RELOAD_TIMEOUT = 60 * 1000
 
 class BroadcastPromise<T> {
     // Registers a bunch of promises and broadcast to all of them
@@ -142,9 +142,8 @@ class AnalysisCache {
         this.url = url
     }
 
-
-    private static isTrackingTimeOut(lastUpdated: number): boolean {
-        return (new Date()).getTime() - lastUpdated > TRACKING_TIMEOUT
+    private static isReloadTimeout(lastUpdated: number): boolean {
+        return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
     }
 
     private async loadTracking(): Promise<SeriesModel[]> {
@@ -158,7 +157,7 @@ class AnalysisCache {
         let status = await this.statusCache.getStatus()
         let lastUpdated = this.statusCache.getLastUpdated()
 
-        if (this.tracking == null || (status.isRunning && AnalysisCache.isTrackingTimeOut(lastUpdated)) || isRefresh) {
+        if (this.tracking == null || (status.isRunning && AnalysisCache.isReloadTimeout(lastUpdated)) || isRefresh) {
             this.tracking = await this.loadTracking()
             this.statusCache.setLastUpdated((new Date()).getTime())
             await this.statusCache.getStatus(true)
