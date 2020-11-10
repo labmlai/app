@@ -72,7 +72,7 @@ def after_request(response):
     request_time = time.time() - g.request_start_time
 
     if request_time > 0.4:
-        logger.error(f'uri: {request.full_path} request_time: {"%.5fs" % request_time} data: {request.data}')
+        logger.error(f'uri: {request.full_path} request_time: {"%.5fs" % request_time}')
     else:
         logger.info(f'uri: {request.full_path} request_time: {"%.5fs" % request_time}')
 
