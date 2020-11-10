@@ -1,15 +1,16 @@
-import NETWORK from "../network";
-import {ANALYSES_INDICES} from "../cards/types";
-import {Run, RunModel, SeriesModel} from "../models/run";
-import {Status, StatusModel} from "../models/status";
-import {RunsList, RunsListModel} from "../models/run_list";
-import {Preference, PreferenceModel} from "../models/preferences";
-import {User, UserModel} from "../models/user";
+import NETWORK from "../network"
+import {ANALYSES_INDICES} from "../cards/types"
+import {Run, RunModel, SeriesModel} from "../models/run"
+import {Status, StatusModel} from "../models/status"
+import {RunsList, RunsListModel} from "../models/run_list"
+import {Preference, PreferenceModel} from "../models/preferences"
+import {User, UserModel} from "../models/user"
 
 const TRACKING_TIMEOUT = 60 * 1000
 
 class BroadcastPromise<T> {
-    private isLoading: boolean;
+    // Registers a bunch of promises and broadcast to all of them
+    private isLoading: boolean
     private resolvers: any[]
     private rejectors: any[]
 
@@ -31,7 +32,9 @@ class BroadcastPromise<T> {
 
         if (!this.isLoading) {
             this.isLoading = true
-            load().then((res) => {
+            // Load again only if not currently loading;
+            // Otherwise resolve/reject will be called when the current loading completes.
+            load().then((res: T) => {
                 this.resolve(res)
             }).catch((err) => {
                 this.reject(err)
@@ -167,31 +170,31 @@ class AnalysisCache {
 
 class MetricAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'metrics_track', statusCache);
+        super(uuid, 'metrics_track', statusCache)
     }
 }
 
 class GradientAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'gradients_track', statusCache);
+        super(uuid, 'gradients_track', statusCache)
     }
 }
 
 class ParameterAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'parameters_track', statusCache);
+        super(uuid, 'parameters_track', statusCache)
     }
 }
 
 class OutputAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'outputs_track', statusCache);
+        super(uuid, 'outputs_track', statusCache)
     }
 }
 
 class TimeTrackingAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'times_track', statusCache);
+        super(uuid, 'times_track', statusCache)
     }
 }
 
