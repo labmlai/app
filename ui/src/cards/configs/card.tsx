@@ -33,11 +33,6 @@ function Card(props: CardProps) {
         configsView = <LabLoader/>
     }
 
-   if (run){
-       console.log(run)
-       console.log(run.run_uuid)
-   }
-
     return <div>
         <div className={'labml-card labml-card-action'} onClick={
             () => {
