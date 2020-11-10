@@ -1,9 +1,9 @@
 import NETWORK from "../network"
-import {Run, RunModel, SeriesModel} from "../models/run"
-import {Status, StatusModel} from "../models/status"
+import {Run, SeriesModel} from "../models/run"
+import {Status} from "../models/status"
 import {RunsList, RunsListModel} from "../models/run_list"
 import {Preference, PreferenceModel} from "../models/preferences"
-import {User, UserModel} from "../models/user"
+import {User} from "../models/user"
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -67,7 +67,7 @@ class BroadcastPromise<T> {
 }
 
 abstract class CacheObject<T> {
-    private data!: T
+    protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number
 
@@ -77,8 +77,8 @@ abstract class CacheObject<T> {
 
     abstract async load(): Promise<T>
 
-    async get(): Promise<T> {
-        if (this.data == null) {
+    async get(isRefresh = false): Promise<T> {
+        if (this.data == null || isRefresh) {
             this.data = await this.load()
         }
 
@@ -104,30 +104,21 @@ class RunCache extends CacheObject<Run> {
     }
 }
 
-export class StatusCache {
+export class StatusCache extends CacheObject<Status> {
     private readonly uuid: string
     private lastUpdated: number
-    private status!: Status
-    private statusPromise = new BroadcastPromise<StatusModel>()
 
     constructor(uuid: string) {
+        super()
         this.uuid = uuid
         this.lastUpdated = 0
     }
 
-    private async loadStatus(): Promise<StatusModel> {
-        return this.statusPromise.create(async () => {
+    async load(): Promise<Status> {
+        return this.broadcastPromise.create(async () => {
             let res = await NETWORK.get_status(this.uuid)
             return res.data
         })
-    }
-
-    async getStatus(isRefresh = false): Promise<Status> {
-        if (this.status == null || isRefresh) {
-            this.status = new Status(await this.loadStatus())
-        }
-
-        return this.status
     }
 
     public getLastUpdated() {
@@ -141,14 +132,50 @@ export class StatusCache {
     }
 }
 
-export class AnalysisCache {
+class UserCache extends CacheObject<User> {
+    constructor() {
+        super()
+    }
+
+    async load(): Promise<User> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.get_user()
+            return res.data
+        })
+    }
+}
+
+class RunsListCache {
+    private runsList!: RunsList
+    private runsListPromise = new BroadcastPromise<RunsListModel>()
+
+    private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
+        return this.runsListPromise.create(async () => {
+            let res = await NETWORK.get_runs(labml_token)
+            return res.data
+        })
+    }
+
+    async getRunsList(labml_token: string | null): Promise<RunsList> {
+        if (labml_token) {
+            return await this.loadRuns(labml_token)
+        }
+
+        if (this.runsList == null) {
+            this.runsList = await this.loadRuns(null)
+        }
+
+        return this.runsList
+    }
+}
+
+export class AnalysisCache extends CacheObject<SeriesModel[]> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: StatusCache
-    private tracking!: SeriesModel[]
-    private trackingPromise = new BroadcastPromise<SeriesModel[]>()
 
     constructor(uuid: string, url: string, statusCache: StatusCache) {
+        super()
         this.uuid = uuid
         this.statusCache = statusCache
         this.url = url
@@ -158,24 +185,24 @@ export class AnalysisCache {
         return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
     }
 
-    private async loadTracking(): Promise<SeriesModel[]> {
-        return this.trackingPromise.create(async () => {
+    async load(): Promise<SeriesModel[]> {
+        return this.broadcastPromise.create(async () => {
             let res = await NETWORK.get_tracking(this.url, this.uuid)
             return res.data
         })
     }
 
-    async getTracking(isRefresh = false): Promise<SeriesModel[]> {
-        let status = await this.statusCache.getStatus()
+    async get(isRefresh = false): Promise<SeriesModel[]> {
+        let status = await this.statusCache.get()
         let lastUpdated = this.statusCache.getLastUpdated()
 
-        if (this.tracking == null || (status.isRunning && AnalysisCache.isReloadTimeout(lastUpdated)) || isRefresh) {
-            this.tracking = await this.loadTracking()
+        if (this.data == null || (status.isRunning && AnalysisCache.isReloadTimeout(lastUpdated)) || isRefresh) {
+            this.data = await this.load()
             this.statusCache.setLastUpdated((new Date()).getTime())
-            await this.statusCache.getStatus(true)
+            await this.statusCache.get(true)
         }
 
-        return this.tracking
+        return this.data
     }
 }
 
@@ -202,50 +229,6 @@ class PreferenceCache {
         await NETWORK.update_preferences(preference)
 
         return this.preference
-    }
-}
-
-class UserCache {
-    private user!: User
-    private userPromise = new BroadcastPromise<UserModel>()
-
-    private async loadUser(): Promise<UserModel> {
-        return this.userPromise.create(async () => {
-            let res = await NETWORK.get_user()
-            return res.data
-        })
-    }
-
-    async getUser(): Promise<User> {
-        if (this.user == null) {
-            this.user = new User(await this.loadUser())
-        }
-
-        return this.user
-    }
-}
-
-class RunsListCache {
-    private runsList!: RunsList
-    private runsListPromise = new BroadcastPromise<RunsListModel>()
-
-    private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
-        return this.runsListPromise.create(async () => {
-            let res = await NETWORK.get_runs(labml_token)
-            return res.data
-        })
-    }
-
-    async getRunsList(labml_token: string | null): Promise<RunsList> {
-        if (labml_token) {
-            return await this.loadRuns(labml_token)
-        }
-
-        if (this.runsList == null) {
-            this.runsList = await this.loadRuns(null)
-        }
-
-        return this.runsList
     }
 }
 

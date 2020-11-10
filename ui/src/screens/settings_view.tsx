@@ -28,7 +28,7 @@ function SettingsView() {
         const userCache = CACHE.getUser()
 
         async function load() {
-            let currentUser = await userCache.getUser()
+            let currentUser = await userCache.get()
             if (currentUser) {
                 setUser(currentUser)
                 setIsLoading(false)

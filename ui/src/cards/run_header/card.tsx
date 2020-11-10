@@ -68,7 +68,7 @@ function Card(props: CardProps) {
 
     useEffect(() => {
         async function load() {
-            let status = await statusCache.getStatus()
+            let status = await statusCache.get()
             setStatus(status)
             let run = await runCache.get()
             document.title = `LabML: ${run.name.trim()}`
@@ -84,7 +84,7 @@ function Card(props: CardProps) {
 
     useEffect(() => {
         async function loadStatus() {
-            let status = await statusCache.getStatus()
+            let status = await statusCache.get()
             setStatus(status)
             setLastUpdated(getTimeDiff(statusCache.getLastUpdated()))
             if (!status.isRunning) {

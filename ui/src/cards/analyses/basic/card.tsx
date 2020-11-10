@@ -57,7 +57,7 @@ function Card(props: BasicCardProps, ref: any) {
     const history = useHistory()
 
     async function load() {
-        setTrack(await analysisCache.getTracking(true))
+        setTrack(await analysisCache.get(true))
     }
 
     useImperativeHandle(ref, () => ({
@@ -68,8 +68,8 @@ function Card(props: BasicCardProps, ref: any) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await analysisCache.getTracking())
-            let status = await statusCache.getStatus()
+            setTrack(await analysisCache.get())
+            let status = await statusCache.get()
             if (!status.isRunning) {
                 clearInterval(interval)
             }
@@ -122,8 +122,8 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await analysisCache.getTracking())
-            let status = await statusCache.getStatus()
+            setTrack(await analysisCache.get())
+            let status = await statusCache.get()
             if (!status.isRunning) {
                 clearInterval(interval)
             }
