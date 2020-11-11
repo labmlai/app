@@ -71,7 +71,7 @@ abstract class CacheObject<T> {
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number
 
-    protected constructor() {
+   constructor() {
         this.lastUsed = 0
     }
 
@@ -142,10 +142,6 @@ export class StatusCache {
 }
 
 class UserCache extends CacheObject<User> {
-    constructor() {
-        super()
-    }
-
     async load(): Promise<User> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.get_user()
