@@ -1,6 +1,6 @@
 import NETWORK from "../network"
 import {Run, SeriesModel} from "../models/run"
-import {Status} from "../models/status"
+import {Status, StatusModel} from "../models/status"
 import {RunsList, RunsListModel} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
 import {User} from "../models/user"
@@ -104,21 +104,30 @@ class RunCache extends CacheObject<Run> {
     }
 }
 
-export class StatusCache extends CacheObject<Status> {
+export class StatusCache {
     private readonly uuid: string
     private lastUpdated: number
+    private status!: Status
+    private statusPromise = new BroadcastPromise<StatusModel>()
 
     constructor(uuid: string) {
-        super()
         this.uuid = uuid
         this.lastUpdated = 0
     }
 
-    async load(): Promise<Status> {
-        return this.broadcastPromise.create(async () => {
+    private async loadStatus(): Promise<StatusModel> {
+        return this.statusPromise.create(async () => {
             let res = await NETWORK.get_status(this.uuid)
             return res.data
         })
+    }
+
+    async get(isRefresh = false): Promise<Status> {
+        if (this.status == null || isRefresh) {
+            this.status = new Status(await this.loadStatus())
+        }
+
+        return this.status
     }
 
     public getLastUpdated() {

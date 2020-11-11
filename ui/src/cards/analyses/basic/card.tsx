@@ -173,7 +173,7 @@ function BasicView(props: BasicViewProps) {
     }, [preference, preferenceCache])
 
     async function load() {
-        setTrack(await analysisCache.getTracking(true))
+        setTrack(await analysisCache.get(true))
     }
 
     function onRefresh() {
@@ -192,7 +192,7 @@ function BasicView(props: BasicViewProps) {
             setPlotIdx(new Array<number>(...plotIdx))
             preference.series_preferences = plotIdx
         }
-    }, [plotIdx, preference, props.analysisName, runUUID])
+    }, [plotIdx, preference])
 
 
     if (track != null && track.length > 0 && plotIdx == null) {
