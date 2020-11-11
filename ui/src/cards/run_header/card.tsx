@@ -57,7 +57,11 @@ function RunView(props: RunViewProps) {
     </div>
 }
 
-function Card(props: CardProps) {
+interface RunHeaderProps extends CardProps {
+    lastUpdated?: number
+}
+
+function Card(props: RunHeaderProps) {
     const [run, setRun] = useState(null as unknown as Run)
     const [isSelected, setIsSelected] = useState(false)
     const [status, setStatus] = useState(null as unknown as Status)
@@ -73,9 +77,10 @@ function Card(props: CardProps) {
             let run = await runCache.get()
             document.title = `LabML: ${run.name.trim()}`
             setRun(run)
-            let lastUpdated = statusCache.getLastUpdated()
+            // TODO change this based on discussion
+            let lastUpdated = props.lastUpdated ? props.lastUpdated : statusCache.lastUpdated
             if (status && status.isRunning && lastUpdated > 0) {
-                setLastUpdated(getTimeDiff(statusCache.getLastUpdated()))
+                setLastUpdated(getTimeDiff(lastUpdated))
             }
         }
 
@@ -86,7 +91,9 @@ function Card(props: CardProps) {
         async function loadStatus() {
             let status = await statusCache.get()
             setStatus(status)
-            setLastUpdated(getTimeDiff(statusCache.getLastUpdated()))
+            // TODO change this based on discussion
+            let lastUpdated = props.lastUpdated ? props.lastUpdated : statusCache.lastUpdated
+            setLastUpdated(getTimeDiff(lastUpdated))
             if (!status.isRunning) {
                 clearInterval(interval)
             }

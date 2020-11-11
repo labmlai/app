@@ -70,9 +70,11 @@ abstract class CacheObject<T> {
     protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number
+    public lastUpdated: number
 
-   constructor() {
+    constructor() {
         this.lastUsed = 0
+        this.lastUpdated = 0
     }
 
     abstract async load(): Promise<T>
@@ -80,6 +82,7 @@ abstract class CacheObject<T> {
     async get(isRefresh = false): Promise<T> {
         if (this.data == null || isRefresh) {
             this.data = await this.load()
+            this.lastUpdated = (new Date()).getTime()
         }
 
         this.lastUsed = new Date().getTime()
@@ -106,13 +109,13 @@ class RunCache extends CacheObject<Run> {
 
 export class StatusCache {
     private readonly uuid: string
-    private lastUpdated: number
+    private lastUpdatedTime: number
     private status!: Status
     private statusPromise = new BroadcastPromise<StatusModel>()
 
     constructor(uuid: string) {
         this.uuid = uuid
-        this.lastUpdated = 0
+        this.lastUpdatedTime = 0
     }
 
     private async loadStatus(): Promise<StatusModel> {
@@ -125,19 +128,14 @@ export class StatusCache {
     async get(isRefresh = false): Promise<Status> {
         if (this.status == null || isRefresh) {
             this.status = new Status(await this.loadStatus())
+            this.lastUpdatedTime = (new Date()).getTime()
         }
 
         return this.status
     }
 
-    public getLastUpdated() {
-        return this.lastUpdated
-    }
-
-    public setLastUpdated(lastUpdated: number) {
-        this.lastUpdated = lastUpdated
-
-        return lastUpdated
+    get lastUpdated(): number {
+        return this.lastUpdatedTime
     }
 }
 
@@ -186,8 +184,8 @@ export class AnalysisCache extends CacheObject<SeriesModel[]> {
         this.url = url
     }
 
-    private static isReloadTimeout(lastUpdated: number): boolean {
-        return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
+    private isReloadTimeout(): boolean {
+        return (new Date()).getTime() - this.lastUpdated > RELOAD_TIMEOUT
     }
 
     async load(): Promise<SeriesModel[]> {
@@ -199,11 +197,10 @@ export class AnalysisCache extends CacheObject<SeriesModel[]> {
 
     async get(isRefresh = false): Promise<SeriesModel[]> {
         let status = await this.statusCache.get()
-        let lastUpdated = this.statusCache.getLastUpdated()
 
-        if (this.data == null || (status.isRunning && AnalysisCache.isReloadTimeout(lastUpdated)) || isRefresh) {
+        if (this.data == null || (status.isRunning && this.isReloadTimeout()) || isRefresh) {
             this.data = await this.load()
-            this.statusCache.setLastUpdated((new Date()).getTime())
+            this.lastUpdated = (new Date()).getTime()
             await this.statusCache.get(true)
         }
 

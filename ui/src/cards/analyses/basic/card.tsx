@@ -206,7 +206,7 @@ function BasicView(props: BasicViewProps) {
             <BackButton/>
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.analysisName}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
