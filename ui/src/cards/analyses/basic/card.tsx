@@ -1,7 +1,6 @@
-import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from "react";
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {LineChart, SparkLines} from "./components";
 import {SeriesModel} from "../../../models/run";
-import {AnalysisPreference} from "../../../models/preferences";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"
@@ -113,12 +112,13 @@ function BasicView(props: BasicViewProps) {
     const analysisCache = props.cache.getAnalysis(runUUID)
     const preferenceCache = props.cache.getPreferences(runUUID)
 
-    const [preference, setPreference] = useState(null as unknown as AnalysisPreference)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
+
+    let preference = useRef(null) as any
 
     useEffect(() => {
         async function load() {
@@ -138,10 +138,10 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
-            setPreference(await preferenceCache.get())
+            preference.current = await preferenceCache.get()
 
-            if (preference) {
-                let analysis_preferences = preference.series_preferences
+            if (preference.current) {
+                let analysis_preferences = preference.current.series_preferences
                 if (analysis_preferences.length > 0) {
                     setPlotIdx(analysis_preferences)
                 } else if (track) {
@@ -155,12 +155,12 @@ function BasicView(props: BasicViewProps) {
         }
 
         load().then()
-    }, [track, preference, preferenceCache, props.analysisName, runUUID])
+    }, [track, preference, preferenceCache])
 
     useEffect(() => {
         function updatePreference() {
-            if (preference) {
-                preferenceCache.setPreference(preference).then()
+            if (preference.current) {
+                preferenceCache.setPreference(preference.current).then()
             }
         }
 
@@ -190,7 +190,7 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.series_preferences = plotIdx
+            preference.current.series_preferences = plotIdx
         }
     }, [plotIdx, preference])
 

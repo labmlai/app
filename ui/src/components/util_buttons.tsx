@@ -63,7 +63,7 @@ export function RefreshButton(props: RefreshButtonProps) {
 
     useEffect(() => {
         async function load() {
-            setStatus(await statusCache.getStatus())
+            setStatus(await statusCache.get())
         }
 
         load().then()
