@@ -2,7 +2,7 @@ import NETWORK from "../network"
 import {Run, SeriesModel} from "../models/run"
 import {Status} from "../models/status"
 import {RunsList, RunsListModel} from "../models/run_list"
-import {Preference, PreferenceModel} from "../models/preferences"
+import {AnalysisPreference} from "../models/preferences"
 import {User} from "../models/user"
 
 const RELOAD_TIMEOUT = 60 * 1000
@@ -206,29 +206,27 @@ export class AnalysisCache extends CacheObject<SeriesModel[]> {
     }
 }
 
-class PreferenceCache {
-    private preference!: Preference
-    private preferencesPromise = new BroadcastPromise<PreferenceModel>()
+export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
+    private readonly uuid: string
+    private readonly url: string
 
-    private async loadPreferences(): Promise<PreferenceModel> {
-        return this.preferencesPromise.create(async () => {
-            let res = await NETWORK.get_preferences()
+    constructor(uuid: string, url: string) {
+        super()
+        this.uuid = uuid
+        this.url = url
+    }
+
+    async load(): Promise<AnalysisPreference> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.get_preferences(this.url, this.uuid)
             return res.data
         })
     }
 
-    async getPreference(): Promise<Preference> {
-        if (this.preference == null) {
-            this.preference = new Preference(await this.loadPreferences())
-        }
+    async setPreference(preference: AnalysisPreference): Promise<AnalysisPreference> {
+        await NETWORK.update_preferences(this.url, this.uuid, preference)
 
-        return this.preference
-    }
-
-    async setPreference(preference: Preference): Promise<Preference> {
-        await NETWORK.update_preferences(preference)
-
-        return this.preference
+        return this.data
     }
 }
 
@@ -238,14 +236,12 @@ class Cache {
 
     private user: UserCache | null
     private runsList: RunsListCache | null
-    private preferences: PreferenceCache | null
 
     constructor() {
         this.runs = {}
         this.statuses = {}
         this.user = null
         this.runsList = null
-        this.preferences = null
     }
 
     getRun(uuid: string) {
@@ -278,14 +274,6 @@ class Cache {
         }
 
         return this.runsList
-    }
-
-    getPreference() {
-        if (this.preferences == null) {
-            this.preferences = new PreferenceCache()
-        }
-
-        return this.preferences
     }
 }
 

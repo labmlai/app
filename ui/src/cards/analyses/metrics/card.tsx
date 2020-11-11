@@ -5,18 +5,26 @@ import {useLocation} from "react-router-dom";
 import {SeriesCardProps} from "../../types";
 import {BasicCard, BasicView} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
-import {AnalysisCache, StatusCache} from "../../../cache/cache";
+import {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
 
 const ANALYSIS = 'Metrics'
 const URL = 'metrics'
 
 class MetricAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'metrics_track', statusCache)
+        super(uuid, 'metrics', statusCache)
     }
 }
 
-let cache = new Cache(MetricAnalysisCache)
+
+class MetricPreferenceCache extends AnalysisPreferenceCache {
+    constructor(uuid: string) {
+        super(uuid, 'metrics');
+    }
+}
+
+
+let cache = new Cache(MetricAnalysisCache, MetricPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {

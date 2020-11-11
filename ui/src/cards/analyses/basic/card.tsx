@@ -1,7 +1,7 @@
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useState} from "react";
 import {LineChart, SparkLines} from "./components";
 import {SeriesModel} from "../../../models/run";
-import {Preference} from "../../../models/preferences";
+import {AnalysisPreference} from "../../../models/preferences";
 import useWindowDimensions from "../../../utils/window_dimensions";
 import {defaultSeriesToPlot} from "./utils";
 import RunHeaderCard from "../../run_header/card"
@@ -111,9 +111,9 @@ function BasicView(props: BasicViewProps) {
 
     const statusCache = CACHE.getStatus(runUUID)
     const analysisCache = props.cache.getAnalysis(runUUID)
-    const preferenceCache = CACHE.getPreference()
+    const preferenceCache = props.cache.getPreferences(runUUID)
 
-    const [preference, setPreference] = useState(null as unknown as Preference)
+    const [preference, setPreference] = useState(null as unknown as AnalysisPreference)
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
@@ -138,11 +138,11 @@ function BasicView(props: BasicViewProps) {
 
     useEffect(() => {
         async function load() {
-            setPreference(await preferenceCache.getPreference())
+            setPreference(await preferenceCache.get())
 
             if (preference) {
-                let analysis_preferences = preference.getAnalysis(runUUID, props.analysisName)
-                if (analysis_preferences && analysis_preferences.length > 0) {
+                let analysis_preferences = preference.series_preferences
+                if (analysis_preferences.length > 0) {
                     setPlotIdx(analysis_preferences)
                 } else if (track) {
                     let res: number[] = []
@@ -190,7 +190,7 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.setAnalysis(runUUID, props.analysisName, plotIdx)
+            preference.series_preferences = plotIdx
         }
     }, [plotIdx, preference, props.analysisName, runUUID])
 

@@ -159,43 +159,6 @@ def get_status(run_uuid: str) -> flask.Response:
 
 
 @login_required
-def get_preferences() -> flask.Response:
-    preferences_data = {}
-    status_code = 400
-
-    u = get_auth_user()
-    if not u:
-        return jsonify({})
-
-    up = u.preferences.load()
-    if up:
-        preferences_data = up.get_data()
-        status_code = 200
-
-    response = make_response(jsonify(preferences_data))
-    response.status_code = status_code
-
-    logger.debug(f'preferences, user: {u.key}')
-
-    return response
-
-
-@login_required
-def set_preferences() -> flask.Response:
-    u = get_auth_user()
-    if not u:
-        return jsonify({})
-
-    up = u.preferences.load()
-
-    up.update_preferences(request.json)
-
-    logger.debug(f'update_preferences, user: {u.key}')
-
-    return jsonify({'errors': up.errors})
-
-
-@login_required
 @check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
     s = get_session()
@@ -241,12 +204,9 @@ def add_handlers(app: flask.Flask):
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'GET', get_user, 'user')
-    _add_ui(app, 'GET', get_preferences, 'preferences')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
-
-    _add_ui(app, 'POST', set_preferences, 'preferences')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')

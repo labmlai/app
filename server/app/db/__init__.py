@@ -11,7 +11,6 @@ from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
-from .preferences import Preferences
 from ..analyses import AnalysisManager
 
 from .. import settings
@@ -19,21 +18,20 @@ from .. import settings
 DATA_PATH = settings.DATA_PATH
 
 Model.set_db_drivers([FileDbDriver(s(), m, Path(f'{DATA_PATH}/{p}')) for s, m, p in AnalysisManager.get_db_models()] + [
-    FileDbDriver(YamlSerializer(), User, Path(f'{DATA_PATH}/User')),
-    FileDbDriver(YamlSerializer(), Project, Path(f'{DATA_PATH}/Project')),
-    FileDbDriver(JsonSerializer(), Status, Path(f'{DATA_PATH}/Status')),
-    FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/RunStatus')),
-    FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/Session')),
-    FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/Run')),
-    FileDbDriver(JsonSerializer(), Preferences, Path(f'{DATA_PATH}/Preferences')),
+    FileDbDriver(YamlSerializer(), User, Path(f'{DATA_PATH}/user')),
+    FileDbDriver(YamlSerializer(), Project, Path(f'{DATA_PATH}/project')),
+    FileDbDriver(JsonSerializer(), Status, Path(f'{DATA_PATH}/status')),
+    FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/run_status')),
+    FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/session')),
+    FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/run')),
 ])
 
 Index.set_db_drivers(
     [FileIndexDbDriver(s(), m, Path(f'{DATA_PATH}/{p}')) for s, m, p in AnalysisManager.get_db_indexes()] + [
-        FileIndexDbDriver(YamlSerializer(), ProjectIndex, Path(f'{DATA_PATH}/ProjectIndex.yaml')),
-        FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/UserIndex.yaml')),
-        FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/SessionIndex.yaml')),
-        FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/RunIndex.yaml')),
+        FileIndexDbDriver(YamlSerializer(), ProjectIndex, Path(f'{DATA_PATH}/project_index.yaml')),
+        FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/user_index.yaml')),
+        FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/session_index.yaml')),
+        FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/run_index.yaml')),
     ])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')

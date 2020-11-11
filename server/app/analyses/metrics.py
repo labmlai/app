@@ -1,22 +1,34 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from labml_db import Model, Index
 
+from ..logging import logger
 from .analysis import Analysis
 from .series import SeriesModel, Series
 from ..enums import INDICATORS
 from .series_collection import SeriesCollection
+from .preferences import Preferences
 
 
 @Analysis.db_model
 class MetricsModel(Model['MetricsModel'], SeriesCollection):
-    path = 'Metrics'
+    path = 'metrics'
+
+
+@Analysis.db_model
+class MetricsPreferencesModel(Model['MetricsPreferencesModel'], Preferences):
+    path = 'metrics_preferences'
+
+
+@Analysis.db_index
+class MetricsPreferencesIndex(Index['MetricsPreferences']):
+    path = 'metrics_preferences_index.yaml'
 
 
 @Analysis.db_index
 class MetricsIndex(Index['Metrics']):
-    path = 'MetricsIndex.yaml'
+    path = 'metrics_index.yaml'
 
 
 class MetricsAnalysis(Analysis):
@@ -56,12 +68,16 @@ class MetricsAnalysis(Analysis):
             m.save()
             MetricsIndex.set(run_uuid, m.key)
 
+            mp = MetricsPreferencesModel()
+            mp.save()
+            MetricsPreferencesIndex.set(run_uuid, mp.key)
+
             return MetricsAnalysis(m)
 
         return MetricsAnalysis(metrics_key.load())
 
 
-@Analysis.route('POST', 'metrics_track/<run_uuid>')
+@Analysis.route('GET', 'metrics/<run_uuid>')
 def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
@@ -75,3 +91,35 @@ def get_metrics_tracking(run_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'metrics/preferences/<run_uuid>')
+def get_metrics_preferences(run_uuid: str) -> Any:
+    preferences_data = {}
+
+    preferences_key = MetricsPreferencesIndex.get(run_uuid)
+    if not preferences_key:
+        logger.error(f'no metrics preferences found run_uuid : {run_uuid}')
+        return jsonify(preferences_data)
+
+    mp: MetricsPreferencesModel = preferences_key.load()
+    preferences_data = mp.get_data()
+
+    response = make_response(jsonify(preferences_data))
+
+    return response
+
+
+@Analysis.route('POST', 'metrics/preferences/<run_uuid>')
+def set_metrics_preferences(run_uuid: str) -> Any:
+    preferences_key = MetricsPreferencesIndex.get(run_uuid)
+
+    if not preferences_key:
+        return jsonify({})
+
+    mp = preferences_key.load()
+    mp.update_preferences(request.json)
+
+    logger.debug(f'update metrics references: {mp.key}')
+
+    return jsonify({'errors': mp.errors})

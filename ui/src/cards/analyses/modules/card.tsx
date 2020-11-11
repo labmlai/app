@@ -5,7 +5,7 @@ import {useLocation} from "react-router-dom";
 import {SeriesCardProps} from "../../types";
 import {BasicCard, BasicView} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
-import {AnalysisCache, StatusCache} from "../../../cache/cache";
+import {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
 
 const ANALYSIS_NAME = 'Outputs - L2 Norm'
 const URL = 'outputs'
@@ -13,11 +13,18 @@ const URL = 'outputs'
 
 class OutputAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'outputs_track', statusCache)
+        super(uuid, 'outputs', statusCache)
     }
 }
 
-let cache = new Cache(OutputAnalysisCache)
+
+class OutputPreferenceCache extends AnalysisPreferenceCache {
+    constructor(uuid: string) {
+        super(uuid, 'outputs');
+    }
+}
+
+let cache = new Cache(OutputAnalysisCache, OutputPreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
     return <BasicCard analysisName={ANALYSIS_NAME}

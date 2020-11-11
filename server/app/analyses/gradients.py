@@ -1,22 +1,34 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from labml_db import Model, Index
 
+from ..logging import logger
 from .analysis import Analysis
 from .series import SeriesModel
 from ..enums import SeriesEnums
 from .series_collection import SeriesCollection
+from .preferences import Preferences
 
 
 @Analysis.db_model
 class GradientsModel(Model['GradientsModel'], SeriesCollection):
-    path = 'Gradients'
+    path = 'gradients'
+
+
+@Analysis.db_model
+class GradientsPreferencesModel(Model['GradientsPreferencesModel'], Preferences):
+    path = 'gradients_preferences'
+
+
+@Analysis.db_index
+class GradientsPreferencesIndex(Index['GradientsPreferences']):
+    path = 'gradients_preferences_index.yaml'
 
 
 @Analysis.db_index
 class GradientsIndex(Index['Gradients']):
-    path = 'GradientsIndex.yaml'
+    path = 'gradients_index.yaml'
 
 
 class GradientsAnalysis(Analysis):
@@ -50,12 +62,16 @@ class GradientsAnalysis(Analysis):
             g.save()
             GradientsIndex.set(run_uuid, g.key)
 
+            gp = GradientsPreferencesModel()
+            gp.save()
+            GradientsPreferencesIndex.set(run_uuid, gp.key)
+
             return GradientsAnalysis(g)
 
         return GradientsAnalysis(gradients_key.load())
 
 
-@Analysis.route('POST', 'gradients_track/<run_uuid>')
+@Analysis.route('GET', 'gradients/<run_uuid>')
 def get_grads_tracking(run_uuid: str) -> Any:
     track_data = []
     status_code = 400
@@ -69,3 +85,35 @@ def get_grads_tracking(run_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'gradients/preferences/<run_uuid>')
+def get_grads_preferences(run_uuid: str) -> Any:
+    preferences_data = {}
+
+    preferences_key = GradientsPreferencesIndex.get(run_uuid)
+    if not preferences_key:
+        logger.error(f'no gradients preferences found run_uuid : {run_uuid}')
+        return jsonify(preferences_data)
+
+    gp: GradientsPreferencesModel = preferences_key.load()
+    preferences_data = gp.get_data()
+
+    response = make_response(jsonify(preferences_data))
+
+    return response
+
+
+@Analysis.route('POST', 'gradients/preferences/<run_uuid>')
+def set_grads_preferences(run_uuid: str) -> Any:
+    preferences_key = GradientsPreferencesIndex.get(run_uuid)
+
+    if not preferences_key:
+        return jsonify({})
+
+    gp = preferences_key.load()
+    gp.update_preferences(request.json)
+
+    logger.debug(f'update gradients references: {gp.key}')
+
+    return jsonify({'errors': gp.errors})

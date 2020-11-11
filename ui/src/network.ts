@@ -34,7 +34,15 @@ class Network {
     }
 
     async get_tracking(url: string, run_uuid: string): Promise<any> {
-        return this.axiosInstance.post(`/${url}/${run_uuid}`, {})
+        return this.axiosInstance.get(`/${url}/${run_uuid}`, {})
+    }
+
+    async get_preferences(url: string, run_uuid: string): Promise<any> {
+        return this.axiosInstance.get(`/${url}/preferences/${run_uuid}`, {})
+    }
+
+    async update_preferences(url: string, run_uuid: string, data: object): Promise<any> {
+        return this.axiosInstance.post(`/${url}/preferences/${run_uuid}`, data)
     }
 
     async get_runs(labml_token: string | null): Promise<any> {
@@ -43,14 +51,6 @@ class Network {
 
     async get_user(): Promise<any> {
         return this.axiosInstance.get(`/user`, {})
-    }
-
-    async get_preferences(): Promise<any> {
-        return this.axiosInstance.get(`/preferences`, {})
-    }
-
-    async update_preferences(data: object): Promise<any> {
-        return this.axiosInstance.post(`/preferences`, data)
     }
 
     async sign_in(data: UserModel): Promise<any> {
