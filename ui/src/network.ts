@@ -25,39 +25,39 @@ class Network {
         })
     }
 
-    async get_run(run_uuid: string): Promise<any> {
+    async getRun(run_uuid: string): Promise<any> {
         return this.axiosInstance.get(`/run/${run_uuid}`)
     }
 
-    async get_status(run_uuid: string): Promise<any> {
+    async getStatus(run_uuid: string): Promise<any> {
         return this.axiosInstance.get(`/status/${run_uuid}`)
     }
 
-    async get_tracking(url: string, run_uuid: string): Promise<any> {
+    async getAnalysis(url: string, run_uuid: string): Promise<any> {
         return this.axiosInstance.get(`/${url}/${run_uuid}`, {})
     }
 
-    async get_preferences(url: string, run_uuid: string): Promise<any> {
+    async getPreferences(url: string, run_uuid: string): Promise<any> {
         return this.axiosInstance.get(`/${url}/preferences/${run_uuid}`, {})
     }
 
-    async update_preferences(url: string, run_uuid: string, data: object): Promise<any> {
+    async updatePreferences(url: string, run_uuid: string, data: object): Promise<any> {
         return this.axiosInstance.post(`/${url}/preferences/${run_uuid}`, data)
     }
 
-    async get_runs(labml_token: string | null): Promise<any> {
+    async getRuns(labml_token: string | null): Promise<any> {
         return this.axiosInstance.get(`/runs/${labml_token}`, {})
     }
 
-    async get_user(): Promise<any> {
+    async getUser(): Promise<any> {
         return this.axiosInstance.get(`/user`, {})
     }
 
-    async sign_in(data: UserModel): Promise<any> {
+    async signIn(data: UserModel): Promise<any> {
         return this.axiosInstance.post(`/auth/sign_in`, data)
     }
 
-    async sign_out(): Promise<any> {
+    async signOut(): Promise<any> {
         return this.axiosInstance.delete(`/auth/sign_out`)
     }
 }

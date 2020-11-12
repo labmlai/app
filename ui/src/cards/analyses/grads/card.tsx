@@ -7,7 +7,7 @@ import {BasicView, BasicCard} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
 import {AnalysisCache, StatusCache, AnalysisPreferenceCache} from "../../../cache/cache";
 
-const ANALYSIS = 'Gradients - L2 Norm'
+const TITLE = 'Gradients - L2 Norm'
 const URL = 'gradients'
 
 class GradientAnalysisCache extends AnalysisCache {
@@ -28,7 +28,7 @@ let cache = new Cache(GradientAnalysisCache, GradientPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard analysisName={ANALYSIS}
+    return <BasicCard title={TITLE}
                       uuid={props.uuid}
                       url={URL}
                       cache={cache}
@@ -41,7 +41,7 @@ function AnalysisSummary(props: SeriesCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView analysisName={ANALYSIS}
+    return <BasicView title={TITLE}
                       cache={cache}
                       location={location}/>
 }

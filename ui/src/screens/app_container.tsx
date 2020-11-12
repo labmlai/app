@@ -46,7 +46,7 @@ function AppContainer() {
                 data.email_verified = user.email_verified
                 data.picture = user.picture
 
-                NETWORK.sign_in(data).then((res) => {
+                NETWORK.signIn(data).then((res) => {
                     if (res.data.is_successful) {
                         setLoggedIn(true)
                         mixpanel.track('Successful login');

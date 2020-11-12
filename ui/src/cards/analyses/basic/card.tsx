@@ -92,7 +92,7 @@ function Card(props: BasicCardProps, ref: any) {
             history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
         }
     }>
-        <h3 className={'header'}>{props.analysisName}</h3>
+        <h3 className={'header'}>{props.title}</h3>
         {card}
     </div>
     }
@@ -129,7 +129,7 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.analysisName});
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.title});
 
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
@@ -207,7 +207,7 @@ function BasicView(props: BasicViewProps) {
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
-        <h2 className={'header text-center'}>{props.analysisName}</h2>
+        <h2 className={'header text-center'}>{props.title}</h2>
         <div className={'labml-card'}>{chart}</div>
     </div>
 }

@@ -7,7 +7,7 @@ import {BasicCard, BasicView} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
 import {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
 
-const ANALYSIS = 'Metrics'
+const TITLE = 'Metrics'
 const URL = 'metrics'
 
 class MetricAnalysisCache extends AnalysisCache {
@@ -28,7 +28,7 @@ let cache = new Cache(MetricAnalysisCache, MetricPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard analysisName={ANALYSIS}
+    return <BasicCard title={TITLE}
                       url={URL}
                       cache={cache}
                       uuid={props.uuid}
@@ -40,7 +40,7 @@ function AnalysisSummary(props: SeriesCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView analysisName={ANALYSIS}
+    return <BasicView title={TITLE}
                       cache={cache}
                       location={location}/>
 }

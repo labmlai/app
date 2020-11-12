@@ -39,7 +39,7 @@ function SettingsView() {
     }, [])
 
     function logOut() {
-        NETWORK.sign_out().then((res) => {
+        NETWORK.signOut().then((res) => {
             if (res.data.is_successful) {
                 logout({returnTo: window.location.origin})
             } else {

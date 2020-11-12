@@ -1,6 +1,6 @@
 import NETWORK from "../network"
 import {Run, SeriesModel} from "../models/run"
-import {Status, StatusModel} from "../models/status"
+import {Status} from "../models/status"
 import {RunsList, RunsListModel} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
 import {User} from "../models/user"
@@ -101,49 +101,33 @@ class RunCache extends CacheObject<Run> {
 
     async load(): Promise<Run> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.get_run(this.uuid)
-            return res.data
+            let res = await NETWORK.getRun(this.uuid)
+            return new Run(res.data)
         })
     }
 }
 
-export class StatusCache {
+export class StatusCache extends CacheObject<Status> {
     private readonly uuid: string
-    private lastUpdatedTime: number
-    private status!: Status
-    private statusPromise = new BroadcastPromise<StatusModel>()
 
     constructor(uuid: string) {
+        super()
         this.uuid = uuid
-        this.lastUpdatedTime = 0
     }
 
-    private async loadStatus(): Promise<StatusModel> {
-        return this.statusPromise.create(async () => {
-            let res = await NETWORK.get_status(this.uuid)
-            return res.data
+    async load(): Promise<Status> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getStatus(this.uuid)
+            return new Status(res.data)
         })
-    }
-
-    async get(isRefresh = false): Promise<Status> {
-        if (this.status == null || isRefresh) {
-            this.status = new Status(await this.loadStatus())
-            this.lastUpdatedTime = (new Date()).getTime()
-        }
-
-        return this.status
-    }
-
-    get lastUpdated(): number {
-        return this.lastUpdatedTime
     }
 }
 
 class UserCache extends CacheObject<User> {
     async load(): Promise<User> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.get_user()
-            return res.data
+            let res = await NETWORK.getUser()
+            return new User(res.data)
         })
     }
 }
@@ -154,7 +138,7 @@ class RunsListCache {
 
     private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
         return this.runsListPromise.create(async () => {
-            let res = await NETWORK.get_runs(labml_token)
+            let res = await NETWORK.getRuns(labml_token)
             return res.data
         })
     }
@@ -190,7 +174,7 @@ export class AnalysisCache extends CacheObject<SeriesModel[]> {
 
     async load(): Promise<SeriesModel[]> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.get_tracking(this.url, this.uuid)
+            let res = await NETWORK.getAnalysis(this.url, this.uuid)
             return res.data
         })
     }
@@ -220,13 +204,13 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
 
     async load(): Promise<AnalysisPreference> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.get_preferences(this.url, this.uuid)
+            let res = await NETWORK.getPreferences(this.url, this.uuid)
             return res.data
         })
     }
 
     async setPreference(preference: AnalysisPreference): Promise<AnalysisPreference> {
-        await NETWORK.update_preferences(this.url, this.uuid, preference)
+        await NETWORK.updatePreferences(this.url, this.uuid, preference)
 
         return this.data
     }

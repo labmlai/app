@@ -6,7 +6,7 @@ import {BasicCard, BasicView} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
 import {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
 
-const ANALYSIS = 'Time Tracking'
+const TITLE = 'Time Tracking'
 const URL = 'timeTracking'
 
 
@@ -25,7 +25,7 @@ class TimePreferenceCache extends AnalysisPreferenceCache {
 let cache = new Cache(TimeTrackingAnalysisCache, TimePreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard analysisName={ANALYSIS}
+    return <BasicCard title={TITLE}
                       uuid={props.uuid}
                       url={URL}
                       cache={cache}
@@ -38,7 +38,7 @@ function AnalysisSummary(props: SeriesCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView analysisName={ANALYSIS}
+    return <BasicView title={TITLE}
                       cache={cache}
                       location={location}/>
 }
