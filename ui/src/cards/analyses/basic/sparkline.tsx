@@ -1,10 +1,10 @@
-import {PointValue} from "../../../models/run";
-import {formatFixed, pickHex, scaleValue} from "../../../components/value";
-import {ListGroup} from "react-bootstrap";
-import React from "react";
-import {getExtent, getScale} from "./utils";
-import {LinePlot} from "./line_plot";
-import {BASE_COLOR} from "./constants";
+import {PointValue} from "../../../models/run"
+import {formatFixed, pickHex, scaleValue} from "../../../components/value"
+import {ListGroup} from "react-bootstrap"
+import React from "react"
+import {getExtent, getScale} from "./utils"
+import {LinePlot} from "./line_plot"
+import {BASE_COLOR} from "./constants"
 
 interface SparkLineProps {
     name: string

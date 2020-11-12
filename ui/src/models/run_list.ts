@@ -1,4 +1,4 @@
-import {RunStatus} from "./status";
+import {RunStatus} from "./status"
 
 export interface RunListItemModel {
     run_uuid: string

@@ -1,4 +1,4 @@
-import CACHE, {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache";
+import CACHE, {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
 
 
 export interface Analysis {

@@ -1,9 +1,9 @@
 import React, {useState} from "react"
 import {Nav} from "react-bootstrap"
-import RunsListView from "../screens/runs_list_view";
-import SettingsView from "../screens/settings_view";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faHome, faUserCircle} from "@fortawesome/free-solid-svg-icons";
+import RunsListView from "../screens/runs_list_view"
+import SettingsView from "../screens/settings_view"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faHome, faUserCircle} from "@fortawesome/free-solid-svg-icons"
 
 import './tabs_view.scss'
 

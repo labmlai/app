@@ -4,11 +4,11 @@ import {RunsList} from "../components/runs_list"
 import {EmptyRunsList} from "../components/empty_runs_list"
 import {LabLoader} from "../components/loader"
 import {RunListItemModel} from "../models/run_list"
-import CACHE from "../cache/cache";
+import CACHE from "../cache/cache"
 
 import './runs_list_view.scss'
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSearch} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faSearch} from "@fortawesome/free-solid-svg-icons"
 
 
 function RunsListView() {

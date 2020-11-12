@@ -1,5 +1,5 @@
-import React from "react";
-import {RunStatusModel} from "../models/status";
+import React from "react"
+import {RunStatusModel} from "../models/status"
 
 export interface StatusProps {
     status: RunStatusModel

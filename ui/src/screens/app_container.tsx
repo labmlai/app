@@ -8,12 +8,12 @@ import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../cards/configs/card"
 import analyses from "../cards/analyses/all_analyses"
-import {useErrorHandler} from "react-error-boundary";
-import NETWORK from "../network";
-import {useAuth0} from "@auth0/auth0-react";
-import {LabLoader} from "../components/loader";
-import {UserModel} from "../models/user";
-import mixpanel from "mixpanel-browser";
+import {useErrorHandler} from "react-error-boundary"
+import NETWORK from "../network"
+import {useAuth0} from "@auth0/auth0-react"
+import {LabLoader} from "../components/loader"
+import {UserModel} from "../models/user"
+import mixpanel from "mixpanel-browser"
 
 function AppContainer() {
     const location = useLocation()
@@ -65,7 +65,7 @@ function AppContainer() {
             console.log('undefined error or response')
         } else if (error.response.status === 403) {
             setLoggedIn(false)
-            mixpanel.track('unauthorized');
+            mixpanel.track('unauthorized')
         } else if (error.response.status === 400) {
             mixpanel.track('404', {path: location.pathname + location.search});
             history.push(`/404`)

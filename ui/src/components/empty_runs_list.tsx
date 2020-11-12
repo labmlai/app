@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react"
 
-import {Nav} from "react-bootstrap";
+import {Nav} from "react-bootstrap"
 
 import {PyTorchCode, KerasCode} from "./code"
 import {Footer} from './footer'
-import {LabLoader} from "./loader";
-import CACHE from "../cache/cache";
-import {RunListItemModel} from "../models/run_list";
-import {RunsList} from "./runs_list";
+import {LabLoader} from "./loader"
+import CACHE from "../cache/cache"
+import {RunListItemModel} from "../models/run_list"
+import {RunsList} from "./runs_list"
 
 import "./empty_runs_list.scss"
 

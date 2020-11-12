@@ -1,10 +1,10 @@
 import React from "react"
-import {useHistory} from "react-router-dom";
+import {useHistory} from "react-router-dom"
 import "./runs_list.scss"
 import {ListGroup} from "react-bootstrap"
 import {RunListItemModel} from "../models/run_list"
-import {formatTime} from "./utils";
-import {StatusView} from "./status";
+import {formatTime} from "./utils"
+import {StatusView} from "./status"
 
 
 interface RunsListProps {

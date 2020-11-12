@@ -1,16 +1,16 @@
 import React, {useEffect, useState} from "react"
 
 import {Button, Form, Image} from "react-bootstrap"
-import {useAuth0} from "@auth0/auth0-react";
-import {useErrorHandler} from "react-error-boundary";
+import {useAuth0} from "@auth0/auth0-react"
+import {useErrorHandler} from "react-error-boundary"
 
-import NETWORK from "../network";
+import NETWORK from "../network"
 import {LabLoader} from "../components/loader"
-import useWindowDimensions from "../utils/window_dimensions";
-import {User} from "../models/user";
+import useWindowDimensions from "../utils/window_dimensions"
+import {User} from "../models/user"
 
 import './settings_view.scss'
-import CACHE from "../cache/cache";
+import CACHE from "../cache/cache"
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 

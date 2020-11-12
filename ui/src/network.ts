@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 
-import {UserModel} from "./models/user";
+import {UserModel} from "./models/user"
 
 class Network {
     axiosInstance: AxiosInstance

@@ -1,15 +1,15 @@
-import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
-import {LineChart, SparkLines} from "./components";
-import {SeriesModel} from "../../../models/run";
-import useWindowDimensions from "../../../utils/window_dimensions";
-import {defaultSeriesToPlot} from "./utils";
+import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react"
+import {LineChart, SparkLines} from "./components"
+import {SeriesModel} from "../../../models/run"
+import useWindowDimensions from "../../../utils/window_dimensions"
+import {defaultSeriesToPlot} from "./utils"
 import RunHeaderCard from "../../run_header/card"
-import CACHE from "../../../cache/cache";
-import {LabLoader} from "../../../components/loader";
+import CACHE from "../../../cache/cache"
+import {LabLoader} from "../../../components/loader"
 import {BackButton, RefreshButton} from "../../../components/util_buttons"
-import {BasicProps, CardProps, ViewProps} from "../../types";
-import {useHistory} from "react-router-dom";
-import mixpanel from "mixpanel-browser";
+import {BasicProps, CardProps, ViewProps} from "../../types"
+import {useHistory} from "react-router-dom"
+import mixpanel from "mixpanel-browser"
 
 
 function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
@@ -114,7 +114,7 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.title});
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.title})
 
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)

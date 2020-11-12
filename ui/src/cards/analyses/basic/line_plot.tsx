@@ -1,6 +1,6 @@
-import {PointValue} from "../../../models/run";
-import * as d3 from "d3";
-import React from "react";
+import {PointValue} from "../../../models/run"
+import * as d3 from "d3"
+import React from "react"
 
 interface LinePlotProps {
     series: PointValue[]

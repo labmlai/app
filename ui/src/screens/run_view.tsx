@@ -7,8 +7,8 @@ import RunHeaderCard from "../cards/run_header/card"
 import useWindowDimensions from "../utils/window_dimensions"
 
 import "./run_view.scss"
-import mixpanel from "mixpanel-browser";
-import CACHE from "../cache/cache";
+import mixpanel from "mixpanel-browser"
+import CACHE from "../cache/cache"
 
 
 interface RunProps {
