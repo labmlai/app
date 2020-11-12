@@ -51,7 +51,6 @@ interface BasicCardProps extends BasicProps, CardProps {
 
 function Card(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
-    const statusCache = CACHE.getStatus(props.uuid)
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
 
@@ -64,20 +63,6 @@ function Card(props: BasicCardProps, ref: any) {
             load().then()
         }
     }))
-
-    useEffect(() => {
-        async function load() {
-            setTrack(await analysisCache.get())
-            let status = await statusCache.get()
-            if (!status.isRunning) {
-                clearInterval(interval)
-            }
-        }
-
-        load().then()
-        let interval = setInterval(load, 2 * 60 * 1000)
-        return () => clearInterval(interval)
-    })
 
     let card = null
     if (props.isChartView) {
