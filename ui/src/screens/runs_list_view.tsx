@@ -46,7 +46,7 @@ function RunsListView() {
         return (name.search(re) !== -1 || comment.search(re) !== -1)
     }
 
-    const handleChannelChange = () => {
+    function handleChannelChange() {
         async function load() {
             if (inputElement.current) {
                 let search = inputElement.current.value
@@ -61,6 +61,17 @@ function RunsListView() {
         load().then()
     }
 
+    function onDelete(runsSet: Set<string>) {
+        let res: RunListItemModel[] = []
+        for (let run of runs) {
+            if (!runsSet.has(run.run_uuid)) {
+                res.push(run)
+            }
+        }
+
+        setRuns(res)
+    }
+
     return <div>
         {(() => {
             if (isLoading) {
@@ -70,7 +81,7 @@ function RunsListView() {
             } else {
                 return <div className={'runs-list'}>
                     {/*TODO: Change later to simple html & css*/}
-                    <div className={"search-container my-3 px-2"}>
+                    <div className={"search-container mt-3 mb-2 px-2"}>
                         <div className={"search-content"}>
                             <span className={'icon'}>
                                 <FontAwesomeIcon icon={faSearch}/>
@@ -84,7 +95,7 @@ function RunsListView() {
                             />
                         </div>
                     </div>
-                    <RunsList runs={runs}/>
+                    <RunsList runs={runs} onDelete={onDelete}/>
                 </div>
             }
         })()}
