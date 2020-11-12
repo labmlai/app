@@ -1,4 +1,4 @@
-import CACHE, {AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache";
+import CACHE, {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
 
 
 export interface Analysis {
@@ -8,14 +8,14 @@ export interface Analysis {
 }
 
 
-export class Cache {
+export class Cache<TA extends AnalysisCache, TAP extends AnalysisPreferenceCache> {
     private readonly analysisCaches: { [uuid: string]: AnalysisCache }
     private readonly PreferencesCaches: { [uuid: string]: AnalysisPreferenceCache }
-    private readonly analysis: any
+    private readonly analysis: new (uuid: string, status: StatusCache) => TA
     private readonly preferences: any
 
 
-    constructor(analysis: any, preferences: any) {
+    constructor(analysis:  new (uuid: string, status: StatusCache) => TA , preferences: any) {
         this.analysisCaches = {}
         this.PreferencesCaches = {}
         this.analysis = analysis
