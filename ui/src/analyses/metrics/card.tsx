@@ -2,10 +2,10 @@ import React from "react"
 
 import {useLocation} from "react-router-dom"
 
-import {SeriesCardProps} from "../../types"
-import {BasicCard, BasicView} from "../basic/card"
-import {Analysis, Cache} from "../basic/analysis"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
+import {SeriesCardProps, Analysis} from "../types"
+import {BasicCard, BasicView} from "../../components/basic/card"
+import {Cache} from "../common"
+import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
 
 const TITLE = 'Metrics'
 const URL = 'metrics'

@@ -1,7 +1,7 @@
 import React, {useEffect} from "react"
 import * as d3 from "d3"
 import "./style.scss"
-import {SeriesModel} from "../../../models/run"
+import {SeriesModel} from "../../models/run"
 import {ListGroup} from "react-bootstrap"
 import {getColor} from "./constants"
 import {LinePlot} from "./line_plot"

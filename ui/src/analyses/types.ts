@@ -15,3 +15,9 @@ export interface BasicProps {
     title: string
     cache: any
 }
+
+export interface Analysis {
+    card: any
+    view: any
+    route: string
+}

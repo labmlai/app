@@ -1,5 +1,5 @@
-import {PointValue} from "../../../models/run"
-import {formatFixed, pickHex, scaleValue} from "../../../components/value"
+import {PointValue} from "../../models/run"
+import {formatFixed, pickHex, scaleValue} from "../value"
 import {ListGroup} from "react-bootstrap"
 import React from "react"
 import {getExtent, getScale} from "./utils"

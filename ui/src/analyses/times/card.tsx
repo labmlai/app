@@ -1,30 +1,28 @@
-import React from "react";
+import React from "react"
+import {useLocation} from "react-router-dom"
 
-import {useLocation} from "react-router-dom";
+import {SeriesCardProps, Analysis} from "../types"
+import {BasicCard, BasicView} from "../../components/basic/card"
+import {Cache} from "../common"
+import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
 
-import {SeriesCardProps} from "../../types";
-import {BasicCard, BasicView} from "../basic/card";
-import {Analysis, Cache} from "../basic/analysis";
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache";
-
-const TITLE = 'Outputs - L2 Norm'
-const URL = 'outputs'
+const TITLE = 'Time Tracking'
+const URL = 'timeTracking'
 
 
-class OutputAnalysisCache extends SeriesCache {
+class TimeTrackingAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'outputs', statusCache)
+        super(uuid, 'times', statusCache)
     }
 }
 
-
-class OutputPreferenceCache extends SeriesPreferenceCache {
+class TimePreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'outputs');
+        super(uuid, 'times')
     }
 }
 
-let cache = new Cache(OutputAnalysisCache, OutputPreferenceCache)
+let cache = new Cache(TimeTrackingAnalysisCache, TimePreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
     return <BasicCard title={TITLE}
@@ -45,10 +43,10 @@ function AnalysisDetails() {
                       location={location}/>
 }
 
-let moduleAnalysis: Analysis = {
+let timeAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
     route: `/${URL}`
 }
 
-export default moduleAnalysis
+export default timeAnalysis

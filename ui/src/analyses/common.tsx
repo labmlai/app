@@ -1,12 +1,4 @@
-import CACHE, {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
-
-
-export interface Analysis {
-    card: any
-    view: any
-    route: string
-}
-
+import CACHE, {SeriesCache, SeriesPreferenceCache, StatusCache} from "../cache/cache"
 
 export class Cache<TA extends SeriesCache, TAP extends SeriesPreferenceCache> {
     private readonly analysisCaches: { [uuid: string]: SeriesCache }

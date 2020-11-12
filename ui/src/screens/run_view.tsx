@@ -1,9 +1,9 @@
 import React, {useEffect, useRef} from "react"
 
 import {BackButton, RefreshButton} from "../components/util_buttons"
-import ConfigsCard from "../cards/configs/card"
-import analyses from "../cards/analyses/all_analyses"
-import RunHeaderCard from "../cards/run_header/card"
+import ConfigsCard from "../analyses/configs/card"
+import analyses from "../analyses/all_analyses"
+import RunHeaderCard from "../analyses/run_header/card"
 import useWindowDimensions from "../utils/window_dimensions"
 
 import "./run_view.scss"
