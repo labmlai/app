@@ -1,12 +1,15 @@
 import React, {useEffect} from "react"
+
 import * as d3 from "d3"
-import "./style.scss"
-import {SeriesModel} from "../../models/run"
 import {ListGroup} from "react-bootstrap"
+
+import {SeriesModel} from "../../models/run"
 import {getColor} from "./constants"
 import {LinePlot} from "./line_plot"
 import {getExtent, getScale, toPointValues} from "./utils"
 import {SparkLine} from "./sparkline"
+
+import "./style.scss"
 
 
 interface AxisProps {

@@ -1,10 +1,14 @@
 import React from 'react'
+
+import {useHistory} from "react-router-dom"
+
+import mixpanel from "mixpanel-browser"
 import Lottie from 'lottie-react-web'
 import animation from '../assets/lottie/Chemical.json'
 import {Button} from "react-bootstrap"
+
 import useWindowDimensions from "../utils/window_dimensions"
-import {useHistory} from "react-router-dom"
-import mixpanel from "mixpanel-browser"
+
 
 
 function PageNotFound() {

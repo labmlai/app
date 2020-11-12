@@ -1,7 +1,9 @@
 import React from "react"
-import "./style.scss"
+
 import {FormattedValue} from "../../components/value"
 import {Config} from "../../models/config"
+
+import "./style.scss"
 
 const CONFIG_PRINT_LEN = 20
 const KEY_WIDTH = 125

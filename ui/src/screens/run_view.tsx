@@ -1,14 +1,15 @@
 import React, {useEffect, useRef} from "react"
 
+import mixpanel from "mixpanel-browser"
+
 import {BackButton, RefreshButton} from "../components/util_buttons"
 import ConfigsCard from "../analyses/configs/card"
 import analyses from "../analyses/all_analyses"
 import RunHeaderCard from "../analyses/run_header/card"
+import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 
 import "./run_view.scss"
-import mixpanel from "mixpanel-browser"
-import CACHE from "../cache/cache"
 
 
 interface RunProps {

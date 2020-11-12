@@ -6,9 +6,10 @@ import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync} from "@fortawesome/free-solid-svg-icons"
 
-import "./util_buttons.scss"
 import {Status} from "../models/status"
 import CACHE from "../cache/cache"
+
+import "./util_buttons.scss"
 
 interface ButtonProps {
     onButtonClick?: () => void

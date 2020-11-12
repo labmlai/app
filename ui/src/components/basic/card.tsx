@@ -1,4 +1,9 @@
 import React, {forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react"
+
+import {useHistory} from "react-router-dom"
+
+import mixpanel from "mixpanel-browser"
+
 import {LineChart, SparkLines} from "./components"
 import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
@@ -8,8 +13,6 @@ import CACHE from "../../cache/cache"
 import {LabLoader} from "../loader"
 import {BackButton, RefreshButton} from "../util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../analyses/types"
-import {useHistory} from "react-router-dom"
-import mixpanel from "mixpanel-browser"
 
 
 function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {

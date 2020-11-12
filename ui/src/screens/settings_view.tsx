@@ -8,9 +8,9 @@ import NETWORK from "../network"
 import {LabLoader} from "../components/loader"
 import useWindowDimensions from "../utils/window_dimensions"
 import {User} from "../models/user"
+import CACHE from "../cache/cache"
 
 import './settings_view.scss'
-import CACHE from "../cache/cache"
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 

@@ -1,5 +1,6 @@
-import {PointValue, SeriesModel} from "../../models/run"
 import * as d3 from "d3"
+
+import {PointValue, SeriesModel} from "../../models/run"
 import {OUTLIER_MARGIN} from "./constants"
 
 export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointValue) => number): [number, number] {
