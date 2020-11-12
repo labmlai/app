@@ -156,7 +156,7 @@ class RunsListCache {
     }
 }
 
-export class AnalysisCache extends CacheObject<SeriesModel[]> {
+export class SeriesCache extends CacheObject<SeriesModel[]> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: StatusCache
@@ -192,7 +192,7 @@ export class AnalysisCache extends CacheObject<SeriesModel[]> {
     }
 }
 
-export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
+export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
     private readonly uuid: string
     private readonly url: string
 

@@ -1,4 +1,4 @@
-import CACHE, {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
+import CACHE, {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache";
 
 
 export interface Analysis {
@@ -8,9 +8,9 @@ export interface Analysis {
 }
 
 
-export class Cache<TA extends AnalysisCache, TAP extends AnalysisPreferenceCache> {
-    private readonly analysisCaches: { [uuid: string]: AnalysisCache }
-    private readonly PreferencesCaches: { [uuid: string]: AnalysisPreferenceCache }
+export class Cache<TA extends SeriesCache, TAP extends SeriesPreferenceCache> {
+    private readonly analysisCaches: { [uuid: string]: SeriesCache }
+    private readonly PreferencesCaches: { [uuid: string]: SeriesPreferenceCache }
     private readonly analysis: new (uuid: string, status: StatusCache) => TA
     private readonly preferences: new (uuid: string) => TAP
 

@@ -4,19 +4,19 @@ import {useLocation} from "react-router-dom";
 import {SeriesCardProps} from "../../types";
 import {BasicCard, BasicView} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
-import {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
+import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache";
 
 const TITLE = 'Time Tracking'
 const URL = 'timeTracking'
 
 
-class TimeTrackingAnalysisCache extends AnalysisCache {
+class TimeTrackingAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
         super(uuid, 'times', statusCache)
     }
 }
 
-class TimePreferenceCache extends AnalysisPreferenceCache {
+class TimePreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'times');
     }

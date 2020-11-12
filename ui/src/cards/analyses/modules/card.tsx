@@ -5,20 +5,20 @@ import {useLocation} from "react-router-dom";
 import {SeriesCardProps} from "../../types";
 import {BasicCard, BasicView} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
-import {AnalysisCache, AnalysisPreferenceCache, StatusCache} from "../../../cache/cache";
+import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache";
 
 const TITLE = 'Outputs - L2 Norm'
 const URL = 'outputs'
 
 
-class OutputAnalysisCache extends AnalysisCache {
+class OutputAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
         super(uuid, 'outputs', statusCache)
     }
 }
 
 
-class OutputPreferenceCache extends AnalysisPreferenceCache {
+class OutputPreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'outputs');
     }

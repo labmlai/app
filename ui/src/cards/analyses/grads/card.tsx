@@ -5,19 +5,19 @@ import {useLocation} from "react-router-dom";
 import {SeriesCardProps} from "../../types";
 import {BasicView, BasicCard} from "../basic/card";
 import {Analysis, Cache} from "../basic/analysis";
-import {AnalysisCache, StatusCache, AnalysisPreferenceCache} from "../../../cache/cache";
+import {SeriesCache, StatusCache, SeriesPreferenceCache} from "../../../cache/cache";
 
 const TITLE = 'Gradients - L2 Norm'
 const URL = 'gradients'
 
-class GradientAnalysisCache extends AnalysisCache {
+class GradientAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
         super(uuid, 'gradients', statusCache);
     }
 
 }
 
-class GradientPreferenceCache extends AnalysisPreferenceCache {
+class GradientPreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'gradients');
     }
