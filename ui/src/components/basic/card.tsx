@@ -75,17 +75,21 @@ function Card(props: BasicCardProps, ref: any) {
         card = getSparkLines(track, null, props.width)
     }
 
-    return <div>{track && track.length > 0 ?
-        <div className={'labml-card labml-card-action'} onClick={
-            () => {
-                history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
-            }
-        }>
+    return <div>{!track ?
+        <div className={'labml-card labml-card-action'}>
             <h3 className={'header'}>{props.title}</h3>
-            {card}
+            <LabLoader/>
         </div>
-        :
-        <LabLoader/>
+        : track && track.length > 0 ?
+            <div className={'labml-card labml-card-action'} onClick={
+                () => {
+                    history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
+                }
+            }>
+                <h3 className={'header'}>{props.title}</h3>
+                {card}
+            </div>
+            : <div/>
     }
     </div>
 }
