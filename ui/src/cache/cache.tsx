@@ -154,6 +154,10 @@ class RunsListCache {
 
         return this.runsList
     }
+
+    async deleteRuns(runUUIDS: string[]): Promise<void> {
+        await NETWORK.deleteRuns(runUUIDS)
+    }
 }
 
 export class SeriesCache extends CacheObject<SeriesModel[]> {
@@ -209,10 +213,8 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
         })
     }
 
-    async setPreference(preference: AnalysisPreference): Promise<AnalysisPreference> {
+    async setPreference(preference: AnalysisPreference): Promise<void> {
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
-
-        return this.data
     }
 }
 

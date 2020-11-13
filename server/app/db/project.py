@@ -26,6 +26,13 @@ class Project(Model['Project']):
 
         return res
 
+    def delete_runs(self, run_uuids: List[str]):
+        for run_uuid in run_uuids:
+            if run_uuid in self.runs:
+                self.runs.pop(run_uuid)
+
+        self.save()
+
 
 class ProjectIndex(Index['Project']):
     pass

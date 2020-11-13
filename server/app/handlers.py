@@ -161,12 +161,12 @@ def get_status(run_uuid: str) -> flask.Response:
 @login_required
 @check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
-    s = get_session()
+    u = get_auth_user()
 
     if labml_token:
         runs_list = run.get_runs(labml_token)
     else:
-        default_project = s.user.load().default_project
+        default_project = u.default_project
         labml_token = default_project.labml_token
         runs_list = default_project.get_runs()
 
@@ -181,6 +181,16 @@ def get_runs(labml_token: str) -> flask.Response:
     logger.debug(f'runs, labml_token : {labml_token}')
 
     return jsonify({'runs': res, 'labml_token': labml_token})
+
+
+@login_required
+def delete_runs():
+    run_uuids = request.json['run_uuids']
+
+    u = get_auth_user()
+    u.default_project.delete_runs(run_uuids)
+
+    return jsonify({'is_successful': True})
 
 
 @login_required
@@ -203,6 +213,7 @@ def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
+    _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'GET', get_user, 'user')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')

@@ -13,7 +13,7 @@ function TabsView() {
     const [isRunsList, setIsRunsList] = useState(true)
 
 
-    function clickHandle(e: any, tab: string) {
+    function clickHandle(e: Event, tab: string) {
         if (tab === 'user') {
             setIsRunsList(false)
         } else {

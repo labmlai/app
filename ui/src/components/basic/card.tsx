@@ -64,7 +64,8 @@ function Card(props: BasicCardProps, ref: any) {
     useImperativeHandle(ref, () => ({
         refresh: () => {
             load().then()
-        }
+        },
+        lastUpdated: analysisCache.lastUpdated
     }))
 
     let card = null

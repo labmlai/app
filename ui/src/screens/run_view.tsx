@@ -60,12 +60,28 @@ function RunView(props: RunProps) {
         }
     }
 
+    function getOldest() {
+        let oldest = (new Date()).getTime()
+        for (let i = 0; i < analyses.length; i++) {
+            if (refreshArray[i].current) {
+                if (refreshArray[i].current.lastUpdated < oldest) {
+                    oldest = refreshArray[i].current.lastUpdated
+                }
+            }
+        }
+
+        console.log(oldest)
+        return oldest
+    }
+
+    getOldest()
+
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={getOldest()}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
         {analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
