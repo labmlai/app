@@ -213,10 +213,8 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
         })
     }
 
-    async setPreference(preference: AnalysisPreference): Promise<AnalysisPreference> {
+    async setPreference(preference: AnalysisPreference): Promise<void> {
         await NETWORK.updatePreferences(this.url, this.uuid, preference)
-
-        return this.data
     }
 }
 
