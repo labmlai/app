@@ -183,10 +183,6 @@ def get_runs(labml_token: str) -> flask.Response:
     return jsonify({'runs': res, 'labml_token': labml_token})
 
 
-def delete_runs():
-    pass
-
-
 @login_required
 def get_user() -> Any:
     u = get_auth_user()
