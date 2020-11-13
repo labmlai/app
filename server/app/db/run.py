@@ -52,7 +52,7 @@ class Run(Model['Run']):
             self.name = data.get('name', '')
         if not self.comment:
             self.comment = data.get('comment', '')
-        if not self.configs:
+        if 'configs' in data:
             self.configs.update(data.get('configs', {}))
         if not self.indicators:
             self.indicators = data.get('indicators', {})
