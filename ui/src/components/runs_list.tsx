@@ -52,7 +52,6 @@ export function RunsList(props: RunsListProps) {
     }
 
     function onDelete() {
-        console.log(runDeleteSet)
         if (props.onDelete) {
             props.onDelete(runDeleteSet)
         }
