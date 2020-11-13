@@ -49,6 +49,10 @@ class Network {
         return this.axiosInstance.get(`/runs/${labml_token}`, {})
     }
 
+    async deleteRuns(runUUIDS: string[]): Promise<any> {
+        return this.axiosInstance.put(`/runs`, {'run_uuids': runUUIDS})
+    }
+
     async getUser(): Promise<any> {
         return this.axiosInstance.get(`/user`, {})
     }

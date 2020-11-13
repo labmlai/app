@@ -154,6 +154,10 @@ class RunsListCache {
 
         return this.runsList
     }
+
+    async deleteRuns(runUUIDS: string[]): Promise<void> {
+        await NETWORK.deleteRuns(runUUIDS)
+    }
 }
 
 export class SeriesCache extends CacheObject<SeriesModel[]> {
