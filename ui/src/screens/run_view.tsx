@@ -51,37 +51,31 @@ function RunView(props: RunProps) {
         useRef(null) as any,
     ]
 
+    let lastUpdated: number = 0
+
     // call when load, 2 minutes interval and when refresh button clicks
     function onRefresh() {
+        let oldest = (new Date()).getTime()
+
         for (let i = 0; i < analyses.length; i++) {
             if (refreshArray[i].current) {
                 refreshArray[i].current.refresh()
-            }
-        }
-    }
 
-    function getOldest() {
-        let oldest = (new Date()).getTime()
-        for (let i = 0; i < analyses.length; i++) {
-            if (refreshArray[i].current) {
                 if (refreshArray[i].current.lastUpdated < oldest) {
                     oldest = refreshArray[i].current.lastUpdated
                 }
             }
         }
 
-        console.log(oldest)
-        return oldest
+        lastUpdated = oldest
     }
-
-    getOldest()
 
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={getOldest()}/>
+        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
         {analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
