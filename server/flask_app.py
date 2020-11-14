@@ -37,7 +37,7 @@ def create_app():
         sha = repo.head.object.hexsha
 
         logger.info('initializing app')
-        logger.error(f'Deployed server SHA : {sha}')
+        logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
 
     run_on_start()
 
