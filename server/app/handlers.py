@@ -119,6 +119,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
             r.save()
 
 
+@login_required
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
     status_code = 400
@@ -139,6 +140,7 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
+@login_required
 def get_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
@@ -221,6 +223,4 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
 
     for method, func, url in AnalysisManager.get_handlers():
-        _add_ui(app, method, func, url)
-
-#http://localhost:3000/run?run_uuid=519b2aea265911eba32cacde48001122
+        _add_ui(app, method, login_required(func), url)
