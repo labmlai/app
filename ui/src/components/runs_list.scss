@@ -34,8 +34,9 @@
 
     input[type=checkbox] {
       transform: scale(1.2);
-      margin-top: 20px;
-      border-radius: 8px;
+      margin-top: 18px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
     }
   }
 

@@ -28,9 +28,9 @@ function RunsListItem(props: RunsListItemProps) {
 
     const run = props.run
     return <ListGroup.Item className={'runs-list-item'} action>
-        <input type={'checkbox'} className={'float-right'}
+        <input type={'checkbox'} className={'float-left'}
                onChange={(e: any) => props.onCheckBoxClick(e, run.run_uuid)}/>
-        <div onClick={() => {
+        <div className={'ml-4'} onClick={() => {
             history.push(`/run?run_uuid=${run.run_uuid}`, history.location.pathname)
         }}>
             <StatusView status={run.run_status}/>
