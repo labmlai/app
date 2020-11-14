@@ -11,6 +11,7 @@ export interface RunModel {
 export interface PointValue {
     step: number
     value: number
+    mean: number
     smoothed: number
 }
 
@@ -19,6 +20,7 @@ export interface SeriesModel {
     step: number[]
     value: number[]
     smoothed: number[]
+    mean: number
     series: PointValue[]
 }
 

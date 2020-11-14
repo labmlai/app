@@ -3,7 +3,7 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SeriesCardProps, Analysis} from "../types"
-import {BasicCard, BasicView} from "../../components/basic/card"
+import {BasicBarLines, BasicView} from "../../components/basic/card"
 import {Cache} from "../common"
 import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
 
@@ -27,7 +27,7 @@ class OutputPreferenceCache extends SeriesPreferenceCache {
 let cache = new Cache(OutputAnalysisCache, OutputPreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard title={TITLE}
+    return <BasicBarLines title={TITLE}
                       uuid={props.uuid}
                       url={URL}
                       cache={cache}

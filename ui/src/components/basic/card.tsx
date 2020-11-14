@@ -5,6 +5,7 @@ import {useHistory} from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 
 import {LineChart, SparkLines} from "./components"
+import {BarLines} from "./barline"
 import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {defaultSeriesToPlot} from "./utils"
@@ -52,7 +53,7 @@ interface BasicCardProps extends BasicProps, CardProps {
     url: string
 }
 
-function Card(props: BasicCardProps, ref: any) {
+function SparkLinesCard(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
@@ -88,6 +89,41 @@ function Card(props: BasicCardProps, ref: any) {
             }>
                 <h3 className={'header'}>{props.title}</h3>
                 {card}
+            </div>
+            : <div/>
+    }
+    </div>
+}
+
+function BarLinesCard(props: BasicCardProps, ref: any) {
+    const [track, setTrack] = useState(null as (SeriesModel[] | null))
+    const analysisCache = props.cache.getAnalysis(props.uuid)
+    const history = useHistory()
+
+    async function load() {
+        setTrack(await analysisCache.get(true))
+    }
+
+    useImperativeHandle(ref, () => ({
+        refresh: () => {
+            load().then()
+        },
+        lastUpdated: analysisCache.lastUpdated
+    }))
+
+    return <div>{!track ?
+        <div className={'labml-card labml-card-action'}>
+            <h3 className={'header'}>{props.title}</h3>
+            <LabLoader/>
+        </div>
+        : track && track.length > 0 ?
+            <div className={'labml-card labml-card-action'} onClick={
+                () => {
+                    history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
+                }
+            }>
+                <h3 className={'header'}>{props.title}</h3>
+                <BarLines width={props.width} series={track}/>
             </div>
             : <div/>
     }
@@ -207,9 +243,11 @@ function BasicView(props: BasicViewProps) {
     </div>
 }
 
-let BasicCard = forwardRef(Card)
+let BasicSparkLines = forwardRef(SparkLinesCard)
+let BasicBarLines = forwardRef(BarLinesCard)
 
 export {
     BasicView,
-    BasicCard
+    BasicSparkLines,
+    BasicBarLines
 }

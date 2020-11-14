@@ -32,7 +32,8 @@ class Series:
         return {
             'step': self.last_step,
             'value': self.value,
-            'smoothed': self.smooth_45()
+            'smoothed': self.smooth_45(),
+            'mean': np.mean(self.value)
         }
 
     def to_data(self) -> SeriesModel:

@@ -3,7 +3,7 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SeriesCardProps, Analysis} from "../types"
-import {BasicCard, BasicView} from "../../components/basic/card"
+import {BasicSparkLines, BasicView} from "../../components/basic/card"
 import {Cache} from "../common"
 import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
 
@@ -28,7 +28,7 @@ let cache = new Cache(MetricAnalysisCache, MetricPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicCard title={TITLE}
+    return <BasicSparkLines title={TITLE}
                       url={URL}
                       cache={cache}
                       uuid={props.uuid}
