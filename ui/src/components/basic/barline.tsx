@@ -20,7 +20,7 @@ export function BarLine(props: BarLineProps) {
     return <ListGroup.Item className={'sparkline-list-item'}>
         <div className={'sparkline-content'} style={{width: `${titleWidth * 2 + chartWidth}px`}}>
             <span style={{color: 'rgb(52, 73, 94)', width: `${titleWidth}px`}}>{props.name}</span>
-            <svg className={'sparkline'} height={40} width={chartWidth}>
+            <svg className={'sparkline'} height={35} width={chartWidth}>
                 <g transform={`translate(${0}, 5)`}>
                     <rect width={props.value * chartWidth} height={25} fill={props.color} opacity={0.7}/>
                 </g>
