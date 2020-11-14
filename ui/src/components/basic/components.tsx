@@ -120,7 +120,7 @@ export function LineChart(props: SeriesProps) {
     }
 
     let plotSeries = plot.map(s => s.series)
-    const yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
+    const yScale = getScale(getExtent(plotSeries, d => d.value, false), - chartHeight)
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
     const xScale = getScale(stepExtent, chartWidth)
 
