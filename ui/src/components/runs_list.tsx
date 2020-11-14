@@ -28,8 +28,8 @@ function RunsListItem(props: RunsListItemProps) {
 
     const run = props.run
     return <ListGroup.Item className={'runs-list-item'} action>
-        <input type={'checkbox'} className={'float-left'}
-               onChange={(e: any) => props.onCheckBoxClick(e, run.run_uuid)}/>
+        <input key={run.run_uuid} type={'checkbox'} className={'float-left'}
+               onChange={(e: any) => props.onCheckBoxClick(e, run.run_uuid)} defaultChecked={false} value={10}/>
         <div className={'ml-4'} onClick={() => {
             history.push(`/run?run_uuid=${run.run_uuid}`, history.location.pathname)
         }}>
