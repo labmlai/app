@@ -202,7 +202,7 @@ def get_user() -> Any:
 
 
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
-    app.add_url_rule(f'/backend/v1/{url}', view_func=func, methods=[method])
+    app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
 
 def _add_ui(app: flask.Flask, method: str, func: typing.Callable, url: str):
