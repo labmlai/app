@@ -59,7 +59,7 @@ export function RunsList(props: RunsListProps) {
     }
 
     return <ListGroup className={"runs-list"}>
-        <DeleteButton onButtonClick={onDelete}/>
+        {props.onDelete && <DeleteButton onButtonClick={onDelete}/>}
         {props.runs.map((run, idx) => (
             <RunsListItem key={idx} idx={idx} run={run} onCheckBoxClick={onCheckBoxClick}/>
         ))}
