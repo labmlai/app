@@ -61,7 +61,12 @@ function Auth0ProviderWithHistory(props: ProviderProps) {
 
 function ErrorFallback({error}: any) {
     return <div>
-        <Alert variant={'danger'}>{error.message}</Alert>
+        <Alert className={'text-center'} variant={'danger'}>
+            <div className={'mb-3'}>{error.message}</div>
+            <a href={'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/'}>
+                <h6>Click here to report this error in our Slack workspace</h6>
+            </a>
+        </Alert>
     </div>
 }
 
