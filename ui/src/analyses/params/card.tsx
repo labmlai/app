@@ -49,7 +49,7 @@ function AnalysisDetails() {
 let parameterAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
-    route: `/${URL}`
+    route: `${URL}`
 }
 
 export default parameterAnalysis

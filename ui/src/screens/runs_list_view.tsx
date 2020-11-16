@@ -70,7 +70,7 @@ function RunsListView() {
         }
 
         setRuns(res)
-        runListCache.deleteRuns(Array.from(runsSet)).then()
+        runListCache.deleteRuns(res, Array.from(runsSet)).then()
     }
 
     return <div>

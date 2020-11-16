@@ -1,7 +1,7 @@
 import NETWORK from "../network"
 import {Run, SeriesModel} from "../models/run"
 import {Status} from "../models/status"
-import {RunsList, RunsListModel} from "../models/run_list"
+import {RunListItemModel, RunsList, RunsListModel} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
 import {User} from "../models/user"
 
@@ -155,7 +155,8 @@ class RunsListCache {
         return this.runsList
     }
 
-    async deleteRuns(runUUIDS: string[]): Promise<void> {
+    async deleteRuns(runs: RunListItemModel[], runUUIDS: string[]): Promise<void> {
+        this.runsList.runs = runs
         await NETWORK.deleteRuns(runUUIDS)
     }
 }

@@ -28,8 +28,19 @@ function AppContainer() {
     let [loggedIn, setLoggedIn] = useState(false)
 
     useEffect(() => {
+            function isRunPath(): boolean {
+                const runPath = '/run'
+                if (location) {
+                    return location.state === runPath || location.pathname === runPath
+                }
+
+                return false
+            }
+
             if (error) {
                 handleError(error)
+            } else if (isRunPath()) {
+                setLoggedIn(true)
             } else if (isLoading) {
             } else if (!isAuthenticated) {
                 let uri = location.pathname + location.search
@@ -99,7 +110,7 @@ function AppContainer() {
                 <Route path="/home" component={TabsView}/>
                 <Route path="/runs" component={RunsView}/>
                 {analyses.map((analysis, i) => {
-                    return <Route key={i} path={analysis.route} component={analysis.view}/>
+                    return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
                 })}
                 <Route path="/"><Redirect to="/home"/></Route>
                 <Route path="/"><Redirect to="/login"/></Route>

@@ -47,7 +47,7 @@ function AnalysisDetails() {
 let timeAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
-    route: `/${URL}`
+    route: `${URL}`
 }
 
 export default timeAnalysis
