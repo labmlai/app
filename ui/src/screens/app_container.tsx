@@ -2,18 +2,22 @@ import React, {useEffect, useState} from "react"
 
 import {Redirect, Route, Switch, useHistory, useLocation} from "react-router-dom"
 
+import mixpanel from "mixpanel-browser"
+import {Image} from "react-bootstrap"
+import {useErrorHandler} from "react-error-boundary"
+import {useAuth0} from "@auth0/auth0-react"
+
 import RunView from "./run_view"
 import PageNotFound from "./page_not_found_view"
 import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../analyses/configs/card"
 import analyses from "../analyses/all_analyses"
-import {useErrorHandler} from "react-error-boundary"
 import NETWORK from "../network"
-import {useAuth0} from "@auth0/auth0-react"
 import {LabLoader} from "../components/loader"
 import {UserModel} from "../models/user"
-import mixpanel from "mixpanel-browser"
+import logo from "../assets/lab_logo.png"
+
 
 function AppContainer() {
     const location = useLocation()
@@ -78,6 +82,11 @@ function AppContainer() {
 
     if (!loggedIn) {
         return <div>
+            <div className={'text-center mt-5'}>
+                <Image className={'image-style'}
+                       src={logo}/>
+                <h1 className={'mt-3 '}>LabML</h1>
+            </div>
             <LabLoader/>
         </div>
     }
