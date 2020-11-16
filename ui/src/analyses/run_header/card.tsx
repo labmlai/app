@@ -14,7 +14,7 @@ interface RunViewProps {
     run: Run
     status: Status
     lastUpdated: string | null
-    isSelected: boolean
+    isClicked: boolean
 }
 
 function RunView(props: RunViewProps) {
@@ -31,7 +31,7 @@ function RunView(props: RunViewProps) {
                 <StatusView status={props.status.run_status}/>
                 <h3>{props.run.name}</h3>
                 <h5>{props.run.comment}</h5>
-                {props.isSelected &&
+                {props.isClicked &&
                 <div>
                     <div className={"run-uuid"}>
                         <span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.run.run_uuid}
@@ -50,7 +50,7 @@ function RunView(props: RunViewProps) {
     }
 
     let className = 'labml-card labml-card-action'
-    if (props.isSelected) {
+    if (props.isClicked) {
         className += ' selected'
     }
 
@@ -65,7 +65,7 @@ interface RunHeaderProps extends CardProps {
 
 function Card(props: RunHeaderProps) {
     const [run, setRun] = useState(null as unknown as Run)
-    const [isSelected, setIsSelected] = useState(false)
+    const [isClicked, setIsClicked] = useState(false)
     const [status, setStatus] = useState(null as unknown as Status)
     const [lastUpdated, setLastUpdated] = useState(null as (string | null))
 
@@ -107,11 +107,11 @@ function Card(props: RunHeaderProps) {
 
 
     function onClick() {
-        setIsSelected(!isSelected)
+        setIsClicked(!isClicked)
     }
 
     return <div onClick={onClick}>
-        <RunView run={run} status={status} lastUpdated={lastUpdated} isSelected={isSelected}/>
+        <RunView run={run} status={status} lastUpdated={lastUpdated} isClicked={isClicked}/>
     </div>
 }
 

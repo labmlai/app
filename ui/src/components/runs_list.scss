@@ -8,6 +8,12 @@
       text-transform: uppercase;
     }
 
+    outline: none;
+
+    &:focus {
+      background-color: transparent;
+    }
+
     h3, h4, h5, h6, p {
       overflow-wrap: break-word;
       padding: 0;
