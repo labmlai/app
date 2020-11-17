@@ -58,15 +58,22 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
 
-    async function load() {
+    async function onRefresh() {
         setTrack(await analysisCache.get(true))
+    }
+
+    async function onLoad() {
+        setTrack(await analysisCache.get())
     }
 
     useImperativeHandle(ref, () => ({
         refresh: () => {
-            load().then()
+            onRefresh().then()
         },
-        lastUpdated: analysisCache.lastUpdated
+        load: () => {
+            onLoad().then()
+        },
+        lastUpdated: analysisCache.lastUpdated,
     }))
 
     let card = null
@@ -100,13 +107,20 @@ function BarLinesCard(props: BasicCardProps, ref: any) {
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
 
-    async function load() {
+    async function onRefresh() {
         setTrack(await analysisCache.get(true))
+    }
+
+    async function onLoad() {
+        setTrack(await analysisCache.get())
     }
 
     useImperativeHandle(ref, () => ({
         refresh: () => {
-            load().then()
+            onRefresh().then()
+        },
+        load: () => {
+            onLoad().then()
         },
         lastUpdated: analysisCache.lastUpdated
     }))

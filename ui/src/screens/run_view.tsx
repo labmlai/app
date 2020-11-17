@@ -24,24 +24,6 @@ function RunView(props: RunProps) {
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
-    useEffect(() => {
-        async function load() {
-            onRefresh()
-            let status = await statusCache.get()
-            if (!status.isRunning) {
-                clearInterval(interval)
-            }
-        }
-
-        load().then()
-        let interval = setInterval(load, 2 * 60 * 1000)
-        return () => clearInterval(interval)
-    })
-
-    useEffect(() => {
-        mixpanel.track('Run View', {uuid: runUUID});
-    }, [runUUID])
-
     //TODO should create from a loop
     let refreshArray: any[] = [
         useRef(null) as any,
@@ -52,6 +34,29 @@ function RunView(props: RunProps) {
     ]
 
     let lastUpdated: number = 0
+
+    useEffect(() => {
+        async function load() {
+            for (let i = 0; i < analyses.length; i++) {
+                if (refreshArray[i].current) {
+                    refreshArray[i].current.load()
+                }
+            }
+
+            let status = await statusCache.get()
+            if (!status.isRunning) {
+                clearInterval(interval)
+            }
+        }
+
+        load().then()
+        let interval = setInterval(load, 2 * 60 * 1000)
+        return () => clearInterval(interval)
+    }, [statusCache, refreshArray])
+
+    useEffect(() => {
+        mixpanel.track('Run View', {uuid: runUUID});
+    }, [runUUID])
 
     // call when load, 2 minutes interval and when refresh button clicks
     function onRefresh() {
