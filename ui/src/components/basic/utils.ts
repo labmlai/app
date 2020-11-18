@@ -75,7 +75,7 @@ export function toPointValues(track: SeriesModel[]) {
     for (let s of track) {
         let res: PointValue[] = []
         for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i], mean: s.mean})
+            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
         }
         s.series = res
     }

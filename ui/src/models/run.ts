@@ -11,7 +11,6 @@ export interface RunModel {
 export interface PointValue {
     step: number
     value: number
-    mean: number
     smoothed: number
 }
 

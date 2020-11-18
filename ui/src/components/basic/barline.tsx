@@ -42,17 +42,15 @@ export function BarLines(props: BarLinesProps) {
 
     const rowWidth = Math.min(450, windowWidth - 3 * margin)
 
-    let track = toPointValues(props.series)
-
     let res: number[] = []
-    for (let s of track) {
+    for (let s of props.series) {
         res.push(s.mean)
     }
 
     let minMean: number = Math.min(...res)
     let maxMean: number = Math.max(...res)
 
-    let barLines = track.map((s, i) => {
+    let barLines = props.series.map((s, i) => {
         return <BarLine key={i} value={(s.mean - minMean) / (maxMean - minMean)} color={getColor(i)}
                         name={s.name} width={rowWidth}/>
 
