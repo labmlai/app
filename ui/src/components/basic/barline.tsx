@@ -1,5 +1,4 @@
 import React from "react"
-import {toPointValues} from "./utils"
 import {getColor} from "./constants"
 import {ListGroup} from "react-bootstrap"
 import {SeriesModel} from "../../models/run"
