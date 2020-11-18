@@ -109,9 +109,14 @@ def update_run() -> flask.Response:
 def claim_run(run_uuid: str, r: run.Run) -> None:
     s = get_session()
 
+    if not s.user:
+        return
+
     default_project = s.user.load().default_project
+
     if run_uuid not in default_project.runs:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+
         if run_uuid in float_project.runs:
             default_project.runs[run_uuid] = r.key
             default_project.save()
