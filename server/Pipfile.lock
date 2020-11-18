@@ -109,19 +109,19 @@
         },
         "labml": {
             "hashes": [
-                "sha256:291964ff1e01234c4911e582a1330f3737ed0502101c7b3712420ee748bb7dd1",
-                "sha256:363a2d247da9bc7a8b7c8415a7e8d1bba5fa62ad498c45e3f1f83772fd098dc7"
+                "sha256:197fced871b9583eeb8c16f9084f333e1f5220fe4e6bbb6c24cc5c077bddbfa7",
+                "sha256:9113a45c3cd4d04bbcc987be9033e83d6f993275da9970806789989cd92e198f"
             ],
             "index": "pypi",
-            "version": "==0.4.54"
+            "version": "==0.4.60"
         },
         "labml-db": {
             "hashes": [
-                "sha256:1f48d2ba0e4f4cefac3f81d0ca1a86fccff8553b9e77b301011c4b096f36f922",
-                "sha256:b6693446c863c520f5da518ea6a35d773f3d666317e6eb17454bb70d425c865c"
+                "sha256:208b384027c38d990319a6b6b9e8f20c4355236e712565367cd0f4cbd76df13f",
+                "sha256:7838f8dbfa4af9b1d0e1d8db59752af2c46d895597a9277333183b1dfe4cb98a"
             ],
             "index": "pypi",
-            "version": "==0.0.6"
+            "version": "==0.0.7"
         },
         "markupsafe": {
             "hashes": [
@@ -231,11 +231,11 @@
                 "flask"
             ],
             "hashes": [
-                "sha256:17b725df2258354ccb39618ae4ead29651aa92c01a92acf72f98efe06ee2e45a",
-                "sha256:9040539485226708b5cad0401d76628fba4eed9154bf301c50579767afe344fd"
+                "sha256:81d7a5d8ca0b13a16666e8280127b004565aa988bfeec6481e98a8601804b215",
+                "sha256:fd48f627945511c140546939b4d73815be4860cd1d2b9149577d7f6563e7bd60"
             ],
             "index": "pypi",
-            "version": "==0.19.2"
+            "version": "==0.19.3"
         },
         "six": {
             "hashes": [

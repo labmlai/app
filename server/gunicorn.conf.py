@@ -11,7 +11,7 @@ errorlog = '../logs/api-error.log'
 accesslog = '../logs/api-access.log'
 
 bind = '0.0.0.0:5000'
-workers = 1
+workers = 3
 threads = 4
 
 timeout = 3 * 60  # 3 minutes
