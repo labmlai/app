@@ -2,6 +2,8 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response, request
 from labml_db import Model, Index
+from labml_db.serializer.pickle import PickleSerializer
+from labml_db.serializer.yaml import YamlSerializer
 
 from ..logging import logger
 from .analysis import Analysis
@@ -11,24 +13,24 @@ from .series_collection import SeriesCollection
 from .preferences import Preferences
 
 
-@Analysis.db_model
+@Analysis.db_model(PickleSerializer, 'time_tracking')
 class TimeTrackingModel(Model['TimeTrackingModel'], SeriesCollection):
-    path = 'time_tracking'
+    pass
 
 
-@Analysis.db_model
+@Analysis.db_model(PickleSerializer, 'times_preferences')
 class TimesPreferencesModel(Model['TimesPreferencesModel'], Preferences):
-    path = 'times_preferences'
+    pass
 
 
-@Analysis.db_index
+@Analysis.db_index(YamlSerializer, 'times_preferences_index.yaml')
 class TimesPreferencesIndex(Index['TimesPreferences']):
-    path = 'parameters_preferences_index.yaml'
+    pass
 
 
-@Analysis.db_index
+@Analysis.db_index(YamlSerializer, 'time_tracking_index.yaml')
 class TimeTrackingIndex(Index['TimeTracking']):
-    path = 'time_tracking_index.yaml'
+    pass
 
 
 class TimeTrackingAnalysis(Analysis):

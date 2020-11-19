@@ -2,6 +2,8 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response, request
 from labml_db import Model, Index
+from labml_db.serializer.pickle import PickleSerializer
+from labml_db.serializer.yaml import YamlSerializer
 
 from ..logging import logger
 from .analysis import Analysis
@@ -11,24 +13,24 @@ from .series_collection import SeriesCollection
 from .preferences import Preferences
 
 
-@Analysis.db_model
+@Analysis.db_model(PickleSerializer, 'outputs')
 class OutputsModel(Model['OutputsModel'], SeriesCollection):
-    path = 'outputs'
+    pass
 
 
-@Analysis.db_model
+@Analysis.db_model(PickleSerializer, 'outputs_preferences')
 class OutputsPreferencesModel(Model['OutputsPreferencesModel'], Preferences):
-    path = 'outputs_preferences'
+    pass
 
 
-@Analysis.db_index
+@Analysis.db_index(YamlSerializer, 'outputs_preferences_index.yaml')
 class OutputsPreferencesIndex(Index['OutputsPreferences']):
-    path = 'outputs_preferences_index.yaml'
+    pass
 
 
-@Analysis.db_index
+@Analysis.db_index(YamlSerializer, 'outputs_index.yaml')
 class OutputsIndex(Index['Outputs']):
-    path = 'outputs_index.yaml'
+    pass
 
 
 class OutputsAnalysis(Analysis):

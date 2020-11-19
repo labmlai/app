@@ -1,7 +1,5 @@
 from typing import Dict
 
-from labml_db.serializer.pickle import PickleSerializer
-from labml_db.serializer.yaml import YamlSerializer
 from .series import SeriesModel
 
 URLS = []
@@ -26,13 +24,19 @@ class Analysis:
         return decorator
 
     @staticmethod
-    def db_model(cls):
-        DB_MODELS.append((PickleSerializer, cls, cls.path))
+    def db_model(serializer: any, path: str):
+        def decorator(cls):
+            DB_MODELS.append((serializer, cls, path))
 
-        return cls
+            return cls
+
+        return decorator
 
     @staticmethod
-    def db_index(cls):
-        DB_INDEXES.append((YamlSerializer, cls, cls.path))
+    def db_index(serializer: any, path: str):
+        def decorator(cls):
+            DB_INDEXES.append((serializer, cls, path))
 
-        return cls
+            return cls
+
+        return decorator

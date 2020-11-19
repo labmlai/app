@@ -2,6 +2,8 @@ from typing import Dict, Any
 
 from flask import jsonify, make_response, request
 from labml_db import Model, Index
+from labml_db.serializer.pickle import PickleSerializer
+from labml_db.serializer.yaml import YamlSerializer
 
 from ..logging import logger
 from .analysis import Analysis
@@ -11,24 +13,24 @@ from .series_collection import SeriesCollection
 from .preferences import Preferences
 
 
-@Analysis.db_model
+@Analysis.db_model(PickleSerializer, 'gradients')
 class GradientsModel(Model['GradientsModel'], SeriesCollection):
-    path = 'gradients'
+    pass
 
 
-@Analysis.db_model
+@Analysis.db_model(PickleSerializer, 'gradients_preferences')
 class GradientsPreferencesModel(Model['GradientsPreferencesModel'], Preferences):
-    path = 'gradients_preferences'
+    pass
 
 
-@Analysis.db_index
+@Analysis.db_index(YamlSerializer, 'gradients_preferences_index.yaml')
 class GradientsPreferencesIndex(Index['GradientsPreferences']):
-    path = 'gradients_preferences_index.yaml'
+    pass
 
 
-@Analysis.db_index
+@Analysis.db_index(YamlSerializer, 'gradients_index.yaml')
 class GradientsIndex(Index['Gradients']):
-    path = 'gradients_index.yaml'
+    pass
 
 
 class GradientsAnalysis(Analysis):
