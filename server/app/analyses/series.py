@@ -175,8 +175,8 @@ class Series:
         return smoothed
 
     def load(self, data):
-        self.step = data['step']
-        self.last_step = data['last_step']
-        self.value = data['value']
+        self.step = data['step'].copy()
+        self.last_step = data['last_step'].copy()
+        self.value = data['value'].copy()
 
         return self

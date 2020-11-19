@@ -44,3 +44,8 @@ class SeriesCollection:
 
         s = Series().load(self.tracking[ind])
         s.update(series['step'], series['value'])
+
+        self.tracking[ind] = s.to_data()
+
+
+
