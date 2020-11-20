@@ -63,6 +63,9 @@ def before_request():
     """Save time before each request"""
     timestamp = strftime('[%Y-%b-%d %H:%M]')
     g.request_start_time = time.time()
+    content_size = request.content_length
+    if content_size and content_size > (15 * 1000000):
+        logger.error(f'large content size: {request.content_length/1000000} MB')
     logger.debug(f'time: {timestamp} uri: {request.full_path}')
 
 
