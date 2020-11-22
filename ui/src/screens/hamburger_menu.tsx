@@ -2,7 +2,7 @@ import React, {useState} from "react"
 
 import "./hamburger_menu.scss"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faHome, faUserCircle, faDesktop, faSearch} from "@fortawesome/free-solid-svg-icons";
+import {faHome, faUserCircle, faDesktop} from "@fortawesome/free-solid-svg-icons";
 import {Nav} from "react-bootstrap";
 import RunsListView from "./runs_list_view";
 import SettingsView from "./settings_view";
