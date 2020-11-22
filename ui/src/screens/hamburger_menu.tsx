@@ -33,7 +33,7 @@ function HamburgerMenu() {
 
         // Animate Links
         const navLinks = document.querySelectorAll<HTMLElement>('.nav-links .tab')
-        navLinks.forEach((link, index: number) => {
+        navLinks.forEach((link: HTMLElement, index: number) => {
             if (link.style.animation) {
                 link.style.animation = ''
             } else {
@@ -52,7 +52,7 @@ function HamburgerMenu() {
     return <div>
         <div className={'nav-container'}>
             <nav>
-                <div className={'logo'}>
+                <div className={'title'}>
                     <h4>{currentTab}</h4>
                 </div>
                 <div className={'nav-links' + navLinksClass}>
