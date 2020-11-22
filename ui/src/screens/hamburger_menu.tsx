@@ -1,11 +1,27 @@
 import React, {useState} from "react"
 
 import "./hamburger_menu.scss"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faHome, faUserCircle, faDesktop, faSearch} from "@fortawesome/free-solid-svg-icons";
+import {Nav} from "react-bootstrap";
+import RunsListView from "./runs_list_view";
+import SettingsView from "./settings_view";
 
 
 function HamburgerMenu() {
     const [navLinksClass, setNavLinksClass] = useState('')
     const [burgerClass, setBurgerClass] = useState('')
+    const [currentTab, setCurrentTab] = useState('Experiments')
+
+    function clickHandle(e: Event, tab: string) {
+        if (tab === 'User Profile') {
+            setCurrentTab('User Profile')
+        } else if (tab === 'Experiments') {
+            setCurrentTab('Experiments')
+        } else {
+            setCurrentTab('Computers')
+        }
+    }
 
     function onBurgerClick() {
         // Toggle Nav
@@ -16,7 +32,7 @@ function HamburgerMenu() {
         }
 
         // Animate Links
-        const navLinks = document.querySelectorAll<HTMLElement>('.nav-links li')
+        const navLinks = document.querySelectorAll<HTMLElement>('.nav-links .tab')
         navLinks.forEach((link, index: number) => {
             if (link.style.animation) {
                 link.style.animation = ''
@@ -26,38 +42,49 @@ function HamburgerMenu() {
         })
 
         // Burger Animation
-        if(burgerClass){
-           setBurgerClass('')
-        }else{
-            setBurgerClass( ' toggle')
+        if (burgerClass) {
+            setBurgerClass('')
+        } else {
+            setBurgerClass(' toggle')
         }
     }
 
-    return <div className={'nav-container'}>
-        <nav>
-            <div className={'logo'}>
-                <h4>The Nav</h4>
-            </div>
-            <ul className={'nav-links' + navLinksClass}>
-                <li>
-                    <a href={'#'}>Home</a>
-                </li>
-                <li>
-                    <a href={'#'}>About</a>
-                </li>
-                <li>
-                    <a href={'#'}>Work</a>
-                </li>
-                <li>
-                    <a href={'#'}>Projects</a>
-                </li>
-            </ul>
-            <div className={'burger' + burgerClass} onClick={onBurgerClick}>
-                <div className={'line1'}></div>
-                <div className={'line2'}></div>
-                <div className={'line3'}></div>
-            </div>
-        </nav>
+    return <div>
+        <div className={'nav-container'}>
+            <nav>
+                <div className={'logo'}>
+                    <h4>{currentTab}</h4>
+                </div>
+                <div className={'nav-links' + navLinksClass}>
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Experiments')}>
+                        <FontAwesomeIcon icon={faHome}/>
+                        <span>Experiments</span>
+                    </Nav.Link>
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>
+                        <FontAwesomeIcon icon={faDesktop}/>
+                        <span>Computers</span>
+                    </Nav.Link>
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')}>
+                        <FontAwesomeIcon icon={faUserCircle}/>
+                        <span>User Profile</span>
+                    </Nav.Link>
+                </div>
+                <div className={'burger' + burgerClass} onClick={onBurgerClick}>
+                    <div className={'line1'}></div>
+                    <div className={'line2'}></div>
+                    <div className={'line3'}></div>
+                </div>
+            </nav>
+        </div>
+        {(() => {
+            if (currentTab === 'User Profile') {
+                return <SettingsView/>
+            } else if (currentTab === 'Experiments') {
+                return <RunsListView/>
+            } else {
+                return <div></div>
+            }
+        })()}
     </div>
 }
 

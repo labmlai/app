@@ -1,22 +1,14 @@
-//* {
-//    margin: 0px;
-//    padding: 0px;
-//    box-sizing: border-box;
-//  }
-
 .nav-container {
   nav {
     display: flex;
     justify-content: space-around;
     align-items: center;
     min-height: 8vh;
-    background-color: #5d4954;
-    font-family: 'Poppins', sans-serif;
   }
 }
 
 .logo {
-  color: rgb(226, 226, 226);
+  color: gray;
   text-transform: uppercase;
   letter-spacing: 5px;
   font-size: 20px;
@@ -27,16 +19,8 @@
   justify-content: space-around;
   width: 40%;
 
-  a {
-    color: rgb(226, 226, 226);
-    text-decoration: none;
-    letter-spacing: 3px;
-    font-weight: bold;
-    font-size: 14px;
-  }
-
-  li {
-    list-style: none;
+  span {
+    margin-left: 5px;
   }
 }
 
@@ -47,9 +31,8 @@
   div {
     width: 25px;
     height: 3px;
-    background-color: rgb(226, 226, 226);
+    background-color: black;
     margin: 5px;
-
   }
 }
 
@@ -59,10 +42,11 @@
   }
   .nav-links {
     position: absolute;
+    background-color: #eee;
+    z-index: 1;
     right: 0px;
     height: 92vh;
     top: 8vh;
-    background-color: #5d4954;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -70,7 +54,7 @@
     transform: translate(100%);
     transition: transform 0.5s ease-in;
 
-    li {
+    .tab {
       opacity: 0;
     }
   }
