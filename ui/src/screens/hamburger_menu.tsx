@@ -64,11 +64,13 @@ function HamburgerMenu() {
                         <FontAwesomeIcon icon={faUserCircle}/>
                         <span>User Profile</span>
                     </Nav.Link>
-                    <Nav.Link className={'tab'}>
+                    <Nav.Link className={'tab'} href={'http://lab-ml.com/'} target="_blank">
                         <FontAwesomeIcon icon={faBook}/>
                         <span>Documentation</span>
                     </Nav.Link>
-                    <Nav.Link className={'tab'}>
+                    <Nav.Link className={'tab'}
+                              href={'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/'}
+                              target="_blank">
                         <FontAwesomeIcon icon={faComments}/>
                         <span>Join Our Slack</span>
                     </Nav.Link>
@@ -86,8 +88,7 @@ function HamburgerMenu() {
             } else if (currentTab === 'Experiments') {
                 return <RunsListView/>
             } else {
-                return <div className={'text-center'}>
-                    <h1 className={'text-secondary'}>Coming Soon</h1>
+                return <div>
                 </div>
             }
         })()}
