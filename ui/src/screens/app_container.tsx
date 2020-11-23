@@ -10,7 +10,6 @@ import {useAuth0} from "@auth0/auth0-react"
 import RunView from "./run_view"
 import PageNotFound from "./page_not_found_view"
 import HamburgerMenu from "./hamburger_menu"
-import TabsView from "./tabs_view"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../analyses/configs/card"
 import analyses from "../analyses/all_analyses"
@@ -108,9 +107,8 @@ function AppContainer() {
                 <Route path="/404" component={PageNotFound}/>
                 <Route path="/run" component={RunView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
-                <Route path="/home" component={TabsView}/>
+                <Route path="/home" component={HamburgerMenu}/>
                 <Route path="/runs" component={RunsView}/>
-                <Route path="/test" component={HamburgerMenu}/>
                 {analyses.map((analysis, i) => {
                     return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
                 })}
