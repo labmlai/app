@@ -1,4 +1,8 @@
 .nav-container {
+  body {
+    overflow-x: hidden;
+  }
+
   nav {
     display: flex;
     justify-content: space-around;
@@ -8,7 +12,7 @@
 }
 
 .title {
-  color: gray;
+  color: dimgrey;
   text-transform: uppercase;
   letter-spacing: 5px;
   font-size: 20px;
@@ -17,7 +21,23 @@
 .nav-links {
   display: flex;
   justify-content: space-around;
-  width: 40%;
+
+  position: absolute;
+  background-color: #eee;
+  z-index: 2;
+  right: 0px;
+  height: 92vh;
+  top: 8vh;
+  flex-direction: column;
+  align-items: center;
+  width: 20%;
+  transform: translate(100%);
+  transition: transform 0.5s ease-in;
+
+  .tab {
+    opacity: 0;
+    text-align: center;
+  }
 
   span {
     margin-left: 5px;
@@ -25,46 +45,36 @@
 }
 
 .burger {
-  display: none;
   cursor: pointer;
+  display: block;
 
   div {
     width: 25px;
     height: 3px;
-    background-color: black;
+    background-color: dimgrey;
     margin: 5px;
   }
 }
 
 @media screen and (max-width: 768px) {
-  body {
-    overflow-x: hidden;
-  }
   .nav-links {
-    position: absolute;
-    background-color: #eee;
-    z-index: 1;
-    right: 0px;
-    height: 92vh;
-    top: 8vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     width: 50%;
-    transform: translate(100%);
-    transition: transform 0.5s ease-in;
-
-    .tab {
-      opacity: 0;
-    }
-  }
-  .burger {
-    display: block;
   }
 }
 
 .nav-active {
   transform: translate(0%);
+}
+
+@keyframes navLinkFade {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0px);
+  }
 }
 
 .toggle {
@@ -78,16 +88,5 @@
 
   .line3 {
     transform: rotate(45deg) translate(-5px, -6px);
-  }
-}
-
-@keyframes navLinkFade {
-  from {
-    opacity: 0;
-    transform: translateX(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0px);
   }
 }

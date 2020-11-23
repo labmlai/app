@@ -1,11 +1,13 @@
 import React, {useState} from "react"
 
+import {Nav} from "react-bootstrap"
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
+import {faHome, faUserCircle, faDesktop, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
+
+import RunsListView from "./runs_list_view"
+import SettingsView from "./settings_view"
+
 import "./hamburger_menu.scss"
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faHome, faUserCircle, faDesktop} from "@fortawesome/free-solid-svg-icons";
-import {Nav} from "react-bootstrap";
-import RunsListView from "./runs_list_view";
-import SettingsView from "./settings_view";
 
 
 function HamburgerMenu() {
@@ -14,13 +16,7 @@ function HamburgerMenu() {
     const [currentTab, setCurrentTab] = useState('Experiments')
 
     function clickHandle(e: Event, tab: string) {
-        if (tab === 'User Profile') {
-            setCurrentTab('User Profile')
-        } else if (tab === 'Experiments') {
-            setCurrentTab('Experiments')
-        } else {
-            setCurrentTab('Computers')
-        }
+        setCurrentTab(tab)
     }
 
     function onBurgerClick() {
@@ -68,6 +64,14 @@ function HamburgerMenu() {
                         <FontAwesomeIcon icon={faUserCircle}/>
                         <span>User Profile</span>
                     </Nav.Link>
+                    <Nav.Link className={'tab'}>
+                        <FontAwesomeIcon icon={faBook}/>
+                        <span>Documentation</span>
+                    </Nav.Link>
+                    <Nav.Link className={'tab'}>
+                        <FontAwesomeIcon icon={faComments}/>
+                        <span>Join Our Slack</span>
+                    </Nav.Link>
                 </div>
                 <div className={'burger' + burgerClass} onClick={onBurgerClick}>
                     <div className={'line1'}></div>
@@ -82,7 +86,9 @@ function HamburgerMenu() {
             } else if (currentTab === 'Experiments') {
                 return <RunsListView/>
             } else {
-                return <div></div>
+                return <div className={'text-center'}>
+                    <h1 className={'text-secondary'}>Coming Soon</h1>
+                </div>
             }
         })()}
     </div>
