@@ -8,26 +8,22 @@ import "./style.scss"
 interface BarLineProps {
     value: number
     color: string
-    name: string
     width: number
 }
 
 export function BarLine(props: BarLineProps) {
     const titleWidth = Math.min(150, Math.round(props.width * .375))
-    const chartWidth = props.width - titleWidth * 2
+    const chartWidth = props.width - titleWidth
 
     return <ListGroup.Item className={'sparkline-list-item'}>
-        <div className={'sparkline-content'} style={{width: `${titleWidth * 2 + chartWidth}px`}}>
-            <span style={{color: 'rgb(52, 73, 94)', width: `${titleWidth}px`}}>{props.name}</span>
-            <svg className={'sparkline'} height={35} width={chartWidth}>
-                <g transform={`translate(${0}, 5)`}>
-                    <rect width={props.value * chartWidth} height={25} fill={props.color} opacity={0.7}/>
+        <div className={'sparkline-content'} style={{width: `${titleWidth + chartWidth}px`}}>
+            <svg className={'sparkline'} height={15} width={chartWidth}>
+                <g>
+                    <rect width={props.value * chartWidth} height={15} fill={props.color} opacity={0.7}/>
                 </g>
             </svg>
         </div>
     </ListGroup.Item>
-
-
 }
 
 interface BarLinesProps {
@@ -41,18 +37,21 @@ export function BarLines(props: BarLinesProps) {
 
     const rowWidth = Math.min(450, windowWidth - 3 * margin)
 
-    let res: number[] = []
+    let res: any = []
+    let values: number[] = []
     for (let s of props.series) {
-        res.push(s.mean)
+        res.push({'mean': s.mean, 'name': s.name})
+        values.push(s.mean)
     }
 
-    let minMean: number = Math.min(...res)
-    let maxMean: number = Math.max(...res)
+    let sortedRes: [] = res.sort((n1: any, n2: any) => n1.mean - n2.mean);
 
-    let barLines = props.series.map((s, i) => {
-        return <BarLine key={i} value={(s.mean - minMean) / (maxMean - minMean)} color={getColor(i)}
-                        name={s.name} width={rowWidth}/>
+    let minMean: number = Math.min(...values)
+    let maxMean: number = Math.max(...values)
 
+    let barLines = sortedRes.map((s: any, i) => {
+        let color = s.name.includes('weight') ? getColor(2) : getColor(0)
+        return <BarLine key={i} value={(s.mean - minMean) / (maxMean - minMean)} color={color} width={rowWidth}/>
     })
 
     return <ListGroup className={'sparkline-list'}>
