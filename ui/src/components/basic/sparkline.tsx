@@ -3,7 +3,7 @@ import React from "react"
 import {ListGroup} from "react-bootstrap"
 
 import {PointValue} from "../../models/run"
-import {formatFixed, pickHex, scaleValue} from "../value"
+import {formatFixed, pickHex, scaleValue} from "../../utils/value"
 import {getExtent, getScale} from "./utils"
 import {LinePlot} from "./line_plot"
 import {BASE_COLOR} from "./constants"

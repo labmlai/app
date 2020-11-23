@@ -1,6 +1,6 @@
 import React from "react"
 
-import {FormattedValue} from "../../components/value"
+import {FormattedValue} from "../../utils/value"
 import {Config} from "../../models/config"
 
 import "./style.scss"
