@@ -10,7 +10,6 @@ import {Button} from "react-bootstrap"
 import useWindowDimensions from "../utils/window_dimensions"
 
 
-
 function PageNotFound() {
     mixpanel.track('404')
     const history = useHistory()
@@ -21,13 +20,13 @@ function PageNotFound() {
     }
 
     return <div className={'container'}>
-        <div className={'text-center mt-5'}>
+        <div className={'text-center mt-1'}>
+            <h1 className={'text-danger display-4'}>ERROR #404</h1>
             <div style={{width: Math.min(windowWidth, 500), margin: '0 auto'}}>
                 <Lottie options={{animationData: animation}}/>
             </div>
-            <h1 className={'text-danger'}>404 - Not found error</h1>
-            <h3>Page your are looking for was not found</h3>
-            <Button onClick={onButtonClick}>Go to Home</Button>
+            <h3 className={'text-secondary'}>OOPS! - Could not Find it</h3>
+            <Button className={'mt-2'} onClick={onButtonClick}>Go Back to Home</Button>
         </div>
     </div>
 }
