@@ -1,8 +1,9 @@
-.nav-container {
-  body {
-    overflow-x: hidden;
-  }
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
 
+.nav-container {
   nav {
     display: flex;
     justify-content: space-around;
