@@ -2,7 +2,7 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SeriesCardProps, Analysis} from "../types"
-import {BasicBarLines, BasicView} from "../../components/basic/card"
+import {BasicBarLines, BasicView} from "../../components/charts/card"
 import {Cache} from "../common"
 import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
 
