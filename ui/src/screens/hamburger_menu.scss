@@ -4,6 +4,7 @@ html, body {
 }
 
 .nav-container {
+  position: relative;
   nav {
     display: flex;
     justify-content: space-around;
