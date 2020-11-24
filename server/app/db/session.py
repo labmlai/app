@@ -38,10 +38,13 @@ class SessionIndex(Index['Session']):
 
 
 def get_or_create(session_id: str) -> Session:
+    if not session_id:
+        session_id = gen_session_id()
+
     session_key = SessionIndex.get(session_id)
 
     if not session_key:
-        session = Session(session_id=gen_session_id(),
+        session = Session(session_id=session_id,
                           expiration=gen_expiration()
                           )
         session.save()

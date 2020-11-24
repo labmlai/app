@@ -18,6 +18,7 @@ function HamburgerMenu() {
 
     function clickHandle(e: Event, tab: string) {
         setCurrentTab(tab)
+        onBurgerClick()
     }
 
     function onBurgerClick() {
@@ -96,7 +97,8 @@ function HamburgerMenu() {
             } else if (currentTab === 'Experiments') {
                 return <RunsListView/>
             } else {
-                return <div>
+                return <div className={'text-center'}>
+                    <h1 className={'mt-5'}>Under Construction</h1>
                 </div>
             }
         })()}

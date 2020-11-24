@@ -1,8 +1,8 @@
-from pathlib import Path
+import redis
 
 from labml_db import Model, Index
-from labml_db.driver.file import FileDbDriver
-from labml_db.index_driver.file import FileIndexDbDriver
+from labml_db.driver.redis import RedisDbDriver
+from labml_db.index_driver.redis import RedisIndexDbDriver
 from labml_db.serializer.json import JsonSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
@@ -17,21 +17,24 @@ from .. import settings
 
 DATA_PATH = settings.DATA_PATH
 
-Model.set_db_drivers([FileDbDriver(s(), m, Path(f'{DATA_PATH}/{p}')) for s, m, p in AnalysisManager.get_db_models()] + [
-    FileDbDriver(YamlSerializer(), User, Path(f'{DATA_PATH}/user')),
-    FileDbDriver(YamlSerializer(), Project, Path(f'{DATA_PATH}/project')),
-    FileDbDriver(JsonSerializer(), Status, Path(f'{DATA_PATH}/status')),
-    FileDbDriver(JsonSerializer(), RunStatus, Path(f'{DATA_PATH}/run_status')),
-    FileDbDriver(JsonSerializer(), Session, Path(f'{DATA_PATH}/session')),
-    FileDbDriver(JsonSerializer(), Run, Path(f'{DATA_PATH}/run')),
-])
+db = redis.Redis(host='localhost', port=6379, db=0)
+
+Model.set_db_drivers(
+    [RedisDbDriver(s(), m, db) for s, m, p in AnalysisManager.get_db_models()] + [
+        RedisDbDriver(YamlSerializer(), User, db),
+        RedisDbDriver(YamlSerializer(), Project, db),
+        RedisDbDriver(JsonSerializer(), Status, db),
+        RedisDbDriver(JsonSerializer(), RunStatus, db),
+        RedisDbDriver(JsonSerializer(), Session, db),
+        RedisDbDriver(JsonSerializer(), Run, db),
+    ])
 
 Index.set_db_drivers(
-    [FileIndexDbDriver(s(), m, Path(f'{DATA_PATH}/{p}')) for s, m, p in AnalysisManager.get_db_indexes()] + [
-        FileIndexDbDriver(YamlSerializer(), ProjectIndex, Path(f'{DATA_PATH}/project_index.yaml')),
-        FileIndexDbDriver(YamlSerializer(), UserIndex, Path(f'{DATA_PATH}/user_index.yaml')),
-        FileIndexDbDriver(YamlSerializer(), SessionIndex, Path(f'{DATA_PATH}/session_index.yaml')),
-        FileIndexDbDriver(YamlSerializer(), RunIndex, Path(f'{DATA_PATH}/run_index.yaml')),
+    [RedisIndexDbDriver(m, db) for s, m, p in AnalysisManager.get_db_indexes()] + [
+        RedisIndexDbDriver(ProjectIndex, db),
+        RedisIndexDbDriver(UserIndex, db),
+        RedisIndexDbDriver(SessionIndex, db),
+        RedisIndexDbDriver(RunIndex, db),
     ])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
