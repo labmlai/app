@@ -48,9 +48,6 @@ function HamburgerMenu() {
     return <div>
         <div className={'nav-container'}>
             <nav>
-                <div className={'title'}>
-                    <h4>{currentTab}</h4>
-                </div>
                 <div className={'nav-links' + navLinksClass}>
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Experiments')}>
                         <FontAwesomeIcon icon={faHome}/>
@@ -79,6 +76,9 @@ function HamburgerMenu() {
                     <div className={'line1'}></div>
                     <div className={'line2'}></div>
                     <div className={'line3'}></div>
+                </div>
+                <div className={'title ml-5 mt-1'}>
+                    <h4>{currentTab}</h4>
                 </div>
             </nav>
         </div>

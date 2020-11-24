@@ -5,8 +5,8 @@ html, body {
 
 .nav-container {
   nav {
+    margin-left: 5px;
     display: flex;
-    justify-content: space-around;
     align-items: center;
     min-height: 8vh;
   }
@@ -20,28 +20,28 @@ html, body {
 }
 
 .nav-links {
-  display: flex;
-  justify-content: space-around;
-
   position: absolute;
   background-color: #eee;
   z-index: 2;
-  right: 0px;
+  left: -10px;
   height: 92vh;
   top: 8vh;
-  flex-direction: column;
-  align-items: center;
   width: 20%;
-  transform: translate(100%);
+  transform: translate(-100%);
   transition: transform 0.5s ease-in;
 
   .tab {
     opacity: 0;
-    text-align: center;
+    display: block;
+    width: 80%;
+    cursor: pointer;
+    margin-top: 50px;
   }
 
   span {
-    margin-left: 5px;
+    margin-left: 15px;
+    font-size: 15px;
+    font-weight: bold;
   }
 }
 
@@ -59,7 +59,11 @@ html, body {
 
 @media screen and (max-width: 768px) {
   .nav-links {
-    width: 50%;
+    width: 80%;
+
+    .tab {
+      width: 80%;
+    }
   }
 }
 
@@ -70,11 +74,11 @@ html, body {
 @keyframes navLinkFade {
   from {
     opacity: 0;
-    transform: translateX(50px);
+    transform: translateX(0px);
   }
   to {
     opacity: 1;
-    transform: translateX(0px);
+    transform: translateX(30px);
   }
 }
 
