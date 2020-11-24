@@ -13,6 +13,7 @@ import "./hamburger_menu.scss"
 function HamburgerMenu() {
     const [navLinksClass, setNavLinksClass] = useState('')
     const [burgerClass, setBurgerClass] = useState('')
+    const [overlayClass, setOverlayClass] = useState('')
     const [currentTab, setCurrentTab] = useState('Experiments')
 
     function clickHandle(e: Event, tab: string) {
@@ -42,6 +43,13 @@ function HamburgerMenu() {
             setBurgerClass('')
         } else {
             setBurgerClass(' toggle')
+        }
+
+        // turn on overlay
+        if (overlayClass) {
+            setOverlayClass('')
+        } else {
+            setOverlayClass(' d-block')
         }
     }
 
@@ -77,7 +85,7 @@ function HamburgerMenu() {
                     <div className={'line2'}></div>
                     <div className={'line3'}></div>
                 </div>
-                <div className={'title ml-5 mt-1'}>
+                <div className={'title ml-4 mt-1'}>
                     <h4>{currentTab}</h4>
                 </div>
             </nav>
@@ -92,6 +100,7 @@ function HamburgerMenu() {
                 </div>
             }
         })()}
+        <div className={'overlay' + overlayClass}/>
     </div>
 }
 
