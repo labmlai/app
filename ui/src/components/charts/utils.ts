@@ -82,3 +82,16 @@ export function toPointValues(track: SeriesModel[]) {
 
     return track
 }
+
+
+export function toLogPointValues(track: SeriesModel[]) {
+    for (let s of track) {
+        let res: PointValue[] = []
+        for (let i = 0; i < s.step.length; ++i) {
+            res.push({step: s.step[i], value: Math.log(s.value[i]), smoothed: Math.log(s.smoothed[i])})
+        }
+        s.series = res
+    }
+
+    return track
+}

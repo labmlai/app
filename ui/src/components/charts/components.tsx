@@ -6,10 +6,11 @@ import {ListGroup} from "react-bootstrap"
 import {SeriesModel} from "../../models/run"
 import {getColor} from "./constants"
 import {LinePlot} from "./line_plot"
-import {getExtent, getScale, toPointValues} from "./utils"
+import {defaultSeriesToPlot, getExtent, getScale, toLogPointValues, toPointValues} from "./utils"
 import {SparkLine} from "./sparkline"
 
 import "./style.scss"
+import {LabLoader} from "../loader";
 
 
 interface AxisProps {
@@ -51,7 +52,7 @@ interface SeriesProps {
     onSelect?: (i: number) => void
 }
 
-export function SparkLines(props: SeriesProps) {
+function SparkLines(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
@@ -93,7 +94,7 @@ export function SparkLines(props: SeriesProps) {
     </ListGroup>
 }
 
-export function LineChart(props: SeriesProps) {
+function LineChart(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
     const axisSize = 30
@@ -120,7 +121,7 @@ export function LineChart(props: SeriesProps) {
     }
 
     let plotSeries = plot.map(s => s.series)
-    const yScale = getScale(getExtent(plotSeries, d => d.value, false), - chartHeight)
+    const yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
     const xScale = getScale(stepExtent, chartWidth)
 
@@ -153,7 +154,40 @@ export function LineChart(props: SeriesProps) {
                 <RightAxis chartId={chartId} scale={yScale}/>
             </g>
         </svg>
-
-        <SparkLines series={props.series} plotIdx={props.plotIdx} width={props.width} onSelect={props.onSelect}/>
     </div>
+}
+
+let chartTypes = ['smoothed', 'logSmoothed', 'unSmoothed', "logUnSmoothed"]
+
+export function getChartType(index: number) {
+    return chartTypes[index % 4]
+}
+
+export function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+    if (track != null) {
+        if (track.length === 0) {
+            return null
+        }
+        if (plotIdx == null) {
+            plotIdx = defaultSeriesToPlot(track)
+        }
+        return <LineChart key={1} series={track} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+    } else {
+        return <LabLoader/>
+    }
+}
+
+
+export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+    if (track != null) {
+        if (track.length === 0) {
+            return null
+        }
+        if (plotIdx == null) {
+            plotIdx = defaultSeriesToPlot(track)
+        }
+        return <SparkLines series={track} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+    } else {
+        return <LabLoader/>
+    }
 }
