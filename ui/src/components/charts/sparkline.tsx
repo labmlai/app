@@ -39,7 +39,7 @@ export function SparkLine(props: SparkLineProps) {
     let valueColor = pickHex(lastValue)
 
     let value
-    if (Math.abs(last.value - last.smoothed) > last.value / 1e6) {
+    if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
         value = <span className={'value'} style={{width: `${titleWidth}px`}}>
             <span className={'value-secondary'} key={'value'} style={{color: valueColor}}>
                 {formatFixed(last.value, 6)}
