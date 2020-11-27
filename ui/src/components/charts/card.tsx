@@ -8,7 +8,6 @@ import {getChart, getSparkLines} from "./components"
 import {BarLines} from "./barline"
 import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
-import {defaultSeriesToPlot} from "./utils"
 import RunHeaderCard from "../../analyses/run_header/card"
 import CACHE from "../../cache/cache"
 import {LabLoader} from "../loader"
@@ -204,11 +203,6 @@ function BasicView(props: BasicViewProps) {
         }
     }, [plotIdx, preference])
 
-
-    if (track != null && track.length > 0 && plotIdx == null) {
-        setPlotIdx(defaultSeriesToPlot(track))
-    }
-
     function onChartClick() {
         if (currentChart === 1) {
             setCurrentChart(0)
@@ -240,15 +234,19 @@ function BasicView(props: BasicViewProps) {
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
-        <div className={'labml-card'}>
-            <div className={'pointer-cursor'} onClick={onChartClick}>
-                <div className={'text-center mb-3'}>
-                    {dots}
+        {track && track.length > 0 && preference.current?
+            <div className={'labml-card'}>
+                <div className={'pointer-cursor'} onClick={onChartClick}>
+                    <div className={'text-center mb-3'}>
+                        {dots}
+                    </div>
+                    {chart}
                 </div>
-                {chart}
+                {sparkLines}
             </div>
-            {sparkLines}
-        </div>
+            :
+            <LabLoader/>
+        }
     </div>
 }
 

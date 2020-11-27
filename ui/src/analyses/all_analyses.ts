@@ -11,7 +11,7 @@ let analyses: Analysis[] = [
     gradientAnalysis,
     parameterAnalysis,
     moduleAnalysis,
-    timeAnalysis,
+    // timeAnalysis,
 ]
 
 export default analyses
