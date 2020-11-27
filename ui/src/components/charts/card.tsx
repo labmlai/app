@@ -8,7 +8,7 @@ import {getChart, getSparkLines} from "./components"
 import {BarLines} from "./barline"
 import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
-import {defaultSeriesToPlot, toLogPointValues, toPointValues} from "./utils"
+import {defaultSeriesToPlot} from "./utils"
 import RunHeaderCard from "../../analyses/run_header/card"
 import CACHE from "../../cache/cache"
 import {LabLoader} from "../loader"
@@ -59,8 +59,8 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getChart(track, null, props.width)}
-                {getSparkLines(track, null, props.width)}
+                {props.isChartView && getChart('normal', track, null, props.width)}
+                {getSparkLines('normal', track, null, props.width)}
             </div>
             : <div/>
     }
@@ -210,15 +210,19 @@ function BasicView(props: BasicViewProps) {
     }
 
     function onChartClick() {
-        if (currentChart === 3) {
+        if (currentChart === 1) {
             setCurrentChart(0)
         } else {
             setCurrentChart(currentChart + 1)
         }
     }
 
+    function getChartType(index: number): 'log' | 'normal' {
+        return index === 0 ? 'normal' : 'log'
+    }
+
     let dots: JSX.Element[] = []
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 2; i++) {
         if (i === currentChart) {
             dots.push(<span key={i} className={"dot color-dot"}/>)
         } else {
@@ -226,8 +230,8 @@ function BasicView(props: BasicViewProps) {
         }
     }
 
-    let chart = getChart(track, plotIdx, actualWidth, toggleChart)
-    let sparkLines = getSparkLines(track, plotIdx, actualWidth, toggleChart)
+    let chart = getChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)
+    let sparkLines = getSparkLines(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
@@ -236,11 +240,13 @@ function BasicView(props: BasicViewProps) {
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
-        <div className={'labml-card pointer-cursor'} onClick={onChartClick}>
-            <div className={'text-center mb-3'}>
-                {dots}
+        <div className={'labml-card'}>
+            <div className={'pointer-cursor'} onClick={onChartClick}>
+                <div className={'text-center mb-3'}>
+                    {dots}
+                </div>
+                {chart}
             </div>
-            {chart}
             {sparkLines}
         </div>
     </div>

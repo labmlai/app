@@ -8,9 +8,9 @@ import {getColor} from "./constants"
 import {LinePlot} from "./line_plot"
 import {defaultSeriesToPlot, getExtent, getScale, toLogPointValues, toPointValues} from "./utils"
 import {SparkLine} from "./sparkline"
+import {LabLoader} from "../loader"
 
 import "./style.scss"
-import {LabLoader} from "../loader";
 
 
 interface AxisProps {
@@ -56,7 +56,7 @@ function SparkLines(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
-    let track = toPointValues(props.series)
+    let track = props.series
 
     let lastValues: number[] = []
     for (let s of track) {
@@ -101,7 +101,7 @@ function LineChart(props: SeriesProps) {
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
 
-    let track = toPointValues(props.series)
+    let track = props.series
 
     if (track.length === 0) {
         return <div/>
@@ -157,13 +157,9 @@ function LineChart(props: SeriesProps) {
     </div>
 }
 
-let chartTypes = ['smoothed', 'logSmoothed', 'unSmoothed', "logUnSmoothed"]
+let chartTypes: 'log' | 'normal'
 
-export function getChartType(index: number) {
-    return chartTypes[index % 4]
-}
-
-export function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+export function getChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -171,14 +167,14 @@ export function getChart(track: SeriesModel[] | null, plotIdx: number[] | null, 
         if (plotIdx == null) {
             plotIdx = defaultSeriesToPlot(track)
         }
-        return <LineChart key={1} series={track} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+        let series: SeriesModel[] = chartType === 'normal' ? toPointValues(track) : toLogPointValues(track)
+        return <LineChart key={1} series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
     } else {
         return <LabLoader/>
     }
 }
 
-
-export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+export function getSparkLines(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -186,7 +182,9 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
         if (plotIdx == null) {
             plotIdx = defaultSeriesToPlot(track)
         }
-        return <SparkLines series={track} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+
+        let series: SeriesModel[] = chartType === 'normal' ? toPointValues(track) : toLogPointValues(track)
+        return <SparkLines series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
     } else {
         return <LabLoader/>
     }
