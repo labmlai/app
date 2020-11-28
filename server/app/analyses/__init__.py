@@ -1,12 +1,17 @@
 from typing import Dict
 
 from . import analysis
+from .series import SeriesModel
 from .experiments.parameters import ParametersAnalysis
 from .experiments.time_tracking import TimeTrackingAnalysis
 from .experiments.gradients import GradientsAnalysis
 from .experiments.metrics import MetricsAnalysis
 from .experiments.outputs import OutputsAnalysis
-from .series import SeriesModel
+from .computers.cpu import CPUAnalysis
+from .computers.memory import MemoryAnalysis
+from .computers.network import NetworkAnalysis
+from .computers.disk import DiskAnalysis
+from .computers.process import ProcessAnalysis
 
 experiment_analyses = [GradientsAnalysis,
                        OutputsAnalysis,
@@ -14,7 +19,11 @@ experiment_analyses = [GradientsAnalysis,
                        TimeTrackingAnalysis,
                        MetricsAnalysis]
 
-computer_analyses = []
+computer_analyses = [CPUAnalysis,
+                     MemoryAnalysis,
+                     NetworkAnalysis,
+                     DiskAnalysis,
+                     ProcessAnalysis]
 
 
 class AnalysisManager:
