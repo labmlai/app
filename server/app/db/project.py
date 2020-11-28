@@ -29,6 +29,13 @@ class Project(Model['Project']):
 
         return res
 
+    def get_computers(self) -> List[Computer]:
+        res = []
+        for computer_uuid, computer_key in self.computers.items():
+            res.append(computer_key.load())
+
+        return res
+
     def delete_runs(self, run_uuids: List[str]):
         for run_uuid in run_uuids:
             if run_uuid in self.runs:

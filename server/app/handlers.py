@@ -73,6 +73,46 @@ def update_computer() -> flask.Response:
     return jsonify({'errors': errors, 'url': c.url})
 
 
+@login_required
+def get_computer(computer_uuid: str) -> flask.Response:
+    computer_data = {}
+    status_code = 400
+
+    c = computer.get_computer(computer_uuid)
+    if c:
+        computer_data = c.get_data()
+        status_code = 200
+
+    response = make_response(jsonify(computer_data))
+    response.status_code = status_code
+
+    logger.debug(f'computer, computer_uuid: {computer_uuid}')
+
+    return response
+
+
+@login_required
+@check_labml_token_permission
+def get_computers(labml_token: str) -> flask.Response:
+    u = get_auth_user()
+
+    if labml_token:
+        computers_list = computer.get_computers(labml_token)
+    else:
+        default_project = u.default_project
+        labml_token = default_project.labml_token
+        computers_list = default_project.get()
+
+    res = []
+    for c in computers_list:
+        if c.computer_uuid:
+            res.append(c.get_summary())
+
+    logger.debug(f'computers, labml_token : {labml_token}')
+
+    return jsonify({'runs': res, 'labml_token': labml_token})
+
+
 def update_run() -> flask.Response:
     errors = []
 
@@ -232,12 +272,15 @@ def _add_ui(app: flask.Flask, method: str, func: typing.Callable, url: str):
 
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
+    _add_server(app, 'POST', update_computer, 'computer')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
+    _add_ui(app, 'GET', get_computers, 'computers/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'GET', get_user, 'user')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
+    _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
     _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
