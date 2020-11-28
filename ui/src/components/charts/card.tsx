@@ -25,8 +25,31 @@ interface BasicCardProps extends BasicProps, CardProps {
 
 function SparkLinesCard(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesModel[] | null))
-    const analysisCache = props.cache.getAnalysis(props.uuid)
+
     const history = useHistory()
+
+    const analysisCache = props.cache.getAnalysis(props.uuid)
+    const preferenceCache = props.cache.getPreferences(props.uuid)
+
+     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
+
+    let preference = useRef(null) as any
+
+    useEffect(() => {
+        async function load() {
+            preference.current = await preferenceCache.get()
+
+            if (preference.current) {
+                let analysis_preferences = preference.current.series_preferences
+                if (analysis_preferences.length > 0) {
+                    setPlotIdx([...analysis_preferences])
+                }
+            }
+        }
+
+        load().then()
+    }, [preference, preferenceCache])
+
 
     async function onRefresh() {
         setTrack(await analysisCache.get(true))
@@ -58,8 +81,8 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getChart('normal', track, null, props.width)}
-                {getSparkLines('normal', track, null, props.width)}
+                {props.isChartView && getChart('normal', track, plotIdx, props.width)}
+                {getSparkLines('normal', track, plotIdx, props.width)}
             </div>
             : <div/>
     }
