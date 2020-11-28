@@ -11,7 +11,7 @@ import useWindowDimensions from "../../utils/window_dimensions"
 import RunHeaderCard from "../../analyses/run_header/card"
 import CACHE from "../../cache/cache"
 import {LabLoader} from "../loader"
-import {BackButton, RefreshButton} from "../util_buttons"
+import {BackButton, RefreshButton, SaveButton} from "../util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../analyses/types"
 
 
@@ -124,6 +124,7 @@ function BasicView(props: BasicViewProps) {
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const [currentChart, setCurrentChart] = useState(0)
+    const [isDisabled, setIsDisabled] = useState(true)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -167,20 +168,12 @@ function BasicView(props: BasicViewProps) {
         load().then()
     }, [track, preference, preferenceCache])
 
-    useEffect(() => {
-        function updatePreference() {
-            if (preference.current) {
-                preferenceCache.setPreference(preference.current).then()
-            }
+    function updatePreferences() {
+        if (preference.current) {
+            preferenceCache.setPreference(preference.current).then()
+            setIsDisabled(true)
         }
-
-        window.addEventListener('beforeunload', updatePreference)
-
-        return () => {
-            updatePreference()
-            window.removeEventListener('beforeunload', updatePreference)
-        }
-    }, [preference, preferenceCache])
+    }
 
     async function load() {
         setTrack(await analysisCache.get(true))
@@ -191,6 +184,8 @@ function BasicView(props: BasicViewProps) {
     }
 
     let toggleChart = useCallback((idx: number) => {
+        setIsDisabled(false)
+
         if (plotIdx[idx] >= 0) {
             plotIdx[idx] = -1
         } else {
@@ -230,11 +225,12 @@ function BasicView(props: BasicViewProps) {
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
+            <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled}/>
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
-        {track && track.length > 0 && preference.current?
+        {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>
                 <div className={'pointer-cursor'} onClick={onChartClick}>
                     <div className={'text-center mb-3'}>
