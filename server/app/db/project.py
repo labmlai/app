@@ -3,6 +3,7 @@ from typing import List, Dict, Union
 from labml_db import Model, Key, Index
 
 from .run import Run
+from .computer import Computer
 
 
 class Project(Model['Project']):
@@ -10,13 +11,15 @@ class Project(Model['Project']):
     is_sharable: float
     name: str
     runs: Dict[str, Key[Run]]
+    computers: Dict[str, Key[Computer]]
 
     @classmethod
     def defaults(cls):
         return dict(name='',
                     is_sharable=False,
                     labml_token='',
-                    runs={}
+                    runs={},
+                    computers={},
                     )
 
     def get_runs(self) -> List[Run]:

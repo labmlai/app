@@ -1,25 +1,32 @@
 from typing import Dict
 
 from . import analysis
-from .parameters import ParametersAnalysis
-from .time_tracking import TimeTrackingAnalysis
-from .gradients import GradientsAnalysis
-from .metrics import MetricsAnalysis
-from .outputs import OutputsAnalysis
+from .experiments.parameters import ParametersAnalysis
+from .experiments.time_tracking import TimeTrackingAnalysis
+from .experiments.gradients import GradientsAnalysis
+from .experiments.metrics import MetricsAnalysis
+from .experiments.outputs import OutputsAnalysis
 from .series import SeriesModel
 
-Analyses = [GradientsAnalysis,
-            OutputsAnalysis,
-            ParametersAnalysis,
-            TimeTrackingAnalysis,
-            MetricsAnalysis]
+experiment_analyses = [GradientsAnalysis,
+                       OutputsAnalysis,
+                       ParametersAnalysis,
+                       TimeTrackingAnalysis,
+                       MetricsAnalysis]
+
+computer_analyses = []
 
 
 class AnalysisManager:
     @staticmethod
     def track(run_uuid: str, data: Dict[str, SeriesModel]):
-        for ans in Analyses:
+        for ans in experiment_analyses:
             ans.get_or_create(run_uuid).track(data)
+
+    @staticmethod
+    def computer(computer_uuid: str, data: Dict[str, SeriesModel]):
+        for ans in computer_analyses:
+            ans.get_or_create(computer_uuid).computer(data)
 
     @staticmethod
     def get_handlers():

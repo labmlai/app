@@ -5,12 +5,12 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from ..logging import logger
-from .analysis import Analysis
-from .series import SeriesModel
-from ..enums import SeriesEnums
-from .series_collection import SeriesCollection
-from .preferences import Preferences
+from app.logging import logger
+from app.enums import SeriesEnums
+from ..analysis import Analysis
+from ..series import SeriesModel
+from ..series_collection import SeriesCollection
+from ..preferences import Preferences
 
 
 @Analysis.db_model(PickleSerializer, 'outputs')

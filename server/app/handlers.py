@@ -10,6 +10,7 @@ from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session, get_auth_user
 from .db import run
+from .db import computer
 from .db import session
 from .db import status
 from .db import user
@@ -53,6 +54,23 @@ def sign_out() -> flask.Response:
     logger.debug(f'sign_out, session_id: {s.session_id}')
 
     return response
+
+
+def update_computer() -> flask.Response:
+    errors = []
+
+    token = request.args.get('labml_token', '')
+    computer_uuid = request.args.get('computer_uuid', '')
+
+    c = computer.get_or_create(computer_uuid, token, request.remote_addr)
+    s = c.status.load()
+
+    c.update_computer(request.json)
+    s.update_time_status(request.json)
+    if 'computer' in request.json:
+        AnalysisManager.computer(computer_uuid, request.json['computer'])
+
+    return jsonify({'errors': errors, 'url': c.url})
 
 
 def update_run() -> flask.Response:

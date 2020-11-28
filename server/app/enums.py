@@ -15,6 +15,14 @@ class SeriesEnums:
     METRIC = 'metric'
 
 
+class COMPUTEREnums:
+    CPU = 'cpu'
+    DISK = 'disk'
+    MEMORY = 'memory'
+    NETWORK = 'net'
+    PROCESS = 'process'
+
+
 INDICATORS = [SeriesEnums.GRAD,
               SeriesEnums.PARAM,
               SeriesEnums.TIME,
