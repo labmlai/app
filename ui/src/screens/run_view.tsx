@@ -5,7 +5,7 @@ import mixpanel from "mixpanel-browser"
 import {BackButton, RefreshButton} from "../components/util_buttons"
 import ConfigsCard from "../analyses/configs/card"
 import analyses from "../analyses/all_analyses"
-import RunHeaderCard from "../analyses/run_header/card"
+import RunHeaderCard from "../analyses/experiments/run_header/card"
 import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 

@@ -2,33 +2,31 @@ import React from "react"
 
 import {useLocation} from "react-router-dom"
 
-import {SeriesCardProps, Analysis} from "../types"
-import {BasicView, BasicBarLines} from "../../components/charts/card"
-import {Cache} from "../common"
-import {SeriesCache, StatusCache, SeriesPreferenceCache} from "../../cache/cache"
+import {SeriesCardProps, Analysis} from "../../types"
+import {BasicSparkLines, BasicView} from "../../../components/charts/card"
+import {Cache} from "../../common"
+import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
 
-const TITLE = 'Gradients - L2 Norm'
-const URL = 'gradients'
+const TITLE = 'Time Tracking'
+const URL = 'timeTracking'
 
-class GradientAnalysisCache extends SeriesCache {
+
+class TimeTrackingAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'gradients', statusCache)
+        super(uuid, 'times', statusCache)
     }
-
 }
 
-class GradientPreferenceCache extends SeriesPreferenceCache {
+class TimePreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'gradients')
+        super(uuid, 'times')
     }
 }
 
-
-let cache = new Cache(GradientAnalysisCache, GradientPreferenceCache)
-
+let cache = new Cache(TimeTrackingAnalysisCache, TimePreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicBarLines title={TITLE}
+    return <BasicSparkLines title={TITLE}
                       uuid={props.uuid}
                       url={URL}
                       cache={cache}
@@ -46,10 +44,10 @@ function AnalysisDetails() {
                       location={location}/>
 }
 
-let gradientAnalysis: Analysis = {
+let timeAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
     route: `${URL}`
 }
 
-export default gradientAnalysis
+export default timeAnalysis

@@ -1,10 +1,10 @@
 import {Analysis} from "./types"
 
-import gradientAnalysis from "./grads/card"
-import metricAnalysis from "./metrics/card"
-import parameterAnalysis from "./params/card"
-import timeAnalysis from "./times/card"
-import moduleAnalysis from "./modules/card"
+import gradientAnalysis from "./experiments/grads/card"
+import metricAnalysis from "./experiments/metrics/card"
+import parameterAnalysis from "./experiments/params/card"
+import timeAnalysis from "./experiments/times/card"
+import moduleAnalysis from "./experiments/modules/card"
 
 let analyses: Analysis[] = [
     metricAnalysis,

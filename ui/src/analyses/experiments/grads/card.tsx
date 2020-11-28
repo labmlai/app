@@ -1,31 +1,31 @@
 import React from "react"
+
 import {useLocation} from "react-router-dom"
 
-import {SeriesCardProps, Analysis} from "../types"
-import {BasicBarLines, BasicView} from "../../components/charts/card"
-import {Cache} from "../common"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
+import {SeriesCardProps, Analysis} from "../../types"
+import {BasicView, BasicBarLines} from "../../../components/charts/card"
+import {Cache} from "../../common"
+import {SeriesCache, StatusCache, SeriesPreferenceCache} from "../../../cache/cache"
 
+const TITLE = 'Gradients - L2 Norm'
+const URL = 'gradients'
 
-const TITLE = 'Parameters - L2 Norm'
-const URL = 'parameters'
-
-
-class ParameterAnalysisCache extends SeriesCache {
+class GradientAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'parameters', statusCache)
+        super(uuid, 'gradients', statusCache)
     }
+
 }
 
-
-class ParameterPreferenceCache extends SeriesPreferenceCache {
+class GradientPreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'parameters')
+        super(uuid, 'gradients')
     }
 }
 
 
-let cache = new Cache(ParameterAnalysisCache, ParameterPreferenceCache)
+let cache = new Cache(GradientAnalysisCache, GradientPreferenceCache)
+
 
 function AnalysisSummary(props: SeriesCardProps) {
     return <BasicBarLines title={TITLE}
@@ -46,10 +46,10 @@ function AnalysisDetails() {
                       location={location}/>
 }
 
-let parameterAnalysis: Analysis = {
+let gradientAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
     route: `${URL}`
 }
 
-export default parameterAnalysis
+export default gradientAnalysis

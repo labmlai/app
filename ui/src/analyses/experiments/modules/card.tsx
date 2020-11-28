@@ -2,31 +2,32 @@ import React from "react"
 
 import {useLocation} from "react-router-dom"
 
-import {SeriesCardProps, Analysis} from "../types"
-import {BasicSparkLines, BasicView} from "../../components/charts/card"
-import {Cache} from "../common"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../cache/cache"
+import {SeriesCardProps, Analysis} from "../../types"
+import {BasicBarLines, BasicView} from "../../../components/charts/card"
+import {Cache} from "../../common"
+import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
 
-const TITLE = 'Time Tracking'
-const URL = 'timeTracking'
+const TITLE = 'Outputs - L2 Norm'
+const URL = 'outputs'
 
 
-class TimeTrackingAnalysisCache extends SeriesCache {
+class OutputAnalysisCache extends SeriesCache {
     constructor(uuid: string, statusCache: StatusCache) {
-        super(uuid, 'times', statusCache)
+        super(uuid, 'outputs', statusCache)
     }
 }
 
-class TimePreferenceCache extends SeriesPreferenceCache {
+
+class OutputPreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'times')
+        super(uuid, 'outputs')
     }
 }
 
-let cache = new Cache(TimeTrackingAnalysisCache, TimePreferenceCache)
+let cache = new Cache(OutputAnalysisCache, OutputPreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
-    return <BasicSparkLines title={TITLE}
+    return <BasicBarLines title={TITLE}
                       uuid={props.uuid}
                       url={URL}
                       cache={cache}
@@ -44,10 +45,10 @@ function AnalysisDetails() {
                       location={location}/>
 }
 
-let timeAnalysis: Analysis = {
+let moduleAnalysis: Analysis = {
     card: AnalysisSummary,
     view: AnalysisDetails,
     route: `${URL}`
 }
 
-export default timeAnalysis
+export default moduleAnalysis
