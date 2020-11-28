@@ -154,7 +154,7 @@ function BasicView(props: BasicViewProps) {
             if (preference.current) {
                 let analysis_preferences = preference.current.series_preferences
                 if (analysis_preferences.length > 0) {
-                    setPlotIdx(analysis_preferences)
+                    setPlotIdx([...analysis_preferences])
                 } else if (track) {
                     let res: number[] = []
                     for (let i = 0; i < track.length; i++) {
@@ -170,6 +170,7 @@ function BasicView(props: BasicViewProps) {
 
     function updatePreferences() {
         if (preference.current) {
+            preference.current.series_preferences = plotIdx
             preferenceCache.setPreference(preference.current).then()
             setIsDisabled(true)
         }
@@ -194,9 +195,8 @@ function BasicView(props: BasicViewProps) {
 
         if (plotIdx.length > 1) {
             setPlotIdx(new Array<number>(...plotIdx))
-            preference.current.series_preferences = plotIdx
         }
-    }, [plotIdx, preference])
+    }, [plotIdx])
 
     function onChartClick() {
         if (currentChart === 1) {
