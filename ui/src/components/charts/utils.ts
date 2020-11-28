@@ -72,7 +72,8 @@ export function defaultSeriesToPlot(series: SeriesModel[]) {
 
 
 export function toPointValues(track: SeriesModel[]) {
-    for (let s of track) {
+    let series: SeriesModel[] = [...track]
+    for (let s of series) {
         let res: PointValue[] = []
         for (let i = 0; i < s.step.length; ++i) {
             res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
@@ -80,12 +81,13 @@ export function toPointValues(track: SeriesModel[]) {
         s.series = res
     }
 
-    return track
+    return series
 }
 
 
 export function toLogPointValues(track: SeriesModel[]) {
-    for (let s of track) {
+    let series: SeriesModel[] = [...track]
+    for (let s of series) {
         let res: PointValue[] = []
         for (let i = 0; i < s.step.length; ++i) {
             res.push({step: s.step[i], value: Math.log(s.value[i]), smoothed: Math.log(s.smoothed[i])})
@@ -93,5 +95,5 @@ export function toLogPointValues(track: SeriesModel[]) {
         s.series = res
     }
 
-    return track
+    return series
 }

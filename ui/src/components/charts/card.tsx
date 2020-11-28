@@ -31,7 +31,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const preferenceCache = props.cache.getPreferences(props.uuid)
 
-     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
+    const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
 
     let preference = useRef(null) as any
 
@@ -41,7 +41,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
 
             if (preference.current) {
                 let analysis_preferences = preference.current.series_preferences
-                if (analysis_preferences.length > 0) {
+                if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx([...analysis_preferences])
                 }
             }
@@ -176,7 +176,7 @@ function BasicView(props: BasicViewProps) {
 
             if (preference.current) {
                 let analysis_preferences = preference.current.series_preferences
-                if (analysis_preferences.length > 0) {
+                if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx([...analysis_preferences])
                 } else if (track) {
                     let res: number[] = []
