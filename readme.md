@@ -7,7 +7,7 @@
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
 [![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
-[![Conda](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
+[![Docs](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
 
 <img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" height="600" alt=""/>
 </div>
