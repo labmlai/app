@@ -60,7 +60,8 @@ def update_computer() -> flask.Response:
     errors = []
 
     token = request.args.get('labml_token', '')
-    computer_uuid = request.args.get('computer_uuid', '')
+    # TODO change this
+    computer_uuid = request.args.get('run_uuid', '')
 
     c = computer.get_or_create(computer_uuid, token, request.remote_addr)
     s = c.status.load()
@@ -105,8 +106,9 @@ def get_computers(labml_token: str) -> flask.Response:
 
     res = []
     for c in computers_list:
+        s = computer.get_status(c.computer_uuid)
         if c.computer_uuid:
-            res.append(c.get_summary())
+            res.append({**c.get_summary(), **s.get_data()})
 
     logger.debug(f'computers, labml_token : {labml_token}')
 
@@ -206,7 +208,7 @@ def get_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
 
-    s = status.get_status(run_uuid)
+    s = run.get_status(run_uuid)
     if s:
         status_data = s.get_data()
         status_code = 200
@@ -233,7 +235,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
     res = []
     for r in runs_list:
-        s = status.get_status(r.run_uuid)
+        s = run.get_status(r.run_uuid)
         if r.run_uuid:
             res.append({**r.get_summary(), **s.get_data()})
 

@@ -51,6 +51,7 @@ class Computer(Model['Computer']):
             'computer_uuid': self.computer_uuid,
             'name': self.name,
             'comment': self.comment,
+            'start_time': self.start_time,
             'configs': configs,
         }
 
@@ -59,6 +60,7 @@ class Computer(Model['Computer']):
             'computer_uuid': self.computer_uuid,
             'name': self.name,
             'comment': self.comment,
+            'start_time': self.start_time,
         }
 
 
@@ -113,5 +115,14 @@ def get_computer(computer_uuid: str) -> Optional[Computer]:
 
     if computer_key:
         return computer_key.load()
+
+    return None
+
+
+def get_status(computer_uuid: str) -> Union[None, Status]:
+    c = get_computer(computer_uuid)
+
+    if c:
+        return c.status.load()
 
     return None

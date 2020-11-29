@@ -2,7 +2,7 @@ import {RunStatus} from "./status"
 
 export interface ComputerListItemModel {
     computer_uuid: string
-    computer_status: RunStatus
+    run_status: RunStatus
     last_updated_time: number
     name: string
     comment: string
@@ -17,7 +17,7 @@ export interface ComputersListModel {
 
 export class ComputerListItem {
     computer_uuid: string
-    computer_status: RunStatus
+    run_status: RunStatus
     last_updated_time: number
     name: string
     comment: string
@@ -29,7 +29,7 @@ export class ComputerListItem {
         this.comment = computer_list_item.comment
         this.start_time = computer_list_item.start_time
         this.last_updated_time = computer_list_item.last_updated_time
-        this.computer_status = new RunStatus(computer_list_item.computer_status)
+        this.run_status = new RunStatus(computer_list_item.run_status)
     }
 }
 

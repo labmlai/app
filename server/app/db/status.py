@@ -1,10 +1,9 @@
 import time
-from typing import Dict, Union
+from typing import Dict
 
 from labml_db import Model, Key
 
 from ..enums import RunEnums
-from . import run
 
 
 class RunStatus(Model['RunStatusModel']):
@@ -69,15 +68,6 @@ class Status(Model['Status']):
             return RunEnums.RUN_UNKNOWN
         else:
             return status
-
-
-def get_status(run_uuid: str) -> Union[None, Status]:
-    r = run.get_run(run_uuid)
-
-    if r:
-        return r.status.load()
-
-    return None
 
 
 def create_status() -> Status:
