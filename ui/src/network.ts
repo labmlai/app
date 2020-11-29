@@ -29,6 +29,10 @@ class Network {
         return this.axiosInstance.get(`/run/${run_uuid}`)
     }
 
+    async getComputer(computer_uuid: string): Promise<any> {
+        return this.axiosInstance.get(`/computer/${computer_uuid}`)
+    }
+
     async getStatus(run_uuid: string): Promise<any> {
         return this.axiosInstance.get(`/status/${run_uuid}`)
     }
@@ -47,6 +51,10 @@ class Network {
 
     async getRuns(labml_token: string | null): Promise<any> {
         return this.axiosInstance.get(`/runs/${labml_token}`, {})
+    }
+
+    async getComputers(): Promise<any> {
+        return this.axiosInstance.get(`/computers/${null}`, {})
     }
 
     async deleteRuns(runUUIDS: string[]): Promise<any> {
