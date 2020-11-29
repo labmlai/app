@@ -1,4 +1,4 @@
-import CACHE, {SeriesCache, SeriesPreferenceCache, RunStatusCache, ComputerStatusCache} from "../cache/cache"
+import CACHE, {SeriesCache, SeriesPreferenceCache} from "../cache/cache"
 
 export class Cache<TA extends SeriesCache, TAP extends SeriesPreferenceCache> {
     private readonly type: string

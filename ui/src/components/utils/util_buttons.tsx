@@ -7,7 +7,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync, faTrash, faEdit, faSave} from "@fortawesome/free-solid-svg-icons"
 
 import {Status} from "../../models/status"
-import CACHE from "../../cache/cache"
 
 import "./util_buttons.scss"
 
@@ -57,11 +56,11 @@ export function BackButton(props: ButtonProps) {
 
 interface RefreshButtonProps extends ButtonProps {
     runUUID: string
-
+    statusCache: any
 }
 
 export function RefreshButton(props: RefreshButtonProps) {
-    const statusCache = CACHE.getRunStatus(props.runUUID)
+    const statusCache = props.statusCache
     const [status, setStatus] = useState(null as unknown as Status)
 
     useEffect(() => {

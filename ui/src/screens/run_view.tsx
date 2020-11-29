@@ -78,7 +78,7 @@ function RunView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID} statusCache={CACHE.getRunStatus(runUUID)}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>

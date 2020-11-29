@@ -249,7 +249,7 @@ function BasicView(props: BasicViewProps) {
         <div className={'flex-container'}>
             <BackButton/>
             <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled}/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID} statusCache={CACHE.getRunStatus(runUUID)}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>

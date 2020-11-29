@@ -3,7 +3,6 @@ import React, {useEffect, useRef} from "react"
 import mixpanel from "mixpanel-browser"
 
 import {BackButton, RefreshButton} from "../components/utils/util_buttons"
-import ConfigsCard from "../analyses/configs/card"
 import {computer_analyses} from "../analyses/all_analyses"
 import ComputerHeaderCard from "../analyses/computers/computer_header/card"
 import CACHE from "../cache/cache"
@@ -79,10 +78,10 @@ function ComputerView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            {/*<RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}/>*/}
+            <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}
+                           statusCache={CACHE.getComputerStatus(computerUUID)}/>
         </div>
         <ComputerHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
-        {/*<ConfigsCard.Card uuid={computerUUID} width={actualWidth}/>*/}
         {computer_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={computerUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>
