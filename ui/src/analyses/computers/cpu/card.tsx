@@ -5,13 +5,13 @@ import {useLocation} from "react-router-dom"
 import {SeriesCardProps, Analysis} from "../../types"
 import {BasicSparkLines, BasicView} from "../../../components/charts/card"
 import {Cache} from "../../common"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
+import {SeriesCache, SeriesPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
 
 const TITLE = 'CPU'
 const URL = 'cpu'
 
 class CPUAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: StatusCache) {
+    constructor(uuid: string, statusCache: ComputerStatusCache) {
         super(uuid, 'cpu', statusCache)
     }
 }
@@ -24,7 +24,7 @@ class CPUPreferenceCache extends SeriesPreferenceCache {
 }
 
 
-let cache = new Cache(CPUAnalysisCache, CPUPreferenceCache)
+let cache = new Cache('computer', CPUAnalysisCache, CPUPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {

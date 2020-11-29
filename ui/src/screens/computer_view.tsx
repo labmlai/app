@@ -20,7 +20,7 @@ function ComputerView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
     const computerUUID = params.get('computer_uuid') as string
 
-    const statusCache = CACHE.getStatus(computerUUID)
+    const statusCache = CACHE.getComputerStatus(computerUUID)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -79,10 +79,10 @@ function ComputerView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}/>
+            {/*<RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}/>*/}
         </div>
         {/*<RunHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>*/}
-        <ConfigsCard.Card uuid={computerUUID} width={actualWidth}/>
+        {/*<ConfigsCard.Card uuid={computerUUID} width={actualWidth}/>*/}
         {computer_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={computerUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>

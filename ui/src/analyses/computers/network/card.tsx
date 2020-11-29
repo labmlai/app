@@ -5,13 +5,13 @@ import {useLocation} from "react-router-dom"
 import {SeriesCardProps, Analysis} from "../../types"
 import {BasicSparkLines, BasicView} from "../../../components/charts/card"
 import {Cache} from "../../common"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
+import {SeriesCache, SeriesPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
 
 const TITLE = 'Network'
 const URL = 'network'
 
 class NetworkAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: StatusCache) {
+    constructor(uuid: string, statusCache: ComputerStatusCache) {
         super(uuid, 'network', statusCache)
     }
 }
@@ -24,7 +24,7 @@ class NetworkPreferenceCache extends SeriesPreferenceCache {
 }
 
 
-let cache = new Cache(NetworkAnalysisCache, NetworkPreferenceCache)
+let cache = new Cache('computer',NetworkAnalysisCache, NetworkPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {

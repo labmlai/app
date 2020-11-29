@@ -68,8 +68,9 @@ def update_computer() -> flask.Response:
 
     c.update_computer(request.json)
     s.update_time_status(request.json)
-    if 'computer' in request.json:
-        AnalysisManager.computer(computer_uuid, request.json['computer'])
+    # TODO change this
+    if 'track' in request.json:
+        AnalysisManager.track_computer(computer_uuid, request.json['track'])
 
     return jsonify({'errors': errors, 'url': c.url})
 
@@ -109,6 +110,8 @@ def get_computers(labml_token: str) -> flask.Response:
         s = computer.get_status(c.computer_uuid)
         if c.computer_uuid:
             res.append({**c.get_summary(), **s.get_data()})
+
+    res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
     logger.debug(f'computers, labml_token : {labml_token}')
 
@@ -204,7 +207,7 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
-def get_status(run_uuid: str) -> flask.Response:
+def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
 
@@ -216,7 +219,24 @@ def get_status(run_uuid: str) -> flask.Response:
     response = make_response(jsonify(status_data))
     response.status_code = status_code
 
-    logger.debug(f'status, run_uuid: {run_uuid}')
+    logger.debug(f'run_status, run_uuid: {run_uuid}')
+
+    return response
+
+
+def get_computer_status(computer_uuid: str) -> flask.Response:
+    status_data = {}
+    status_code = 400
+
+    s = computer.get_status(computer_uuid)
+    if s:
+        status_data = s.get_data()
+        status_code = 200
+
+    response = make_response(jsonify(status_data))
+    response.status_code = status_code
+
+    logger.debug(f'computer_status, computer_uuid: {computer_uuid}')
 
     return response
 
@@ -283,7 +303,8 @@ def add_handlers(app: flask.Flask):
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
-    _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
+    _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
+    _add_ui(app, 'GET', get_computer_status, 'computer/status/<computer_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')

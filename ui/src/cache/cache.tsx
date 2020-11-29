@@ -125,7 +125,7 @@ class ComputerCache extends CacheObject<Computer> {
     }
 }
 
-export class StatusCache extends CacheObject<Status> {
+export class RunStatusCache extends CacheObject<Status> {
     private readonly uuid: string
 
     constructor(uuid: string) {
@@ -135,7 +135,23 @@ export class StatusCache extends CacheObject<Status> {
 
     async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getStatus(this.uuid)
+            let res = await NETWORK.getRunStatus(this.uuid)
+            return new Status(res.data)
+        })
+    }
+}
+
+export class ComputerStatusCache extends CacheObject<Status> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<Status> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputerStatus(this.uuid)
             return new Status(res.data)
         })
     }
@@ -195,9 +211,9 @@ class RunsListCache {
 export class SeriesCache extends CacheObject<SeriesModel[]> {
     private readonly uuid: string
     private readonly url: string
-    private statusCache: StatusCache
+    private statusCache: RunStatusCache | ComputerStatusCache
 
-    constructor(uuid: string, url: string, statusCache: StatusCache) {
+    constructor(uuid: string, url: string, statusCache: RunStatusCache | ComputerStatusCache) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache
@@ -253,7 +269,8 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly computers: { [uuid: string]: ComputerCache }
-    private readonly statuses: { [uuid: string]: StatusCache }
+    private readonly runStatuses: { [uuid: string]: RunStatusCache }
+    private readonly computerStatuses: { [uuid: string]: ComputerStatusCache }
 
     private user: UserCache | null
     private runsList: RunsListCache | null
@@ -262,7 +279,8 @@ class Cache {
     constructor() {
         this.runs = {}
         this.computers = {}
-        this.statuses = {}
+        this.runStatuses = {}
+        this.computerStatuses = {}
         this.user = null
         this.runsList = null
         this.computersList = null
@@ -284,12 +302,20 @@ class Cache {
         return this.computers[uuid]
     }
 
-    getStatus(uuid: string) {
-        if (this.statuses[uuid] == null) {
-            this.statuses[uuid] = new StatusCache(uuid)
+    getRunStatus(uuid: string) {
+        if (this.runStatuses[uuid] == null) {
+            this.runStatuses[uuid] = new RunStatusCache(uuid)
         }
 
-        return this.statuses[uuid]
+        return this.runStatuses[uuid]
+    }
+
+    getComputerStatus(uuid: string) {
+        if (this.computerStatuses[uuid] == null) {
+            this.computerStatuses[uuid] = new ComputerStatusCache(uuid)
+        }
+
+        return this.computerStatuses[uuid]
     }
 
     getUser() {

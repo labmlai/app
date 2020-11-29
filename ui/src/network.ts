@@ -33,8 +33,12 @@ class Network {
         return this.axiosInstance.get(`/computer/${computer_uuid}`)
     }
 
-    async getStatus(run_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/status/${run_uuid}`)
+    async getRunStatus(run_uuid: string): Promise<any> {
+        return this.axiosInstance.get(`/run/status/${run_uuid}`)
+    }
+
+    async getComputerStatus(computer_uuid: string): Promise<any> {
+        return this.axiosInstance.get(`/computer/status/${computer_uuid}`)
     }
 
     async getAnalysis(url: string, run_uuid: string): Promise<any> {

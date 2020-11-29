@@ -1,13 +1,15 @@
-import CACHE, {SeriesCache, SeriesPreferenceCache, StatusCache} from "../cache/cache"
+import CACHE, {SeriesCache, SeriesPreferenceCache, RunStatusCache, ComputerStatusCache} from "../cache/cache"
 
 export class Cache<TA extends SeriesCache, TAP extends SeriesPreferenceCache> {
+    private readonly type: string
     private readonly seriesCaches: { [uuid: string]: SeriesCache }
     private readonly PreferencesCaches: { [uuid: string]: SeriesPreferenceCache }
-    private readonly series: new (uuid: string, status: StatusCache) => TA
+    private readonly series: new (uuid: string, status: any) => TA
     private readonly preferences: new (uuid: string) => TAP
 
 
-    constructor(series: new (uuid: string, status: StatusCache) => TA, preferences: new (uuid: string) => TAP) {
+    constructor(type: string, series: new (uuid: string, status: any) => TA, preferences: new (uuid: string) => TAP) {
+        this.type = type
         this.seriesCaches = {}
         this.PreferencesCaches = {}
         this.series = series
@@ -15,8 +17,15 @@ export class Cache<TA extends SeriesCache, TAP extends SeriesPreferenceCache> {
     }
 
     getAnalysis(uuid: string) {
+        let statusCache
+        if (this.type === 'run') {
+            statusCache = CACHE.getRunStatus(uuid)
+        } else {
+            statusCache = CACHE.getComputerStatus(uuid)
+        }
+
         if (this.seriesCaches[uuid] == null) {
-            this.seriesCaches[uuid] = new this.series(uuid, CACHE.getStatus(uuid))
+            this.seriesCaches[uuid] = new this.series(uuid, statusCache)
         }
 
         return this.seriesCaches[uuid]

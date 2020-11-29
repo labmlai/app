@@ -70,7 +70,7 @@ function Card(props: RunHeaderProps) {
     const [lastUpdated, setLastUpdated] = useState(null as (string | null))
 
     const runCache = CACHE.getRun(props.uuid)
-    const statusCache = CACHE.getStatus(props.uuid)
+    const statusCache = CACHE.getRunStatus(props.uuid)
 
     useEffect(() => {
         async function load() {

@@ -57,10 +57,11 @@ export function BackButton(props: ButtonProps) {
 
 interface RefreshButtonProps extends ButtonProps {
     runUUID: string
+
 }
 
 export function RefreshButton(props: RefreshButtonProps) {
-    const statusCache = CACHE.getStatus(props.runUUID)
+    const statusCache = CACHE.getRunStatus(props.runUUID)
     const [status, setStatus] = useState(null as unknown as Status)
 
     useEffect(() => {

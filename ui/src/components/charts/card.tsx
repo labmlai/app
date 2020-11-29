@@ -140,7 +140,7 @@ function BasicView(props: BasicViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
 
-    const statusCache = CACHE.getStatus(runUUID)
+    const statusCache = CACHE.getRunStatus(runUUID)
     const analysisCache = props.cache.getAnalysis(runUUID)
     const preferenceCache = props.cache.getPreferences(runUUID)
 

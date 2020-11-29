@@ -5,13 +5,13 @@ import {useLocation} from "react-router-dom"
 import {SeriesCardProps, Analysis} from "../../types"
 import {BasicSparkLines, BasicView} from "../../../components/charts/card"
 import {Cache} from "../../common"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
+import {SeriesCache, SeriesPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
 
 const TITLE = 'Disk'
 const URL = 'disk'
 
 class DiskAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: StatusCache) {
+    constructor(uuid: string, statusCache: ComputerStatusCache) {
         super(uuid, 'disk', statusCache)
     }
 }
@@ -24,7 +24,7 @@ class DiskPreferenceCache extends SeriesPreferenceCache {
 }
 
 
-let cache = new Cache(DiskAnalysisCache, DiskPreferenceCache)
+let cache = new Cache('computer',DiskAnalysisCache, DiskPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {

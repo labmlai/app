@@ -8,7 +8,7 @@ from labml_db.serializer.yaml import YamlSerializer
 from app.logging import logger
 from app.enums import COMPUTEREnums
 from ..analysis import Analysis
-from ..series import SeriesModel
+from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 
@@ -49,7 +49,13 @@ class NetworkAnalysis(Analysis):
         self.network.track(res)
 
     def get_tracking(self):
-        res = self.network.get_tracks()
+        res = []
+        for ind, track in self.network.tracking.items():
+            name = ind.split('.')
+            series: Dict[str, Any] = Series().load(track).summary
+            series['name'] = '.'.join(name)
+
+            res.append(series)
 
         res.sort(key=lambda s: s['name'])
 

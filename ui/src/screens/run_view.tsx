@@ -19,7 +19,7 @@ interface RunProps {
 function RunView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
-    const statusCache = CACHE.getStatus(runUUID)
+    const statusCache = CACHE.getRunStatus(runUUID)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)

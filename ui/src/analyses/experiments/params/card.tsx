@@ -4,7 +4,7 @@ import {useLocation} from "react-router-dom"
 import {SeriesCardProps, Analysis} from "../../types"
 import {BasicBarLines, BasicView} from "../../../components/charts/card"
 import {Cache} from "../../common"
-import {SeriesCache, SeriesPreferenceCache, StatusCache} from "../../../cache/cache"
+import {SeriesCache, SeriesPreferenceCache, RunStatusCache} from "../../../cache/cache"
 
 
 const TITLE = 'Parameters - L2 Norm'
@@ -12,7 +12,7 @@ const URL = 'parameters'
 
 
 class ParameterAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: StatusCache) {
+    constructor(uuid: string, statusCache: RunStatusCache) {
         super(uuid, 'parameters', statusCache)
     }
 }
@@ -25,16 +25,16 @@ class ParameterPreferenceCache extends SeriesPreferenceCache {
 }
 
 
-let cache = new Cache(ParameterAnalysisCache, ParameterPreferenceCache)
+let cache = new Cache('run', ParameterAnalysisCache, ParameterPreferenceCache)
 
 function AnalysisSummary(props: SeriesCardProps) {
     return <BasicBarLines title={TITLE}
-                      uuid={props.uuid}
-                      url={URL}
-                      cache={cache}
-                      ref={props.refreshRef}
-                      isChartView={false}
-                      width={props.width}/>
+                          uuid={props.uuid}
+                          url={URL}
+                          cache={cache}
+                          ref={props.refreshRef}
+                          isChartView={false}
+                          width={props.width}/>
 
 }
 
