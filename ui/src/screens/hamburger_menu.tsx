@@ -2,7 +2,7 @@ import React, {useState} from "react"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faHome, faUserCircle, faDesktop, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
+import {faHome, faUserCircle, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
 
 import RunsListView from "./runs_list_view"
 import SettingsView from "./settings_view"

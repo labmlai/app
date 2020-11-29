@@ -10,8 +10,8 @@ import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
 import RunHeaderCard from "../../analyses/experiments/run_header/card"
 import CACHE from "../../cache/cache"
-import {LabLoader} from "../loader"
-import {BackButton, RefreshButton, SaveButton} from "../util_buttons"
+import {LabLoader} from "../utils/loader"
+import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../analyses/types"
 
 

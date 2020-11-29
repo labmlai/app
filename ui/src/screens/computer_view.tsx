@@ -4,7 +4,7 @@ import mixpanel from "mixpanel-browser"
 
 import {BackButton, RefreshButton} from "../components/utils/util_buttons"
 import ConfigsCard from "../analyses/configs/card"
-import {experiment_analyses} from "../analyses/all_analyses"
+import {computer_analyses} from "../analyses/all_analyses"
 import RunHeaderCard from "../analyses/experiments/run_header/card"
 import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
@@ -16,10 +16,11 @@ interface RunProps {
     location: any
 }
 
-function RunView(props: RunProps) {
+function ComputerView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
-    const runUUID = params.get('run_uuid') as string
-    const statusCache = CACHE.getStatus(runUUID)
+    const computerUUID = params.get('computer_uuid') as string
+
+    const statusCache = CACHE.getStatus(computerUUID)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -37,7 +38,7 @@ function RunView(props: RunProps) {
 
     useEffect(() => {
         async function load() {
-            for (let i = 0; i < experiment_analyses.length; i++) {
+            for (let i = 0; i < computer_analyses.length; i++) {
                 if (refreshArray[i].current) {
                     refreshArray[i].current.load()
                 }
@@ -55,14 +56,14 @@ function RunView(props: RunProps) {
     }, [statusCache, refreshArray])
 
     useEffect(() => {
-        mixpanel.track('Run View', {uuid: runUUID});
-    }, [runUUID])
+        mixpanel.track('Computer View', {uuid: computerUUID});
+    }, [computerUUID])
 
     // call when load, 2 minutes interval and when refresh button clicks
     function onRefresh() {
         let oldest = (new Date()).getTime()
 
-        for (let i = 0; i < experiment_analyses.length; i++) {
+        for (let i = 0; i < computer_analyses.length; i++) {
             if (refreshArray[i].current) {
                 refreshArray[i].current.refresh()
 
@@ -78,12 +79,12 @@ function RunView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
+            <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}/>
         </div>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
-        <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
-        {experiment_analyses.map((analysis, i) => {
-            return <analysis.card key={i} uuid={runUUID} width={actualWidth}
+        {/*<RunHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>*/}
+        <ConfigsCard.Card uuid={computerUUID} width={actualWidth}/>
+        {computer_analyses.map((analysis, i) => {
+            return <analysis.card key={i} uuid={computerUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>
         })}
         <div className={'footer-copyright text-center'}>
@@ -94,4 +95,4 @@ function RunView(props: RunProps) {
     </div>
 }
 
-export default RunView
+export default ComputerView

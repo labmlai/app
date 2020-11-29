@@ -6,8 +6,8 @@ import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync, faTrash, faEdit, faSave} from "@fortawesome/free-solid-svg-icons"
 
-import {Status} from "../models/status"
-import CACHE from "../cache/cache"
+import {Status} from "../../models/status"
+import CACHE from "../../cache/cache"
 
 import "./util_buttons.scss"
 

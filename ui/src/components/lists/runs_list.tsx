@@ -4,10 +4,10 @@ import {useHistory} from "react-router-dom"
 
 import {ListGroup} from "react-bootstrap"
 
-import {RunListItemModel} from "../models/run_list"
-import {formatTime} from "../utils/time"
-import {StatusView} from "../utils/status"
-import {DeleteButton, EditButton} from "./util_buttons"
+import {RunListItemModel} from "../../models/run_list"
+import {formatTime} from "../../utils/time"
+import {StatusView} from "../../utils/status"
+import {DeleteButton, EditButton} from "../utils/util_buttons"
 
 import "./runs_list.scss"
 

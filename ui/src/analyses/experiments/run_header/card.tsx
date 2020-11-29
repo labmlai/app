@@ -5,7 +5,7 @@ import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import CACHE from "../../../cache/cache"
 import {formatTime, getTimeDiff} from "../../../utils/time"
-import {LabLoader} from "../../../components/loader"
+import {LabLoader} from "../../../components/utils/loader"
 import {StatusView} from "../../../utils/status"
 
 import "./style.scss"
