@@ -1,3 +1,5 @@
+/*TODO design a reusable component that can be used with RunHeader */
+
 import React, {useEffect, useState} from "react"
 
 import {CardProps} from "../../types"
@@ -79,7 +81,6 @@ function Card(props: RunHeaderProps) {
             let computer = await computerCache.get()
             document.title = `LabML: ${computer.name.trim()}`
             setComputer(computer)
-            // TODO change this based on discussion
             let lastUpdated = props.lastUpdated ? props.lastUpdated : statusCache.lastUpdated
             if (status && status.isRunning && lastUpdated > 0) {
                 setLastUpdated(getTimeDiff(lastUpdated))

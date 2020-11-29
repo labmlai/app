@@ -3,7 +3,8 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SeriesCardProps, Analysis} from "../../types"
-import {BasicSparkLines, BasicView} from "../../../components/charts/card"
+import {BasicSparkLines} from "../../../components/charts/card"
+import {BasicView} from "../../../components/charts/detail_views"
 import {Cache} from "../../common"
 import {SeriesCache, SeriesPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
 
