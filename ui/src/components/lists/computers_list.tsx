@@ -7,6 +7,6 @@ interface ComputersListProps {
     onDelete?: (itemsList: Set<string>) => void
 }
 
-export function ComputersListList(props: ComputersListProps) {
+export function ComputersList(props: ComputersListProps) {
     return <List items={props.computers} onDelete={props.onDelete} itemKey={'computer'}/>
 }

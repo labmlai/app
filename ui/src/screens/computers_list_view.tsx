@@ -3,42 +3,42 @@ import React, {useEffect, useRef, useState} from "react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faSearch} from "@fortawesome/free-solid-svg-icons"
 
-import {RunsList} from "../components/lists/runs_list"
-import {EmptyRunsList} from "../components/lists/empty_runs_list"
+import {ComputersList} from "../components/lists/computers_list"
+import {EmptyComputersList} from "../components/lists/empty_computers_list"
 import {LabLoader} from "../components/utils/loader"
-import {RunListItemModel} from "../models/run_list"
+import {ComputerListItemModel} from "../models/computer_list"
 import CACHE from "../cache/cache"
 
 import './runs_list_view.scss'
 
 
-function RunsListView() {
+function ComputersListView() {
     const [isLoading, setIsLoading] = useState(true)
-    const [runs, setRuns] = useState<RunListItemModel[]>([])
+    const [computers, setComputers] = useState<ComputerListItemModel[]>([])
     const [labMlToken, setLabMlToken] = useState('')
 
-    const runListCache = CACHE.getRunsList()
+    const computerListCache = CACHE.getComputersList()
     const inputElement = useRef(null) as any
 
     useEffect(() => {
         async function load() {
-            let currentRunsList = await runListCache.getRunsList(null)
-            if (currentRunsList) {
-                setRuns(currentRunsList.runs)
-                setLabMlToken(currentRunsList.labml_token)
+            let currentComputerList = await computerListCache.get()
+            if (currentComputerList) {
+                setComputers(currentComputerList.computers)
+                setLabMlToken(currentComputerList.labml_token)
                 setIsLoading(false)
             }
         }
 
         load().then()
-    }, [runListCache])
+    }, [computerListCache])
 
 
     useEffect(() => {
-        document.title = "LabML: Experiments"
+        document.title = "LabML: Computers"
     }, [labMlToken])
 
-    function runsFilter(run: RunListItemModel, search: string) {
+    function ComputersFilter(run: ComputerListItemModel, search: string) {
         let re = new RegExp(search.toLowerCase(), "g")
         let name = run.name.toLowerCase()
         let comment = run.comment.toLowerCase()
@@ -50,35 +50,35 @@ function RunsListView() {
         async function load() {
             if (inputElement.current) {
                 let search = inputElement.current.value
-                let currentRunsList = await runListCache.getRunsList(null)
-                let currentRuns = currentRunsList.runs
+                let currentComputersList = await computerListCache.get()
+                let currentComputers = currentComputersList.computers
 
-                currentRuns = currentRuns.filter((run) => runsFilter(run, search))
-                setRuns(currentRuns)
+                currentComputers = currentComputers.filter((computer) => ComputersFilter(computer, search))
+                setComputers(currentComputers)
             }
         }
 
         load().then()
     }
 
-    function onDelete(runsSet: Set<string>) {
-        let res: RunListItemModel[] = []
-        for (let run of runs) {
-            if (!runsSet.has(run.run_uuid)) {
-                res.push(run)
+    function onDelete(computersSet: Set<string>) {
+        let res: ComputerListItemModel[] = []
+        for (let computer of computers) {
+            if (!computersSet.has(computer.computer_uuid)) {
+                res.push(computer)
             }
         }
 
-        setRuns(res)
-        runListCache.deleteRuns(res, Array.from(runsSet)).then()
+        setComputers(res)
+        computerListCache.deleteRuns(res, Array.from(computersSet)).then()
     }
 
     return <div>
         {(() => {
             if (isLoading) {
                 return <LabLoader/>
-            } else if (inputElement.current === null && runs.length === 0) {
-                return <EmptyRunsList/>
+            } else if (inputElement.current === null && computers.length === 0) {
+                return <EmptyComputersList/>
             } else {
                 return <div className={'runs-list'}>
                     {/*TODO: Change later to simple html & css*/}
@@ -96,11 +96,11 @@ function RunsListView() {
                             />
                         </div>
                     </div>
-                    <RunsList runs={runs} onDelete={onDelete}/>
+                    <ComputersList computers={computers} onDelete={onDelete}/>
                 </div>
             }
         })()}
     </div>
 }
 
-export default RunsListView
+export default ComputersListView

@@ -5,7 +5,7 @@ import {RunListItemModel, RunsList, RunsListModel} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
 import {User} from "../models/user"
 import {Computer} from "../models/computer"
-import {ComputersList} from "../models/computer_list"
+import {ComputersList, ComputerListItemModel} from "../models/computer_list"
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -156,6 +156,10 @@ class ComputersListCache extends CacheObject<ComputersList> {
             let res = await NETWORK.getComputers()
             return new ComputersList(res.data)
         })
+    }
+
+    async deleteRuns(computers: ComputerListItemModel[], computerUUIDS: string[]): Promise<void> {
+
     }
 }
 

@@ -2,9 +2,10 @@ import React, {useState} from "react"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faHome, faUserCircle, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
+import {faHome, faUserCircle, faBook, faComments, faDesktop} from "@fortawesome/free-solid-svg-icons"
 
 import RunsListView from "./runs_list_view"
+import ComputersListView from "./computers_list_view"
 import SettingsView from "./settings_view"
 
 import "./hamburger_menu.scss"
@@ -62,10 +63,10 @@ function HamburgerMenu() {
                         <FontAwesomeIcon icon={faHome}/>
                         <span>Experiments</span>
                     </Nav.Link>
-                    {/*<Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>*/}
-                    {/*    <FontAwesomeIcon icon={faDesktop}/>*/}
-                    {/*    <span>Computers</span>*/}
-                    {/*</Nav.Link>*/}
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>
+                        <FontAwesomeIcon icon={faDesktop}/>
+                        <span>Computers</span>
+                    </Nav.Link>
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')}>
                         <FontAwesomeIcon icon={faUserCircle}/>
                         <span>User Profile</span>
@@ -97,9 +98,7 @@ function HamburgerMenu() {
             } else if (currentTab === 'Experiments') {
                 return <RunsListView/>
             } else {
-                return <div className={'text-center'}>
-                    <h1 className={'mt-5'}>Under Construction</h1>
-                </div>
+                return <ComputersListView/>
             }
         })()}
         <div className={'overlay' + overlayClass}/>

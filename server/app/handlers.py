@@ -101,7 +101,7 @@ def get_computers(labml_token: str) -> flask.Response:
     else:
         default_project = u.default_project
         labml_token = default_project.labml_token
-        computers_list = default_project.get()
+        computers_list = default_project.get_computers()
 
     res = []
     for c in computers_list:
@@ -110,7 +110,7 @@ def get_computers(labml_token: str) -> flask.Response:
 
     logger.debug(f'computers, labml_token : {labml_token}')
 
-    return jsonify({'runs': res, 'labml_token': labml_token})
+    return jsonify({'computers': res, 'labml_token': labml_token})
 
 
 def update_run() -> flask.Response:
