@@ -29,6 +29,8 @@ export function BackButton(props: ButtonProps) {
         if (previous_path) {
             if (previous_path === '/run') {
                 setText('Run')
+            } else if (previous_path === '/computer') {
+                setText('Computer')
             }
             setIsPrevious(true)
         }

@@ -15,7 +15,7 @@ function HamburgerMenu() {
     const [navLinksClass, setNavLinksClass] = useState('')
     const [burgerClass, setBurgerClass] = useState('')
     const [overlayClass, setOverlayClass] = useState('')
-    const [currentTab, setCurrentTab] = useState('Computers')
+    const [currentTab, setCurrentTab] = useState('Experiments')
 
     function clickHandle(e: Event, tab: string) {
         setCurrentTab(tab)

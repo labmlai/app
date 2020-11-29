@@ -4,7 +4,7 @@ import {List} from "./list"
 
 interface RunsListProps {
     runs: any[]
-    onDelete?: (itemsList: Set<string>) => void
+    onDelete?: (itemsSet: Set<string>) => void
 }
 
 export function RunsList(props: RunsListProps) {

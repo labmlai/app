@@ -35,7 +35,7 @@ function ListItem(props: ListItemProps) {
     let onClick = null
     if (props.isEditMode) {
         onClick = (e: any) => {
-            props.onItemClick(e, item.uuid)
+            props.onItemClick(e, item[uuidKey])
             setIsClicked(!isClicked)
         }
     } else {
