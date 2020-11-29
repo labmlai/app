@@ -5,7 +5,7 @@ import mixpanel from "mixpanel-browser"
 import {BackButton, RefreshButton} from "../components/utils/util_buttons"
 import ConfigsCard from "../analyses/configs/card"
 import {computer_analyses} from "../analyses/all_analyses"
-import RunHeaderCard from "../analyses/experiments/run_header/card"
+import ComputerHeaderCard from "../analyses/computers/computer_header/card"
 import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 
@@ -81,7 +81,7 @@ function ComputerView(props: RunProps) {
             <BackButton/>
             {/*<RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}/>*/}
         </div>
-        {/*<RunHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>*/}
+        <ComputerHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         {/*<ConfigsCard.Card uuid={computerUUID} width={actualWidth}/>*/}
         {computer_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={computerUUID} width={actualWidth}
