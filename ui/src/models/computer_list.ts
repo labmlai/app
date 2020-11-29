@@ -39,8 +39,8 @@ export class ComputersList {
 
     constructor(computers_list: ComputersListModel) {
         this.computers = []
-        for (let r of computers_list.computers) {
-            this.computers.push(new ComputerListItem(r))
+        for (let c of computers_list.computers) {
+            this.computers.push(new ComputerListItem(c))
         }
         this.labml_token = computers_list.labml_token
     }
