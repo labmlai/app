@@ -1,14 +1,16 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from app.logging import logger
 from app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
+from ..preferences import Preferences
 
 
 @Analysis.db_model(PickleSerializer, 'CPU')
@@ -18,6 +20,16 @@ class CPUModel(Model['CPUModel'], SeriesCollection):
 
 @Analysis.db_index(YamlSerializer, 'cpu_index.yaml')
 class CPUIndex(Index['CPU']):
+    pass
+
+
+@Analysis.db_model(PickleSerializer, 'cpu_preferences')
+class CPUPreferencesModel(Model['CPUPreferencesModel'], Preferences):
+    pass
+
+
+@Analysis.db_index(YamlSerializer, 'cpu_preferences_index.yaml')
+class CPUPreferencesIndex(Index['CPUPreferences']):
     pass
 
 
@@ -71,3 +83,35 @@ def get_cpu_tracking(computer_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'cpu/preferences/<computer_uuid>')
+def get_cpu_preferences(computer_uuid: str) -> Any:
+    preferences_data = {}
+
+    preferences_key = CPUPreferencesIndex.get(computer_uuid)
+    if not preferences_key:
+        logger.error(f'no cpu preferences found computer_uuid : {computer_uuid}')
+        return jsonify(preferences_data)
+
+    cp: CPUPreferencesModel = preferences_key.load()
+    preferences_data = cp.get_data()
+
+    response = make_response(jsonify(preferences_data))
+
+    return response
+
+
+@Analysis.route('POST', 'cpu/preferences/<computer_uuid>')
+def set_cpu_preferences(computer_uuid: str) -> Any:
+    preferences_key = CPUPreferencesIndex.get(computer_uuid)
+
+    if not preferences_key:
+        return jsonify({})
+
+    cp = preferences_key.load()
+    cp.update_preferences(request.json)
+
+    logger.debug(f'update cpu preferences: {cp.key}')
+
+    return jsonify({'errors': cp.errors})

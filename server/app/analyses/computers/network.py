@@ -1,14 +1,16 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from app.logging import logger
 from app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
+from ..preferences import Preferences
 
 
 @Analysis.db_model(PickleSerializer, 'Network')
@@ -18,6 +20,16 @@ class NetworkModel(Model['NetworkModel'], SeriesCollection):
 
 @Analysis.db_index(YamlSerializer, 'network_index.yaml')
 class NetworkIndex(Index['Network']):
+    pass
+
+
+@Analysis.db_model(PickleSerializer, 'network_preferences')
+class NetworkPreferencesModel(Model['NetworkPreferencesModel'], Preferences):
+    pass
+
+
+@Analysis.db_index(YamlSerializer, 'network_preferences_index.yaml')
+class NetworkPreferencesIndex(Index['NetworkPreferences']):
     pass
 
 
@@ -71,3 +83,35 @@ def get_network_tracking(computer_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'network/preferences/<computer_uuid>')
+def get_network_preferences(computer_uuid: str) -> Any:
+    preferences_data = {}
+
+    preferences_key = NetworkPreferencesIndex.get(computer_uuid)
+    if not preferences_key:
+        logger.error(f'no network preferences found computer_uuid : {computer_uuid}')
+        return jsonify(preferences_data)
+
+    np: NetworkPreferencesModel = preferences_key.load()
+    preferences_data = np.get_data()
+
+    response = make_response(jsonify(preferences_data))
+
+    return response
+
+
+@Analysis.route('POST', 'network/preferences/<computer_uuid>')
+def set_network_preferences(computer_uuid: str) -> Any:
+    preferences_key = NetworkPreferencesIndex.get(computer_uuid)
+
+    if not preferences_key:
+        return jsonify({})
+
+    np = preferences_key.load()
+    np.update_preferences(request.json)
+
+    logger.debug(f'update network preferences: {np.key}')
+
+    return jsonify({'errors': np.errors})

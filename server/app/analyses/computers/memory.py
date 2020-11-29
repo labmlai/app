@@ -1,14 +1,16 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from app.logging import logger
 from app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
+from ..preferences import Preferences
 
 
 @Analysis.db_model(PickleSerializer, 'Memory')
@@ -18,6 +20,16 @@ class MemoryModel(Model['MemoryModel'], SeriesCollection):
 
 @Analysis.db_index(YamlSerializer, 'memory_index.yaml')
 class MemoryIndex(Index['Memory']):
+    pass
+
+
+@Analysis.db_model(PickleSerializer, 'memory_preferences')
+class MemoryPreferencesModel(Model['MemoryPreferencesModel'], Preferences):
+    pass
+
+
+@Analysis.db_index(YamlSerializer, 'memory_preferences_index.yaml')
+class MemoryPreferencesIndex(Index['MemoryPreferences']):
     pass
 
 
@@ -71,3 +83,35 @@ def get_memory_tracking(computer_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'memory/preferences/<computer_uuid>')
+def get_memory_preferences(computer_uuid: str) -> Any:
+    preferences_data = {}
+
+    preferences_key = MemoryPreferencesIndex.get(computer_uuid)
+    if not preferences_key:
+        logger.error(f'no memory preferences found computer_uuid : {computer_uuid}')
+        return jsonify(preferences_data)
+
+    mp: MemoryPreferencesModel = preferences_key.load()
+    preferences_data = mp.get_data()
+
+    response = make_response(jsonify(preferences_data))
+
+    return response
+
+
+@Analysis.route('POST', 'memory/preferences/<computer_uuid>')
+def set_memory_preferences(computer_uuid: str) -> Any:
+    preferences_key = MemoryPreferencesIndex.get(computer_uuid)
+
+    if not preferences_key:
+        return jsonify({})
+
+    mp = preferences_key.load()
+    mp.update_preferences(request.json)
+
+    logger.debug(f'update memory preferences: {mp.key}')
+
+    return jsonify({'errors': mp.errors})

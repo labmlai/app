@@ -1,14 +1,16 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from app.logging import logger
 from app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
+from ..preferences import Preferences
 
 
 @Analysis.db_model(PickleSerializer, 'Process')
@@ -18,6 +20,16 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
 
 @Analysis.db_index(YamlSerializer, 'process_index.yaml')
 class ProcessIndex(Index['Process']):
+    pass
+
+
+@Analysis.db_model(PickleSerializer, 'process_preferences')
+class ProcessPreferencesModel(Model['ProcessPreferencesModel'], Preferences):
+    pass
+
+
+@Analysis.db_index(YamlSerializer, 'process_preferences_index.yaml')
+class ProcessPreferencesIndex(Index['ProcessPreferences']):
     pass
 
 
@@ -71,3 +83,35 @@ def get_process_tracking(computer_uuid: str) -> Any:
     response.status_code = status_code
 
     return response
+
+
+@Analysis.route('GET', 'process/preferences/<computer_uuid>')
+def get_process_preferences(computer_uuid: str) -> Any:
+    preferences_data = {}
+
+    preferences_key = ProcessPreferencesIndex.get(computer_uuid)
+    if not preferences_key:
+        logger.error(f'no process preferences found computer_uuid : {computer_uuid}')
+        return jsonify(preferences_data)
+
+    pp: ProcessPreferencesModel = preferences_key.load()
+    preferences_data = pp.get_data()
+
+    response = make_response(jsonify(preferences_data))
+
+    return response
+
+
+@Analysis.route('POST', 'process/preferences/<computer_uuid>')
+def set_process_preferences(computer_uuid: str) -> Any:
+    preferences_key = ProcessPreferencesIndex.get(computer_uuid)
+
+    if not preferences_key:
+        return jsonify({})
+
+    pp = preferences_key.load()
+    pp.update_preferences(request.json)
+
+    logger.debug(f'update process preferences: {pp.key}')
+
+    return jsonify({'errors': pp.errors})
