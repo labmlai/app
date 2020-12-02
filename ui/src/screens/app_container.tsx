@@ -31,7 +31,7 @@ function AppContainer() {
     useEffect(() => {
             function isRunPath(): boolean {
                 const runPath = '/run'
-                if (location) {
+                if (location && location.state !== '/login') {
                     return location.state === runPath || location.pathname === runPath
                 }
 
@@ -45,11 +45,14 @@ function AppContainer() {
             } else if (isLoading) {
             } else if (!isAuthenticated) {
                 let uri = location.pathname + location.search
+                if (location.state) {
+                    uri = location.state.toString()
+                }
                 loginWithRedirect({appState: {returnTo: uri}}).then()
             } else if (isAuthenticated && !loggedIn) {
                 let data = {} as UserModel
 
-                mixpanel.identify(user.sub);
+                mixpanel.identify(user.sub)
                 mixpanel.people.set({
                     $first_name: user.first_name,
                     $last_name: user.last_name,
@@ -124,4 +127,4 @@ function AppContainer() {
     );
 }
 
-export default AppContainer;
+export default AppContainer

@@ -55,7 +55,7 @@ function RunView(props: RunProps) {
     }, [statusCache, refreshArray])
 
     useEffect(() => {
-        mixpanel.track('Run View', {uuid: runUUID});
+        mixpanel.track('Run View', {uuid: runUUID})
     }, [runUUID])
 
     // call when load, 2 minutes interval and when refresh button clicks
