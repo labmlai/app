@@ -31,7 +31,9 @@ export function BackButton(props: ButtonProps) {
             if (previous_path === '/run') {
                 setText('Run')
             }
-            setIsPrevious(true)
+            if (previous_path !== '/login') {
+                setIsPrevious(true)
+            }
         }
 
     }, [location])
@@ -45,7 +47,8 @@ export function BackButton(props: ButtonProps) {
         if (isPrevious) {
             history.goBack()
         } else {
-            history.push('/home')
+            let uri = location.pathname + location.search
+            history.push('/home', uri)
         }
     }
 
