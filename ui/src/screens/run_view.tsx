@@ -2,10 +2,10 @@ import React, {useEffect, useRef} from "react"
 
 import mixpanel from "mixpanel-browser"
 
-import {BackButton, RefreshButton} from "../components/util_buttons"
+import {BackButton, RefreshButton} from "../components/utils/util_buttons"
 import ConfigsCard from "../analyses/configs/card"
-import analyses from "../analyses/all_analyses"
-import RunHeaderCard from "../analyses/run_header/card"
+import {experiment_analyses} from "../analyses/all_analyses"
+import RunHeaderCard from "../analyses/experiments/run_header/card"
 import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 
@@ -19,7 +19,7 @@ interface RunProps {
 function RunView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
-    const statusCache = CACHE.getStatus(runUUID)
+    const statusCache = CACHE.getRunStatus(runUUID)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -37,7 +37,7 @@ function RunView(props: RunProps) {
 
     useEffect(() => {
         async function load() {
-            for (let i = 0; i < analyses.length; i++) {
+            for (let i = 0; i < experiment_analyses.length; i++) {
                 if (refreshArray[i].current) {
                     refreshArray[i].current.load()
                 }
@@ -62,7 +62,7 @@ function RunView(props: RunProps) {
     function onRefresh() {
         let oldest = (new Date()).getTime()
 
-        for (let i = 0; i < analyses.length; i++) {
+        for (let i = 0; i < experiment_analyses.length; i++) {
             if (refreshArray[i].current) {
                 refreshArray[i].current.refresh()
 
@@ -78,11 +78,11 @@ function RunView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID} statusCache={CACHE.getRunStatus(runUUID)}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
-        {analyses.map((analysis, i) => {
+        {experiment_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>
         })}

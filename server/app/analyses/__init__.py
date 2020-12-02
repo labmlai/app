@@ -1,25 +1,41 @@
 from typing import Dict
 
 from . import analysis
-from .parameters import ParametersAnalysis
-from .time_tracking import TimeTrackingAnalysis
-from .gradients import GradientsAnalysis
-from .metrics import MetricsAnalysis
-from .outputs import OutputsAnalysis
 from .series import SeriesModel
+from .experiments.parameters import ParametersAnalysis
+from .experiments.time_tracking import TimeTrackingAnalysis
+from .experiments.gradients import GradientsAnalysis
+from .experiments.metrics import MetricsAnalysis
+from .experiments.outputs import OutputsAnalysis
+from .computers.cpu import CPUAnalysis
+from .computers.memory import MemoryAnalysis
+from .computers.network import NetworkAnalysis
+from .computers.disk import DiskAnalysis
+from .computers.process import ProcessAnalysis
 
-Analyses = [GradientsAnalysis,
-            OutputsAnalysis,
-            ParametersAnalysis,
-            TimeTrackingAnalysis,
-            MetricsAnalysis]
+experiment_analyses = [GradientsAnalysis,
+                       OutputsAnalysis,
+                       ParametersAnalysis,
+                       TimeTrackingAnalysis,
+                       MetricsAnalysis]
+
+computer_analyses = [CPUAnalysis,
+                     MemoryAnalysis,
+                     NetworkAnalysis,
+                     DiskAnalysis,
+                     ProcessAnalysis]
 
 
 class AnalysisManager:
     @staticmethod
     def track(run_uuid: str, data: Dict[str, SeriesModel]):
-        for ans in Analyses:
+        for ans in experiment_analyses:
             ans.get_or_create(run_uuid).track(data)
+
+    @staticmethod
+    def track_computer(computer_uuid: str, data: Dict[str, SeriesModel]):
+        for ans in computer_analyses:
+            ans.get_or_create(computer_uuid).track(data)
 
     @staticmethod
     def get_handlers():

@@ -8,13 +8,14 @@ import {useErrorHandler} from "react-error-boundary"
 import {useAuth0} from "@auth0/auth0-react"
 
 import RunView from "./run_view"
+import ComputerView from "./computer_view"
 import PageNotFound from "./page_not_found_view"
 import HamburgerMenu from "./hamburger_menu"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../analyses/configs/card"
-import analyses from "../analyses/all_analyses"
+import {experiment_analyses, computer_analyses} from "../analyses/all_analyses"
 import NETWORK from "../network"
-import {LabLoader} from "../components/loader"
+import {LabLoader} from "../components/utils/loader"
 import {UserModel} from "../models/user"
 import logo from "../assets/lab_logo.png"
 
@@ -109,10 +110,14 @@ function AppContainer() {
             <Switch>
                 <Route path="/404" component={PageNotFound}/>
                 <Route path="/run" component={RunView}/>
+                <Route path="/computer" component={ComputerView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
                 <Route path="/home" component={HamburgerMenu}/>
                 <Route path="/runs" component={RunsView}/>
-                {analyses.map((analysis, i) => {
+                {experiment_analyses.map((analysis, i) => {
+                    return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
+                })}
+                {computer_analyses.map((analysis, i) => {
                     return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
                 })}
                 <Route path="/"><Redirect to="/home"/></Route>

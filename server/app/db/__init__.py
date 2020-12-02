@@ -11,6 +11,7 @@ from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
+from .computer import Computer, ComputerIndex
 from ..analyses import AnalysisManager
 
 from .. import settings
@@ -27,6 +28,7 @@ Model.set_db_drivers(
         RedisDbDriver(JsonSerializer(), RunStatus, db),
         RedisDbDriver(JsonSerializer(), Session, db),
         RedisDbDriver(JsonSerializer(), Run, db),
+        RedisDbDriver(JsonSerializer(), Computer, db),
     ])
 
 Index.set_db_drivers(
@@ -35,6 +37,7 @@ Index.set_db_drivers(
         RedisIndexDbDriver(UserIndex, db),
         RedisIndexDbDriver(SessionIndex, db),
         RedisIndexDbDriver(RunIndex, db),
+        RedisIndexDbDriver(ComputerIndex, db),
     ])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')

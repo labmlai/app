@@ -8,7 +8,7 @@ import {getColor} from "./constants"
 import {LinePlot} from "./line_plot"
 import {defaultSeriesToPlot, getExtent, getScale, toLogPointValues, toPointValues} from "./utils"
 import {SparkLine} from "./sparkline"
-import {LabLoader} from "../loader"
+import {LabLoader} from "../utils/loader"
 
 import "./style.scss"
 

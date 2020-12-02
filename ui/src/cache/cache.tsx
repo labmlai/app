@@ -4,6 +4,8 @@ import {Status} from "../models/status"
 import {RunListItemModel, RunsList, RunsListModel} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
 import {User} from "../models/user"
+import {Computer} from "../models/computer"
+import {ComputersList, ComputerListItemModel} from "../models/computer_list"
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -107,7 +109,23 @@ class RunCache extends CacheObject<Run> {
     }
 }
 
-export class StatusCache extends CacheObject<Status> {
+class ComputerCache extends CacheObject<Computer> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<Computer> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputer(this.uuid)
+            return new Computer(res.data)
+        })
+    }
+}
+
+export class RunStatusCache extends CacheObject<Status> {
     private readonly uuid: string
 
     constructor(uuid: string) {
@@ -117,7 +135,23 @@ export class StatusCache extends CacheObject<Status> {
 
     async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getStatus(this.uuid)
+            let res = await NETWORK.getRunStatus(this.uuid)
+            return new Status(res.data)
+        })
+    }
+}
+
+export class ComputerStatusCache extends CacheObject<Status> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<Status> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputerStatus(this.uuid)
             return new Status(res.data)
         })
     }
@@ -129,6 +163,19 @@ class UserCache extends CacheObject<User> {
             let res = await NETWORK.getUser()
             return new User(res.data)
         })
+    }
+}
+
+class ComputersListCache extends CacheObject<ComputersList> {
+    async load(): Promise<ComputersList> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputers()
+            return new ComputersList(res.data)
+        })
+    }
+
+    async deleteRuns(computers: ComputerListItemModel[], computerUUIDS: string[]): Promise<void> {
+
     }
 }
 
@@ -164,9 +211,9 @@ class RunsListCache {
 export class SeriesCache extends CacheObject<SeriesModel[]> {
     private readonly uuid: string
     private readonly url: string
-    private statusCache: StatusCache
+    private statusCache: RunStatusCache | ComputerStatusCache
 
-    constructor(uuid: string, url: string, statusCache: StatusCache) {
+    constructor(uuid: string, url: string, statusCache: RunStatusCache | ComputerStatusCache) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache
@@ -221,16 +268,22 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
 
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
-    private readonly statuses: { [uuid: string]: StatusCache }
+    private readonly computers: { [uuid: string]: ComputerCache }
+    private readonly runStatuses: { [uuid: string]: RunStatusCache }
+    private readonly computerStatuses: { [uuid: string]: ComputerStatusCache }
 
     private user: UserCache | null
     private runsList: RunsListCache | null
+    private computersList: ComputersListCache | null
 
     constructor() {
         this.runs = {}
-        this.statuses = {}
+        this.computers = {}
+        this.runStatuses = {}
+        this.computerStatuses = {}
         this.user = null
         this.runsList = null
+        this.computersList = null
     }
 
     getRun(uuid: string) {
@@ -241,12 +294,28 @@ class Cache {
         return this.runs[uuid]
     }
 
-    getStatus(uuid: string) {
-        if (this.statuses[uuid] == null) {
-            this.statuses[uuid] = new StatusCache(uuid)
+    getComputer(uuid: string) {
+        if (this.computers[uuid] == null) {
+            this.computers[uuid] = new ComputerCache(uuid)
         }
 
-        return this.statuses[uuid]
+        return this.computers[uuid]
+    }
+
+    getRunStatus(uuid: string) {
+        if (this.runStatuses[uuid] == null) {
+            this.runStatuses[uuid] = new RunStatusCache(uuid)
+        }
+
+        return this.runStatuses[uuid]
+    }
+
+    getComputerStatus(uuid: string) {
+        if (this.computerStatuses[uuid] == null) {
+            this.computerStatuses[uuid] = new ComputerStatusCache(uuid)
+        }
+
+        return this.computerStatuses[uuid]
     }
 
     getUser() {
@@ -263,6 +332,14 @@ class Cache {
         }
 
         return this.runsList
+    }
+
+    getComputersList() {
+        if (this.computersList == null) {
+            this.computersList = new ComputersListCache()
+        }
+
+        return this.computersList
     }
 }
 

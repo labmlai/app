@@ -3,9 +3,9 @@ import React, {useEffect, useRef, useState} from "react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faSearch} from "@fortawesome/free-solid-svg-icons"
 
-import {RunsList} from "../components/runs_list"
-import {EmptyRunsList} from "../components/empty_runs_list"
-import {LabLoader} from "../components/loader"
+import {RunsList} from "../components/lists/runs_list"
+import {EmptyRunsList} from "../components/lists/empty_runs_list"
+import {LabLoader} from "../components/utils/loader"
 import {RunListItemModel} from "../models/run_list"
 import CACHE from "../cache/cache"
 
@@ -35,7 +35,7 @@ function RunsListView() {
 
 
     useEffect(() => {
-        document.title = "LabML: Home"
+        document.title = "LabML: Experiments"
     }, [labMlToken])
 
     function runsFilter(run: RunListItemModel, search: string) {

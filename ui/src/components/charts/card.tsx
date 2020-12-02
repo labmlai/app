@@ -8,10 +8,10 @@ import {getChart, getSparkLines} from "./components"
 import {BarLines} from "./barline"
 import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
-import RunHeaderCard from "../../analyses/run_header/card"
+import RunHeaderCard from "../../analyses/experiments/run_header/card"
 import CACHE from "../../cache/cache"
-import {LabLoader} from "../loader"
-import {BackButton, RefreshButton, SaveButton} from "../util_buttons"
+import {LabLoader} from "../utils/loader"
+import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {BasicProps, CardProps, ViewProps} from "../../analyses/types"
 
 
@@ -77,7 +77,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
         : track && track.length > 0 ?
             <div className={'labml-card labml-card-action'} onClick={
                 () => {
-                    history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
+                    history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
@@ -120,7 +120,7 @@ function BarLinesCard(props: BasicCardProps, ref: any) {
         : track && track.length > 0 ?
             <div className={'labml-card labml-card-action'} onClick={
                 () => {
-                    history.push(`/${props.url}?run_uuid=${props.uuid}`, history.location.pathname);
+                    history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
@@ -138,9 +138,9 @@ interface BasicViewProps extends BasicProps, ViewProps {
 
 function BasicView(props: BasicViewProps) {
     const params = new URLSearchParams(props.location.search)
-    const runUUID = params.get('run_uuid') as string
+    const runUUID = params.get('uuid') as string
 
-    const statusCache = CACHE.getStatus(runUUID)
+    const statusCache = CACHE.getRunStatus(runUUID)
     const analysisCache = props.cache.getAnalysis(runUUID)
     const preferenceCache = props.cache.getPreferences(runUUID)
 
@@ -249,7 +249,7 @@ function BasicView(props: BasicViewProps) {
         <div className={'flex-container'}>
             <BackButton/>
             <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled}/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID}/>
+            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID} statusCache={statusCache}/>
         </div>
         <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>

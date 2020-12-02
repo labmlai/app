@@ -139,3 +139,12 @@ def get_run(run_uuid: str) -> Optional[Run]:
         return run_key.load()
 
     return None
+
+
+def get_status(run_uuid: str) -> Union[None, Status]:
+    r = get_run(run_uuid)
+
+    if r:
+        return r.status.load()
+
+    return None

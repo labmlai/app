@@ -9,9 +9,9 @@ import {Run} from "../../models/run"
 import CACHE from "../../cache/cache"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {CardProps, ViewProps} from "../types"
-import {LabLoader} from "../../components/loader"
-import RunHeaderCard from "../run_header/card"
-import {BackButton} from "../../components/util_buttons"
+import {LabLoader} from "../../components/utils/loader"
+import RunHeaderCard from "../experiments/run_header/card"
+import {BackButton} from "../../components/utils/util_buttons"
 
 
 function Card(props: CardProps) {

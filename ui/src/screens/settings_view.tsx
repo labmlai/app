@@ -5,7 +5,7 @@ import {useAuth0} from "@auth0/auth0-react"
 import {useErrorHandler} from "react-error-boundary"
 
 import NETWORK from "../network"
-import {LabLoader} from "../components/loader"
+import {LabLoader} from "../components/utils/loader"
 import useWindowDimensions from "../utils/window_dimensions"
 import {User} from "../models/user"
 import CACHE from "../cache/cache"

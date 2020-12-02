@@ -10,6 +10,7 @@ from .analyses import AnalysisManager
 from . import settings
 from .auth import login_required, check_labml_token_permission, get_session, get_auth_user
 from .db import run
+from .db import computer
 from .db import session
 from .db import status
 from .db import user
@@ -53,6 +54,68 @@ def sign_out() -> flask.Response:
     logger.debug(f'sign_out, session_id: {s.session_id}')
 
     return response
+
+
+def update_computer() -> flask.Response:
+    errors = []
+
+    token = request.args.get('labml_token', '')
+    # TODO change this
+    computer_uuid = request.args.get('run_uuid', '')
+
+    c = computer.get_or_create(computer_uuid, token, request.remote_addr)
+    s = c.status.load()
+
+    c.update_computer(request.json)
+    s.update_time_status(request.json)
+    # TODO change this
+    if 'track' in request.json:
+        AnalysisManager.track_computer(computer_uuid, request.json['track'])
+
+    return jsonify({'errors': errors, 'url': c.url})
+
+
+@login_required
+def get_computer(computer_uuid: str) -> flask.Response:
+    computer_data = {}
+    status_code = 400
+
+    c = computer.get_computer(computer_uuid)
+    if c:
+        computer_data = c.get_data()
+        status_code = 200
+
+    response = make_response(jsonify(computer_data))
+    response.status_code = status_code
+
+    logger.debug(f'computer, computer_uuid: {computer_uuid}')
+
+    return response
+
+
+@login_required
+@check_labml_token_permission
+def get_computers(labml_token: str) -> flask.Response:
+    u = get_auth_user()
+
+    if labml_token:
+        computers_list = computer.get_computers(labml_token)
+    else:
+        default_project = u.default_project
+        labml_token = default_project.labml_token
+        computers_list = default_project.get_computers()
+
+    res = []
+    for c in computers_list:
+        s = computer.get_status(c.computer_uuid)
+        if c.computer_uuid:
+            res.append({**c.get_summary(), **s.get_data()})
+
+    res = sorted(res, key=lambda i: i['start_time'], reverse=True)
+
+    logger.debug(f'computers, labml_token : {labml_token}')
+
+    return jsonify({'computers': res, 'labml_token': labml_token})
 
 
 def update_run() -> flask.Response:
@@ -144,11 +207,11 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
-def get_status(run_uuid: str) -> flask.Response:
+def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
 
-    s = status.get_status(run_uuid)
+    s = run.get_status(run_uuid)
     if s:
         status_data = s.get_data()
         status_code = 200
@@ -156,7 +219,24 @@ def get_status(run_uuid: str) -> flask.Response:
     response = make_response(jsonify(status_data))
     response.status_code = status_code
 
-    logger.debug(f'status, run_uuid: {run_uuid}')
+    logger.debug(f'run_status, run_uuid: {run_uuid}')
+
+    return response
+
+
+def get_computer_status(computer_uuid: str) -> flask.Response:
+    status_data = {}
+    status_code = 400
+
+    s = computer.get_status(computer_uuid)
+    if s:
+        status_data = s.get_data()
+        status_code = 200
+
+    response = make_response(jsonify(status_data))
+    response.status_code = status_code
+
+    logger.debug(f'computer_status, computer_uuid: {computer_uuid}')
 
     return response
 
@@ -175,7 +255,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
     res = []
     for r in runs_list:
-        s = status.get_status(r.run_uuid)
+        s = run.get_status(r.run_uuid)
         if r.run_uuid:
             res.append({**r.get_summary(), **s.get_data()})
 
@@ -214,13 +294,17 @@ def _add_ui(app: flask.Flask, method: str, func: typing.Callable, url: str):
 
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
+    _add_server(app, 'POST', update_computer, 'computer')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
+    _add_ui(app, 'GET', get_computers, 'computers/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'GET', get_user, 'user')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
-    _add_ui(app, 'GET', get_status, 'status/<run_uuid>')
+    _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
+    _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
+    _add_ui(app, 'GET', get_computer_status, 'computer/status/<computer_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
