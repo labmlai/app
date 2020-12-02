@@ -95,7 +95,6 @@ def get_params_preferences(run_uuid: str) -> Any:
 
     preferences_key = ParametersPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        logger.error(f'no parameters preferences found run_uuid : {run_uuid}')
         return jsonify(preferences_data)
 
     pp: ParametersPreferencesModel = preferences_key.load()

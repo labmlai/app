@@ -97,7 +97,6 @@ def get_network_preferences(computer_uuid: str) -> Any:
 
     preferences_key = NetworkPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        logger.error(f'no network preferences found computer_uuid : {computer_uuid}')
         return jsonify(preferences_data)
 
     np: NetworkPreferencesModel = preferences_key.load()

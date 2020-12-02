@@ -97,7 +97,6 @@ def get_process_preferences(computer_uuid: str) -> Any:
 
     preferences_key = ProcessPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        logger.error(f'no process preferences found computer_uuid : {computer_uuid}')
         return jsonify(preferences_data)
 
     pp: ProcessPreferencesModel = preferences_key.load()

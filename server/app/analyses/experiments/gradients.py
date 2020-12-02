@@ -95,7 +95,6 @@ def get_grads_preferences(run_uuid: str) -> Any:
 
     preferences_key = GradientsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        logger.error(f'no gradients preferences found run_uuid : {run_uuid}')
         return jsonify(preferences_data)
 
     gp: GradientsPreferencesModel = preferences_key.load()

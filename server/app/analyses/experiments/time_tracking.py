@@ -95,7 +95,6 @@ def get_times_preferences(run_uuid: str) -> Any:
 
     preferences_key = TimesPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        logger.error(f'no times preferences found run_uuid : {run_uuid}')
         return jsonify(preferences_data)
 
     tp: TimesPreferencesModel = preferences_key.load()

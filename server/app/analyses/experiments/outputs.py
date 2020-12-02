@@ -95,7 +95,6 @@ def get_modules_preferences(run_uuid: str) -> Any:
 
     preferences_key = OutputsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        logger.error(f'no outputs preferences found run_uuid : {run_uuid}')
         return jsonify(preferences_data)
 
     op: OutputsPreferencesModel = preferences_key.load()

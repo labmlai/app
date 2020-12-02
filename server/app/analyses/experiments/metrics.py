@@ -101,7 +101,6 @@ def get_metrics_preferences(run_uuid: str) -> Any:
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        logger.error(f'no metrics preferences found run_uuid : {run_uuid}')
         return jsonify(preferences_data)
 
     mp: MetricsPreferencesModel = preferences_key.load()

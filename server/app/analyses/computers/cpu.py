@@ -97,7 +97,6 @@ def get_cpu_preferences(computer_uuid: str) -> Any:
 
     preferences_key = CPUPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        logger.error(f'no cpu preferences found computer_uuid : {computer_uuid}')
         return jsonify(preferences_data)
 
     cp: CPUPreferencesModel = preferences_key.load()

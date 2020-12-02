@@ -97,7 +97,6 @@ def get_disk_preferences(computer_uuid: str) -> Any:
 
     preferences_key = DiskPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        logger.error(f'no disk preferences found computer_uuid : {computer_uuid}')
         return jsonify(preferences_data)
 
     dp: DiskPreferencesModel = preferences_key.load()
