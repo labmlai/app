@@ -73,6 +73,17 @@ function ComputersListView() {
         computerListCache.deleteRuns(res, Array.from(computersSet)).then()
     }
 
+    async function load() {
+        let currentComputerList = await computerListCache.get(true)
+        if (currentComputerList) {
+            setComputers(currentComputerList.computers)
+        }
+    }
+
+    function onRefresh() {
+        load().then()
+    }
+
     return <div>
         {(() => {
             if (isLoading) {
@@ -96,7 +107,7 @@ function ComputersListView() {
                             />
                         </div>
                     </div>
-                    <ComputersList computers={computers} onDelete={onDelete}/>
+                    <ComputersList computers={computers} onDelete={onDelete} onRefresh={onRefresh}/>
                 </div>
             }
         })()}

@@ -73,6 +73,17 @@ function RunsListView() {
         runListCache.deleteRuns(res, Array.from(runsSet)).then()
     }
 
+    async function load() {
+        let currentRunsList = await runListCache.getRunsList(null, true)
+        if (currentRunsList) {
+            setRuns(currentRunsList.runs)
+        }
+    }
+
+    function onRefresh() {
+        load().then()
+    }
+
     return <div>
         {(() => {
             if (isLoading) {
@@ -96,7 +107,7 @@ function RunsListView() {
                             />
                         </div>
                     </div>
-                    <RunsList runs={runs} onDelete={onDelete}/>
+                    <RunsList runs={runs} onDelete={onDelete} onRefresh={onRefresh}/>
                 </div>
             }
         })()}

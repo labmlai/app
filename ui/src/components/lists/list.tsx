@@ -6,16 +6,9 @@ import {ListGroup} from "react-bootstrap"
 
 import {formatTime} from "../../utils/time"
 import {StatusView} from "../../utils/status"
-import {DeleteButton, EditButton} from "../utils/util_buttons"
+import {DeleteButton, EditButton, RefreshButton} from "../utils/util_buttons"
 
 import "./list.scss"
-
-
-interface ListProps {
-    items: any[]
-    itemKey: string
-    onDelete?: (itemsList: Set<string>) => void
-}
 
 interface ListItemProps {
     idx: number
@@ -59,6 +52,13 @@ function ListItem(props: ListItemProps) {
     </ListGroup.Item>
 }
 
+interface ListProps {
+    items: any[]
+    itemKey: string
+    onDelete?: (itemsList: Set<string>) => void
+    onRefresh?: () => void
+}
+
 export function List(props: ListProps) {
     const [isEditMode, setIsEditMode] = useState(false)
 
@@ -86,8 +86,11 @@ export function List(props: ListProps) {
     }
 
     return <ListGroup className={"list"}>
-        {props.onDelete && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
-        {props.onDelete && !isEditMode && <EditButton onButtonClick={onEdit}/>}
+        <div className={'flex-container mb-2'}>
+            {props.onDelete && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
+            {props.onDelete && !isEditMode && <EditButton onButtonClick={onEdit}/>}
+            <RefreshButton onButtonClick={props.onRefresh}/>
+        </div>
         {props.items.map((item, idx) => (
             <ListItem key={item[uuidKey]} idx={idx} item={item} onItemClick={onItemClick}
                       isEditMode={isEditMode} itemKey={props.itemKey}/>

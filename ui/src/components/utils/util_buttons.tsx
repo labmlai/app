@@ -65,25 +65,21 @@ export function RefreshButton(props: ButtonProps) {
         }
     }
 
-    return <Nav.Link className={'float-right'} onClick={onRefreshButtonClick}>
+    return <Nav.Link className={'tab float-right'} onClick={onRefreshButtonClick}>
         <FontAwesomeIcon icon={faSync}/>
     </Nav.Link>
 }
 
 export function DeleteButton(props: ButtonProps) {
-    return <div>
-        <Nav.Link className={'float-right mb-3'} onClick={props.onButtonClick}>
-            <FontAwesomeIcon icon={faTrash}/>
-        </Nav.Link>
-    </div>
+    return <Nav.Link className={'tab float-right'} onClick={props.onButtonClick}>
+        <FontAwesomeIcon icon={faTrash}/>
+    </Nav.Link>
 }
 
 export function EditButton(props: ButtonProps) {
-    return <div>
-        <Nav.Link className={'float-right mb-3'} onClick={props.onButtonClick}>
-            <FontAwesomeIcon icon={faEdit}/>
-        </Nav.Link>
-    </div>
+    return <Nav.Link className={'tab float-right'} onClick={props.onButtonClick}>
+        <FontAwesomeIcon icon={faEdit}/>
+    </Nav.Link>
 }
 
 export function SaveButton(props: ButtonProps) {

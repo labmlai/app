@@ -190,12 +190,12 @@ class RunsListCache {
         })
     }
 
-    async getRunsList(labml_token: string | null): Promise<RunsList> {
+    async getRunsList(labml_token: string | null, isRefresh = false): Promise<RunsList> {
         if (labml_token) {
             return await this.loadRuns(labml_token)
         }
 
-        if (this.runsList == null) {
+        if (this.runsList == null || isRefresh) {
             this.runsList = await this.loadRuns(null)
         }
 
