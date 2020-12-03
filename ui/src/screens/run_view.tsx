@@ -95,7 +95,7 @@ function RunView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         {isLogged && !isLogged.is_user_logged &&
         <WarningMessage onClick={onMessageClick}>
-            <p>This Run may be lost in the future. Click here to add this to your experiments.</p>
+            <p>This run will be deleted in 12 hours. Click here to add it to your experiments.</p>
         </WarningMessage>
         }
         <div className={'flex-container'}>
