@@ -28,3 +28,15 @@ export class User {
         this.default_project = user.default_project
     }
 }
+
+export interface IsUserLoggedModel {
+    is_user_logged: boolean
+}
+
+export class IsUserLogged {
+    is_user_logged: boolean
+
+    constructor(isUserLogged: IsUserLoggedModel) {
+        this.is_user_logged = isUserLogged.is_user_logged
+    }
+}

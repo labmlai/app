@@ -11,9 +11,9 @@ import {Auth0Provider} from "@auth0/auth0-react"
 import './App.scss'
 import './neumorphism.scss'
 
-import {Alert} from "react-bootstrap"
 import {ErrorBoundary} from "react-error-boundary"
 
+import {ErrorMessage} from "./components/utils/alert"
 import AppContainer from './screens/app_container'
 
 mixpanel.init("7e19de9c3c68ba5a897f19837042a826")
@@ -61,12 +61,12 @@ function Auth0ProviderWithHistory(props: ProviderProps) {
 
 function ErrorFallback({error}: any) {
     return <div>
-        <Alert className={'text-center'} variant={'danger'}>
+        <ErrorMessage>
             <div className={'mb-3'}>{error.message}</div>
             <a href={'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/'}>
                 <h6>Click here to report this error in our Slack workspace</h6>
             </a>
-        </Alert>
+        </ErrorMessage>
     </div>
 }
 

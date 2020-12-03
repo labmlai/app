@@ -1,8 +1,10 @@
 import React, {useEffect, useRef, useState} from "react"
 
+import {useHistory} from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 
 import {BackButton, RefreshButton} from "../components/utils/util_buttons"
+import {WarningMessage} from "../components/utils/alert"
 import ConfigsCard from "../analyses/configs/card"
 import {experiment_analyses} from "../analyses/all_analyses"
 import RunHeaderCard from "../analyses/experiments/run_header/card"
@@ -10,6 +12,7 @@ import {Footer} from '../components/utils/footer'
 import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 import {Status} from "../models/status"
+import {IsUserLogged} from "../models/user"
 
 
 interface RunProps {
@@ -17,11 +20,16 @@ interface RunProps {
 }
 
 function RunView(props: RunProps) {
+    const history = useHistory()
+
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
     const statusCache = CACHE.getRunStatus(runUUID)
+    const isUserLoggedCache = CACHE.getIsUserLogged()
 
     const [status, setStatus] = useState(null as unknown as Status)
+    const [isLogged, SetIsLogged] = useState(null as unknown as IsUserLogged)
+
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -45,6 +53,8 @@ function RunView(props: RunProps) {
                 }
             }
 
+            SetIsLogged(await isUserLoggedCache.get())
+
             setStatus(await statusCache.get())
             if (status && !status.isRunning) {
                 clearInterval(interval)
@@ -54,7 +64,7 @@ function RunView(props: RunProps) {
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
-    }, [status, refreshArray, statusCache])
+    }, [status, refreshArray, statusCache, isUserLoggedCache])
 
     useEffect(() => {
         mixpanel.track('Run View', {uuid: runUUID})
@@ -77,7 +87,17 @@ function RunView(props: RunProps) {
         lastUpdated = oldest
     }
 
+    function onMessageClick() {
+        let uri = props.location.pathname + props.location.search
+        history.push('/home', uri)
+    }
+
     return <div className={'run page'} style={{width: actualWidth}}>
+        {isLogged && !isLogged.is_user_logged &&
+        <WarningMessage onClick={onMessageClick}>
+            <p>This Run may be lost in the future. Click here to add this to your experiments.</p>
+        </WarningMessage>
+        }
         <div className={'flex-container'}>
             <BackButton/>
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}

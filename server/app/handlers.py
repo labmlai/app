@@ -8,7 +8,7 @@ from flask import jsonify, request, make_response
 
 from .analyses import AnalysisManager
 from . import settings
-from .auth import login_required, check_labml_token_permission, get_session, get_auth_user
+from .auth import login_required, check_labml_token_permission, get_session, get_auth_user, get_is_user_logged
 from .db import run
 from .db import computer
 from .db import session
@@ -283,6 +283,11 @@ def get_user() -> Any:
     return jsonify(u.get_data())
 
 
+def is_user_logged() -> Any:
+
+    return jsonify({'is_user_logged': get_is_user_logged()})
+
+
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
@@ -307,6 +312,7 @@ def add_handlers(app: flask.Flask):
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
+    _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
     for method, func, url in AnalysisManager.get_handlers():
         _add_ui(app, method, func, url)

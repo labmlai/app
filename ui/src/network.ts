@@ -76,6 +76,11 @@ class Network {
     async signOut(): Promise<any> {
         return this.axiosInstance.delete(`/auth/sign_out`)
     }
+
+    async getIsUserLogged(): Promise<any> {
+        return this.axiosInstance.get(`/auth/is_logged`)
+    }
+
 }
 
 const NETWORK = new Network()

@@ -3,7 +3,7 @@ import {Run, SeriesModel} from "../models/run"
 import {Status} from "../models/status"
 import {RunListItemModel, RunsList, RunsListModel} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
-import {User} from "../models/user"
+import {User, IsUserLogged} from "../models/user"
 import {Computer} from "../models/computer"
 import {ComputersList, ComputerListItemModel} from "../models/computer_list"
 
@@ -166,6 +166,16 @@ class UserCache extends CacheObject<User> {
     }
 }
 
+
+class IsUserLoggedCache extends CacheObject<IsUserLogged> {
+    async load(): Promise<IsUserLogged> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getIsUserLogged()
+            return new IsUserLogged(res.data)
+        })
+    }
+}
+
 class ComputersListCache extends CacheObject<ComputersList> {
     async load(): Promise<ComputersList> {
         return this.broadcastPromise.create(async () => {
@@ -273,6 +283,7 @@ class Cache {
     private readonly computerStatuses: { [uuid: string]: ComputerStatusCache }
 
     private user: UserCache | null
+    private isUserLogged: IsUserLoggedCache | null
     private runsList: RunsListCache | null
     private computersList: ComputersListCache | null
 
@@ -284,6 +295,7 @@ class Cache {
         this.user = null
         this.runsList = null
         this.computersList = null
+        this.isUserLogged = null
     }
 
     getRun(uuid: string) {
@@ -324,6 +336,14 @@ class Cache {
         }
 
         return this.user
+    }
+
+    getIsUserLogged() {
+        if (this.isUserLogged == null) {
+            this.isUserLogged = new IsUserLoggedCache()
+        }
+
+        return this.isUserLogged
     }
 
     getRunsList() {

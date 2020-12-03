@@ -58,3 +58,12 @@ def get_auth_user() -> user.User:
     u = s.user.load()
 
     return u
+
+
+def get_is_user_logged() -> bool:
+    s = get_session()
+
+    if s.is_auth:
+        return True
+
+    return False
