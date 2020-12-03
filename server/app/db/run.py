@@ -69,6 +69,7 @@ class Run(Model['Run']):
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,
+            'is_claimed': self.is_claimed,
             'configs': configs,
         }
 

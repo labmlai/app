@@ -5,6 +5,7 @@ export interface RunModel {
     name: string
     comment: string
     start_time: number
+    is_claimed: boolean
     configs: ConfigModel[]
 }
 
@@ -28,6 +29,7 @@ export class Run {
     name: string
     comment: string
     start_time: number
+    is_claimed: boolean
     configs: Config[]
 
     constructor(run: RunModel) {
@@ -35,6 +37,7 @@ export class Run {
         this.name = run.name
         this.comment = run.comment
         this.start_time = run.start_time
+        this.is_claimed = run.is_claimed
         this.configs = []
         for (let c of run.configs) {
             this.configs.push(new Config(c))

@@ -30,7 +30,6 @@ function RunView(props: RunProps) {
     const [status, setStatus] = useState(null as unknown as Status)
     const [isLogged, SetIsLogged] = useState(null as unknown as IsUserLogged)
 
-
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
