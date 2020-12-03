@@ -6,8 +6,6 @@ import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync, faTrash, faEdit, faSave} from "@fortawesome/free-solid-svg-icons"
 
-import {Status} from "../../models/status"
-
 import "./util_buttons.scss"
 
 interface ButtonProps {
@@ -60,37 +58,16 @@ export function BackButton(props: ButtonProps) {
     </Nav.Link>
 }
 
-interface RefreshButtonProps extends ButtonProps {
-    runUUID: string
-    statusCache: any
-}
-
-export function RefreshButton(props: RefreshButtonProps) {
-    const statusCache = props.statusCache
-    const [status, setStatus] = useState(null as unknown as Status)
-
-    useEffect(() => {
-        async function load() {
-            setStatus(await statusCache.get())
-        }
-
-        load().then()
-    }, [statusCache])
-
-
+export function RefreshButton(props: ButtonProps) {
     function onRefreshButtonClick() {
         if (props.onButtonClick) {
             props.onButtonClick()
         }
     }
 
-    return <div className={'d-inline'}>
-        {status && status.isRunning &&
-        <Nav.Link className={'tab refresh float-right'} onClick={onRefreshButtonClick}>
-            <FontAwesomeIcon icon={faSync}/>
-        </Nav.Link>
-        }
-    </div>
+    return <Nav.Link className={'float-right'} onClick={onRefreshButtonClick}>
+        <FontAwesomeIcon icon={faSync}/>
+    </Nav.Link>
 }
 
 export function DeleteButton(props: ButtonProps) {

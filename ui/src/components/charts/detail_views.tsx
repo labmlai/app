@@ -8,6 +8,7 @@ import {getChart, getSparkLines} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, ViewProps} from "../../analyses/types"
+import {Status} from "../../models/status";
 
 interface BasicViewProps extends BasicProps, ViewProps {
     headerCard: any
@@ -22,6 +23,7 @@ function BasicView(props: BasicViewProps) {
     const preferenceCache = props.cache.getPreferences(computerUUID)
 
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
+    const [status, setStatus] = useState(null as unknown as Status)
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const [currentChart, setCurrentChart] = useState(0)
     const [isDisabled, setIsDisabled] = useState(true)
@@ -34,8 +36,9 @@ function BasicView(props: BasicViewProps) {
     useEffect(() => {
         async function load() {
             setTrack(await analysisCache.get())
-            let status = await statusCache.get()
-            if (!status.isRunning) {
+
+            setStatus(await statusCache.get())
+            if (status && !status.isRunning) {
                 clearInterval(interval)
             }
         }
@@ -126,8 +129,7 @@ function BasicView(props: BasicViewProps) {
         <div className={'flex-container'}>
             <BackButton/>
             <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled}/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}
-                           statusCache={statusCache}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
         </div>
         <props.headerCard uuid={computerUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>

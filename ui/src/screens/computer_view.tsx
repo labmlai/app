@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 import mixpanel from "mixpanel-browser"
 
@@ -9,6 +9,7 @@ import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 
 import "./run_view.scss"
+import {Status} from "../models/status";
 
 
 interface RunProps {
@@ -18,8 +19,9 @@ interface RunProps {
 function ComputerView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
     const computerUUID = params.get('computer_uuid') as string
-
     const statusCache = CACHE.getComputerStatus(computerUUID)
+
+    const [status, setStatus] = useState(null as unknown as Status)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -43,8 +45,8 @@ function ComputerView(props: RunProps) {
                 }
             }
 
-            let status = await statusCache.get()
-            if (!status.isRunning) {
+            setStatus(await statusCache.get())
+            if (status && !status.isRunning) {
                 clearInterval(interval)
             }
         }
@@ -52,7 +54,7 @@ function ComputerView(props: RunProps) {
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
-    }, [statusCache, refreshArray])
+    }, [statusCache, refreshArray, status])
 
     useEffect(() => {
         mixpanel.track('Computer View', {uuid: computerUUID});
@@ -78,8 +80,7 @@ function ComputerView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}
-                           statusCache={CACHE.getComputerStatus(computerUUID)}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
         </div>
         <ComputerHeaderCard uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         {computer_analyses.map((analysis, i) => {

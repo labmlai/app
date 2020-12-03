@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 import mixpanel from "mixpanel-browser"
 
@@ -10,6 +10,7 @@ import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 
 import "./run_view.scss"
+import {Status} from "../models/status";
 
 
 interface RunProps {
@@ -20,6 +21,8 @@ function RunView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
     const statusCache = CACHE.getRunStatus(runUUID)
+
+    const [status, setStatus] = useState(null as unknown as Status)
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -43,8 +46,8 @@ function RunView(props: RunProps) {
                 }
             }
 
-            let status = await statusCache.get()
-            if (!status.isRunning) {
+            setStatus(await statusCache.get())
+            if (status && !status.isRunning) {
                 clearInterval(interval)
             }
         }
@@ -52,7 +55,7 @@ function RunView(props: RunProps) {
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
-    }, [statusCache, refreshArray])
+    }, [status, refreshArray, statusCache])
 
     useEffect(() => {
         mixpanel.track('Run View', {uuid: runUUID})
@@ -78,7 +81,7 @@ function RunView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton/>
-            <RefreshButton onButtonClick={onRefresh} runUUID={runUUID} statusCache={CACHE.getRunStatus(runUUID)}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
