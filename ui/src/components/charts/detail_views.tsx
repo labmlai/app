@@ -36,8 +36,8 @@ function BasicView(props: BasicViewProps) {
     useEffect(() => {
         async function load() {
             setTrack(await analysisCache.get())
-
             setStatus(await statusCache.get())
+
             if (status && !status.isRunning) {
                 clearInterval(interval)
             }
@@ -68,7 +68,10 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
-        load().then()
+        if (plotIdx === null) {
+            load().then()
+        }
+
     }, [track, preference, preferenceCache])
 
     function updatePreferences() {
