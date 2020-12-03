@@ -90,7 +90,10 @@ export function toLogPointValues(track: SeriesModel[]) {
     for (let s of series) {
         let res: PointValue[] = []
         for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: Math.log(s.value[i]), smoothed: Math.log(s.smoothed[i])})
+            //TODO think about a better way to remove zeros in logValues
+            if (s.value[i] > 0.0 && s.smoothed[i] > 0.0) {
+                res.push({step: s.step[i], value: Math.log(s.value[i]), smoothed: Math.log(s.smoothed[i])})
+            }
         }
         s.series = res
     }
