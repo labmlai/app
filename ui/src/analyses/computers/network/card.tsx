@@ -3,7 +3,8 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SeriesCardProps, Analysis} from "../../types"
-import {BasicSparkLines} from "../../../components/charts/card"
+import {BasicSparkLines} from "../../../components/charts/summary_views"
+import ComputerHeaderCard from "../computer_header/card"
 import {BasicView} from "../../../components/charts/detail_views"
 import {Cache} from "../../common"
 import {SeriesCache, SeriesPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
@@ -25,7 +26,7 @@ class NetworkPreferenceCache extends SeriesPreferenceCache {
 }
 
 
-let cache = new Cache('computer',NetworkAnalysisCache, NetworkPreferenceCache)
+let cache = new Cache('computer', NetworkAnalysisCache, NetworkPreferenceCache)
 
 
 function AnalysisSummary(props: SeriesCardProps) {
@@ -43,7 +44,8 @@ function AnalysisDetails() {
 
     return <BasicView title={TITLE}
                       cache={cache}
-                      location={location}/>
+                      location={location}
+                      headerCard={ComputerHeaderCard}/>
 }
 
 

@@ -65,7 +65,7 @@ interface RunHeaderProps extends CardProps {
     lastUpdated?: number
 }
 
-function Card(props: RunHeaderProps) {
+function ComputerHeaderCard(props: RunHeaderProps) {
     const [computer, setComputer] = useState(null as unknown as Computer)
     const [isClicked, setIsClicked] = useState(false)
     const [status, setStatus] = useState(null as unknown as Status)
@@ -115,6 +115,4 @@ function Card(props: RunHeaderProps) {
     </div>
 }
 
-export default {
-    Card
-}
+export default ComputerHeaderCard

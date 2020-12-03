@@ -5,7 +5,7 @@ import {ListGroup} from "react-bootstrap"
 import {PointValue} from "../../models/run"
 import {formatFixed, pickHex, scaleValue} from "../../utils/value"
 import {getExtent, getScale} from "./utils"
-import {LinePlot} from "./line_plot"
+import {LinePlot} from "./lineplot"
 import {BASE_COLOR} from "./constants"
 
 interface SparkLineProps {

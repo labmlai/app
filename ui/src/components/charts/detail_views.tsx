@@ -1,26 +1,23 @@
-/*TODO design a reusable component that can be used with BasicView */
 import React, {useCallback, useEffect, useRef, useState} from "react"
 
 import mixpanel from "mixpanel-browser"
 
-import CACHE from "../../cache/cache"
 import {SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {getChart, getSparkLines} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
-import ComputerHeaderCard from "../../analyses/computers/computer_header/card"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, ViewProps} from "../../analyses/types"
 
 interface BasicViewProps extends BasicProps, ViewProps {
-
+    headerCard: any
 }
 
 function BasicView(props: BasicViewProps) {
     const params = new URLSearchParams(props.location.search)
     const computerUUID = params.get('uuid') as string
 
-    const statusCache = CACHE.getComputerStatus(computerUUID)
+    const statusCache = props.cache.getStatus(computerUUID)
     const analysisCache = props.cache.getAnalysis(computerUUID)
     const preferenceCache = props.cache.getPreferences(computerUUID)
 
@@ -132,7 +129,7 @@ function BasicView(props: BasicViewProps) {
             <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}
                            statusCache={statusCache}/>
         </div>
-        <ComputerHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
+        <props.headerCard uuid={computerUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>

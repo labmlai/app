@@ -5,7 +5,7 @@ import {ListGroup} from "react-bootstrap"
 
 import {SeriesModel} from "../../models/run"
 import {getColor} from "./constants"
-import {LinePlot} from "./line_plot"
+import {LinePlot} from "./lineplot"
 import {defaultSeriesToPlot, getExtent, getScale, toLogPointValues, toPointValues} from "./utils"
 import {SparkLine} from "./sparkline"
 import {LabLoader} from "../utils/loader"

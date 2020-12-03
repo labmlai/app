@@ -12,7 +12,6 @@ from .auth import login_required, check_labml_token_permission, get_session, get
 from .db import run
 from .db import computer
 from .db import session
-from .db import status
 from .db import user
 from .db import project
 from .logging import logger
@@ -60,15 +59,15 @@ def update_computer() -> flask.Response:
     errors = []
 
     token = request.args.get('labml_token', '')
-    # TODO change this
-    computer_uuid = request.args.get('run_uuid', '')
+    # TODO change this in client
+    computer_uuid = request.args.get('computer_uuid', '')
 
     c = computer.get_or_create(computer_uuid, token, request.remote_addr)
     s = c.status.load()
 
     c.update_computer(request.json)
     s.update_time_status(request.json)
-    # TODO change this
+    # TODO change this in client
     if 'track' in request.json:
         AnalysisManager.track_computer(computer_uuid, request.json['track'])
 

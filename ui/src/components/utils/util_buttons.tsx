@@ -109,7 +109,6 @@ export function EditButton(props: ButtonProps) {
     </div>
 }
 
-
 export function SaveButton(props: ButtonProps) {
     return <Nav.Link onClick={props.onButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
         <FontAwesomeIcon icon={faSave}/>

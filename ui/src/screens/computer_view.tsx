@@ -81,7 +81,7 @@ function ComputerView(props: RunProps) {
             <RefreshButton onButtonClick={onRefresh} runUUID={computerUUID}
                            statusCache={CACHE.getComputerStatus(computerUUID)}/>
         </div>
-        <ComputerHeaderCard.Card uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
+        <ComputerHeaderCard uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         {computer_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={computerUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>

@@ -80,7 +80,7 @@ function RunView(props: RunProps) {
             <BackButton/>
             <RefreshButton onButtonClick={onRefresh} runUUID={runUUID} statusCache={CACHE.getRunStatus(runUUID)}/>
         </div>
-        <RunHeaderCard.Card uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
+        <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
         {experiment_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
