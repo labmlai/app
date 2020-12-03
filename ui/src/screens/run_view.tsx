@@ -6,11 +6,10 @@ import {BackButton, RefreshButton} from "../components/utils/util_buttons"
 import ConfigsCard from "../analyses/configs/card"
 import {experiment_analyses} from "../analyses/all_analyses"
 import RunHeaderCard from "../analyses/experiments/run_header/card"
+import {Footer} from '../components/utils/footer'
 import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
-
-import "./run_view.scss"
-import {Status} from "../models/status";
+import {Status} from "../models/status"
 
 
 interface RunProps {
@@ -89,11 +88,7 @@ function RunView(props: RunProps) {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>
         })}
-        <div className={'footer-copyright text-center'}>
-            <a href={'https://github.com/lab-ml/labml'}>LabML Github Repo</a>
-            <span> | </span>
-            <a href={'https://github.com/lab-ml/app'}>LabML App Github Repo</a>
-        </div>
+        <Footer/>
     </div>
 }
 
