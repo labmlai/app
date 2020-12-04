@@ -1,17 +1,11 @@
 import React from "react"
 
-import Loader from 'react-loader-spinner'
+import {Spinner} from "react-bootstrap"
 
 import './loader.scss'
 
 export function LabLoader() {
     return <div className={'loader'}>
-        <Loader
-            type="Oval"
-            color="#eb6134"
-            height={50}
-            width={50}
-            visible={true}
-        />
+        <Spinner animation="border" style={{color: "#eb6134"}}/>
     </div>
 }
