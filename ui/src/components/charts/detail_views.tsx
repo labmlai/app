@@ -72,7 +72,7 @@ function BasicView(props: BasicViewProps) {
             load().then()
         }
 
-    }, [track, preference, preferenceCache])
+    }, [track, preference, preferenceCache, plotIdx])
 
     function updatePreferences() {
         if (preference.current) {

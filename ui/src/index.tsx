@@ -11,8 +11,6 @@ import {Auth0Provider} from "@auth0/auth0-react"
 import './App.scss'
 import './neumorphism.scss'
 
-import {ErrorBoundary} from "react-error-boundary"
-
 import {ErrorMessage} from "./components/utils/alert"
 import AppContainer from './screens/app_container'
 
@@ -73,13 +71,13 @@ function ErrorFallback({error}: any) {
 
 ReactDOM.render(
     <React.StrictMode>
-        <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <Sentry.ErrorBoundary fallback={ErrorFallback}>
             <Router>
                 <Auth0ProviderWithHistory>
                     <AppContainer/>
                 </Auth0ProviderWithHistory>,
             </Router>
-        </ErrorBoundary>
+        </Sentry.ErrorBoundary>
     </React.StrictMode>,
     document.getElementById('root')
 )
