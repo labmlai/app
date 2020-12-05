@@ -85,11 +85,11 @@ export function List(props: ListProps) {
         setIsEditMode(true)
     }
 
-    return <ListGroup className={"list"}>
+    return <ListGroup className={"list runs-list"}>
         <div className={'flex-container mb-2'}>
             {props.onDelete && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
             {props.onDelete && !isEditMode && <EditButton onButtonClick={onEdit}/>}
-            <RefreshButton onButtonClick={props.onRefresh}/>
+            {props.onRefresh && <RefreshButton onButtonClick={props.onRefresh}/>}
         </div>
         {props.items.map((item, idx) => (
             <ListItem key={item[uuidKey]} idx={idx} item={item} onItemClick={onItemClick}
