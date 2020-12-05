@@ -2,7 +2,7 @@ import React, {useState} from "react"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faHome, faUserCircle, faBook, faComments, faDesktop} from "@fortawesome/free-solid-svg-icons"
+import {faHome, faUserCircle, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
 
 import RunsListView from "./runs_list_view"
 import ComputersListView from "./computers_list_view"
@@ -63,10 +63,10 @@ function HamburgerMenu() {
                         <FontAwesomeIcon icon={faHome}/>
                         <span>Experiments</span>
                     </Nav.Link>
-                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>
-                        <FontAwesomeIcon icon={faDesktop}/>
-                        <span>Computers</span>
-                    </Nav.Link>
+                    {/*<Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>*/}
+                    {/*    <FontAwesomeIcon icon={faDesktop}/>*/}
+                    {/*    <span>Computers</span>*/}
+                    {/*</Nav.Link>*/}
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')}>
                         <FontAwesomeIcon icon={faUserCircle}/>
                         <span>User Profile</span>
