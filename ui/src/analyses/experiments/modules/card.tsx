@@ -9,7 +9,7 @@ import RunHeaderCard from "../run_header/card"
 import {Cache} from "../../common"
 import {SeriesCache, SeriesPreferenceCache, RunStatusCache} from "../../../cache/cache"
 
-const TITLE = 'Outputs - L2 Norm'
+const TITLE = 'Activations - L2 Norm'
 const URL = 'outputs'
 
 
