@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 
 import {Button, Form, Image} from "react-bootstrap"
 import {useAuth0} from "@auth0/auth0-react"
-import {useErrorHandler} from "react-error-boundary"
+import {captureException} from '@sentry/react'
 
 import NETWORK from "../network"
 import {LabLoader} from "../components/utils/loader"
@@ -18,8 +18,7 @@ function SettingsView() {
     let [user, setUser] = useState(null as unknown as User)
     const [isLoading, setIsLoading] = useState(true)
 
-    const {logout} = useAuth0();
-    const handleError = useErrorHandler()
+    const {logout} = useAuth0()
 
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
@@ -43,7 +42,7 @@ function SettingsView() {
             if (res.data.is_successful) {
                 logout({returnTo: window.location.origin})
             } else {
-                handleError(Error('error in logout'))
+                captureException(Error('error in logout'))
             }
         })
     }

@@ -4,7 +4,6 @@ import {Redirect, Route, Switch, useHistory, useLocation} from "react-router-dom
 
 import mixpanel from "mixpanel-browser"
 import {Image} from "react-bootstrap"
-import {useErrorHandler} from "react-error-boundary"
 import {useAuth0} from "@auth0/auth0-react"
 
 import RunView from "./run_view"
@@ -18,11 +17,11 @@ import NETWORK from "../network"
 import {LabLoader} from "../components/utils/loader"
 import {UserModel} from "../models/user"
 import logo from "../assets/lab_logo.png"
+import {captureException} from "@sentry/react"
 
 
 function AppContainer() {
     const location = useLocation()
-    const handleError = useErrorHandler()
     const history = useHistory()
 
     const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
@@ -39,7 +38,7 @@ function AppContainer() {
             }
 
             if (error) {
-                handleError(error)
+                captureException(error)
             } else if (isRunPath()) {
                 setLoggedIn(true)
             } else if (isLoading) {
@@ -70,18 +69,18 @@ function AppContainer() {
                         setLoggedIn(true)
                         mixpanel.track('Successful login');
                     } else {
-                        handleError(Error('error in login'))
+                        captureException(Error('error in login'))
                         mixpanel.track('Login failed');
                     }
                 })
             }
         },
-        [loggedIn, isLoading, user, isAuthenticated, handleError, location, error, loginWithRedirect]
+        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect]
     )
 
     NETWORK.handleError = function (error: any) {
         if (error === undefined || error.response === undefined) {
-            console.log('undefined error or response')
+            captureException(Error('undefined error or response'))
         } else if (error.response.status === 403) {
             setLoggedIn(false)
             mixpanel.track('unauthorized')
@@ -89,7 +88,7 @@ function AppContainer() {
             mixpanel.track('404', {path: location.pathname + location.search});
             history.push(`/404`)
         } else {
-            handleError(error)
+            captureException(error)
         }
 
         return error
