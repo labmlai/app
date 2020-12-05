@@ -18,15 +18,11 @@ import {LabLoader} from "../components/utils/loader"
 import {UserModel} from "../models/user"
 import logo from "../assets/lab_logo.png"
 import {captureException} from "@sentry/react"
-import CACHE from "../cache/cache"
-import {IsUserLogged} from "../models/user"
 
 
 function AppContainer() {
     const location = useLocation()
     const history = useHistory()
-
-    const isUserLoggedCache = CACHE.getIsUserLogged()
 
     const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
     let [loggedIn, setLoggedIn] = useState(false)
@@ -41,53 +37,45 @@ function AppContainer() {
                 return false
             }
 
-            let isUserLogged: IsUserLogged
-            async function load() {
-                isUserLogged = await isUserLoggedCache.get()
-                setLoggedIn(isUserLogged.is_user_logged)
-            }
-
-            load().then(() => {
-                if (error) {
-                    captureException(error)
-                } else if (isRunPath()) {
-                    setLoggedIn(true)
-                } else if (isLoading) {
-                } else if (!isAuthenticated && !loggedIn) {
-                    let uri = location.pathname + location.search
-                    if (location.state) {
-                        uri = location.state.toString()
-                    }
-                    loginWithRedirect({appState: {returnTo: uri}}).then()
-                } else if (isAuthenticated && !loggedIn) {
-                    let data = {} as UserModel
-
-                    mixpanel.identify(user.sub)
-                    mixpanel.people.set({
-                        $first_name: user.first_name,
-                        $last_name: user.last_name,
-                        $email: user.email
-                    })
-
-                    data.name = user.name
-                    data.email = user.email
-                    data.sub = user.sub
-                    data.email_verified = user.email_verified
-                    data.picture = user.picture
-
-                    NETWORK.signIn(data).then((res) => {
-                        if (res.data.is_successful) {
-                            setLoggedIn(true)
-                            mixpanel.track('Successful login');
-                        } else {
-                            captureException(Error('error in login'))
-                            mixpanel.track('Login failed');
-                        }
-                    })
+            if (error) {
+                captureException(error)
+            } else if (isRunPath()) {
+                setLoggedIn(true)
+            } else if (isLoading) {
+            } else if (!isAuthenticated && !loggedIn) {
+                let uri = location.pathname + location.search
+                if (location.state) {
+                    uri = location.state.toString()
                 }
-            })
+                loginWithRedirect({appState: {returnTo: uri}}).then()
+            } else if (isAuthenticated && !loggedIn) {
+                let data = {} as UserModel
+
+                mixpanel.identify(user.sub)
+                mixpanel.people.set({
+                    $first_name: user.first_name,
+                    $last_name: user.last_name,
+                    $email: user.email
+                })
+
+                data.name = user.name
+                data.email = user.email
+                data.sub = user.sub
+                data.email_verified = user.email_verified
+                data.picture = user.picture
+
+                NETWORK.signIn(data).then((res) => {
+                    if (res.data.is_successful) {
+                        setLoggedIn(true)
+                        mixpanel.track('Successful login');
+                    } else {
+                        captureException(Error('error in login'))
+                        mixpanel.track('Login failed');
+                    }
+                })
+            }
         },
-        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect, isUserLoggedCache]
+        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect]
     )
 
     NETWORK.handleError = function (error: any) {
