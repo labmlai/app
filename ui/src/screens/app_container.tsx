@@ -53,7 +53,7 @@ function AppContainer() {
                 } else if (isRunPath()) {
                     setLoggedIn(true)
                 } else if (isLoading) {
-                } else if (!isAuthenticated) {
+                } else if (!isAuthenticated && !loggedIn) {
                     let uri = location.pathname + location.search
                     if (location.state) {
                         uri = location.state.toString()
