@@ -40,16 +40,16 @@ html, body {
   left: -10px;
   height: 92vh;
   top: 8vh;
-  width: 20%;
+  width: 250px;
   transform: translate(-100%);
   transition: transform 0.5s ease-in;
 
   .tab {
-    opacity: 0;
+    margin-left: 30px;
     display: block;
     width: 80%;
     cursor: pointer;
-    margin-top: 50px;
+    margin-top: 20px;
   }
 
   span {
@@ -68,16 +68,6 @@ html, body {
     height: 3px;
     background-color: dimgrey;
     margin: 5px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .nav-links {
-    width: 80%;
-
-    .tab {
-      width: 80%;
-    }
   }
 }
 

@@ -30,16 +30,6 @@ function HamburgerMenu() {
             setNavLinksClass(' nav-active')
         }
 
-        // Animate Links
-        const navLinks = document.querySelectorAll<HTMLElement>('.nav-links .tab')
-        navLinks.forEach((link: HTMLElement, index: number) => {
-            if (link.style.animation) {
-                link.style.animation = ''
-            } else {
-                link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.5}s`
-            }
-        })
-
         // Burger Animation
         if (burgerClass) {
             setBurgerClass('')
