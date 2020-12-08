@@ -12,7 +12,7 @@ function PageNotFound() {
     const history = useHistory()
 
     function onButtonClick() {
-        history.push('/home')
+        history.push('/runs')
     }
 
     return <div className={'error-container'}>

@@ -48,7 +48,7 @@ export function BackButton(props: ButtonProps) {
             history.goBack()
         } else {
             let uri = location.pathname + location.search
-            history.push('/home', uri)
+            history.push('/runs', uri)
         }
     }
 

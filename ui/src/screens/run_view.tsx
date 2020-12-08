@@ -88,7 +88,7 @@ function RunView(props: RunProps) {
 
     function onMessageClick() {
         let uri = props.location.pathname + props.location.search
-        history.push('/home', uri)
+        history.push('/runs', uri)
     }
 
     return <div className={'run page'} style={{width: actualWidth}}>

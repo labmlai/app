@@ -45,25 +45,25 @@ function AppContainer() {
             let isUserLogged: IsUserLogged
 
             async function load(): Promise<boolean> {
-                isUserLogged = await isUserLoggedCache.get(true)
+                isUserLogged = await isUserLoggedCache.get()
 
                 return isUserLogged.is_user_logged
-
             }
 
             load().then((is_user_logged) => {
-                setLoggedIn(isRunPath() || is_user_logged)
+                let currentState = is_user_logged || isRunPath()
+                setLoggedIn(currentState)
 
                 if (error) {
                     captureException(error)
                 } else if (isLoading) {
-                } else if (!isAuthenticated && !loggedIn) {
+                } else if (!isAuthenticated && !currentState) {
                     let uri = location.pathname + location.search
                     if (location.state) {
                         uri = location.state.toString()
                     }
                     loginWithRedirect({appState: {returnTo: uri}}).then()
-                } else if (isAuthenticated && !loggedIn) {
+                } else if (isAuthenticated && !currentState) {
                     let data = {} as UserModel
 
                     mixpanel.identify(user.sub)
@@ -82,6 +82,7 @@ function AppContainer() {
                     NETWORK.signIn(data).then((res) => {
                         if (res.data.is_successful) {
                             setLoggedIn(true)
+                            isUserLoggedCache.UserLogged = true
                             mixpanel.track('Successful login')
                         } else {
                             captureException(Error('error in login'))

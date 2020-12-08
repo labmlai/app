@@ -174,6 +174,10 @@ class IsUserLoggedCache extends CacheObject<IsUserLogged> {
             return new IsUserLogged(res.data)
         })
     }
+
+    set UserLogged(is_user_logged: boolean) {
+         this.data = new IsUserLogged({is_user_logged: is_user_logged})
+    }
 }
 
 class ComputersListCache extends CacheObject<ComputersList> {
