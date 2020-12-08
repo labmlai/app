@@ -266,7 +266,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
 
 @login_required
-def delete_runs():
+def delete_runs() -> flask.Response:
     run_uuids = request.json['run_uuids']
 
     u = get_auth_user()
@@ -276,14 +276,14 @@ def delete_runs():
 
 
 @login_required
-def get_user() -> Any:
+def get_user() -> flask.Response:
     u = get_auth_user()
     logger.debug(f'get_user, user : {u.key}')
 
     return jsonify(u.get_data())
 
 
-def is_user_logged() -> Any:
+def is_user_logged() -> flask.Response:
 
     return jsonify({'is_user_logged': get_is_user_logged()})
 

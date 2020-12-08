@@ -1,24 +1,32 @@
-import React, {useState} from "react"
+import React, {ReactElement, useState} from "react"
+
+import {useHistory} from "react-router-dom"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faHome, faUserCircle, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
-
-import RunsListView from "./runs_list_view"
-import ComputersListView from "./computers_list_view"
-import SettingsView from "./settings_view"
-
 import "./hamburger_menu.scss"
 
+interface HamburgerMenuBarProps {
+    title: string
+    children: ReactElement | never[]
+}
 
-function HamburgerMenu() {
+function HamburgerMenuBar(props: HamburgerMenuBarProps) {
     const [navLinksClass, setNavLinksClass] = useState('')
     const [burgerClass, setBurgerClass] = useState('')
     const [overlayClass, setOverlayClass] = useState('')
-    const [currentTab, setCurrentTab] = useState('Experiments')
+
+    const history = useHistory()
 
     function clickHandle(e: Event, tab: string) {
-        setCurrentTab(tab)
+        // setCurrentTab(tab)
+        e.preventDefault()
+        if (tab === 'Experiments') {
+            history.push('/runs')
+        } else if ('User Profile') {
+            history.push('/user')
+        }
         onBurgerClick()
     }
 
@@ -49,15 +57,11 @@ function HamburgerMenu() {
         <div className={'nav-container'}>
             <nav>
                 <div className={'nav-links' + navLinksClass}>
-                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Experiments')}>
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Experiments')} href={'/runs'}>
                         <FontAwesomeIcon icon={faHome}/>
                         <span>Experiments</span>
                     </Nav.Link>
-                    {/*<Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>*/}
-                    {/*    <FontAwesomeIcon icon={faDesktop}/>*/}
-                    {/*    <span>Computers</span>*/}
-                    {/*</Nav.Link>*/}
-                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')}>
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
                         <FontAwesomeIcon icon={faUserCircle}/>
                         <span>User Profile</span>
                     </Nav.Link>
@@ -78,21 +82,15 @@ function HamburgerMenu() {
                     <div className={'line3'}></div>
                 </div>
                 <div className={'title ml-4 mt-1'}>
-                    <h4>{currentTab}</h4>
+                    <h4>{props.title}</h4>
                 </div>
+                {props.children}
             </nav>
         </div>
         {(() => {
-            if (currentTab === 'User Profile') {
-                return <SettingsView/>
-            } else if (currentTab === 'Experiments') {
-                return <RunsListView/>
-            } else {
-                return <ComputersListView/>
-            }
         })()}
         <div className={'overlay' + overlayClass}/>
     </div>
 }
 
-export default HamburgerMenu
+export default HamburgerMenuBar

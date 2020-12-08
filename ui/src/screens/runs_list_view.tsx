@@ -1,13 +1,13 @@
 import React, {useEffect, useRef, useState} from "react"
 
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faSearch} from "@fortawesome/free-solid-svg-icons"
-
-import {RunsList} from "../components/lists/runs_list"
+import {List} from "../components/lists/list"
 import {EmptyRunsList} from "../components/lists/empty_runs_list"
 import {LabLoader} from "../components/utils/loader"
 import {RunListItemModel} from "../models/run_list"
 import CACHE from "../cache/cache"
+import HamburgerMenuBar from "../components/utils/hamburger_menu"
+import Search from "../components/utils/search"
+import {DeleteButton, EditButton, RefreshButton, CancelButton} from "../components/utils/util_buttons"
 
 import './runs_list_view.scss'
 
@@ -15,9 +15,10 @@ import './runs_list_view.scss'
 function RunsListView() {
     const [isLoading, setIsLoading] = useState(true)
     const [runs, setRuns] = useState<RunListItemModel[]>([])
-    const [labMlToken, setLabMlToken] = useState('')
+    const [isEditMode, setIsEditMode] = useState(false)
 
     const runListCache = CACHE.getRunsList()
+
     const inputElement = useRef(null) as any
 
     useEffect(() => {
@@ -25,7 +26,6 @@ function RunsListView() {
             let currentRunsList = await runListCache.getRunsList(null)
             if (currentRunsList) {
                 setRuns(currentRunsList.runs)
-                setLabMlToken(currentRunsList.labml_token)
                 setIsLoading(false)
             }
         }
@@ -36,7 +36,7 @@ function RunsListView() {
 
     useEffect(() => {
         document.title = "LabML: Experiments"
-    }, [labMlToken])
+    }, [])
 
     function runsFilter(run: RunListItemModel, search: string) {
         let re = new RegExp(search.toLowerCase(), "g")
@@ -46,7 +46,7 @@ function RunsListView() {
         return (name.search(re) !== -1 || comment.search(re) !== -1)
     }
 
-    function handleChannelChange() {
+    function onInputChange() {
         async function load() {
             if (inputElement.current) {
                 let search = inputElement.current.value
@@ -61,30 +61,61 @@ function RunsListView() {
         load().then()
     }
 
-    function onDelete(runsSet: Set<string>) {
-        let res: RunListItemModel[] = []
-        for (let run of runs) {
-            if (!runsSet.has(run.run_uuid)) {
-                res.push(run)
-            }
-        }
+    let runsDeleteSet = new Set<string>()
 
-        setRuns(res)
-        runListCache.deleteRuns(res, Array.from(runsSet)).then()
+    function onToggleEdit() {
+        setIsEditMode(!isEditMode)
     }
 
-    async function load() {
-        let currentRunsList = await runListCache.getRunsList(null, true)
-        if (currentRunsList) {
-            setRuns(currentRunsList.runs)
+    function onDelete() {
+        async function load() {
+            let currentRunsList = await runListCache.getRunsList(null)
+            let currentRuns = currentRunsList.runs
+
+            let res: RunListItemModel[] = []
+            for (let run of currentRuns) {
+                if (!runsDeleteSet.has(run.run_uuid)) {
+                    res.push(run)
+                }
+            }
+
+            setRuns(res)
+            runListCache.deleteRuns(res, Array.from(runsDeleteSet)).then()
+        }
+
+        load().then()
+        onToggleEdit()
+        onInputChange()
+    }
+
+    function onItemClick(e: any, UUID: string) {
+        if (runsDeleteSet.has(UUID)) {
+            runsDeleteSet.delete(UUID)
+        } else {
+            runsDeleteSet.add(UUID)
         }
     }
 
     function onRefresh() {
+        async function load() {
+            let currentRunsList = await runListCache.getRunsList(null, true)
+            if (currentRunsList) {
+                setRuns(currentRunsList.runs)
+            }
+        }
+
         load().then()
     }
 
     return <div>
+        <HamburgerMenuBar title={'Experiments'}>
+            <div className={'mb-2 float-right d-flex'}>
+                {runs.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
+                {runs.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit}/>}
+                {runs.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh}/>}
+                {runs.length > 0 && isEditMode && <CancelButton onButtonClick={onToggleEdit}/>}
+            </div>
+        </HamburgerMenuBar>
         {(() => {
             if (isLoading) {
                 return <LabLoader/>
@@ -92,22 +123,8 @@ function RunsListView() {
                 return <EmptyRunsList/>
             } else {
                 return <div className={'runs-list'}>
-                    {/*TODO: Change later to simple html & css*/}
-                    <div className={"search-container mt-3 mb-2 px-2"}>
-                        <div className={"search-content"}>
-                            <span className={'icon'}>
-                                <FontAwesomeIcon icon={faSearch}/>
-                            </span>
-                            <input
-                                ref={inputElement}
-                                onChange={handleChannelChange}
-                                type={"search"}
-                                placeholder={"Search"}
-                                aria-label="Search"
-                            />
-                        </div>
-                    </div>
-                    <RunsList runs={runs} onDelete={onDelete} onRefresh={onRefresh}/>
+                    <Search inputElement={inputElement} onInputChange={onInputChange}/>
+                    <List items={runs} onItemClick={onItemClick} isEditMode={isEditMode} itemKey={'run'}/>
                 </div>
             }
         })()}

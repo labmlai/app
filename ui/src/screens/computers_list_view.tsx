@@ -1,23 +1,25 @@
 import React, {useEffect, useRef, useState} from "react"
 
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faSearch} from "@fortawesome/free-solid-svg-icons"
-
-import {ComputersList} from "../components/lists/computers_list"
-import {EmptyComputersList} from "../components/lists/empty_computers_list"
+import {List} from "../components/lists/list"
 import {LabLoader} from "../components/utils/loader"
 import {ComputerListItemModel} from "../models/computer_list"
 import CACHE from "../cache/cache"
+import HamburgerMenuBar from "../components/utils/hamburger_menu"
+import Search from "../components/utils/search"
+import {DeleteButton, EditButton, RefreshButton, CancelButton} from "../components/utils/util_buttons"
+import {EmptyComputersList} from "../components/lists/empty_computers_list"
 
 import './runs_list_view.scss'
+
 
 
 function ComputersListView() {
     const [isLoading, setIsLoading] = useState(true)
     const [computers, setComputers] = useState<ComputerListItemModel[]>([])
-    const [labMlToken, setLabMlToken] = useState('')
+    const [isEditMode, setIsEditMode] = useState(false)
 
     const computerListCache = CACHE.getComputersList()
+
     const inputElement = useRef(null) as any
 
     useEffect(() => {
@@ -25,7 +27,6 @@ function ComputersListView() {
             let currentComputerList = await computerListCache.get()
             if (currentComputerList) {
                 setComputers(currentComputerList.computers)
-                setLabMlToken(currentComputerList.labml_token)
                 setIsLoading(false)
             }
         }
@@ -36,7 +37,7 @@ function ComputersListView() {
 
     useEffect(() => {
         document.title = "LabML: Computers"
-    }, [labMlToken])
+    }, [])
 
     function ComputersFilter(run: ComputerListItemModel, search: string) {
         let re = new RegExp(search.toLowerCase(), "g")
@@ -46,7 +47,7 @@ function ComputersListView() {
         return (name.search(re) !== -1 || comment.search(re) !== -1)
     }
 
-    function handleChannelChange() {
+    function onInputChange() {
         async function load() {
             if (inputElement.current) {
                 let search = inputElement.current.value
@@ -61,16 +62,39 @@ function ComputersListView() {
         load().then()
     }
 
-    function onDelete(computersSet: Set<string>) {
-        let res: ComputerListItemModel[] = []
-        for (let computer of computers) {
-            if (!computersSet.has(computer.computer_uuid)) {
-                res.push(computer)
+    let computersDeleteSet = new Set<string>()
+
+    function onToggleEdit() {
+        setIsEditMode(!isEditMode)
+    }
+
+    function onDelete() {
+        async function load() {
+            let currentComputersList = await computerListCache.get()
+            let currentComputers = currentComputersList.computers
+
+            let res: ComputerListItemModel[] = []
+            for (let computer of currentComputers) {
+                if (!computersDeleteSet.has(computer.computer_uuid)) {
+                    res.push(computer)
+                }
             }
+
+            setComputers(res)
+            computerListCache.deleteRuns(res, Array.from(computersDeleteSet)).then()
         }
 
-        setComputers(res)
-        computerListCache.deleteRuns(res, Array.from(computersSet)).then()
+        load().then()
+        onToggleEdit()
+        onInputChange()
+    }
+
+    function onItemClick(e: any, UUID: string) {
+        if (computersDeleteSet.has(UUID)) {
+            computersDeleteSet.delete(UUID)
+        } else {
+            computersDeleteSet.add(UUID)
+        }
     }
 
     async function load() {
@@ -85,6 +109,14 @@ function ComputersListView() {
     }
 
     return <div>
+        <HamburgerMenuBar title={'Experiments'}>
+            <div className={'mb-2 float-right d-flex'}>
+                {computers.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
+                {computers.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit}/>}
+                {computers.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh}/>}
+                {computers.length > 0 && isEditMode && <CancelButton onButtonClick={onToggleEdit}/>}
+            </div>
+        </HamburgerMenuBar>
         {(() => {
             if (isLoading) {
                 return <LabLoader/>
@@ -92,22 +124,8 @@ function ComputersListView() {
                 return <EmptyComputersList/>
             } else {
                 return <div className={'runs-list'}>
-                    {/*TODO: Change later to simple html & css*/}
-                    <div className={"search-container mt-3 mb-2 px-2"}>
-                        <div className={"search-content"}>
-                            <span className={'icon'}>
-                                <FontAwesomeIcon icon={faSearch}/>
-                            </span>
-                            <input
-                                ref={inputElement}
-                                onChange={handleChannelChange}
-                                type={"search"}
-                                placeholder={"Search"}
-                                aria-label="Search"
-                            />
-                        </div>
-                    </div>
-                    <ComputersList computers={computers} onDelete={onDelete} onRefresh={onRefresh}/>
+                    <Search inputElement={inputElement} onInputChange={onInputChange}/>
+                    <List items={computers} onItemClick={onItemClick} isEditMode={isEditMode} itemKey={'computer'}/>
                 </div>
             }
         })()}
