@@ -4,7 +4,7 @@ import {useHistory, useLocation} from "react-router-dom"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faChevronLeft, faSync, faTrash, faEdit, faSave} from "@fortawesome/free-solid-svg-icons"
+import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons"
 
 import "./util_buttons.scss"
 
@@ -85,5 +85,11 @@ export function EditButton(props: ButtonProps) {
 export function SaveButton(props: ButtonProps) {
     return <Nav.Link onClick={props.onButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
         <FontAwesomeIcon icon={faSave}/>
+    </Nav.Link>
+}
+
+export function CancelButton(props: ButtonProps) {
+    return <Nav.Link onClick={props.onButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
+        <FontAwesomeIcon icon={faTimes}/>
     </Nav.Link>
 }

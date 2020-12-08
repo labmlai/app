@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 
 import {useHistory} from "react-router-dom"
 
@@ -10,7 +10,6 @@ import {StatusView} from "../../utils/status"
 import "./list.scss"
 
 interface ListItemProps {
-    idx: number
     item: any
     isEditMode?: boolean
     itemKey: string
@@ -24,7 +23,18 @@ function ListItem(props: ListItemProps) {
     const item = props.item
     const uuidKey = `${props.itemKey}_uuid`
 
-    let onClick = null
+    let className = 'list-item'
+    useEffect(() => {
+        if (!props.isEditMode) {
+            setIsClicked(false)
+        }
+    }, [props.isEditMode])
+
+    if (isClicked && props.isEditMode) {
+        className += ' selected'
+    }
+
+    let onClick: (e: any) => void
     if (props.isEditMode && props.onItemClick) {
         onClick = (e: any) => {
             props.onItemClick(e, item[uuidKey])
@@ -34,11 +44,6 @@ function ListItem(props: ListItemProps) {
         onClick = () => {
             history.push(`/${props.itemKey}?${uuidKey}=${item[uuidKey]}`, history.location.pathname)
         }
-    }
-
-    let className = 'list-item'
-    if (isClicked) {
-        className += ' selected'
     }
 
     return <ListGroup.Item className={className} action>
@@ -63,7 +68,9 @@ export function List(props: ListProps) {
 
     return <ListGroup className={"list runs-list"}>
         {props.items.map((item, idx) => (
-            <ListItem key={item[uuidKey]} idx={idx} item={item} onItemClick={props.onItemClick}
+            <ListItem key={item[uuidKey]}
+                      item={item}
+                      onItemClick={props.onItemClick}
                       isEditMode={props.isEditMode} itemKey={props.itemKey}/>
         ))}
     </ListGroup>
