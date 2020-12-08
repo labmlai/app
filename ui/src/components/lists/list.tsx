@@ -17,7 +17,7 @@ interface ListItemProps {
     onItemClick: (e: any, UUID: string) => void
 }
 
-export function ListItem(props: ListItemProps) {
+function ListItem(props: ListItemProps) {
     const history = useHistory()
     const [isClicked, setIsClicked] = useState(false)
 
@@ -49,4 +49,22 @@ export function ListItem(props: ListItemProps) {
             <h6>{item.comment}</h6>
         </div>
     </ListGroup.Item>
+}
+
+interface ListProps {
+    items: any[]
+    onItemClick: (e: any, UUID: string) => void
+    isEditMode: boolean
+    itemKey: string
+}
+
+export function List(props: ListProps) {
+    const uuidKey = `${props.itemKey}_uuid`
+
+    return <ListGroup className={"list runs-list"}>
+        {props.items.map((item, idx) => (
+            <ListItem key={item[uuidKey]} idx={idx} item={item} onItemClick={props.onItemClick}
+                      isEditMode={props.isEditMode} itemKey={props.itemKey}/>
+        ))}
+    </ListGroup>
 }

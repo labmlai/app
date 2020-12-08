@@ -61,10 +61,6 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                         <FontAwesomeIcon icon={faHome}/>
                         <span>Experiments</span>
                     </Nav.Link>
-                    {/*<Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')}>*/}
-                    {/*    <FontAwesomeIcon icon={faDesktop}/>*/}
-                    {/*    <span>Computers</span>*/}
-                    {/*</Nav.Link>*/}
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
                         <FontAwesomeIcon icon={faUserCircle}/>
                         <span>User Profile</span>

@@ -1,18 +1,15 @@
 import React, {useEffect, useRef, useState} from "react"
 
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faSearch} from "@fortawesome/free-solid-svg-icons"
-
-import {ListItem} from "../components/lists/list"
+import {List} from "../components/lists/list"
 import {EmptyRunsList} from "../components/lists/empty_runs_list"
 import {LabLoader} from "../components/utils/loader"
 import {RunListItemModel} from "../models/run_list"
 import CACHE from "../cache/cache"
+import HamburgerMenuBar from "../components/utils/hamburger_menu"
+import Search from "../components/utils/search"
+import {DeleteButton, EditButton, RefreshButton} from "../components/utils/util_buttons"
 
 import './runs_list_view.scss'
-import HamburgerMenuBar from "../components/utils/hamburger_menu"
-import {DeleteButton, EditButton, RefreshButton} from "../components/utils/util_buttons"
-import {ListGroup} from "react-bootstrap"
 
 
 function RunsListView() {
@@ -127,27 +124,8 @@ function RunsListView() {
                 return <EmptyRunsList/>
             } else {
                 return <div className={'runs-list'}>
-                    {/*TODO: Change later to simple html & css*/}
-                    <div className={"search-container mt-3 mb-3 px-2"}>
-                        <div className={"search-content"}>
-                            <span className={'icon'}>
-                                <FontAwesomeIcon icon={faSearch}/>
-                            </span>
-                            <input
-                                ref={inputElement}
-                                onChange={onInputChange}
-                                type={"search"}
-                                placeholder={"Search"}
-                                aria-label="Search"
-                            />
-                        </div>
-                    </div>
-                    <ListGroup className={"list"}>
-                        {runs.map((item, idx) => (
-                            <ListItem key={item.run_uuid} idx={idx} item={item} onItemClick={onItemClick}
-                                      isEditMode={isEditMode} itemKey={'run'}/>
-                        ))}
-                    </ListGroup>
+                    <Search inputElement={inputElement} onInputChange={onInputChange}/>
+                    <List items={runs} onItemClick={onItemClick} isEditMode={isEditMode} itemKey={'run'}/>
                 </div>
             }
         })()}
