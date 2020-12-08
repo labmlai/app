@@ -19,7 +19,7 @@ import logo from "../assets/lab_logo.png"
 import {captureException} from "@sentry/react"
 import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
-import SettingsView from "./settings_view";
+import SettingsView from "./settings_view"
 
 
 function AppContainer() {
@@ -35,7 +35,6 @@ function AppContainer() {
             function isRunPath(): boolean {
                 const runPath = '/run'
 
-                console.log(location.state, location.pathname)
                 if (location && location.state !== '/login') {
                     return location.state === runPath || location.pathname === runPath
                 }
@@ -47,7 +46,7 @@ function AppContainer() {
 
             async function load(): Promise<boolean> {
                 isUserLogged = await isUserLoggedCache.get(true)
-                console.log(isUserLogged.is_user_logged)
+
                 return isUserLogged.is_user_logged
 
             }

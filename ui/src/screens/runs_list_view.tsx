@@ -51,7 +51,7 @@ function RunsListView() {
         return (name.search(re) !== -1 || comment.search(re) !== -1)
     }
 
-    function handleChannelChange() {
+    function onInputChange() {
         async function load() {
             if (inputElement.current) {
                 let search = inputElement.current.value
@@ -69,16 +69,24 @@ function RunsListView() {
     let runsDeleteSet = new Set<string>()
 
     function onDelete() {
-        let res: RunListItemModel[] = []
-        for (let run of runs) {
-            if (!runsDeleteSet.has(run.run_uuid)) {
-                res.push(run)
+        async function load() {
+            let currentRunsList = await runListCache.getRunsList(null)
+            let currentRuns = currentRunsList.runs
+
+            let res: RunListItemModel[] = []
+            for (let run of currentRuns) {
+                if (!runsDeleteSet.has(run.run_uuid)) {
+                    res.push(run)
+                }
             }
+
+            setRuns(res)
+            runListCache.deleteRuns(res, Array.from(runsDeleteSet)).then()
+            setIsEditMode(false)
         }
 
-        setRuns(res)
-        runListCache.deleteRuns(res, Array.from(runsDeleteSet)).then()
-        setIsEditMode(false)
+        load().then()
+        onInputChange()
     }
 
     function onItemClick(e: any, UUID: string) {
@@ -93,15 +101,14 @@ function RunsListView() {
         setIsEditMode(true)
     }
 
-
-    async function load() {
-        let currentRunsList = await runListCache.getRunsList(null, true)
-        if (currentRunsList) {
-            setRuns(currentRunsList.runs)
-        }
-    }
-
     function onRefresh() {
+        async function load() {
+            let currentRunsList = await runListCache.getRunsList(null, true)
+            if (currentRunsList) {
+                setRuns(currentRunsList.runs)
+            }
+        }
+
         load().then()
     }
 
@@ -128,7 +135,7 @@ function RunsListView() {
                             </span>
                             <input
                                 ref={inputElement}
-                                onChange={handleChannelChange}
+                                onChange={onInputChange}
                                 type={"search"}
                                 placeholder={"Search"}
                                 aria-label="Search"
