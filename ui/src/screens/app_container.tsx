@@ -9,7 +9,6 @@ import {useAuth0} from "@auth0/auth0-react"
 import RunView from "./run_view"
 import ComputerView from "./computer_view"
 import PageNotFound from "./page_not_found_view"
-import HamburgerMenu from "./hamburger_menu"
 import RunsView from "./runs_list_view"
 import ConfigsCard from "../analyses/configs/card"
 import {experiment_analyses, computer_analyses} from "../analyses/all_analyses"
@@ -18,6 +17,9 @@ import {LabLoader} from "../components/utils/loader"
 import {UserModel} from "../models/user"
 import logo from "../assets/lab_logo.png"
 import {captureException} from "@sentry/react"
+import CACHE from "../cache/cache"
+import {IsUserLogged} from "../models/user"
+import SettingsView from "./settings_view";
 
 
 function AppContainer() {
@@ -25,11 +27,15 @@ function AppContainer() {
     const history = useHistory()
 
     const {isAuthenticated, user, isLoading, loginWithRedirect, error} = useAuth0()
-    let [loggedIn, setLoggedIn] = useState(false)
+    const [loggedIn, setLoggedIn] = useState(false)
+
+    const isUserLoggedCache = CACHE.getIsUserLogged()
 
     useEffect(() => {
             function isRunPath(): boolean {
                 const runPath = '/run'
+
+                console.log(location.state, location.pathname)
                 if (location && location.state !== '/login') {
                     return location.state === runPath || location.pathname === runPath
                 }
@@ -37,45 +43,57 @@ function AppContainer() {
                 return false
             }
 
-            if (error) {
-                captureException(error)
-            } else if (isRunPath()) {
-                setLoggedIn(true)
-            } else if (isLoading) {
-            } else if (!isAuthenticated && !loggedIn) {
-                let uri = location.pathname + location.search
-                if (location.state) {
-                    uri = location.state.toString()
-                }
-                loginWithRedirect({appState: {returnTo: uri}}).then()
-            } else if (isAuthenticated && !loggedIn) {
-                let data = {} as UserModel
+            let isUserLogged: IsUserLogged
 
-                mixpanel.identify(user.sub)
-                mixpanel.people.set({
-                    $first_name: user.first_name,
-                    $last_name: user.last_name,
-                    $email: user.email
-                })
+            async function load(): Promise<boolean> {
+                isUserLogged = await isUserLoggedCache.get(true)
+                console.log(isUserLogged.is_user_logged)
+                return isUserLogged.is_user_logged
 
-                data.name = user.name
-                data.email = user.email
-                data.sub = user.sub
-                data.email_verified = user.email_verified
-                data.picture = user.picture
-
-                NETWORK.signIn(data).then((res) => {
-                    if (res.data.is_successful) {
-                        setLoggedIn(true)
-                        mixpanel.track('Successful login');
-                    } else {
-                        captureException(Error('error in login'))
-                        mixpanel.track('Login failed');
-                    }
-                })
             }
+
+            load().then((is_user_logged) => {
+                setLoggedIn(isRunPath() || is_user_logged)
+
+                if (error) {
+                    captureException(error)
+                } else if (isLoading) {
+                } else if (!isAuthenticated && !loggedIn) {
+                    let uri = location.pathname + location.search
+                    if (location.state) {
+                        uri = location.state.toString()
+                    }
+                    loginWithRedirect({appState: {returnTo: uri}}).then()
+                } else if (isAuthenticated && !loggedIn) {
+                    let data = {} as UserModel
+
+                    mixpanel.identify(user.sub)
+                    mixpanel.people.set({
+                        $first_name: user.first_name,
+                        $last_name: user.last_name,
+                        $email: user.email
+                    })
+
+                    data.name = user.name
+                    data.email = user.email
+                    data.sub = user.sub
+                    data.email_verified = user.email_verified
+                    data.picture = user.picture
+
+                    NETWORK.signIn(data).then((res) => {
+                        if (res.data.is_successful) {
+                            setLoggedIn(true)
+                            mixpanel.track('Successful login')
+                        } else {
+                            captureException(Error('error in login'))
+                            mixpanel.track('Login failed')
+                        }
+                    })
+                }
+            })
+
         },
-        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect]
+        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect, isUserLoggedCache]
     )
 
     NETWORK.handleError = function (error: any) {
@@ -111,7 +129,7 @@ function AppContainer() {
                 <Route path="/run" component={RunView}/>
                 <Route path="/computer" component={ComputerView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
-                <Route path="/home" component={HamburgerMenu}/>
+                <Route path="/user" component={SettingsView}/>
                 <Route path="/runs" component={RunsView}/>
                 {experiment_analyses.map((analysis, i) => {
                     return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
@@ -119,7 +137,7 @@ function AppContainer() {
                 {computer_analyses.map((analysis, i) => {
                     return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
                 })}
-                <Route path="/"><Redirect to="/home"/></Route>
+                <Route path="/"><Redirect to="/runs"/></Route>
                 <Route path="/"><Redirect to="/login"/></Route>
             </Switch>
         </main>

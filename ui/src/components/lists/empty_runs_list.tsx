@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react"
 
-import {Nav} from "react-bootstrap"
+import { Nav} from "react-bootstrap"
 
 import {PyTorchCode, KerasCode} from "../codes/code"
 import {Footer} from '../utils/footer'
 import {LabLoader} from "../utils/loader"
 import CACHE from "../../cache/cache"
 import {RunListItemModel} from "../../models/run_list"
-import {RunsList} from "./runs_list"
+
 
 import "./empty_runs_list.scss"
+import {ListItem} from "./list";
 
 export function EmptyRunsList() {
     const [runs, setRuns] = useState<RunListItemModel[]>([])
@@ -59,7 +60,13 @@ export function EmptyRunsList() {
         <div className={'text-center my-4'}>
             <h5 className={'title'}>Sample experiments</h5>
         </div>
-        {isLoading ? <LabLoader/> : <RunsList runs={runs}/>}
+        {isLoading ? <LabLoader/> :
+            <div className={"list runs-list"}>
+                {runs.map((item, idx) => (
+                    <ListItem key={item.run_uuid} idx={idx} item={item} itemKey={'run'} onItemClick={()=>{}}/>
+                ))}
+            </div>
+        }
         <div className={'mt-5'}>
             <Footer/>
         </div>

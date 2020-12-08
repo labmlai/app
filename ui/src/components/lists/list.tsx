@@ -6,19 +6,18 @@ import {ListGroup} from "react-bootstrap"
 
 import {formatTime} from "../../utils/time"
 import {StatusView} from "../../utils/status"
-import {DeleteButton, EditButton, RefreshButton} from "../utils/util_buttons"
 
 import "./list.scss"
 
 interface ListItemProps {
     idx: number
     item: any
-    isEditMode: boolean
+    isEditMode?: boolean
     itemKey: string
     onItemClick: (e: any, UUID: string) => void
 }
 
-function ListItem(props: ListItemProps) {
+export function ListItem(props: ListItemProps) {
     const history = useHistory()
     const [isClicked, setIsClicked] = useState(false)
 
@@ -26,7 +25,7 @@ function ListItem(props: ListItemProps) {
     const uuidKey = `${props.itemKey}_uuid`
 
     let onClick = null
-    if (props.isEditMode) {
+    if (props.isEditMode && props.onItemClick) {
         onClick = (e: any) => {
             props.onItemClick(e, item[uuidKey])
             setIsClicked(!isClicked)
@@ -50,50 +49,4 @@ function ListItem(props: ListItemProps) {
             <h6>{item.comment}</h6>
         </div>
     </ListGroup.Item>
-}
-
-interface ListProps {
-    items: any[]
-    itemKey: string
-    onDelete?: (itemsList: Set<string>) => void
-    onRefresh?: () => void
-}
-
-export function List(props: ListProps) {
-    const [isEditMode, setIsEditMode] = useState(false)
-
-    const uuidKey = `${props.itemKey}_uuid`
-
-    let itemDeleteSet = new Set<string>()
-
-    function onItemClick(e: any, UUID: string) {
-        if (itemDeleteSet.has(UUID)) {
-            itemDeleteSet.delete(UUID)
-        } else {
-            itemDeleteSet.add(UUID)
-        }
-    }
-
-    function onDelete() {
-        if (props.onDelete) {
-            props.onDelete(itemDeleteSet)
-        }
-        setIsEditMode(false)
-    }
-
-    function onEdit() {
-        setIsEditMode(true)
-    }
-
-    return <ListGroup className={"list runs-list"}>
-        <div className={'flex-container mb-2'}>
-            {props.onDelete && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
-            {props.onDelete && !isEditMode && <EditButton onButtonClick={onEdit}/>}
-            {props.onRefresh && <RefreshButton onButtonClick={props.onRefresh}/>}
-        </div>
-        {props.items.map((item, idx) => (
-            <ListItem key={item[uuidKey]} idx={idx} item={item} onItemClick={onItemClick}
-                      isEditMode={isEditMode} itemKey={props.itemKey}/>
-        ))}
-    </ListGroup>
 }
