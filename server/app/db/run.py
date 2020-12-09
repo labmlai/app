@@ -24,6 +24,9 @@ class Run(Model['Run']):
     is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
+    stdout: List[str]
+    logger: List[str]
+    stderr: List[str]
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
     errors: List[Dict[str, str]]
@@ -38,6 +41,9 @@ class Run(Model['Run']):
                     is_claimed=True,
                     status=None,
                     configs={},
+                    stdout=[],
+                    logger=[],
+                    stderr=[],
                     wildcard_indicators={},
                     indicators={},
                     errors=[]
@@ -54,6 +60,12 @@ class Run(Model['Run']):
             self.comment = data.get('comment', '')
         if 'configs' in data:
             self.configs.update(data.get('configs', {}))
+        if 'stdout' in data and data['stdout']:
+            self.stdout.append(data['stdout'])
+        if 'logger' in data and data['logger']:
+            self.logger.append(data['logger'])
+        if 'stderr' in data and data['stderr']:
+            self.stderr.append(data['stderr'])
         if not self.indicators:
             self.indicators = data.get('indicators', {})
         if not self.wildcard_indicators:
@@ -64,6 +76,8 @@ class Run(Model['Run']):
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
 
+        print(self.stdout)
+
         return {
             'run_uuid': self.run_uuid,
             'name': self.name,
@@ -71,6 +85,9 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'is_claimed': self.is_claimed,
             'configs': configs,
+            'stdout': self.stdout,
+            'logger': self.logger,
+            'stderr': self.stderr,
         }
 
     def get_summary(self) -> Dict[str, str]:
