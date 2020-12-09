@@ -1,8 +1,9 @@
 <div align="center" style="margin-bottom: 100px;">
 <h1>LabML App Update: Monitor PyTorch & TensorFlow model training on mobile phones</h1>
 
-[![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 <img src="https://github.com/lab-ml/app/blob/master/images/experiment.png"  width="50%" alt=""/>
+
+[![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 </div>
 
 ## Github Link: https://github.com/lab-ml/app
