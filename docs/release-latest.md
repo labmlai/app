@@ -2,11 +2,10 @@
 <h1>LabML App Update: Monitor PyTorch & TensorFlow model training on mobile phones</h1>
 
 <img src="https://github.com/lab-ml/app/blob/master/images/experiment.png"  width="50%" alt=""/>
-
-[![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 </div>
 
 ## Github Link: https://github.com/lab-ml/app
+[![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 
 We just released the latest version of the **[LaML app](https://web.lab-ml.com/home)**. It's **[open-source](https://github.com/lab-ml/app)** and I'm happy to share with the community.
 
