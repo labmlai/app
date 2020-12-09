@@ -89,7 +89,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
         </div>
         {(() => {
         })()}
-        <div className={'overlay' + overlayClass}/>
+        <div className={'overlay' + overlayClass} onClick={onBurgerClick}/>
     </div>
 }
 

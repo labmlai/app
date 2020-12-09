@@ -80,7 +80,7 @@ function ConfigItemView(props: ConfigItemProps) {
     let conf_modules = conf.key.split('.')
     for (let i = 0; i < conf_modules.length - 1; ++i) {
         parentKey += conf_modules[i]
-        if (configs[parentKey].isDefault) {
+        if (configs[parentKey] && configs[parentKey].isDefault) {
             isParentDefault = true
         }
         parentKey += '.'

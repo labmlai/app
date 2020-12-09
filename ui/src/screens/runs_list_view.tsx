@@ -109,7 +109,7 @@ function RunsListView() {
 
     return <div>
         <HamburgerMenuBar title={'Experiments'}>
-            <div className={'mb-2 float-right d-flex'}>
+            <div className={'d-flex justify-content-end'}>
                 {runs.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
                 {runs.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit}/>}
                 {runs.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh}/>}
