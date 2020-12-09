@@ -1,10 +1,10 @@
 <div align="center" style="margin-bottom: 100px;">
 <h1>LabML App Update: Monitor PyTorch & TensorFlow model training on mobile phones</h1>
 
-<img src="https://github.com/lab-ml/app/blob/master/images/experiment.png" alt=""/>
+<img src="https://github.com/lab-ml/app/blob/master/images/experiment.png" alt="" style="max-width: 60%;"/>
 </div>
 
-#### Github Link: https://github.com/lab-ml/app
+## Github Link: https://github.com/lab-ml/app
 
 We just released the latest version of the **[LaML app](https://web.lab-ml.com/home)**. It's **[open-source](https://github.com/lab-ml/app)** and I'm happy to share with the community.
 
