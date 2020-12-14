@@ -7,6 +7,9 @@ export interface RunModel {
     start_time: number
     is_claimed: boolean
     configs: ConfigModel[]
+    stdout: string
+    logger: string
+    stderr: string
 }
 
 export interface PointValue {
@@ -31,6 +34,9 @@ export class Run {
     start_time: number
     is_claimed: boolean
     configs: Config[]
+    stdout: string
+    logger: string
+    stderr: string
 
     constructor(run: RunModel) {
         this.run_uuid = run.run_uuid
@@ -42,6 +48,9 @@ export class Run {
         for (let c of run.configs) {
             this.configs.push(new Config(c))
         }
+        this.stdout = run.stdout
+        this.logger = run.logger
+        this.stderr = run.stderr
     }
 }
 

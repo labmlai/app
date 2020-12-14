@@ -73,10 +73,27 @@ class Run(Model['Run']):
 
         self.save()
 
+    @staticmethod
+    def format_output(output: List[str]) -> str:
+        res = []
+        for s in output:
+            temp = ''
+            for i, c in enumerate(s):
+                if c == '\n':
+                    temp += '\n'
+                    res.append(temp)
+                    temp = ''
+                elif c == '\r' and s[i + 1] == '\n':
+                    pass
+                elif c == '\r':
+                    temp = ''
+                else:
+                    temp += c
+
+        return ''.join(res)
+
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
-
-        print(self.stdout)
 
         return {
             'run_uuid': self.run_uuid,
@@ -85,7 +102,7 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'is_claimed': self.is_claimed,
             'configs': configs,
-            'stdout': self.stdout,
+            'stdout': self.format_output(self.stdout),
             'logger': self.logger,
             'stderr': self.stderr,
         }

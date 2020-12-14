@@ -7,20 +7,16 @@ import useWindowDimensions from "../../utils/window_dimensions"
 import {getChart, getSparkLines} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
-import {BasicProps, ViewProps} from "../../analyses/types"
-import {Status} from "../../models/status";
+import {ViewCardProps} from "../../analyses/types"
+import {Status} from "../../models/status"
 
-interface BasicViewProps extends BasicProps, ViewProps {
-    headerCard: any
-}
-
-function BasicView(props: BasicViewProps) {
+function BasicView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
-    const computerUUID = params.get('uuid') as string
+    const UUID = params.get('uuid') as string
 
-    const statusCache = props.cache.getStatus(computerUUID)
-    const analysisCache = props.cache.getAnalysis(computerUUID)
-    const preferenceCache = props.cache.getPreferences(computerUUID)
+    const statusCache = props.cache.getStatus(UUID)
+    const analysisCache = props.cache.getAnalysis(UUID)
+    const preferenceCache = props.cache.getPreferences(UUID)
 
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
     const [status, setStatus] = useState(null as unknown as Status)
@@ -43,7 +39,7 @@ function BasicView(props: BasicViewProps) {
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: computerUUID, analysis: props.title})
+        mixpanel.track('Analysis View', {uuid: UUID, analysis: props.title})
 
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
@@ -134,7 +130,7 @@ function BasicView(props: BasicViewProps) {
             <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled}/>
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
         </div>
-        <props.headerCard uuid={computerUUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
+        <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>
