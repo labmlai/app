@@ -16,7 +16,7 @@ import {Status} from "../../../../models/status"
 const TITLE = 'Standard Output'
 const URL = 'stdout'
 
-function StdOut(props: SummaryCardProps, ref: any) {
+function StdOut(props: SummaryCardProps, refreshRef: any) {
     let [run, setRun] = useState(null as unknown as Run)
     const runCache = CACHE.getRun(props.uuid)
 
@@ -41,7 +41,7 @@ function StdOut(props: SummaryCardProps, ref: any) {
         setRun(await runCache.get())
     }
 
-    useImperativeHandle(ref, () => ({
+    useImperativeHandle(refreshRef, () => ({
         refresh: () => {
             onRefresh().then()
         },
@@ -50,6 +50,11 @@ function StdOut(props: SummaryCardProps, ref: any) {
         },
         lastUpdated: runCache.lastUpdated,
     }))
+
+    let stdOut: string[] = []
+    if (run) {
+        stdOut = run.stdout.slice(Math.max(run.stdout.length - 10, 0))
+    }
 
 
     return <div>{!run ?
@@ -63,7 +68,7 @@ function StdOut(props: SummaryCardProps, ref: any) {
             }
         }>
             <h3 className={'header'}>{TITLE}</h3>
-            {run && run.stdout.map((element, i) => {
+            {stdOut.map((element, i) => {
                 return <pre key={i} dangerouslySetInnerHTML={{__html: f.toHtml(element)}}/>
             })}
         </div>
@@ -105,7 +110,7 @@ function StdOutView(props: ViewCardProps) {
     })
 
     async function load() {
-        setRun(await runCache.get())
+        setRun(await runCache.get(true))
     }
 
     function onRefresh() {
