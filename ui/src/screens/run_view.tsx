@@ -6,6 +6,7 @@ import mixpanel from "mixpanel-browser"
 import {BackButton, RefreshButton} from "../components/utils/util_buttons"
 import {WarningMessage} from "../components/utils/alert"
 import ConfigsCard from "../analyses/configs/card"
+import StdOutCard from "../analyses/experiments/stdout/card"
 import {experiment_analyses} from "../analyses/all_analyses"
 import RunHeaderCard from "../analyses/experiments/run_header/card"
 import {Footer} from '../components/utils/footer'
@@ -107,6 +108,7 @@ function RunView(props: RunProps) {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>
         })}
+        <StdOutCard uuid={runUUID} width={actualWidth}/>
         <Footer/>
     </div>
 }
