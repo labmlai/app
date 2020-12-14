@@ -74,12 +74,13 @@ class Run(Model['Run']):
         self.save()
 
     @staticmethod
-    def format_output(output: List[str]) -> List[str]:
+    def format_output(output: List[str]) -> str:
         res = []
         for s in output:
             temp = ''
             for i, c in enumerate(s):
                 if c == '\n':
+                    temp += '\n'
                     res.append(temp)
                     temp = ''
                 elif c == '\r' and s[i + 1] == '\n':
@@ -89,7 +90,7 @@ class Run(Model['Run']):
                 else:
                     temp += c
 
-        return res
+        return ''.join(res)
 
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]

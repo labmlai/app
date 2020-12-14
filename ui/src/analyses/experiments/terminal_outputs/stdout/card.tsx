@@ -51,12 +51,6 @@ function StdOut(props: SummaryCardProps, refreshRef: any) {
         lastUpdated: runCache.lastUpdated,
     }))
 
-    let stdOut: string[] = []
-    if (run) {
-        stdOut = run.stdout.slice(Math.max(run.stdout.length - 10, 0))
-    }
-
-
     return <div>{!run ?
         <div className={'labml-card labml-card-action'}>
             <h3 className={'header'}>{TITLE}</h3>
@@ -68,9 +62,7 @@ function StdOut(props: SummaryCardProps, refreshRef: any) {
             }
         }>
             <h3 className={'header'}>{TITLE}</h3>
-            {stdOut.map((element, i) => {
-                return <pre key={i} dangerouslySetInnerHTML={{__html: f.toHtml(element)}}/>
-            })}
+            {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run.stdout)}}/>}
         </div>
     }
     </div>
@@ -124,9 +116,7 @@ function StdOutView(props: ViewCardProps) {
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={runCache.lastUpdated}/>
         <h2 className={'header text-center'}>{TITLE}</h2>
-        {run && run.stdout.map((element, i) => {
-            return <pre key={i} dangerouslySetInnerHTML={{__html: f.toHtml(element)}}/>
-        })}
+        {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run.stdout)}}/>}
     </div>
 }
 
