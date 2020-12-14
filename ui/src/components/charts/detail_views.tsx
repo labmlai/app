@@ -7,14 +7,10 @@ import useWindowDimensions from "../../utils/window_dimensions"
 import {getChart, getSparkLines} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
-import {BasicProps, ViewProps} from "../../analyses/types"
-import {Status} from "../../models/status";
+import {ViewCardProps} from "../../analyses/types"
+import {Status} from "../../models/status"
 
-interface BasicViewProps extends BasicProps, ViewProps {
-    headerCard: any
-}
-
-function BasicView(props: BasicViewProps) {
+function BasicView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
     const computerUUID = params.get('uuid') as string
 

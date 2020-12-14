@@ -1,6 +1,5 @@
 // basic code from https://github.com/rburns/ansi-to-html and made necessary changes
 
-'use strict';
 const entities = require('entities');
 const defaults = {
     fg: '#FFF',

@@ -3,12 +3,16 @@ export interface CardProps {
     width: number
 }
 
-export interface SeriesCardProps extends CardProps {
+export interface SummaryCardProps extends CardProps {
     refreshRef: any
 }
 
 export interface ViewProps {
     location: any
+}
+
+export interface ViewCardProps extends BasicProps, ViewProps {
+    headerCard: any
 }
 
 export interface BasicProps {

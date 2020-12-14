@@ -5,6 +5,7 @@ import metricAnalysis from "./experiments/metrics/card"
 import parameterAnalysis from "./experiments/params/card"
 //import timeAnalysis from "./experiments/times/card"
 import moduleAnalysis from "./experiments/modules/card"
+import stdOutAnalysis from "./experiments/terminal_outputs/stdout/card"
 
 import CpuAnalysis from "./computers/cpu/card"
 import MemoryAnalysis from "./computers/memory/card"
@@ -18,6 +19,7 @@ let experiment_analyses: Analysis[] = [
     parameterAnalysis,
     moduleAnalysis,
     // timeAnalysis,
+    stdOutAnalysis
 ]
 
 let computer_analyses: Analysis[] = [

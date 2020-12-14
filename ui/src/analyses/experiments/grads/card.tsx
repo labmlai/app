@@ -2,7 +2,7 @@ import React from "react"
 
 import {useLocation} from "react-router-dom"
 
-import {SeriesCardProps, Analysis} from "../../types"
+import {SummaryCardProps, Analysis} from "../../types"
 import {BasicBarLines} from "../../../components/charts/summary_views"
 import {BasicView} from "../../../components/charts/detail_views"
 import RunHeaderCard from "../run_header/card"
@@ -29,7 +29,7 @@ class GradientPreferenceCache extends SeriesPreferenceCache {
 let cache = new Cache('run', GradientAnalysisCache, GradientPreferenceCache)
 
 
-function AnalysisSummary(props: SeriesCardProps) {
+function AnalysisSummary(props: SummaryCardProps) {
     return <BasicBarLines title={TITLE}
                           uuid={props.uuid}
                           url={URL}

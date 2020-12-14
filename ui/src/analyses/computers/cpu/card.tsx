@@ -2,7 +2,7 @@ import React from "react"
 
 import {useLocation} from "react-router-dom"
 
-import {SeriesCardProps, Analysis} from "../../types"
+import {SummaryCardProps, Analysis} from "../../types"
 import {BasicSparkLines} from "../../../components/charts/summary_views"
 import {BasicView} from "../../../components/charts/detail_views"
 import ComputerHeaderCard from "../computer_header/card"
@@ -29,7 +29,7 @@ class CPUPreferenceCache extends SeriesPreferenceCache {
 let cache = new Cache('computer', CPUAnalysisCache, CPUPreferenceCache)
 
 
-function AnalysisSummary(props: SeriesCardProps) {
+function AnalysisSummary(props: SummaryCardProps) {
     return <BasicSparkLines title={TITLE}
                             url={URL}
                             cache={cache}
