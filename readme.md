@@ -21,6 +21,7 @@ experiments. Thanks.
 
 ### Notable Features
 
+* **Mobile first design:** web version, that gives you a great mobile experience on a mobile browser.
 * **Model Gradients, Activations and Parameters:** Now you can track and compare these indicators independently. We provide a separate analysis for each of the indicator types.
 * **Summary and Detail Views:** Summary views would help you to quickly scan and understand your model progress. You can use detail views for more in-depth analysis.
 * **Track only what you need:** You can pick and save the indicators that you want to track in the detail view. This would give you a customised summary view where you can focus on specific model indicators.
