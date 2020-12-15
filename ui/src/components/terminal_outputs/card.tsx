@@ -1,4 +1,4 @@
-import React, {forwardRef, useEffect, useImperativeHandle, useState} from "react"
+import React, {forwardRef, useEffect, useImperativeHandle, useState, useRef} from "react"
 
 import {useHistory} from "react-router-dom"
 import mixpanel from "mixpanel-browser"
@@ -12,6 +12,8 @@ import {BackButton, RefreshButton} from "../utils/util_buttons"
 import RunHeaderCard from "../../analyses/experiments/run_header/card"
 import {Status} from "../../models/status"
 import Filter from "./ansi_to_html"
+
+import "./terminal.scss"
 
 
 interface StdOutCardProps extends BasicProps, CardProps {
@@ -53,6 +55,15 @@ function StdOut(props: StdOutCardProps, ref: any) {
         lastUpdated: runCache.lastUpdated,
     }))
 
+    const terminalRef = useRef(null) as any
+
+    useEffect(() => {
+        if (terminalRef.current) {
+            terminalRef.current.scrollTop = Number.MAX_SAFE_INTEGER
+        }
+    },)
+
+
     return <div>{!run ?
         <div className={'labml-card labml-card-action'}>
             <h3 className={'header'}>{props.title}</h3>
@@ -64,7 +75,9 @@ function StdOut(props: StdOutCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+                <div className={'terminal-card no-scroll'} ref={terminalRef}>
+                    {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+                </div>
             </div>
             : <div/>
     }
@@ -122,7 +135,9 @@ function StdOutView(props: StdOutViewCardProps) {
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={runCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
-        {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+        <div className={'terminal-card'}>
+            {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+        </div>
     </div>
 }
 
