@@ -136,7 +136,10 @@ function StdOutView(props: StdOutViewCardProps) {
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={runCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         <div className={'terminal-card'}>
-            {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+            {run ? <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>
+                :
+                <LabLoader/>
+            }
         </div>
     </div>
 }
