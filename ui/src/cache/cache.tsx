@@ -9,6 +9,10 @@ import {ComputersList, ComputerListItemModel} from "../models/computer_list"
 
 const RELOAD_TIMEOUT = 60 * 1000
 
+function isReloadTimeout(lastUpdated: number): boolean {
+    return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
+}
+
 class BroadcastPromise<T> {
     // Registers a bunch of promises and broadcast to all of them
     private isLoading: boolean
@@ -95,10 +99,12 @@ abstract class CacheObject<T> {
 
 class RunCache extends CacheObject<Run> {
     private readonly uuid: string
+    private statusCache: RunStatusCache
 
-    constructor(uuid: string) {
+    constructor(uuid: string, statusCache: RunStatusCache) {
         super()
         this.uuid = uuid
+        this.statusCache = statusCache
     }
 
     async load(): Promise<Run> {
@@ -106,6 +112,18 @@ class RunCache extends CacheObject<Run> {
             let res = await NETWORK.getRun(this.uuid)
             return new Run(res.data)
         })
+    }
+
+    async get(isRefresh = false): Promise<Run> {
+        let status = await this.statusCache.get()
+
+        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+            this.data = await this.load()
+            this.lastUpdated = (new Date()).getTime()
+            await this.statusCache.get(true)
+        }
+
+        return this.data
     }
 }
 
@@ -176,7 +194,7 @@ class IsUserLoggedCache extends CacheObject<IsUserLogged> {
     }
 
     set UserLogged(is_user_logged: boolean) {
-         this.data = new IsUserLogged({is_user_logged: is_user_logged})
+        this.data = new IsUserLogged({is_user_logged: is_user_logged})
     }
 }
 
@@ -234,10 +252,6 @@ export class SeriesCache extends CacheObject<SeriesModel[]> {
         this.url = url
     }
 
-    private isReloadTimeout(): boolean {
-        return (new Date()).getTime() - this.lastUpdated > RELOAD_TIMEOUT
-    }
-
     async load(): Promise<SeriesModel[]> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getAnalysis(this.url, this.uuid)
@@ -248,7 +262,7 @@ export class SeriesCache extends CacheObject<SeriesModel[]> {
     async get(isRefresh = false): Promise<SeriesModel[]> {
         let status = await this.statusCache.get()
 
-        if (this.data == null || (status.isRunning && this.isReloadTimeout()) || isRefresh) {
+        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
             await this.statusCache.get(true)
@@ -304,7 +318,7 @@ class Cache {
 
     getRun(uuid: string) {
         if (this.runs[uuid] == null) {
-            this.runs[uuid] = new RunCache(uuid)
+            this.runs[uuid] = new RunCache(uuid, this.getRunStatus(uuid))
         }
 
         return this.runs[uuid]
