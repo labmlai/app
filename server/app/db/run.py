@@ -103,8 +103,8 @@ class Run(Model['Run']):
             'is_claimed': self.is_claimed,
             'configs': configs,
             'stdout': self.format_output(self.stdout),
-            'logger': self.logger,
-            'stderr': self.stderr,
+            'logger': self.format_output(self.logger),
+            'stderr': self.format_output(self.stderr),
         }
 
     def get_summary(self) -> Dict[str, str]:

@@ -40,6 +40,8 @@ function RunView(props: RunProps) {
         useRef(null) as any,
         useRef(null) as any,
         useRef(null) as any,
+        useRef(null) as any,
+        useRef(null) as any,
     ]
 
     let lastUpdated: number = 0

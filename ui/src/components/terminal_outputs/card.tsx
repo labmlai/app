@@ -3,26 +3,28 @@ import React, {forwardRef, useEffect, useImperativeHandle, useState} from "react
 import {useHistory} from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 
-import {Analysis, SummaryCardProps, ViewCardProps} from "../../../types"
-import {Run} from "../../../../models/run"
-import CACHE from "../../../../cache/cache"
-import {LabLoader} from "../../../../components/utils/loader"
-import useWindowDimensions from "../../../../utils/window_dimensions"
-import {BackButton, RefreshButton} from "../../../../components/utils/util_buttons"
-import RunHeaderCard from "../../run_header/card"
-import {Status} from "../../../../models/status"
+import {BasicProps, CardProps, ViewCardProps} from "../../analyses/types"
+import {Run} from "../../models/run"
+import CACHE from "../../cache/cache"
+import {LabLoader} from "../utils/loader"
+import useWindowDimensions from "../../utils/window_dimensions"
+import {BackButton, RefreshButton} from "../utils/util_buttons"
+import RunHeaderCard from "../../analyses/experiments/run_header/card"
+import {Status} from "../../models/status"
 
 
-const TITLE = 'Standard Output'
-const URL = 'stdout'
+interface StdOutCardProps extends BasicProps, CardProps {
+    url: string
+    type: 'stdout' | 'logger' | 'stderr'
+}
 
-function StdOut(props: SummaryCardProps, refreshRef: any) {
+function StdOut(props: StdOutCardProps, ref: any) {
     let [run, setRun] = useState(null as unknown as Run)
     const runCache = CACHE.getRun(props.uuid)
 
     const history = useHistory()
 
-    const Filter = require('../ansi_to_html.js')
+    const Filter = require('./ansi_to_html.js')
     const f = new Filter({})
 
     useEffect(() => {
@@ -41,7 +43,7 @@ function StdOut(props: SummaryCardProps, refreshRef: any) {
         setRun(await runCache.get())
     }
 
-    useImperativeHandle(refreshRef, () => ({
+    useImperativeHandle(ref, () => ({
         refresh: () => {
             onRefresh().then()
         },
@@ -53,22 +55,27 @@ function StdOut(props: SummaryCardProps, refreshRef: any) {
 
     return <div>{!run ?
         <div className={'labml-card labml-card-action'}>
-            <h3 className={'header'}>{TITLE}</h3>
+            <h3 className={'header'}>{props.title}</h3>
             <LabLoader/>
         </div>
-        : <div className={'labml-card labml-card-action'} onClick={
-            () => {
-                history.push(`/${URL}?uuid=${props.uuid}`, history.location.pathname)
-            }
-        }>
-            <h3 className={'header'}>{TITLE}</h3>
-            {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run.stdout)}}/>}
-        </div>
+        : run && run[props.type] ? <div className={'labml-card labml-card-action'} onClick={
+                () => {
+                    history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname)
+                }
+            }>
+                <h3 className={'header'}>{props.title}</h3>
+                {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+            </div>
+            : <div/>
     }
     </div>
 }
 
-function StdOutView(props: ViewCardProps) {
+interface StdOutViewCardProps extends ViewCardProps {
+    type: 'stdout' | 'logger' | 'stderr'
+}
+
+function StdOutView(props: StdOutViewCardProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('uuid') as string
 
@@ -81,7 +88,7 @@ function StdOutView(props: ViewCardProps) {
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
-    const Filter = require('../ansi_to_html.js')
+    const Filter = require('./ansi_to_html.js')
     const f = new Filter({})
 
     useEffect(() => {
@@ -94,7 +101,7 @@ function StdOutView(props: ViewCardProps) {
             }
         }
 
-        mixpanel.track('Analysis View', {uuid: runUUID, analysis: TITLE})
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.title})
 
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
@@ -115,17 +122,15 @@ function StdOutView(props: ViewCardProps) {
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={runCache.lastUpdated}/>
-        <h2 className={'header text-center'}>{TITLE}</h2>
-        {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run.stdout)}}/>}
+        <h2 className={'header text-center'}>{props.title}</h2>
+        {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
     </div>
 }
 
 let StdOutCard = forwardRef(StdOut)
 
-let stdOutAnalysis: Analysis = {
-    card: StdOutCard,
-    view: StdOutView,
-    route: `${URL}`
+export {
+    StdOutCard,
+    StdOutView
 }
 
-export default stdOutAnalysis

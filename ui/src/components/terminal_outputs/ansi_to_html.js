@@ -515,10 +515,7 @@ class Filter {
         });
 
         tokenize(input.join(''), options, (token, data) => {
-            // console.log(stack)
-
             const output = generateOutput(stack, token, data, options);
-            //console.log(output)
 
             if (output) {
                 buf.push(output);

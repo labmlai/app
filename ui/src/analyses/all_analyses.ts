@@ -5,7 +5,10 @@ import metricAnalysis from "./experiments/metrics/card"
 import parameterAnalysis from "./experiments/params/card"
 //import timeAnalysis from "./experiments/times/card"
 import moduleAnalysis from "./experiments/modules/card"
-import stdOutAnalysis from "./experiments/terminal_outputs/stdout/card"
+import stdOutAnalysis from "./experiments/stdout/card"
+import stderrAnalysis from "./experiments/stderror/card"
+import loggerAnalysis from "./experiments/logger/card"
+
 
 import CpuAnalysis from "./computers/cpu/card"
 import MemoryAnalysis from "./computers/memory/card"
@@ -19,7 +22,9 @@ let experiment_analyses: Analysis[] = [
     parameterAnalysis,
     moduleAnalysis,
     // timeAnalysis,
-    stdOutAnalysis
+    stdOutAnalysis,
+    stderrAnalysis,
+    loggerAnalysis
 ]
 
 let computer_analyses: Analysis[] = [
