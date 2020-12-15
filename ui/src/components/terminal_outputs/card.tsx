@@ -11,6 +11,7 @@ import useWindowDimensions from "../../utils/window_dimensions"
 import {BackButton, RefreshButton} from "../utils/util_buttons"
 import RunHeaderCard from "../../analyses/experiments/run_header/card"
 import {Status} from "../../models/status"
+import Filter from "./ansi_to_html"
 
 
 interface StdOutCardProps extends BasicProps, CardProps {
@@ -24,7 +25,6 @@ function StdOut(props: StdOutCardProps, ref: any) {
 
     const history = useHistory()
 
-    const Filter = require('./ansi_to_html.js')
     const f = new Filter({})
 
     useEffect(() => {
@@ -88,7 +88,6 @@ function StdOutView(props: StdOutViewCardProps) {
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
-    const Filter = require('./ansi_to_html.js')
     const f = new Filter({})
 
     useEffect(() => {
