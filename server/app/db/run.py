@@ -24,9 +24,9 @@ class Run(Model['Run']):
     is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
-    stdout: List[str]
-    logger: List[str]
-    stderr: List[str]
+    stdout: str
+    logger: str
+    stderr: str
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
     errors: List[Dict[str, str]]
@@ -41,9 +41,9 @@ class Run(Model['Run']):
                     is_claimed=True,
                     status=None,
                     configs={},
-                    stdout=[],
-                    logger=[],
-                    stderr=[],
+                    stdout='',
+                    logger='',
+                    stderr='',
                     wildcard_indicators={},
                     indicators={},
                     errors=[]
@@ -61,11 +61,11 @@ class Run(Model['Run']):
         if 'configs' in data:
             self.configs.update(data.get('configs', {}))
         if 'stdout' in data and data['stdout']:
-            self.stdout.append(data['stdout'])
+            self.stdout = self.process_new_output(self.stdout, data['stdout'])
         if 'logger' in data and data['logger']:
-            self.logger.append(data['logger'])
+            self.logger = self.process_new_output(self.logger, data['logger'])
         if 'stderr' in data and data['stderr']:
-            self.stderr.append(data['stderr'])
+            self.stderr = self.process_new_output(self.stderr, data['stderr'])
         if not self.indicators:
             self.indicators = data.get('indicators', {})
         if not self.wildcard_indicators:
@@ -73,10 +73,15 @@ class Run(Model['Run']):
 
         self.save()
 
-    @staticmethod
-    def format_output(output: List[str]) -> str:
-        output = ''.join(output)
+    def process_new_output(self, current: str, new: str):
+        current += new
+        if len(new) > 1:
+            current = self.format_output(current)
 
+        return current
+
+    @staticmethod
+    def format_output(output: str) -> str:
         res = []
         temp = ''
         for i, c in enumerate(output):
@@ -106,9 +111,9 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'is_claimed': self.is_claimed,
             'configs': configs,
-            'stdout': self.format_output(self.stdout),
-            'logger': self.format_output(self.logger),
-            'stderr': self.format_output(self.stderr),
+            'stdout': self.stdout,
+            'logger': self.logger,
+            'stderr': self.stderr,
         }
 
     def get_summary(self) -> Dict[str, str]:
