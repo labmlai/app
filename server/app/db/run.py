@@ -75,20 +75,24 @@ class Run(Model['Run']):
 
     @staticmethod
     def format_output(output: List[str]) -> str:
+        output = ''.join(output)
+
         res = []
-        for s in output:
-            temp = ''
-            for i, c in enumerate(s):
-                if c == '\n':
-                    temp += '\n'
-                    res.append(temp)
-                    temp = ''
-                elif c == '\r' and len(s) > i + 1 and s[i + 1] == '\n':
-                    pass
-                elif c == '\r':
-                    temp = ''
-                else:
-                    temp += c
+        temp = ''
+        for i, c in enumerate(output):
+            if c == '\n':
+                temp += '\n'
+                res.append(temp)
+                temp = ''
+            elif c == '\r' and len(output) > i + 1 and output[i + 1] == '\n':
+                pass
+            elif c == '\r':
+                temp = ''
+            else:
+                temp += c
+
+        if temp:
+            res.append(temp)
 
         return ''.join(res)
 
