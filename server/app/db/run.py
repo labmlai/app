@@ -61,11 +61,11 @@ class Run(Model['Run']):
         if 'configs' in data:
             self.configs.update(data.get('configs', {}))
         if 'stdout' in data and data['stdout']:
-            self.stdout = self.process_new_output(self.stdout, data['stdout'])
+            self.stdout = self.merge_output(self.stdout, data['stdout'])
         if 'logger' in data and data['logger']:
-            self.logger = self.process_new_output(self.logger, data['logger'])
+            self.logger = self.merge_output(self.logger, data['logger'])
         if 'stderr' in data and data['stderr']:
-            self.stderr = self.process_new_output(self.stderr, data['stderr'])
+            self.stderr = self.merge_output(self.stderr, data['stderr'])
         if not self.indicators:
             self.indicators = data.get('indicators', {})
         if not self.wildcard_indicators:
@@ -73,7 +73,7 @@ class Run(Model['Run']):
 
         self.save()
 
-    def process_new_output(self, current: str, new: str):
+    def merge_output(self, current: str, new: str):
         current += new
         if len(new) > 1:
             current = self.format_output(current)
