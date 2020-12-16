@@ -1,5 +1,6 @@
 import functools
 import typing
+from typing import Optional
 
 import werkzeug.wrappers
 from flask import request, make_response
@@ -52,10 +53,12 @@ def login_required(func) -> functools.wraps:
     return wrapper
 
 
-def get_auth_user() -> user.User:
+def get_auth_user() -> Optional[user.User]:
     s = get_session()
 
-    u = s.user.load()
+    u = None
+    if s.user:
+        u = s.user.load()
 
     return u
 

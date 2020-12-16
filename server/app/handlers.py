@@ -1,6 +1,5 @@
 import sys
 import typing
-from typing import Any
 
 import flask
 import werkzeug.wrappers

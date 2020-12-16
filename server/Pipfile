@@ -15,6 +15,7 @@ numpy = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
 labml-db = "*"
 redis = "*"
+mixpanel = "*"
 
 [requires]
 python_version = "3.7"
