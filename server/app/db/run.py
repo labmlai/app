@@ -83,7 +83,7 @@ class Run(Model['Run']):
                     temp += '\n'
                     res.append(temp)
                     temp = ''
-                elif c == '\r' and s[i + 1] == '\n':
+                elif c == '\r' and len(s) > i and s[i + 1] == '\n':
                     pass
                 elif c == '\r':
                     temp = ''
