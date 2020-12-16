@@ -158,10 +158,16 @@ def update_run() -> flask.Response:
     r = run.get_or_create(run_uuid, token, request.remote_addr)
     s = r.status.load()
 
-    r.update_run(request.json)
-    s.update_time_status(request.json)
-    if 'track' in request.json:
-        AnalysisManager.track(run_uuid, request.json['track'])
+    if isinstance(request.json, list):
+        data = request.json
+    else:
+        data = [request.json]
+
+    for d in data:
+        r.update_run(d)
+        s.update_time_status(d)
+        if 'track' in d:
+            AnalysisManager.track(run_uuid, d['track'])
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
