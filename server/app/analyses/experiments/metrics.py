@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response, request
+from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -11,6 +11,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
+from app.utils import format_rv
 
 
 @Analysis.db_model(PickleSerializer, 'metrics')
@@ -89,7 +90,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(jsonify(track_data))
+    response = make_response(format_rv(track_data))
     response.status_code = status_code
 
     return response
@@ -101,12 +102,12 @@ def get_metrics_preferences(run_uuid: str) -> Any:
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return jsonify(preferences_data)
+        return format_rv(preferences_data)
 
     mp: MetricsPreferencesModel = preferences_key.load()
     preferences_data = mp.get_data()
 
-    response = make_response(jsonify(preferences_data))
+    response = make_response(format_rv(preferences_data))
 
     return response
 
@@ -116,11 +117,11 @@ def set_metrics_preferences(run_uuid: str) -> Any:
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     mp = preferences_key.load()
     mp.update_preferences(request.json)
 
     logger.debug(f'update metrics references: {mp.key}')
 
-    return jsonify({'errors': mp.errors})
+    return format_rv({'errors': mp.errors})

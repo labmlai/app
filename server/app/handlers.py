@@ -3,7 +3,7 @@ import typing
 
 import flask
 import werkzeug.wrappers
-from flask import jsonify, request, make_response
+from flask import request, make_response
 
 from .analyses import AnalysisManager
 from . import settings
@@ -14,7 +14,7 @@ from .db import session
 from .db import user
 from .db import project
 from .logging import logger
-from .utils import check_version
+from .utils import check_version, format_rv
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -28,7 +28,7 @@ def sign_in() -> flask.Response:
     s.user = u.key
     s.save()
 
-    response = make_response(jsonify({'is_successful': True}))
+    response = make_response(format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
@@ -44,7 +44,7 @@ def sign_out() -> flask.Response:
 
     session.delete(s)
 
-    response = make_response(jsonify({'is_successful': True}))
+    response = make_response(format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id)
@@ -70,7 +70,7 @@ def update_computer() -> flask.Response:
     if 'track' in request.json:
         AnalysisManager.track_computer(computer_uuid, request.json['track'])
 
-    return jsonify({'errors': errors, 'url': c.url})
+    return format_rv({'errors': errors, 'url': c.url})
 
 
 @login_required
@@ -83,7 +83,7 @@ def get_computer(computer_uuid: str) -> flask.Response:
         computer_data = c.get_data()
         status_code = 200
 
-    response = make_response(jsonify(computer_data))
+    response = make_response(format_rv(computer_data))
     response.status_code = status_code
 
     logger.debug(f'computer, computer_uuid: {computer_uuid}')
@@ -113,7 +113,7 @@ def get_computers(labml_token: str) -> flask.Response:
 
     logger.debug(f'computers, labml_token : {labml_token}')
 
-    return jsonify({'computers': res, 'labml_token': labml_token})
+    return format_rv({'computers': res, 'labml_token': labml_token})
 
 
 def update_run() -> flask.Response:
@@ -127,14 +127,14 @@ def update_run() -> flask.Response:
         error = {'error': 'invalid_run_uuid',
                  'message': f'Invalid Run UUID'}
         errors.append(error)
-        return jsonify({'errors': errors})
+        return format_rv({'errors': errors})
 
     if check_version(version, settings.LABML_VERSION):
         error = {'error': 'labml_outdated',
                  'message': f'Your labml client is outdated, please upgrade: '
                             'pip install labml --upgrade'}
         errors.append(error)
-        return jsonify({'errors': errors})
+        return format_rv({'errors': errors})
 
     p = project.get_project(labml_token=token)
     if not p:
@@ -170,7 +170,7 @@ def update_run() -> flask.Response:
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return jsonify({'errors': errors, 'url': r.url})
+    return format_rv({'errors': errors, 'url': r.url})
 
 
 def claim_run(run_uuid: str, r: run.Run) -> None:
@@ -203,7 +203,7 @@ def get_run(run_uuid: str) -> flask.Response:
         if not r.is_claimed:
             claim_run(run_uuid, r)
 
-    response = make_response(jsonify(run_data))
+    response = make_response(format_rv(run_data))
     response.status_code = status_code
 
     logger.debug(f'run, run_uuid: {run_uuid}')
@@ -220,7 +220,7 @@ def get_run_status(run_uuid: str) -> flask.Response:
         status_data = s.get_data()
         status_code = 200
 
-    response = make_response(jsonify(status_data))
+    response = make_response(format_rv(status_data))
     response.status_code = status_code
 
     logger.debug(f'run_status, run_uuid: {run_uuid}')
@@ -237,7 +237,7 @@ def get_computer_status(computer_uuid: str) -> flask.Response:
         status_data = s.get_data()
         status_code = 200
 
-    response = make_response(jsonify(status_data))
+    response = make_response(format_rv(status_data))
     response.status_code = status_code
 
     logger.debug(f'computer_status, computer_uuid: {computer_uuid}')
@@ -267,7 +267,7 @@ def get_runs(labml_token: str) -> flask.Response:
 
     logger.debug(f'runs, labml_token : {labml_token}')
 
-    return jsonify({'runs': res, 'labml_token': labml_token})
+    return format_rv({'runs': res, 'labml_token': labml_token})
 
 
 @login_required
@@ -277,7 +277,7 @@ def delete_runs() -> flask.Response:
     u = get_auth_user()
     u.default_project.delete_runs(run_uuids)
 
-    return jsonify({'is_successful': True})
+    return format_rv({'is_successful': True})
 
 
 @login_required
@@ -285,12 +285,11 @@ def get_user() -> flask.Response:
     u = get_auth_user()
     logger.debug(f'get_user, user : {u.key}')
 
-    return jsonify(u.get_data())
+    return format_rv(u.get_data())
 
 
 def is_user_logged() -> flask.Response:
-
-    return jsonify({'is_user_logged': get_is_user_logged()})
+    return format_rv({'is_user_logged': get_is_user_logged()})
 
 
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):

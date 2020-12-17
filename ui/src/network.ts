@@ -15,7 +15,7 @@ class Network {
         this.handleError = null
 
         this.axiosInstance.interceptors.response.use((response: any) => {
-            return response
+            return response.data.data
         }, (error: any) => {
             if (this.handleError != null) {
                 this.handleError(error)

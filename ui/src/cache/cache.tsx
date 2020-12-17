@@ -110,7 +110,7 @@ class RunCache extends CacheObject<Run> {
     async load(): Promise<Run> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRun(this.uuid)
-            return new Run(res.data)
+            return new Run(res)
         })
     }
 
@@ -138,7 +138,7 @@ class ComputerCache extends CacheObject<Computer> {
     async load(): Promise<Computer> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getComputer(this.uuid)
-            return new Computer(res.data)
+            return new Computer(res)
         })
     }
 }
@@ -154,7 +154,7 @@ export class RunStatusCache extends CacheObject<Status> {
     async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRunStatus(this.uuid)
-            return new Status(res.data)
+            return new Status(res)
         })
     }
 }
@@ -170,7 +170,7 @@ export class ComputerStatusCache extends CacheObject<Status> {
     async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getComputerStatus(this.uuid)
-            return new Status(res.data)
+            return new Status(res)
         })
     }
 }
@@ -179,7 +179,7 @@ class UserCache extends CacheObject<User> {
     async load(): Promise<User> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getUser()
-            return new User(res.data)
+            return new User(res)
         })
     }
 }
@@ -189,7 +189,7 @@ class IsUserLoggedCache extends CacheObject<IsUserLogged> {
     async load(): Promise<IsUserLogged> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getIsUserLogged()
-            return new IsUserLogged(res.data)
+            return new IsUserLogged(res)
         })
     }
 
@@ -202,7 +202,7 @@ class ComputersListCache extends CacheObject<ComputersList> {
     async load(): Promise<ComputersList> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getComputers()
-            return new ComputersList(res.data)
+            return new ComputersList(res)
         })
     }
 
@@ -218,7 +218,7 @@ class RunsListCache {
     private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
         return this.runsListPromise.create(async () => {
             let res = await NETWORK.getRuns(labml_token)
-            return res.data
+            return res
         })
     }
 
@@ -255,7 +255,7 @@ export class SeriesCache extends CacheObject<SeriesModel[]> {
     async load(): Promise<SeriesModel[]> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getAnalysis(this.url, this.uuid)
-            return res.data
+            return res
         })
     }
 
@@ -285,7 +285,7 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
     async load(): Promise<AnalysisPreference> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getPreferences(this.url, this.uuid)
-            return res.data
+            return res
         })
     }
 
