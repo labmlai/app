@@ -37,20 +37,22 @@ class Event:
 
         return self._track(identifier, event, data)
 
-    def time_this(self, func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            start = time.time()
-            r = func(*args, **kwargs)
-            end = time.time()
+    def time_this(self, time_limit: float = 0.4):
+        def decorator(function):
+            def wrapper(*args, **kwargs):
+                start = time.time()
+                r = function(*args, **kwargs)
+                end = time.time()
 
-            total_time = end - start
-            if total_time > 0.4:
-                self.track(func.__name__, {'time_elapsed': str(total_time)})
+                total_time = end - start
+                if total_time > time_limit:
+                    self.track(function.__name__, {'time_elapsed': str(total_time)})
 
-            return r
+                return r
 
-        return wrapper
+            return wrapper
+
+        return decorator
 
 
 class MixPanelThread(threading.Thread):
