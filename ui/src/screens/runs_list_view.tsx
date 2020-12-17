@@ -23,7 +23,7 @@ function RunsListView() {
 
     useEffect(() => {
         async function load() {
-            let currentRunsList = await runListCache.getRunsList(null)
+            let currentRunsList = await runListCache.get()
             if (currentRunsList) {
                 setRuns(currentRunsList.runs)
                 setIsLoading(false)
@@ -50,7 +50,7 @@ function RunsListView() {
         async function load() {
             if (inputElement.current) {
                 let search = inputElement.current.value
-                let currentRunsList = await runListCache.getRunsList(null)
+                let currentRunsList = await runListCache.get()
                 let currentRuns = currentRunsList.runs
 
                 currentRuns = currentRuns.filter((run) => runsFilter(run, search))
@@ -69,7 +69,7 @@ function RunsListView() {
 
     function onDelete() {
         async function load() {
-            let currentRunsList = await runListCache.getRunsList(null)
+            let currentRunsList = await runListCache.get()
             let currentRuns = currentRunsList.runs
 
             let res: RunListItemModel[] = []
@@ -98,7 +98,7 @@ function RunsListView() {
 
     function onRefresh() {
         async function load() {
-            let currentRunsList = await runListCache.getRunsList(null, true)
+            let currentRunsList = await runListCache.get(true)
             if (currentRunsList) {
                 setRuns(currentRunsList.runs)
             }

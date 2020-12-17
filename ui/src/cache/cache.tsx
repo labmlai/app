@@ -1,7 +1,7 @@
 import NETWORK from "../network"
 import {Run, SeriesModel} from "../models/run"
 import {Status} from "../models/status"
-import {RunListItemModel, RunsList, RunsListModel} from "../models/run_list"
+import {RunListItemModel, RunsList} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
 import {User, IsUserLogged} from "../models/user"
 import {Computer} from "../models/computer"
@@ -83,9 +83,9 @@ abstract class CacheObject<T> {
         this.lastUpdated = 0
     }
 
-    abstract async load(): Promise<T>
+    abstract async load(...args: any[]): Promise<T>
 
-    async get(isRefresh = false): Promise<T> {
+    async get(isRefresh = false, ...args: any[]): Promise<T> {
         if (this.data == null || isRefresh) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
@@ -211,31 +211,28 @@ class ComputersListCache extends CacheObject<ComputersList> {
     }
 }
 
-class RunsListCache {
-    private runsList!: RunsList
-    private runsListPromise = new BroadcastPromise<RunsListModel>()
-
-    private async loadRuns(labml_token: string | null): Promise<RunsListModel> {
-        return this.runsListPromise.create(async () => {
-            let res = await NETWORK.getRuns(labml_token)
-            return res
+class RunsListCache extends CacheObject<RunsList> {
+    async load(...args: any[]): Promise<RunsList> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getRuns(args[0])
+            return new RunsList(res)
         })
     }
 
-    async getRunsList(labml_token: string | null, isRefresh = false): Promise<RunsList> {
-        if (labml_token) {
-            return await this.loadRuns(labml_token)
+    async get(isRefresh = false, ...args: any[]): Promise<RunsList> {
+        if (args && args[0]) {
+            return await this.load(args[0])
         }
 
-        if (this.runsList == null || isRefresh) {
-            this.runsList = await this.loadRuns(null)
+        if (this.data == null || isRefresh) {
+            this.data = await this.load(null)
         }
 
-        return this.runsList
+        return this.data
     }
 
     async deleteRuns(runs: RunListItemModel[], runUUIDS: string[]): Promise<void> {
-        this.runsList.runs = runs
+        this.data.runs = runs
         await NETWORK.deleteRuns(runUUIDS)
     }
 }
