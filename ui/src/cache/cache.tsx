@@ -73,7 +73,7 @@ class BroadcastPromise<T> {
 }
 
 abstract class CacheObject<T> {
-    protected data!: T
+    protected data!: T | any
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number
     public lastUpdated: number
@@ -94,6 +94,10 @@ abstract class CacheObject<T> {
         this.lastUsed = new Date().getTime()
 
         return this.data
+    }
+
+    async invalidate_cache(): Promise<void>{
+        this.data = null
     }
 }
 
@@ -251,8 +255,7 @@ export class SeriesCache extends CacheObject<SeriesModel[]> {
 
     async load(): Promise<SeriesModel[]> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getAnalysis(this.url, this.uuid)
-            return res
+            return await NETWORK.getAnalysis(this.url, this.uuid)
         })
     }
 
@@ -281,8 +284,7 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
 
     async load(): Promise<AnalysisPreference> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getPreferences(this.url, this.uuid)
-            return res
+            return await NETWORK.getPreferences(this.url, this.uuid)
         })
     }
 
