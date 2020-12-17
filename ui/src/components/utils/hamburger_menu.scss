@@ -60,12 +60,14 @@ html, body {
 .burger {
   cursor: pointer;
   float: left;
+  padding: .3rem 0.4rem;
+  border-radius: 10px;
 
   div {
-    width: 20px;
+    width: 18px;
     height: 3px;
     background-color: dimgrey;
-    margin: 5px;
+    margin: 4px;
   }
 }
 

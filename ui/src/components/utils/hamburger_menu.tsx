@@ -76,12 +76,12 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                         <span>Join Our Slack</span>
                     </Nav.Link>
                 </div>
-                <div className={'burger' + burgerClass} onClick={onBurgerClick}>
+                <Nav.Link className={'burger' + burgerClass} onClick={onBurgerClick}>
                     <div className={'line1'}></div>
                     <div className={'line2'}></div>
                     <div className={'line3'}></div>
-                </div>
-                <div className={'title ml-2 mt-1'}>
+                </Nav.Link>
+                <div className={'title ml-2 mt-2'}>
                     <h5>{props.title}</h5>
                 </div>
                 {props.children}
