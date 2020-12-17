@@ -13,6 +13,7 @@ import CACHE from "../cache/cache"
 import useWindowDimensions from "../utils/window_dimensions"
 import {Status} from "../models/status"
 import {IsUserLogged} from "../models/user"
+import {Run} from "../models/run"
 
 
 interface RunProps {
@@ -24,10 +25,13 @@ function RunView(props: RunProps) {
 
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
+
     const statusCache = CACHE.getRunStatus(runUUID)
+    const runCache = CACHE.getRun(runUUID)
     const isUserLoggedCache = CACHE.getIsUserLogged()
 
     const [status, setStatus] = useState(null as unknown as Status)
+    const [run, setRun] = useState(null as unknown as Run)
     const [isLogged, SetIsLogged] = useState(null as unknown as IsUserLogged)
 
     const {width: windowWidth} = useWindowDimensions()
@@ -54,8 +58,6 @@ function RunView(props: RunProps) {
                 }
             }
 
-            SetIsLogged(await isUserLoggedCache.get())
-
             setStatus(await statusCache.get())
             if (status && !status.isRunning) {
                 clearInterval(interval)
@@ -65,7 +67,16 @@ function RunView(props: RunProps) {
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
-    }, [status, refreshArray, statusCache, isUserLoggedCache])
+    }, [status, refreshArray, statusCache])
+
+    useEffect(() => {
+        async function load() {
+            SetIsLogged(await isUserLoggedCache.get())
+            setRun(await runCache.get())
+        }
+
+        load().then()
+    }, [isUserLoggedCache, runCache])
 
     useEffect(() => {
         mixpanel.track('Run View', {uuid: runUUID})
@@ -94,7 +105,7 @@ function RunView(props: RunProps) {
     }
 
     return <div className={'run page'} style={{width: actualWidth}}>
-        {isLogged && !isLogged.is_user_logged &&
+        {isLogged && !isLogged.is_user_logged && run && !run.is_claimed &&
         <WarningMessage onClick={onMessageClick}>
             <p>This run will be deleted in 12 hours. Click here to add it to your experiments.</p>
         </WarningMessage>
