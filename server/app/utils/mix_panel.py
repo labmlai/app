@@ -55,14 +55,13 @@ class Event:
 
 class MixPanelThread(threading.Thread):
     def __init__(self):
-        super().__init__(daemon=False)
+        super().__init__(daemon=True)
         self.consumer = mixpanel.Consumer()
 
     def run(self):
         while True:
-            if not QUEUE.empty():
-                job = QUEUE.get()
-                self.consumer.send(*job)
+            job = QUEUE.get()
+            self.consumer.send(*job)
 
             time.sleep(5)
 
