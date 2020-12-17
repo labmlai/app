@@ -74,6 +74,7 @@ class Run(Model['Run']):
         self.save()
 
     def merge_output(self, current: str, new: str):
+        # TODO optimize to keep all the completed lines and current line separately
         current += new
         if len(new) > 1:
             current = self.format_output(current)

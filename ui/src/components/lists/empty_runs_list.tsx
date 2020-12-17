@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 
-import { Nav} from "react-bootstrap"
+import {Nav} from "react-bootstrap"
 
 import {PyTorchCode, KerasCode} from "../codes/code"
 import {Footer} from '../utils/footer'
@@ -23,7 +23,7 @@ export function EmptyRunsList() {
         const runListCache = CACHE.getRunsList()
 
         async function load() {
-            let currentRunsList = await runListCache.getRunsList(samples_token)
+            let currentRunsList = await runListCache.get(false, samples_token)
             if (currentRunsList) {
                 setRuns(currentRunsList.runs)
                 setIsLoading(false)
@@ -63,7 +63,8 @@ export function EmptyRunsList() {
         {isLoading ?
             <LabLoader/>
             :
-            <List items={runs} onItemClick={()=>{}} isEditMode={false} itemKey={'run'}/>
+            <List items={runs} onItemClick={() => {
+            }} isEditMode={false} itemKey={'run'}/>
         }
         <div className={'mt-5'}>
             <Footer/>

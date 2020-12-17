@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response, request
+from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -11,6 +11,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
+from app.utils import format_rv
 
 
 @Analysis.db_model(PickleSerializer, 'time_tracking')
@@ -83,7 +84,7 @@ def get_times_tracking(run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(jsonify(track_data))
+    response = make_response(format_rv(track_data))
     response.status_code = status_code
 
     return response
@@ -95,12 +96,12 @@ def get_times_preferences(run_uuid: str) -> Any:
 
     preferences_key = TimesPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return jsonify(preferences_data)
+        return format_rv(preferences_data)
 
     tp: TimesPreferencesModel = preferences_key.load()
     preferences_data = tp.get_data()
 
-    response = make_response(jsonify(preferences_data))
+    response = make_response(format_rv(preferences_data))
 
     return response
 
@@ -110,11 +111,11 @@ def set_times_preferences(run_uuid: str) -> Any:
     preferences_key = TimesPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     tp = preferences_key.load()
     tp.update_preferences(request.json)
 
     logger.debug(f'update times references: {tp.key}')
 
-    return jsonify({'errors': tp.errors})
+    return format_rv({'errors': tp.errors})

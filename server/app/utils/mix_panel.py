@@ -1,7 +1,6 @@
 import time
 import queue
 import threading
-from functools import wraps
 from typing import NamedTuple, Dict, Union
 
 import mixpanel
