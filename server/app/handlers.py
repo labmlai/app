@@ -3,7 +3,7 @@ import typing
 
 import flask
 import werkzeug.wrappers
-from flask import request, make_response
+from flask import request, make_response, jsonify
 
 from .analyses import AnalysisManager
 from . import settings
@@ -127,14 +127,14 @@ def update_run() -> flask.Response:
         error = {'error': 'invalid_run_uuid',
                  'message': f'Invalid Run UUID'}
         errors.append(error)
-        return format_rv({'errors': errors})
+        return jsonify({'errors': errors})
 
     if check_version(version, settings.LABML_VERSION):
         error = {'error': 'labml_outdated',
                  'message': f'Your labml client is outdated, please upgrade: '
                             'pip install labml --upgrade'}
         errors.append(error)
-        return format_rv({'errors': errors})
+        return jsonify({'errors': errors})
 
     p = project.get_project(labml_token=token)
     if not p:
@@ -170,7 +170,7 @@ def update_run() -> flask.Response:
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return format_rv({'errors': errors, 'url': r.url})
+    return jsonify({'errors': errors, 'url': r.url})
 
 
 def claim_run(run_uuid: str, r: run.Run) -> None:

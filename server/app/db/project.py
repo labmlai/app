@@ -12,6 +12,7 @@ class Project(Model['Project']):
     name: str
     runs: Dict[str, Key[Run]]
     computers: Dict[str, Key[Computer]]
+    is_run_added: bool
 
     @classmethod
     def defaults(cls):
@@ -20,12 +21,17 @@ class Project(Model['Project']):
                     labml_token='',
                     runs={},
                     computers={},
+                    is_run_added=False,
                     )
 
     def get_runs(self) -> List[Run]:
         res = []
         for run_uuid, run_key in self.runs.items():
             res.append(run_key.load())
+
+        if self.is_run_added:
+            self.is_run_added = False
+            self.save()
 
         return res
 

@@ -159,6 +159,7 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
               status=status.key,
               )
     p.runs[run.run_uuid] = run.key
+    p.is_run_added = True
 
     run.save()
     p.save()

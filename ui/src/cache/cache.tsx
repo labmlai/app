@@ -96,7 +96,7 @@ abstract class CacheObject<T> {
         return this.data
     }
 
-    async invalidate_cache(): Promise<void>{
+    invalidate_cache(): void{
         this.data = null
     }
 }

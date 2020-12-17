@@ -1,6 +1,18 @@
 import axios, {AxiosInstance} from 'axios'
 
 import {UserModel} from "./models/user"
+import CACHE from "./cache/cache"
+
+interface MetaProps {
+    is_run_added: boolean
+}
+
+function process_meta_data(meta: MetaProps) {
+    if (meta.is_run_added) {
+        const runListCache = CACHE.getRunsList()
+        runListCache.invalidate_cache()
+    }
+}
 
 class Network {
     axiosInstance: AxiosInstance
@@ -15,7 +27,11 @@ class Network {
         this.handleError = null
 
         this.axiosInstance.interceptors.response.use((response: any) => {
-            return response.data.data
+            let data = response.data
+
+            process_meta_data(data.meta)
+
+            return data.data
         }, (error: any) => {
             if (this.handleError != null) {
                 this.handleError(error)
