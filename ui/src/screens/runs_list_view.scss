@@ -4,11 +4,13 @@
       display: flex;
       border-radius: 10px;
       box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
+
       span.icon {
         align-items: center;
         padding: .375rem .75rem;
         color: #555;
       }
+
       input {
         flex: 1 1 auto;
         padding: .375rem .75rem;
@@ -16,7 +18,8 @@
         border: none;
         outline: none;
         background: none;
-        &:focus{
+
+        &:focus {
           box-shadow: none;
         }
       }
@@ -24,3 +27,7 @@
   }
 }
 
+.buttons {
+  float: right;
+  display: flex;
+}

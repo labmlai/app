@@ -18,18 +18,16 @@ html, body {
 }
 
 .nav-container {
-  nav {
-    margin-left: 5px;
-    display: flex;
-    align-items: center;
-    min-height: 8vh;
-  }
+  overflow: hidden;
+  margin-top: 15px;
+  margin-left: 5px;
 
   .title {
     color: dimgrey;
+    float: left;
     text-transform: uppercase;
     letter-spacing: 5px;
-    font-size: 20px;
+    font-size: 10px;
   }
 }
 
@@ -61,10 +59,10 @@ html, body {
 
 .burger {
   cursor: pointer;
-  display: block;
+  float: left;
 
   div {
-    width: 25px;
+    width: 20px;
     height: 3px;
     background-color: dimgrey;
     margin: 5px;

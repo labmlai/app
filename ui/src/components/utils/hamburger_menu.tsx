@@ -55,7 +55,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
 
     return <div>
         <div className={'nav-container'}>
-            <nav>
+            <div>
                 <div className={'nav-links' + navLinksClass}>
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Experiments')} href={'/runs'}>
                         <FontAwesomeIcon icon={faHome}/>
@@ -81,11 +81,11 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                     <div className={'line2'}></div>
                     <div className={'line3'}></div>
                 </div>
-                <div className={'title ml-4 mt-1'}>
-                    <h4>{props.title}</h4>
+                <div className={'title ml-2 mt-1'}>
+                    <h5>{props.title}</h5>
                 </div>
                 {props.children}
-            </nav>
+            </div>
         </div>
         {(() => {
         })()}
