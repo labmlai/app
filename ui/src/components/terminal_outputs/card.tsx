@@ -35,7 +35,7 @@ function StdOut(props: StdOutCardProps, ref: any) {
         }
 
         load().then()
-    })
+    }, [runCache])
 
     async function onRefresh() {
         setRun(await runCache.get(true))
@@ -61,7 +61,7 @@ function StdOut(props: StdOutCardProps, ref: any) {
         if (terminalRef.current) {
             terminalRef.current.scrollTop = Number.MAX_SAFE_INTEGER
         }
-    },)
+    }, [terminalRef])
 
 
     return <div>{!run ?
@@ -106,11 +106,13 @@ function StdOutView(props: StdOutViewCardProps) {
     useEffect(() => {
         async function load() {
             setRun(await runCache.get())
-            setStatus(await statusCache.get())
 
-            if (status && !status.isRunning) {
+            let currentStatus = await statusCache.get()
+            if (currentStatus && !currentStatus.isRunning) {
                 clearInterval(interval)
             }
+
+            setStatus(currentStatus)
         }
 
         mixpanel.track('Analysis View', {uuid: runUUID, analysis: props.title})
@@ -118,7 +120,7 @@ function StdOutView(props: StdOutViewCardProps) {
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
-    })
+    }, [runCache, statusCache, runUUID, props.title])
 
     async function load() {
         setRun(await runCache.get(true))

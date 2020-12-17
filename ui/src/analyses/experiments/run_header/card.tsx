@@ -87,7 +87,7 @@ function RunHeaderCard(props: RunHeaderProps) {
         }
 
         load().then()
-    })
+    }, [props.lastUpdated, statusCache, runCache])
 
     useEffect(() => {
         async function loadStatus() {
@@ -103,7 +103,7 @@ function RunHeaderCard(props: RunHeaderProps) {
 
         let interval = setInterval(loadStatus, 1000)
         return () => clearInterval(interval)
-    })
+    }, [props.lastUpdated, statusCache])
 
 
     function onClick() {

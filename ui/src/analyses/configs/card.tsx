@@ -25,7 +25,7 @@ function Card(props: CardProps) {
         }
 
         load().then()
-    })
+    }, [runCache])
 
     let configsView
     if (run != null) {
@@ -64,7 +64,7 @@ function View(props: ViewProps) {
 
         mixpanel.track('Configs View', {uuid: runUUID});
         load().then()
-    })
+    }, [runCache, runUUID])
 
     let configsView = null
     if (run != null) {

@@ -44,7 +44,7 @@ function BasicView(props: ViewCardProps) {
         load().then()
         let interval = setInterval(load, 2 * 60 * 1000)
         return () => clearInterval(interval)
-    })
+    }, [analysisCache, statusCache, UUID, status, props.title])
 
     useEffect(() => {
         async function load() {
