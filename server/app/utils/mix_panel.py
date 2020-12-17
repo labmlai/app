@@ -1,6 +1,7 @@
 import time
 import queue
 import threading
+from functools import wraps
 from typing import NamedTuple, Dict, Union
 
 import mixpanel
@@ -38,6 +39,7 @@ class Event:
 
     def time_this(self, time_limit: float = None):
         def decorator_function(function):
+            @wraps(function)
             def time_wrapper(*args, **kwargs):
                 start = time.time()
                 r = function(*args, **kwargs)

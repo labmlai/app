@@ -20,6 +20,7 @@ from .utils.mix_panel import MixPanelEvent
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
+@MixPanelEvent.time_this(None)
 def sign_in() -> flask.Response:
     u = user.get_or_create_user(user.AuthOInfo(**request.json))
 
@@ -39,6 +40,7 @@ def sign_in() -> flask.Response:
     return response
 
 
+@MixPanelEvent.time_this(None)
 def sign_out() -> flask.Response:
     session_id = request.cookies.get('session_id')
     s = session.get_or_create(session_id)
@@ -117,6 +119,7 @@ def get_computers(labml_token: str) -> flask.Response:
     return format_rv({'computers': res, 'labml_token': labml_token})
 
 
+@MixPanelEvent.time_this(0.4)
 def update_run() -> flask.Response:
     errors = []
 
@@ -192,6 +195,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
             r.save()
 
 
+@MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
     status_code = 400
@@ -212,6 +216,7 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
+@MixPanelEvent.time_this(None)
 def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
@@ -247,7 +252,7 @@ def get_computer_status(computer_uuid: str) -> flask.Response:
 
 
 @login_required
-@MixPanelEvent.time_this(0.4)
+@MixPanelEvent.time_this(None)
 @check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
     u = get_auth_user()
@@ -272,6 +277,7 @@ def get_runs(labml_token: str) -> flask.Response:
     return format_rv({'runs': res, 'labml_token': labml_token})
 
 
+@MixPanelEvent.time_this(None)
 @login_required
 def delete_runs() -> flask.Response:
     run_uuids = request.json['run_uuids']
@@ -283,6 +289,7 @@ def delete_runs() -> flask.Response:
 
 
 @login_required
+@MixPanelEvent.time_this(None)
 def get_user() -> flask.Response:
     u = get_auth_user()
     logger.debug(f'get_user, user : {u.key}')
@@ -290,6 +297,7 @@ def get_user() -> flask.Response:
     return format_rv(u.get_data())
 
 
+@MixPanelEvent.time_this(None)
 def is_user_logged() -> flask.Response:
     return format_rv({'is_user_logged': get_is_user_logged()})
 
