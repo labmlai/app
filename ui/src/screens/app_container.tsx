@@ -80,7 +80,7 @@ function AppContainer() {
                     data.picture = user.picture
 
                     NETWORK.signIn(data).then((res) => {
-                        if (res.data.is_successful) {
+                        if (res.is_successful) {
                             setLoggedIn(true)
                             isUserLoggedCache.UserLogged = true
                             mixpanel.track('Successful login')

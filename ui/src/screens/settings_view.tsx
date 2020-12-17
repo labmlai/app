@@ -40,7 +40,7 @@ function SettingsView() {
 
     function logOut() {
         NETWORK.signOut().then((res) => {
-            if (res.data.is_successful) {
+            if (res.is_successful) {
                 logout({returnTo: window.location.origin})
             } else {
                 captureException(Error('error in logout'))

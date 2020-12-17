@@ -70,7 +70,7 @@ def before_request():
     g.request_start_time = time.time()
     content_size = request.content_length
     if content_size and content_size > (15 * 1000000):
-        logger.error(f'large content size: {request.content_length/1000000} MB')
+        logger.error(f'large content size: {request.content_length / 1000000} MB')
     logger.debug(f'time: {timestamp} uri: {request.full_path}')
 
 
@@ -79,7 +79,11 @@ def after_request(response):
     """Calculate and log execution time"""
     request_time = time.time() - g.request_start_time
 
-    logger.info(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')
+    if not settings.IS_MIX_PANEL:
+        if request_time > 0.4:
+            logger.error(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')
+        else:
+            logger.info(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')
 
     return response
 
