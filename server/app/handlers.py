@@ -15,6 +15,7 @@ from .db import user
 from .db import project
 from .logging import logger
 from .utils import check_version, format_rv
+from .utils.mix_panel import MixPanelEvent
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -246,6 +247,7 @@ def get_computer_status(computer_uuid: str) -> flask.Response:
 
 
 @login_required
+@MixPanelEvent.time_this(0.4)
 @check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
     u = get_auth_user()
