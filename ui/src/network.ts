@@ -8,7 +8,7 @@ interface MetaProps {
 }
 
 function process_meta_data(meta: MetaProps) {
-    if (meta.is_run_added) {
+    if (meta && meta.is_run_added) {
         const runListCache = CACHE.getRunsList()
         runListCache.invalidate_cache()
     }
