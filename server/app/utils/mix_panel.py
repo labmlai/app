@@ -4,6 +4,8 @@ import threading
 from functools import wraps
 from typing import NamedTuple, Dict, Union
 
+from flask import request
+
 import mixpanel
 
 from ..auth import get_auth_user
@@ -34,6 +36,28 @@ class Event:
             identifier = user.email
         else:
             identifier = ''
+
+        run_uuid = request.args.get('run_uuid', '')
+        computer_uuid = request.args.get('computer_uuid', '')
+
+        uuid = ''
+        if run_uuid:
+            uuid = run_uuid
+        elif computer_uuid:
+            uuid = computer_uuid
+        else:
+            value = request.base_url.split('/')[-1]
+            if not value.isalpha():
+                uuid = value
+
+        meta = {'remote_ip': request.remote_addr,
+                'uuid': uuid,
+                'labml_token': request.args.get('labml_token', ''),
+                'labml_version': request.args.get('labml_version', ''),
+                'agent': request.headers['User-Agent']
+                }
+
+        data.update(meta)
 
         return self._track(identifier, event, data)
 
