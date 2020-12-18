@@ -98,7 +98,7 @@ function AppContainer() {
 
     NETWORK.handleError = function (error: any) {
         if (error === undefined || error.response === undefined) {
-            captureException(Error('undefined error or response'))
+            //captureException(Error('undefined error or response'))
         } else if (error.response.status === 403) {
             setLoggedIn(false)
             mixpanel.track('unauthorized')
