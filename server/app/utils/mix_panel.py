@@ -1,4 +1,5 @@
 import time
+import re
 import queue
 import threading
 from functools import wraps
@@ -28,7 +29,10 @@ class Event:
         return self.mp.track(identifier, event, data)
 
     @staticmethod
-    def get_meta_data() -> Dict[str, str]:
+    def has_numbers(input_string):
+        return bool(re.search(r'\d', input_string))
+
+    def get_meta_data(self) -> Dict[str, str]:
         run_uuid = request.args.get('run_uuid', '')
         computer_uuid = request.args.get('computer_uuid', '')
 
@@ -39,7 +43,7 @@ class Event:
             uuid = computer_uuid
         else:
             value = request.base_url.split('/')[-1]
-            if not value.isalpha():
+            if self.has_numbers(value):
                 uuid = value
 
         meta = {'remote_ip': request.remote_addr,
