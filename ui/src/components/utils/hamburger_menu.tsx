@@ -4,7 +4,7 @@ import {useHistory} from "react-router-dom"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faHome, faUserCircle, faBook, faComments} from "@fortawesome/free-solid-svg-icons"
+import {faHome, faUserCircle, faBook, faComments, faBars, faTimes} from "@fortawesome/free-solid-svg-icons"
 import "./hamburger_menu.scss"
 
 interface HamburgerMenuBarProps {
@@ -14,7 +14,7 @@ interface HamburgerMenuBarProps {
 
 function HamburgerMenuBar(props: HamburgerMenuBarProps) {
     const [navLinksClass, setNavLinksClass] = useState('')
-    const [burgerClass, setBurgerClass] = useState('')
+    const [crossBurger, setCrossBurger] = useState(false)
     const [overlayClass, setOverlayClass] = useState('')
 
     const history = useHistory()
@@ -39,11 +39,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
         }
 
         // Burger Animation
-        if (burgerClass) {
-            setBurgerClass('')
-        } else {
-            setBurgerClass(' toggle')
-        }
+        setCrossBurger(!crossBurger)
 
         // turn on overlay
         if (overlayClass) {
@@ -76,10 +72,12 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                         <span>Join Our Slack</span>
                     </Nav.Link>
                 </div>
-                <Nav.Link className={'burger' + burgerClass} onClick={onBurgerClick}>
-                    <div className={'line1'}></div>
-                    <div className={'line2'}></div>
-                    <div className={'line3'}></div>
+                <Nav.Link className={'burger'} onClick={onBurgerClick}>
+                    {crossBurger ?
+                        <FontAwesomeIcon icon={faTimes}/>
+                        :
+                        <FontAwesomeIcon icon={faBars}/>
+                    }
                 </Nav.Link>
                 <div className={'title ml-2'}>
                     <h5>{props.title}</h5>

@@ -28,7 +28,7 @@ html, body {
     text-transform: uppercase;
     letter-spacing: 5px;
     font-size: 10px;
-    margin-top: 11px;
+    margin-top: 12px;
   }
 }
 
@@ -61,15 +61,6 @@ html, body {
 .burger {
   cursor: pointer;
   float: left;
-  padding: .3rem 0.4rem;
-  border-radius: 10px;
-
-  div {
-    width: 18px;
-    height: 3px;
-    background-color: dimgrey;
-    margin: 4px;
-  }
 }
 
 .nav-active {
@@ -84,19 +75,5 @@ html, body {
   to {
     opacity: 1;
     transform: translateX(30px);
-  }
-}
-
-.toggle {
-  .line1 {
-    transform: rotate(-45deg) translate(-5px, 6px);
-  }
-
-  .line2 {
-    opacity: 0;
-  }
-
-  .line3 {
-    transform: rotate(45deg) translate(-5px, -6px);
   }
 }
