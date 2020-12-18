@@ -130,7 +130,7 @@ function StdOutView(props: StdOutViewCardProps) {
         load().then()
     }
 
-    return <div className={'page'} style={{width: actualWidth}}>
+    return <div className={'page'}>
         <div className={'flex-container'}>
             <BackButton/>
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
