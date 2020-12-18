@@ -28,6 +28,14 @@ class Event:
 
         return self.mp.track(identifier, event, data)
 
+    def people_set(self, identifier: str, first_name: str, last_name: str, email: str) -> None:
+
+        return self.mp.people_set(identifier, {
+            '$first_name': first_name,
+            '$last_name': last_name,
+            '$email': email,
+        })
+
     @staticmethod
     def has_numbers(input_string):
         return bool(re.search(r'\d', input_string))
