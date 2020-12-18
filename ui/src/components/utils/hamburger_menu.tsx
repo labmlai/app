@@ -81,7 +81,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                     <div className={'line2'}></div>
                     <div className={'line3'}></div>
                 </Nav.Link>
-                <div className={'title ml-2 mt-2'}>
+                <div className={'title ml-2'}>
                     <h5>{props.title}</h5>
                 </div>
                 {props.children}
