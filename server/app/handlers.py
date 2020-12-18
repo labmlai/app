@@ -299,7 +299,7 @@ def get_user() -> flask.Response:
 
 @MixPanelEvent.time_this(None)
 def is_user_logged() -> flask.Response:
-    print(get_is_user_logged())
+
     return format_rv({'is_user_logged': get_is_user_logged()})
 
 
