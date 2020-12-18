@@ -1,8 +1,11 @@
 import time
+import re
 import queue
 import threading
 from functools import wraps
 from typing import NamedTuple, Dict, Union
+
+from flask import request
 
 import mixpanel
 
@@ -25,6 +28,41 @@ class Event:
 
         return self.mp.track(identifier, event, data)
 
+    def people_set(self, identifier: str, first_name: str, last_name: str, email: str) -> None:
+
+        return self.mp.people_set(identifier, {
+            '$first_name': first_name,
+            '$last_name': last_name,
+            '$email': email,
+        })
+
+    @staticmethod
+    def has_numbers(input_string):
+        return bool(re.search(r'\d', input_string))
+
+    def get_meta_data(self) -> Dict[str, str]:
+        run_uuid = request.args.get('run_uuid', '')
+        computer_uuid = request.args.get('computer_uuid', '')
+
+        uuid = ''
+        if run_uuid:
+            uuid = run_uuid
+        elif computer_uuid:
+            uuid = computer_uuid
+        else:
+            value = request.base_url.split('/')[-1]
+            if self.has_numbers(value):
+                uuid = value
+
+        meta = {'remote_ip': request.remote_addr,
+                'uuid': uuid,
+                'labml_token': request.args.get('labml_token', ''),
+                'labml_version': request.args.get('labml_version', ''),
+                'agent': request.headers['User-Agent']
+                }
+
+        return meta
+
     def track(self, event: str, data: Union[NamedTuple, Dict]) -> None:
         if isinstance(data, NamedTuple):
             data = dict(data)
@@ -34,6 +72,8 @@ class Event:
             identifier = user.email
         else:
             identifier = ''
+
+        data.update(self.get_meta_data())
 
         return self._track(identifier, event, data)
 

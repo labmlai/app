@@ -26,7 +26,7 @@ function BottomAxis(props: AxisProps) {
         let layer = d3.select(`#${id}`)
         layer.selectAll('g').remove()
         layer.append('g').call(axis)
-    })
+    }, [id, axis])
 
 
     return <g id={id}/>
@@ -39,7 +39,7 @@ function RightAxis(props: AxisProps) {
         let layer = d3.select(`#${id}`)
         layer.selectAll('g').remove()
         layer.append('g').call(axis)
-    })
+    }, [axis, id])
 
 
     return <g id={id}/>

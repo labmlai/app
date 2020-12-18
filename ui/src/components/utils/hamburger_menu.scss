@@ -18,18 +18,17 @@ html, body {
 }
 
 .nav-container {
-  nav {
-    margin-left: 5px;
-    display: flex;
-    align-items: center;
-    min-height: 8vh;
-  }
+  overflow: hidden;
+  margin-top: 10px;
+  margin-left: 5px;
 
   .title {
     color: dimgrey;
+    float: left;
     text-transform: uppercase;
     letter-spacing: 5px;
-    font-size: 20px;
+    font-size: 10px;
+    margin-top: 11px;
   }
 }
 
@@ -61,13 +60,15 @@ html, body {
 
 .burger {
   cursor: pointer;
-  display: block;
+  float: left;
+  padding: .3rem 0.4rem;
+  border-radius: 10px;
 
   div {
-    width: 25px;
+    width: 18px;
     height: 3px;
     background-color: dimgrey;
-    margin: 5px;
+    margin: 4px;
   }
 }
 

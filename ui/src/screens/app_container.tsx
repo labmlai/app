@@ -66,12 +66,12 @@ function AppContainer() {
                 } else if (isAuthenticated && !currentState) {
                     let data = {} as UserModel
 
-                    mixpanel.identify(user.sub)
                     mixpanel.people.set({
                         $first_name: user.first_name,
                         $last_name: user.last_name,
                         $email: user.email
                     })
+                    mixpanel.identify(user.email)
 
                     data.name = user.name
                     data.email = user.email
@@ -98,7 +98,7 @@ function AppContainer() {
 
     NETWORK.handleError = function (error: any) {
         if (error === undefined || error.response === undefined) {
-            captureException(Error('undefined error or response'))
+            //captureException(Error('undefined error or response'))
         } else if (error.response.status === 403) {
             setLoggedIn(false)
             mixpanel.track('unauthorized')
