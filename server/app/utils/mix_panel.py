@@ -27,16 +27,8 @@ class Event:
 
         return self.mp.track(identifier, event, data)
 
-    def track(self, event: str, data: Union[NamedTuple, Dict]) -> None:
-        if isinstance(data, NamedTuple):
-            data = dict(data)
-
-        user = get_auth_user()
-        if user:
-            identifier = user.email
-        else:
-            identifier = ''
-
+    @staticmethod
+    def get_meta_data() -> Dict[str, str]:
         run_uuid = request.args.get('run_uuid', '')
         computer_uuid = request.args.get('computer_uuid', '')
 
@@ -57,7 +49,19 @@ class Event:
                 'agent': request.headers['User-Agent']
                 }
 
-        data.update(meta)
+        return meta
+
+    def track(self, event: str, data: Union[NamedTuple, Dict]) -> None:
+        if isinstance(data, NamedTuple):
+            data = dict(data)
+
+        user = get_auth_user()
+        if user:
+            identifier = user.email
+        else:
+            identifier = ''
+
+        data.update(self.get_meta_data())
 
         return self._track(identifier, event, data)
 
