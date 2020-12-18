@@ -33,7 +33,7 @@ def sign_in() -> flask.Response:
     response = make_response(format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id)
+        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY)
 
     logger.debug(f'sign_in, user: {u.key}')
 
@@ -50,7 +50,7 @@ def sign_out() -> flask.Response:
     response = make_response(format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id)
+        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY)
 
     logger.debug(f'sign_out, session_id: {s.session_id}')
 
@@ -299,6 +299,7 @@ def get_user() -> flask.Response:
 
 @MixPanelEvent.time_this(None)
 def is_user_logged() -> flask.Response:
+    print(get_is_user_logged())
     return format_rv({'is_user_logged': get_is_user_logged()})
 
 
