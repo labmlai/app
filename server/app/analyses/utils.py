@@ -20,7 +20,8 @@ def remove_common_prefix(series: List[Dict[str, Any]], key: str):
 
     common_prefix = find_common_prefix(names)
 
+    len_removed = len(common_prefix)
     for s in series:
-        name = s[key][len(common_prefix):]
+        name = s[key][len_removed:]
 
         s[key] = '.'.join(name)
