@@ -5,22 +5,22 @@ import flask
 import werkzeug.wrappers
 from flask import request, make_response, jsonify
 
-from .analyses import AnalysisManager
+from .logging import logger
 from . import settings
-from .auth import login_required, check_labml_token_permission, get_session, get_auth_user, get_is_user_logged
+from . import auth
+from . import utils
 from .db import run
 from .db import computer
 from .db import session
 from .db import user
 from .db import project
-from .logging import logger
-from .utils import check_version, format_rv
-from .utils.mix_panel import MixPanelEvent
+from .utils import mix_panel
+from .analyses import AnalysisManager
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
-@MixPanelEvent.time_this(None)
+@mix_panel.MixPanelEvent.time_this(None)
 def sign_in() -> flask.Response:
     u = user.get_or_create_user(user.AuthOInfo(**request.json))
 
@@ -30,7 +30,7 @@ def sign_in() -> flask.Response:
     s.user = u.key
     s.save()
 
-    response = make_response(format_rv({'is_successful': True}))
+    response = make_response(utils.format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY)
@@ -40,14 +40,14 @@ def sign_in() -> flask.Response:
     return response
 
 
-@MixPanelEvent.time_this(None)
+@mix_panel.MixPanelEvent.time_this(None)
 def sign_out() -> flask.Response:
     session_id = request.cookies.get('session_id')
     s = session.get_or_create(session_id)
 
     session.delete(s)
 
-    response = make_response(format_rv({'is_successful': True}))
+    response = make_response(utils.format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
         response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY)
@@ -73,10 +73,10 @@ def update_computer() -> flask.Response:
     if 'track' in request.json:
         AnalysisManager.track_computer(computer_uuid, request.json['track'])
 
-    return format_rv({'errors': errors, 'url': c.url})
+    return utils.format_rv({'errors': errors, 'url': c.url})
 
 
-@login_required
+@auth.login_required
 def get_computer(computer_uuid: str) -> flask.Response:
     computer_data = {}
     status_code = 400
@@ -86,7 +86,7 @@ def get_computer(computer_uuid: str) -> flask.Response:
         computer_data = c.get_data()
         status_code = 200
 
-    response = make_response(format_rv(computer_data))
+    response = make_response(utils.format_rv(computer_data))
     response.status_code = status_code
 
     logger.debug(f'computer, computer_uuid: {computer_uuid}')
@@ -94,10 +94,10 @@ def get_computer(computer_uuid: str) -> flask.Response:
     return response
 
 
-@login_required
-@check_labml_token_permission
+@auth.login_required
+@auth.check_labml_token_permission
 def get_computers(labml_token: str) -> flask.Response:
-    u = get_auth_user()
+    u = auth.get_auth_user()
 
     if labml_token:
         computers_list = computer.get_computers(labml_token)
@@ -116,10 +116,10 @@ def get_computers(labml_token: str) -> flask.Response:
 
     logger.debug(f'computers, labml_token : {labml_token}')
 
-    return format_rv({'computers': res, 'labml_token': labml_token})
+    return utils.format_rv({'computers': res, 'labml_token': labml_token})
 
 
-@MixPanelEvent.time_this(0.4)
+@mix_panel.MixPanelEvent.time_this(0.4)
 def update_run() -> flask.Response:
     errors = []
 
@@ -133,7 +133,7 @@ def update_run() -> flask.Response:
         errors.append(error)
         return jsonify({'errors': errors})
 
-    if check_version(version, settings.LABML_VERSION):
+    if utils.check_version(version, settings.LABML_VERSION):
         error = {'error': 'labml_outdated',
                  'message': f'Your labml client is outdated, please upgrade: '
                             'pip install labml --upgrade'}
@@ -178,7 +178,7 @@ def update_run() -> flask.Response:
 
 
 def claim_run(run_uuid: str, r: run.Run) -> None:
-    s = get_session()
+    s = auth.get_session()
 
     if not s.user:
         return
@@ -195,7 +195,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
             r.save()
 
 
-@MixPanelEvent.time_this(None)
+@mix_panel.MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
     status_code = 400
@@ -208,7 +208,9 @@ def get_run(run_uuid: str) -> flask.Response:
         if not r.is_claimed:
             claim_run(run_uuid, r)
 
-    response = make_response(format_rv(run_data))
+    u = auth.get_auth_user()
+
+    response = make_response(utils.format_rv(run_data, {'is_run_added': u.default_project.is_run_added}))
     response.status_code = status_code
 
     logger.debug(f'run, run_uuid: {run_uuid}')
@@ -216,7 +218,7 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
-@MixPanelEvent.time_this(None)
+@mix_panel.MixPanelEvent.time_this(None)
 def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
@@ -226,7 +228,7 @@ def get_run_status(run_uuid: str) -> flask.Response:
         status_data = s.get_data()
         status_code = 200
 
-    response = make_response(format_rv(status_data))
+    response = make_response(utils.format_rv(status_data))
     response.status_code = status_code
 
     logger.debug(f'run_status, run_uuid: {run_uuid}')
@@ -243,7 +245,7 @@ def get_computer_status(computer_uuid: str) -> flask.Response:
         status_data = s.get_data()
         status_code = 200
 
-    response = make_response(format_rv(status_data))
+    response = make_response(utils.format_rv(status_data))
     response.status_code = status_code
 
     logger.debug(f'computer_status, computer_uuid: {computer_uuid}')
@@ -251,11 +253,11 @@ def get_computer_status(computer_uuid: str) -> flask.Response:
     return response
 
 
-@login_required
-@MixPanelEvent.time_this(None)
-@check_labml_token_permission
+@auth.login_required
+@mix_panel.MixPanelEvent.time_this(None)
+@auth.check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
-    u = get_auth_user()
+    u = auth.get_auth_user()
 
     if labml_token:
         runs_list = run.get_runs(labml_token)
@@ -274,33 +276,32 @@ def get_runs(labml_token: str) -> flask.Response:
 
     logger.debug(f'runs, labml_token : {labml_token}')
 
-    return format_rv({'runs': res, 'labml_token': labml_token})
+    return utils.format_rv({'runs': res, 'labml_token': labml_token})
 
 
-@MixPanelEvent.time_this(None)
-@login_required
+@mix_panel.MixPanelEvent.time_this(None)
+@auth.login_required
 def delete_runs() -> flask.Response:
     run_uuids = request.json['run_uuids']
 
-    u = get_auth_user()
+    u = auth.get_auth_user()
     u.default_project.delete_runs(run_uuids)
 
-    return format_rv({'is_successful': True})
+    return utils.format_rv({'is_successful': True})
 
 
-@login_required
-@MixPanelEvent.time_this(None)
+@auth.login_required
+@mix_panel.MixPanelEvent.time_this(None)
 def get_user() -> flask.Response:
-    u = get_auth_user()
+    u = auth.get_auth_user()
     logger.debug(f'get_user, user : {u.key}')
 
-    return format_rv(u.get_data())
+    return utils.format_rv(u.get_data())
 
 
-@MixPanelEvent.time_this(None)
+@mix_panel.MixPanelEvent.time_this(None)
 def is_user_logged() -> flask.Response:
-
-    return format_rv({'is_user_logged': get_is_user_logged()})
+    return utils.format_rv({'is_user_logged': auth.get_is_user_logged()})
 
 
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):

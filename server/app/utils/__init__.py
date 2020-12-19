@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 from uuid import uuid4
 
 from flask import jsonify
@@ -18,6 +18,10 @@ def gen_token() -> str:
     return uuid4().hex
 
 
-def format_rv(data: Any):
+def format_rv(data: Any, updated: Dict[str, Any] = None):
+    meta = {'is_run_added': False}
 
-    return jsonify({'data': data, 'meta': {'is_run_added': False}})
+    if updated:
+        meta.update(updated)
+
+    return jsonify({'data': data, 'meta': meta})
