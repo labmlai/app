@@ -67,9 +67,8 @@ function AppContainer() {
                     let data = {} as UserModel
 
                     mixpanel.people.set({
-                        $first_name: user.first_name,
-                        $last_name: user.last_name,
-                        $email: user.email
+                        $name: user.name,
+                        $email: user.email,
                     })
                     mixpanel.identify(user.email)
 
