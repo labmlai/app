@@ -2,15 +2,18 @@ import React, {useEffect, useState} from "react"
 
 import {useHistory, useLocation} from "react-router-dom"
 
+import mixpanel from "mixpanel-browser"
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons"
 
 import "./util_buttons.scss"
 
+
 interface ButtonProps {
     onButtonClick?: () => void
     isDisabled?: boolean
+    parent: string
 }
 
 export function BackButton(props: ButtonProps) {
@@ -50,6 +53,8 @@ export function BackButton(props: ButtonProps) {
             let uri = location.pathname + location.search
             history.push('/runs', uri)
         }
+
+        mixpanel.track('Back Button Clicked', {parent: props.parent})
     }
 
     return <Nav.Link className={'tab'} onClick={onBackButtonClick}>
@@ -63,6 +68,8 @@ export function RefreshButton(props: ButtonProps) {
         if (props.onButtonClick) {
             props.onButtonClick()
         }
+
+        mixpanel.track('Refresh Button Clicked', {parent: props.parent})
     }
 
     return <Nav.Link className={'tab float-right'} onClick={onRefreshButtonClick}>
@@ -71,25 +78,57 @@ export function RefreshButton(props: ButtonProps) {
 }
 
 export function DeleteButton(props: ButtonProps) {
-    return <Nav.Link className={'tab float-right'} onClick={props.onButtonClick}>
+    function onDeleteButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+
+        mixpanel.track('Delete Button Clicked', {parent: props.parent})
+    }
+
+    return <Nav.Link className={'tab float-right'} onClick={onDeleteButtonClick}>
         <FontAwesomeIcon icon={faTrash}/>
     </Nav.Link>
 }
 
 export function EditButton(props: ButtonProps) {
-    return <Nav.Link className={'tab float-right'} onClick={props.onButtonClick}>
+    function onEditButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+
+        mixpanel.track('Edit Button Clicked', {parent: props.parent})
+    }
+
+    return <Nav.Link className={'tab float-right'} onClick={onEditButtonClick}>
         <FontAwesomeIcon icon={faEdit}/>
     </Nav.Link>
 }
 
 export function SaveButton(props: ButtonProps) {
-    return <Nav.Link onClick={props.onButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
+    function onSaveButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+
+        mixpanel.track('Save Button Clicked', {parent: props.parent})
+    }
+
+    return <Nav.Link onClick={onSaveButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
         <FontAwesomeIcon icon={faSave}/>
     </Nav.Link>
 }
 
 export function CancelButton(props: ButtonProps) {
-    return <Nav.Link onClick={props.onButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
+    function onCancelButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+
+        mixpanel.track('Cancel Button Clicked', {parent: props.parent})
+    }
+
+    return <Nav.Link onClick={onCancelButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
         <FontAwesomeIcon icon={faTimes}/>
     </Nav.Link>
 }

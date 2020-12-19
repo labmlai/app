@@ -108,13 +108,15 @@ function ComputersListView() {
         load().then()
     }
 
+    const view = 'Computer List View'
+
     return <div>
         <HamburgerMenuBar title={'Experiments'}>
             <div className={'mb-2 float-right d-flex'}>
-                {computers.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
-                {computers.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit}/>}
-                {computers.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh}/>}
-                {computers.length > 0 && isEditMode && <CancelButton onButtonClick={onToggleEdit}/>}
+                {computers.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete} parent={view}/>}
+                {computers.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit} parent={view}/>}
+                {computers.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh} parent={view}/>}
+                {computers.length > 0 && isEditMode && <CancelButton onButtonClick={onToggleEdit} parent={view}/>}
             </div>
         </HamburgerMenuBar>
         {(() => {

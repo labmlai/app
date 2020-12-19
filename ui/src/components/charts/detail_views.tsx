@@ -126,9 +126,9 @@ function BasicView(props: ViewCardProps) {
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
-            <BackButton/>
-            <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled}/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <BackButton parent={props.title}/>
+            <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled} parent={props.title}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={props.title}/>}
         </div>
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>

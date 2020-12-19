@@ -10,7 +10,7 @@ from flask_cors import CORS, cross_origin
 from app import handlers
 from app import settings
 from app.logging import logger
-from app.utils.mix_panel import MixPanelThread
+from app.utils import mix_panel
 
 if settings.SENTRY_DSN:
     try:
@@ -38,7 +38,7 @@ def create_app():
         sha = repo.head.object.hexsha
 
         if settings.IS_MIX_PANEL:
-            mp_tread = MixPanelThread()
+            mp_tread = mix_panel.MixPanelThread()
             mp_tread.start()
 
         logger.info('initializing app')

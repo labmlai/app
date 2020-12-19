@@ -56,7 +56,7 @@ function ComputerView(props: RunProps) {
     }, [statusCache, refreshArray, status])
 
     useEffect(() => {
-        mixpanel.track('Computer View', {uuid: computerUUID});
+        mixpanel.track('Computer View', {uuid: computerUUID})
     }, [computerUUID])
 
     // call when load, 2 minutes interval and when refresh button clicks
@@ -78,8 +78,8 @@ function ComputerView(props: RunProps) {
 
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
-            <BackButton/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <BackButton parent={'Computer View'}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={'Computer View'}/>}
         </div>
         <ComputerHeaderCard uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         {computer_analyses.map((analysis, i) => {

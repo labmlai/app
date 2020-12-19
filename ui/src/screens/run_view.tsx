@@ -111,8 +111,8 @@ function RunView(props: RunProps) {
         </WarningMessage>
         }
         <div className={'flex-container'}>
-            <BackButton/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <BackButton parent={'Run View'}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={'Run View'}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>

@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Union, NamedTuple
 
 from labml_db import Model, Key, Index
 
+from ..utils.mix_panel import MixPanelEvent
 from . import project
 from .status import create_status, Status
 from .. import settings
@@ -165,6 +166,11 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     p.save()
 
     RunIndex.set(run.run_uuid, run.key)
+
+    MixPanelEvent.track('run_created', {'run_uuid': run_uuid,
+                                        'run_ip': run_ip,
+                                        'labml_token': labml_token}
+                        )
 
     return run
 

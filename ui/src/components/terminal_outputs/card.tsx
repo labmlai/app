@@ -132,8 +132,8 @@ function StdOutView(props: StdOutViewCardProps) {
 
     return <div className={'page'}>
         <div className={'flex-container'}>
-            <BackButton/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh}/>}
+            <BackButton parent={props.title}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={props.title}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={runCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>

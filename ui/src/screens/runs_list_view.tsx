@@ -107,13 +107,15 @@ function RunsListView() {
         load().then()
     }
 
+    const view = 'Run List View'
+
     return <div>
         <HamburgerMenuBar title={'Runs'}>
             <div className={'buttons'}>
-                {runs.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete}/>}
-                {runs.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit}/>}
-                {runs.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh}/>}
-                {runs.length > 0 && isEditMode && <CancelButton onButtonClick={onToggleEdit}/>}
+                {runs.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete} parent={view}/>}
+                {runs.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit} parent={view}/>}
+                {runs.length > 0 && !isEditMode && <RefreshButton onButtonClick={onRefresh} parent={view}/>}
+                {runs.length > 0 && isEditMode && <CancelButton onButtonClick={onToggleEdit} parent={view}/>}
             </div>
         </HamburgerMenuBar>
         {(() => {

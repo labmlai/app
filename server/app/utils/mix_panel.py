@@ -9,7 +9,7 @@ from flask import request
 
 import mixpanel
 
-from ..auth import get_auth_user
+from .. import auth
 
 QUEUE = queue.Queue()
 
@@ -67,7 +67,7 @@ class Event:
         if isinstance(data, NamedTuple):
             data = dict(data)
 
-        user = get_auth_user()
+        user = auth.get_auth_user()
         if user:
             identifier = user.email
         else:

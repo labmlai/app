@@ -75,7 +75,7 @@ function View(props: ViewProps) {
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
-            <BackButton/>
+            <BackButton parent={'Configs View'}/>
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth}/>
         <h2 className={'header text-center'}>Configurations</h2>
