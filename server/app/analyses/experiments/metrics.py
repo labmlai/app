@@ -12,7 +12,6 @@ from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 from app.utils import format_rv
-from ..utils import remove_common_prefix
 
 
 @Analysis.db_model(PickleSerializer, 'metrics')
@@ -60,8 +59,6 @@ class MetricsAnalysis(Analysis):
             res.append(series)
 
         res.sort(key=lambda s: s['name'])
-
-        remove_common_prefix(res, 'name')
 
         return res
 

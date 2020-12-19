@@ -14,17 +14,13 @@ def find_common_prefix(names: List[str]):
 def remove_common_prefix(series: List[Dict[str, Any]], key: str):
     names = []
     for s in series:
-        if 'loss' in s[key].split('.'):
-            continue
+        s[key] = s[key].split('.')
 
-        names.append(s[key].split('.'))
+        names.append(s[key])
 
     common_prefix = find_common_prefix(names)
 
     for s in series:
-        if 'loss' in s[key].split('.'):
-            continue
-
-        name = s[key].split('.')[len(common_prefix):]
+        name = s[key][len(common_prefix):]
 
         s[key] = '.'.join(name)
