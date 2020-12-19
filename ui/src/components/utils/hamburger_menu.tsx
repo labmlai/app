@@ -4,7 +4,7 @@ import {useHistory} from "react-router-dom"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faHome, faUserCircle, faBook, faComments, faBars, faTimes} from "@fortawesome/free-solid-svg-icons"
+import {faRunning, faUserCircle, faBook, faComments, faBars, faTimes} from "@fortawesome/free-solid-svg-icons"
 import "./hamburger_menu.scss"
 
 interface HamburgerMenuBarProps {
@@ -22,7 +22,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
     function clickHandle(e: Event, tab: string) {
         // setCurrentTab(tab)
         e.preventDefault()
-        if (tab === 'Experiments') {
+        if (tab === 'Runs') {
             history.push('/runs')
         } else if ('User Profile') {
             history.push('/user')
@@ -53,9 +53,9 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
         <div className={'nav-container'}>
             <div>
                 <div className={'nav-links' + navLinksClass}>
-                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Experiments')} href={'/runs'}>
-                        <FontAwesomeIcon icon={faHome}/>
-                        <span>Experiments</span>
+                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Runs')} href={'/runs'}>
+                        <FontAwesomeIcon icon={faRunning}/>
+                        <span>Runs</span>
                     </Nav.Link>
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
                         <FontAwesomeIcon icon={faUserCircle}/>
