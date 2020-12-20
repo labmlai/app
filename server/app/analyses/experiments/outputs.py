@@ -12,6 +12,7 @@ from ..series import SeriesModel
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 from app.utils import format_rv
+from app.utils import mix_panel
 
 
 @Analysis.db_model(PickleSerializer, 'outputs')
@@ -74,6 +75,7 @@ class OutputsAnalysis(Analysis):
         return OutputsAnalysis(outputs_key.load())
 
 
+@mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'outputs/<run_uuid>')
 def get_modules_tracking(run_uuid: str) -> Any:
     track_data = []
