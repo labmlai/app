@@ -7,12 +7,13 @@ from labml_db.serializer.yaml import YamlSerializer
 
 from app.logging import logger
 from app.enums import SeriesEnums
+from app.utils import format_rv
+from app.utils import mix_panel
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from app.utils import format_rv
-from app.utils import mix_panel
+from .. import utils
 
 
 @Analysis.db_model(PickleSerializer, 'gradients')
@@ -54,6 +55,8 @@ class GradientsAnalysis(Analysis):
         res = self.gradients.get_tracks()
 
         res.sort(key=lambda s: s['name'])
+
+        utils.remove_common_prefix(res, 'name')
 
         return res
 

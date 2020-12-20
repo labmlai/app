@@ -5,14 +5,15 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from app.utils import format_rv
+from app.utils import mix_panel
 from app.logging import logger
 from app.enums import SeriesEnums
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from app.utils import format_rv
-from app.utils import mix_panel
+from .. import utils
 
 
 @Analysis.db_model(PickleSerializer, 'parameters')
@@ -54,6 +55,8 @@ class ParametersAnalysis(Analysis):
         res = self.parameters.get_tracks()
 
         res.sort(key=lambda s: s['name'])
+
+        utils.remove_common_prefix(res, 'name')
 
         return res
 
