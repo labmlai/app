@@ -50,8 +50,9 @@ export function BackButton(props: ButtonProps) {
         if (isPrevious) {
             history.goBack()
         } else {
-            let uri = location.pathname + location.search
-            history.push('/runs', uri)
+            // let uri = location.pathname + location.search
+            //history.push('/runs', uri)
+            history.push('/runs')
         }
 
         mixpanel.track('Back Button Clicked', {parent: props.parent})

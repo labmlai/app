@@ -8,10 +8,13 @@ def find_common_prefix(names: List[str]):
             if name[i] != word:
                 return shortest[:i]
 
-    return shortest
+    return ''
 
 
 def remove_common_prefix(series: List[Dict[str, Any]], key: str):
+    if not series:
+        return
+
     names = []
     for s in series:
         s[key] = s[key].split('.')
@@ -19,6 +22,9 @@ def remove_common_prefix(series: List[Dict[str, Any]], key: str):
         names.append(s[key])
 
     common_prefix = find_common_prefix(names)
+
+    if not common_prefix:
+        return
 
     len_removed = len(common_prefix)
     for s in series:
