@@ -93,7 +93,7 @@ function RunHeaderCard(props: RunHeaderProps) {
         async function loadStatus() {
             let status = await statusCache.get()
             setStatus(status)
-            // TODO change this based on discussion
+
             let lastUpdated = props.lastUpdated ? props.lastUpdated : statusCache.lastUpdated
             setLastUpdated(getTimeDiff(lastUpdated))
             if (!status.isRunning) {
@@ -115,4 +115,12 @@ function RunHeaderCard(props: RunHeaderProps) {
     </div>
 }
 
-export default RunHeaderCard
+function RunHeaderView() {
+    const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
+
+}
+
+export {
+    RunHeaderCard
+}

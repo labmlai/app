@@ -9,7 +9,7 @@ import CACHE from "../../cache/cache"
 import {LabLoader} from "../utils/loader"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {BackButton, RefreshButton} from "../utils/util_buttons"
-import RunHeaderCard from "../../analyses/experiments/run_header/card"
+import {RunHeaderCard} from "../../analyses/experiments/run_header/card"
 import {Status} from "../../models/status"
 import Filter from "./ansi_to_html"
 
