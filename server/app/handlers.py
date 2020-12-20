@@ -20,6 +20,15 @@ from .analyses import AnalysisManager
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
+def is_new_run_added():
+    is_run_added = False
+    u = auth.get_auth_user()
+    if u:
+        is_run_added = u.default_project.is_run_added
+
+    return is_run_added
+
+
 @mix_panel.MixPanelEvent.time_this(None)
 def sign_in() -> flask.Response:
     u = user.get_or_create_user(user.AuthOInfo(**request.json))
@@ -208,12 +217,7 @@ def get_run(run_uuid: str) -> flask.Response:
         if not r.is_claimed:
             claim_run(run_uuid, r)
 
-    is_run_added = False
-    u = auth.get_auth_user()
-    if u:
-        is_run_added = u.default_project.is_run_added
-
-    response = make_response(utils.format_rv(run_data, {'is_run_added': is_run_added}))
+    response = make_response(utils.format_rv(run_data, {'is_run_added': is_new_run_added()}))
     response.status_code = status_code
 
     logger.debug(f'run, run_uuid: {run_uuid}')

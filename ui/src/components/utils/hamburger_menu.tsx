@@ -59,7 +59,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                     </Nav.Link>
                     <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
                         <FontAwesomeIcon icon={faUserCircle}/>
-                        <span>User Profile</span>
+                        <span>Profile</span>
                     </Nav.Link>
                     <Nav.Link className={'tab'} href={'http://lab-ml.com/'} target="_blank">
                         <FontAwesomeIcon icon={faBook}/>
