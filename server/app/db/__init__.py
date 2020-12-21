@@ -42,3 +42,5 @@ Index.set_db_drivers(
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
+
+project.clean_project(settings.FLOAT_PROJECT_TOKEN)

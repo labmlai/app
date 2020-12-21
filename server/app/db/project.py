@@ -1,3 +1,4 @@
+import time
 from typing import List, Dict, Union
 
 from labml_db import Model, Key, Index
@@ -73,3 +74,21 @@ def create_project(labml_token: str, name: str):
                           )
         ProjectIndex.set(project.labml_token, project.key)
         project.save()
+
+
+def clean_project(labml_token: str):
+    project_key = ProjectIndex.get(labml_token)
+    p = project_key.load()
+
+    delete_list = []
+    for run_uuid, run_key in p.runs.items():
+        r = run_key.load()
+        s = r.status.load()
+
+        if (time.time() - 86400) > s.last_updated_time:
+            delete_list.append(run_uuid)
+
+    for run_uuid in delete_list:
+        p.runs.pop(run_uuid)
+
+    p.save()
