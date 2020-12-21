@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 
 import {Nav} from "react-bootstrap"
 
-import {PyTorchCode, KerasCode} from "../codes/code"
+import {PyTorchCode, KerasCode, PyTorchLightningCode} from "../codes/code"
 import {Footer} from '../utils/footer'
 import {LabLoader} from "../utils/loader"
 import CACHE from "../../cache/cache"
@@ -10,12 +10,13 @@ import {RunListItemModel} from "../../models/run_list"
 import {List} from "./list"
 
 import "./empty_runs_list.scss"
+import Search from "../utils/search";
 
 
 export function EmptyRunsList() {
     const [runs, setRuns] = useState<RunListItemModel[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [isPyTorch, setIsPyTorch] = useState(true)
+    const [currentTab, setCurrentTab] = useState('pytoch')
 
     useEffect(() => {
         const samples_token: string = process.env.REACT_APP_SAMPLES_PROJECT_TOKEN !
@@ -34,11 +35,7 @@ export function EmptyRunsList() {
     }, [])
 
     function clickHandle(e: any, tab: string) {
-        if (tab === 'keras') {
-            setIsPyTorch(false)
-        } else {
-            setIsPyTorch(true)
-        }
+        setCurrentTab(tab)
     }
 
 
@@ -52,11 +49,22 @@ export function EmptyRunsList() {
             <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'pytoch')}>
                 PyTorch
             </Nav.Link>
+            <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'lightning')}>
+                PyTorch Lightning
+            </Nav.Link>
             <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'keras')}>
                 Keras
             </Nav.Link>
         </div>
-        {isPyTorch ? <PyTorchCode/> : <KerasCode/>}
+        {(() => {
+            if (currentTab === 'pytoch') {
+                return <PyTorchCode/>
+            } else if (currentTab === 'keras') {
+                return <KerasCode/>
+            } else {
+                return <PyTorchLightningCode/>
+            }
+        })()}
         <div className={'text-center my-4'}>
             <h5 className={'title'}>Sample experiments</h5>
         </div>

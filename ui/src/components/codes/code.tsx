@@ -14,6 +14,12 @@ function HalfTab() {
     </span>
 }
 
+function QuarterTab() {
+    return <span>
+        &nbsp;
+    </span>
+}
+
 export function PyTorchCode() {
     return <div className={'code-sample bg-dark px-1 py-2 my-3'}>
         <pre className={"text-white"}>
@@ -110,6 +116,36 @@ export function KerasCode() {
                 <Tab/><Tab/><Tab/><Tab/><HalfTab/><span className={"param"}>verbose</span>=<span
                 className={"key-word"}>None</span>)
             </div>
+        </pre>
+    </div>
+}
+
+export function PyTorchLightningCode() {
+    return <div className={'code-sample bg-dark px-1 py-2 my-3'}>
+        <pre className={"text-white"}>
+             <div>
+                <span className={"key-word"}>from</span> labml <span className={"key-word"}>import</span>
+                <span> experiment </span><span className={"key-word"}>as</span> exp
+            </div>
+            <div>
+                <span className={"key-word"}>from</span> labml.utils.lightening <span
+                className={"key-word"}>import</span>
+                <span> LabMLLighteningLogger </span>
+            </div>
+             <br/>
+            <div>trainer = pl.Trainer(gpus=1,</div>
+             <div><Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/>max_epochs=5,</div>
+            <div><Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/>progress_bar_refresh_rate=20,</div>
+            <div className={'labml-api'}>
+               <Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/><span className={"param"}>logger</span>=LabMLLighteningLogger())
+            </div>
+            <br/>
+            <div className={'labml-api'}>
+                <span className={"key-word"}>with</span> exp.record(
+                <span className={"param"}>name</span>=<span className={"string"}>'sample'</span>,
+                <span className={"param"}> exp_conf</span>=conf):
+            </div>
+            <div><Tab/><Tab/>trainer.fit(model, data_loader)</div>
         </pre>
     </div>
 
