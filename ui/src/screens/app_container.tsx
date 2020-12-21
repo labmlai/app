@@ -5,21 +5,23 @@ import {Redirect, Route, Switch, useHistory, useLocation} from "react-router-dom
 import mixpanel from "mixpanel-browser"
 import {Image} from "react-bootstrap"
 import {useAuth0} from "@auth0/auth0-react"
+import {captureException} from "@sentry/react"
 
 import RunView from "./run_view"
 import ComputerView from "./computer_view"
 import PageNotFound from "./page_not_found_view"
 import RunsView from "./runs_list_view"
+import SettingsView from "./settings_view"
+import {RunHeaderView} from "../analyses/experiments/run_header/card"
 import ConfigsCard from "../analyses/configs/card"
 import {experiment_analyses, computer_analyses} from "../analyses/all_analyses"
 import NETWORK from "../network"
 import {LabLoader} from "../components/utils/loader"
 import {UserModel} from "../models/user"
 import logo from "../assets/lab_logo.png"
-import {captureException} from "@sentry/react"
 import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
-import SettingsView from "./settings_view"
+
 
 
 function AppContainer() {
@@ -128,6 +130,7 @@ function AppContainer() {
                 <Route path="/run" component={RunView}/>
                 <Route path="/computer" component={ComputerView}/>
                 <Route path="/configs" component={ConfigsCard.View}/>
+                <Route path="/run_header" component={RunHeaderView}/>
                 <Route path="/user" component={SettingsView}/>
                 <Route path="/runs" component={RunsView}/>
                 {experiment_analyses.map((analysis, i) => {

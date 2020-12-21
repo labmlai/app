@@ -1,14 +1,21 @@
-import React, {useEffect, useState} from "react"
+import React, {ReactElement, useEffect, useState} from "react"
 
-import {CardProps} from "../../types"
+import mixpanel from "mixpanel-browser"
+
+import {CardProps, ViewCardProps} from "../../types"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import CACHE from "../../../cache/cache"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {LabLoader} from "../../../components/utils/loader"
 import {StatusView} from "../../../utils/status"
+import {BackButton} from "../../../components/utils/util_buttons"
+import useWindowDimensions from "../../../utils/window_dimensions"
+
 
 import "./style.scss"
+import "../../configs/style.scss"
+
 
 interface RunViewProps {
     run: Run
@@ -61,6 +68,7 @@ function RunView(props: RunViewProps) {
 
 interface RunHeaderProps extends CardProps {
     lastUpdated?: number
+    isMainView?: boolean
 }
 
 function RunHeaderCard(props: RunHeaderProps) {
@@ -115,12 +123,78 @@ function RunHeaderCard(props: RunHeaderProps) {
     </div>
 }
 
-function RunHeaderView() {
+interface RunItemProps {
+    item: string
+    value: string | number
+}
+
+function HeaderItem(props: RunItemProps) {
+    return <div className={'info_list config custom'}>
+        <span className={'key text-dark font-weight-bold'}>
+            {props.item}
+        </span>
+        <span className={'combined'}>
+             {props.value}
+        </span>
+    </div>
+}
+
+function RunHeaderView(props: ViewCardProps) {
+    const params = new URLSearchParams(props.location.search)
+    const runUUID = params.get('uuid') as string
+
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
+
+    const runCache = CACHE.getRun(runUUID)
+    const statusCache = CACHE.getRunStatus(runUUID)
+
+    const {width: windowWidth} = useWindowDimensions()
+    const actualWidth = Math.min(800, windowWidth)
+
+    const title = 'Run Details'
+
+    useEffect(() => {
+        async function load() {
+            setRun(await runCache.get())
+            setStatus(await statusCache.get())
+        }
+
+        mixpanel.track('Analysis View', {uuid: runUUID, analysis: title})
+
+        load().then()
+
+    }, [runCache, statusCache, runUUID, props.title])
+
+    let items: ReactElement[] = []
+    if (run && status) {
+        items = [
+            <HeaderItem item={'Run Name'} value={run.name}/>,
+            <HeaderItem item={'Comment'} value={run.comment}/>,
+            <HeaderItem item={'Run UUID'} value={run.run_uuid}/>,
+            <HeaderItem item={'Start Time'} value={run.start_time}/>,
+            <HeaderItem item={'Run Status'} value={status.run_status.status}/>
+        ]
+    }
+
+    return <div className={'page'} style={{width: actualWidth}}>
+        <div className={'flex-container'}>
+            <BackButton parent={props.title}/>
+        </div>
+        <h2 className={'header text-center'}>{title}</h2>
+        <div>
+            {items.length > 0 ? <div className={"configs block collapsed"}>
+                    {items}
+                </div>
+                :
+                <LabLoader/>
+            }
+        </div>
+    </div>
 
 }
 
 export {
-    RunHeaderCard
+    RunHeaderCard,
+    RunHeaderView
 }
