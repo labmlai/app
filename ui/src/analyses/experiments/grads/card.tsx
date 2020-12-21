@@ -5,7 +5,7 @@ import {useLocation} from "react-router-dom"
 import {SummaryCardProps, Analysis} from "../../types"
 import {BasicBarLines} from "../../../components/charts/summary_views"
 import {BasicView} from "../../../components/charts/detail_views"
-import RunHeaderCard from "../run_header/card"
+import {RunHeaderCard} from "../run_header/card"
 import {Cache} from "../../common"
 import {SeriesCache, RunStatusCache, SeriesPreferenceCache} from "../../../cache/cache"
 
