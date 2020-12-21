@@ -54,7 +54,12 @@ class Event:
             if self.has_numbers(value):
                 uuid = value
 
-        meta = {'remote_ip': request.remote_addr,
+        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+            remote_addr = request.environ['REMOTE_ADDR']
+        else:
+            remote_addr = request.environ['HTTP_X_FORWARDED_FOR']  # if behind a proxy
+
+        meta = {'remote_ip': remote_addr,
                 'uuid': uuid,
                 'labml_token': request.args.get('labml_token', ''),
                 'labml_version': request.args.get('labml_version', ''),
