@@ -50,7 +50,20 @@ with experiment.record(name='sample', exp_conf=conf):
         tracker.save(i, {'loss': loss, 'accuracy': accuracy})
 ```
 
-2. TensorFlow 2.0 Keras ([Google Colab](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) and `[Kaggle Notebook](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone))
+2. PyTorch Lightning
+
+```python
+from labml import experiment
+from labml.utils.lightening import LabMLLighteningLogger
+
+trainer = pl.Trainer(gpus=1, max_epochs=5, progress_bar_refresh_rate=20, logger=LabMLLighteningLogger())
+
+with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
+        trainer.fit(model, data_loader)
+
+```
+
+3. TensorFlow 2.0 Keras ([Google Colab](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) and `[Kaggle Notebook](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone))
 
 ```python
 from labml import experiment
@@ -61,6 +74,7 @@ with experiment.record(name='sample', exp_conf=conf):
         model.fit(x_train, y_train, epochs=conf['epochs'], validation_data=(x_test, y_test),
                   callbacks=[LabMLKerasCallback()], verbose=None)
 ```
+
 
 ### Citing LabML
 
