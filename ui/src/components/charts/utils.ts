@@ -56,7 +56,7 @@ export function getScale(extent: [number, number], size: number): d3.ScaleLinear
 
 export function getLogScale(extent: [number, number], size: number): d3.ScaleLogarithmic<number, number> {
     if (extent[0] <= 0) {
-        extent = [1e-3, extent[1]]
+        extent = [1e-6, extent[1]]
     }
 
     return d3.scaleLog<number, number>()
