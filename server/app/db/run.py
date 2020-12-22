@@ -19,6 +19,7 @@ class CardInfo(NamedTuple):
 class Run(Model['Run']):
     name: str
     comment: str
+    note: str
     start_time: float
     run_ip: str
     run_uuid: str
@@ -36,6 +37,7 @@ class Run(Model['Run']):
     def defaults(cls):
         return dict(name='',
                     comment='',
+                    note='',
                     start_time=None,
                     run_uuid='',
                     run_ip='',
@@ -110,6 +112,7 @@ class Run(Model['Run']):
             'run_uuid': self.run_uuid,
             'name': self.name,
             'comment': self.comment,
+            'note': self.note,
             'start_time': self.start_time,
             'is_claimed': self.is_claimed,
             'configs': configs,
@@ -125,6 +128,16 @@ class Run(Model['Run']):
             'comment': self.comment,
             'start_time': self.start_time,
         }
+
+    def edit_run(self, data: Dict[str, any]) -> None:
+        if 'name' in data:
+            self.name = data.get('name', self.name)
+        if 'comment' in data:
+            self.comment = data.get('comment', self.comment)
+        if 'note' in data:
+            self.note = data.get('note', self.note)
+
+        self.save()
 
 
 class RunIndex(Index['Run']):

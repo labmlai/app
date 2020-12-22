@@ -11,15 +11,15 @@ export function StatusView(props: StatusProps) {
     let status = props.status
 
     if (status.status === 'in progress') {
-        return <div className={'status text-info'}>experiment is running</div>
+        return <div className={'status text-info text-uppercase'}>experiment is running</div>
     } else if (status.status === 'no response') {
-        return <div className={'status text-warning'}>no response</div>
+        return <div className={'status text-warning text-uppercase'}>no response</div>
     } else if (status.status === 'completed') {
-        return <div className={'status text-success'}>completed</div>
+        return <div className={'status text-success text-uppercase'}>completed</div>
     } else if (status.status === 'crashed') {
-        return <div className={'status text-danger'}>crashed</div>
+        return <div className={'status text-danger text-uppercase'}>crashed</div>
     } else if (status.status === 'unknown') {
-        return <div className={'status'}>{'Unknown Status'}</div>
+        return <div className={'status text-uppercase'}>{'Unknown Status'}</div>
     } else {
         return <div className={'status'}>{status.status}</div>
     }

@@ -96,7 +96,7 @@ abstract class CacheObject<T> {
         return this.data
     }
 
-    invalidate_cache(): void{
+    invalidate_cache(): void {
         this.data = null
     }
 }
@@ -128,6 +128,10 @@ class RunCache extends CacheObject<Run> {
         }
 
         return this.data
+    }
+
+    async setRun(run: Run): Promise<void> {
+        await NETWORK.setRun(this.uuid, run)
     }
 }
 

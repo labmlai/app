@@ -4,6 +4,7 @@ export interface RunModel {
     run_uuid: string
     name: string
     comment: string
+    note: string
     start_time: number
     is_claimed: boolean
     configs: ConfigModel[]
@@ -31,6 +32,7 @@ export class Run {
     run_uuid: string
     name: string
     comment: string
+    note: string
     start_time: number
     is_claimed: boolean
     configs: Config[]
@@ -42,6 +44,7 @@ export class Run {
         this.run_uuid = run.run_uuid
         this.name = run.name
         this.comment = run.comment
+        this.note = run.note
         this.start_time = run.start_time
         this.is_claimed = run.is_claimed
         this.configs = []

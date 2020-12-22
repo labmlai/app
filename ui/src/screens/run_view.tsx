@@ -114,7 +114,7 @@ function RunView(props: RunProps) {
             <BackButton parent={'Run View'}/>
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={'Run View'}/>}
         </div>
-        <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated}/>
+        <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated} isMainView={true}/>
         <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
         {experiment_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
