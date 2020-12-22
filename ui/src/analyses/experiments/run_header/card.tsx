@@ -1,4 +1,6 @@
-import React, {ReactElement, useEffect, useState} from "react"
+import React, {forwardRef, ReactElement, useEffect, useRef, useState} from "react"
+
+import {useHistory} from "react-router-dom"
 
 import mixpanel from "mixpanel-browser"
 
@@ -9,13 +11,10 @@ import CACHE from "../../../cache/cache"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {LabLoader} from "../../../components/utils/loader"
 import {StatusView} from "../../../utils/status"
-import {BackButton} from "../../../components/utils/util_buttons"
+import {BackButton, CancelButton, EditButton, SaveButton} from "../../../components/utils/util_buttons"
 import useWindowDimensions from "../../../utils/window_dimensions"
 
-
 import "./style.scss"
-import "../../configs/style.scss"
-
 
 interface RunViewProps {
     run: Run
@@ -77,6 +76,8 @@ function RunHeaderCard(props: RunHeaderProps) {
     const [status, setStatus] = useState(null as unknown as Status)
     const [lastUpdated, setLastUpdated] = useState(null as (string | null))
 
+    const history = useHistory()
+
     const runCache = CACHE.getRun(props.uuid)
     const statusCache = CACHE.getRunStatus(props.uuid)
 
@@ -115,7 +116,12 @@ function RunHeaderCard(props: RunHeaderProps) {
 
 
     function onClick() {
-        setIsClicked(!isClicked)
+        if (props.isMainView) {
+            history.push(`/run_header?uuid=${props.uuid}`, history.location.pathname)
+
+        } else {
+            setIsClicked(!isClicked)
+        }
     }
 
     return <div onClick={onClick}>
@@ -125,19 +131,40 @@ function RunHeaderCard(props: RunHeaderProps) {
 
 interface RunItemProps {
     item: string
-    value: string | number
+    value: any
 }
 
-function HeaderItem(props: RunItemProps) {
-    return <div className={'info_list config custom'}>
-        <span className={'key text-dark font-weight-bold'}>
+function RunItem(props: RunItemProps) {
+    return <li>
+        <span className={'item-key'}>
             {props.item}
         </span>
-        <span className={'combined'}>
+        <span className={'item-value'}>
              {props.value}
         </span>
-    </div>
+    </li>
 }
+
+interface RunItemEditableProps {
+    item: string
+    value: any
+    ref: any
+}
+
+function RunItemEditElem(props: RunItemEditableProps, ref: any) {
+    return <li>
+        <span className={'item-key'}>
+            {props.item}
+        </span>
+        <div className={'input-container'}>
+            <div className={'input-content'}>
+                <input placeholder={props.value} ref={ref}/>
+            </div>
+        </div>
+    </li>
+}
+
+let RunItemEditable = forwardRef(RunItemEditElem)
 
 function RunHeaderView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
@@ -145,6 +172,7 @@ function RunHeaderView(props: ViewCardProps) {
 
     const [run, setRun] = useState(null as unknown as Run)
     const [status, setStatus] = useState(null as unknown as Status)
+    const [isEditMode, setIsEditMode] = useState(false)
 
     const runCache = CACHE.getRun(runUUID)
     const statusCache = CACHE.getRunStatus(runUUID)
@@ -166,32 +194,82 @@ function RunHeaderView(props: ViewCardProps) {
 
     }, [runCache, statusCache, runUUID, props.title])
 
+    const runNameElementRef = useRef(null) as any
+    const commentElementRef = useRef(null) as any
+    const noteElementRef = useRef(null) as any
+
     let items: ReactElement[] = []
     if (run && status) {
+        const runItem = 'Run Name'
+        let runNameElement = isEditMode ?
+            <RunItemEditable key={1} item={runItem} value={run.name} ref={runNameElementRef}/>
+            :
+            <RunItem key={1} item={runItem} value={run.name}/>
+
+        const commentItem = 'Comment Name'
+        let commentElement = isEditMode ?
+            <RunItemEditable key={2} item={commentItem} value={run.comment} ref={commentElementRef}/>
+            :
+            <RunItem key={2} item={commentItem} value={run.comment}/>
+
+        const noteItem = 'Note'
+        const noteValue = run.note ? run.note : 'write your note here'
+        let noteElement = isEditMode ?
+            <RunItemEditable key={3} item={noteItem} value={noteValue} ref={noteElementRef}/>
+            :
+            <RunItem key={3} item={noteItem} value={noteValue}/>
+
         items = [
-            <HeaderItem item={'Run Name'} value={run.name}/>,
-            <HeaderItem item={'Comment'} value={run.comment}/>,
-            <HeaderItem item={'Run UUID'} value={run.run_uuid}/>,
-            <HeaderItem item={'Start Time'} value={run.start_time}/>,
-            <HeaderItem item={'Run Status'} value={status.run_status.status}/>
+            runNameElement,
+            commentElement,
+            noteElement,
+            <RunItem key={4} item={'Run Status'} value={<StatusView status={status.run_status}/>}/>,
+            <RunItem key={5} item={'UUID'} value={run.run_uuid}/>,
+            <RunItem key={6} item={'Start Time'} value={formatTime(run.start_time)}/>,
+            <RunItem key={7} item={'Last Recorded'}
+                     value={status.isRunning ? getTimeDiff(status.last_updated_time) : formatTime(status.last_updated_time)}/>,
         ]
+    }
+
+    function UpdateRun() {
+        if (runNameElementRef.current.value) {
+            run.name = runNameElementRef.current.value
+        }
+
+        if (commentElementRef.current.value) {
+            run.comment = commentElementRef.current.value
+        }
+
+        if (runNameElementRef.current.value) {
+            run.name = runNameElementRef.current.value
+        }
+
+        runCache.setRun(run).then()
+        onToggleEdit()
+    }
+
+    function onToggleEdit() {
+        setIsEditMode(!isEditMode)
     }
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
+            {isEditMode && <CancelButton onButtonClick={onToggleEdit} parent={title}/>}
+            {isEditMode && <SaveButton onButtonClick={UpdateRun} parent={title}/>}
+            {!isEditMode && <EditButton onButtonClick={onToggleEdit} parent={title}/>}
         </div>
         <h2 className={'header text-center'}>{title}</h2>
-        <div>
-            {items.length > 0 ? <div className={"configs block collapsed"}>
+        <div className={'list-container'}>
+            {items.length > 0 ?
+                <ul>
                     {items}
-                </div>
+                </ul>
                 :
                 <LabLoader/>
             }
         </div>
     </div>
-
 }
 
 export {

@@ -14,6 +14,7 @@
       margin-right: 4px;
       opacity: 0.7;
     }
+
     color: #7f8c8d;
     margin-top: 2px;
   }
@@ -43,3 +44,36 @@
     color: #7f8c8d;
   }
 }
+
+.list-container {
+  ul {
+    font-size: 15px;
+    margin: 50px auto 0;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  ul li {
+    display: flex;
+    background: rgba(174, 178, 174, .1);
+    padding: 10px 20px;
+    color: black;
+    margin: 8px 0;
+    transition: .5s;
+  }
+
+  .item-key {
+    text-transform: uppercase;
+    color: dimgrey;
+    font-weight: bolder;
+    width: 150px;
+  }
+
+  .item-value {
+    color: black;
+    opacity: 0.7;
+    font-weight: bold;
+    overflow: hidden;
+  }
+}
+

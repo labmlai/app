@@ -45,6 +45,10 @@ class Network {
         return this.axiosInstance.get(`/run/${run_uuid}`)
     }
 
+    async setRun(run_uuid: string, data: object): Promise<any> {
+        return this.axiosInstance.post(`/run/${run_uuid}`, data)
+    }
+
     async getComputer(computer_uuid: string): Promise<any> {
         return this.axiosInstance.get(`/computer/${computer_uuid}`)
     }
