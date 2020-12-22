@@ -227,7 +227,7 @@ function RunHeaderView(props: ViewCardProps) {
             <RunItem key={5} item={'UUID'} value={run.run_uuid}/>,
             <RunItem key={6} item={'Start Time'} value={formatTime(run.start_time)}/>,
             <RunItem key={7} item={'Last Recorded'}
-                     value={status.isRunning ? getTimeDiff(status.last_updated_time) : formatTime(status.last_updated_time)}/>,
+                     value={status.isRunning ? getTimeDiff(status.last_updated_time * 1000) : formatTime(status.last_updated_time)}/>,
         ]
     }
 
