@@ -225,6 +225,19 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
+def edit_run(run_uuid: str) -> flask.Response:
+    r = run.get_run(run_uuid)
+
+    if r:
+        r.edit_run(request.json)
+    else:
+        r.errors.append({'edit_run': 'invalid run uuid'})
+
+    logger.debug(f'edit run: {r.key}')
+
+    return utils.format_rv({'errors': r.errors})
+
+
 @mix_panel.MixPanelEvent.time_this(None)
 def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
@@ -329,6 +342,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_user, 'user')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
+    _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_computer_status, 'computer/status/<computer_uuid>')

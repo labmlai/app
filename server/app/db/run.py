@@ -129,6 +129,16 @@ class Run(Model['Run']):
             'start_time': self.start_time,
         }
 
+    def edit_run(self, data: Dict[str, any]) -> None:
+        if 'name' in data:
+            self.name = data.get('name', self.name)
+        if 'comment' in data:
+            self.comment = data.get('comment', self.comment)
+        if 'note' in data:
+            self.note = data.get('note', self.note)
+
+        self.save()
+
 
 class RunIndex(Index['Run']):
     pass

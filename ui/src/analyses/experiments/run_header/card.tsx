@@ -206,7 +206,7 @@ function RunHeaderView(props: ViewCardProps) {
             :
             <RunItem key={1} item={runItem} value={run.name}/>
 
-        const commentItem = 'Comment Name'
+        const commentItem = 'Comment'
         let commentElement = isEditMode ?
             <RunItemEditable key={2} item={commentItem} value={run.comment} ref={commentElementRef}/>
             :
@@ -240,8 +240,8 @@ function RunHeaderView(props: ViewCardProps) {
             run.comment = commentElementRef.current.value
         }
 
-        if (runNameElementRef.current.value) {
-            run.name = runNameElementRef.current.value
+        if (noteElementRef.current.value) {
+            run.note = noteElementRef.current.value
         }
 
         runCache.setRun(run).then()
