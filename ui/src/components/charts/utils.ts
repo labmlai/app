@@ -54,6 +54,16 @@ export function getScale(extent: [number, number], size: number): d3.ScaleLinear
         .range([0, size])
 }
 
+export function getLogScale(extent: [number, number], size: number): d3.ScaleLogarithmic<number, number> {
+    if (extent[0] <= 0) {
+        extent = [1e-3, extent[1]]
+    }
+
+    return d3.scaleLog<number, number>()
+        .domain(extent).nice()
+        .range([0, size])
+}
+
 export function defaultSeriesToPlot(series: SeriesModel[]) {
     let count = 0
     let plotIdx = []
@@ -77,27 +87,6 @@ export function toPointValues(track: SeriesModel[]) {
         let res: PointValue[] = []
         for (let i = 0; i < s.step.length; ++i) {
             res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
-        }
-        s.series = res
-    }
-
-    return series
-}
-
-
-export function toLogPointValues(track: SeriesModel[]) {
-    let series: SeriesModel[] = [...track]
-    for (let s of series) {
-        let res: PointValue[] = []
-        for (let i = 0; i < s.step.length; ++i) {
-            //TODO think about a better way to remove zeros in logValues
-            if (s.value[i] !== 0.0 && s.smoothed[i] !== 0.0) {
-                res.push({
-                    step: s.step[i],
-                    value: Math.log(Math.abs(s.value[i])),
-                    smoothed: Math.log(Math.abs(s.smoothed[i]))
-                })
-            }
         }
         s.series = res
     }

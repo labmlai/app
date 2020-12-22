@@ -76,7 +76,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
             }>
                 <h3 className={'header'}>{props.title}</h3>
                 {props.isChartView && getChart('normal', track, plotIdx, props.width)}
-                {getSparkLines('normal', track, plotIdx, props.width)}
+                {getSparkLines(track, plotIdx, props.width)}
             </div>
             : <div/>
     }

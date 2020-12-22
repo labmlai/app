@@ -122,7 +122,7 @@ function BasicView(props: ViewCardProps) {
     }
 
     let chart = getChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)
-    let sparkLines = getSparkLines(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)
+    let sparkLines = getSparkLines(track, plotIdx, actualWidth, toggleChart)
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
