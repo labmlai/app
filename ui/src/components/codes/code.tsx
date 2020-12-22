@@ -128,16 +128,16 @@ export function PyTorchLightningCode() {
                 <span> experiment </span><span className={"key-word"}>as</span> exp
             </div>
             <div>
-                <span className={"key-word"}>from</span> labml.utils.lightening <span
+                <span className={"key-word"}>from</span> labml.utils.lightning <span
                 className={"key-word"}>import</span>
-                <span> LabMLLighteningLogger </span>
+                <span> LabMLLightningLogger </span>
             </div>
              <br/>
             <div>trainer = pl.Trainer(gpus=1,</div>
              <div><Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/>max_epochs=5,</div>
             <div><Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/>progress_bar_refresh_rate=20,</div>
             <div className={'labml-api'}>
-               <Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/><span className={"param"}>logger</span>=LabMLLighteningLogger())
+               <Tab/><Tab/><Tab/><Tab/><Tab/><QuarterTab/><span className={"param"}>logger</span>=LabMLLightningLogger())
             </div>
             <br/>
             <div className={'labml-api'}>

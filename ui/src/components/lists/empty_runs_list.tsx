@@ -10,7 +10,6 @@ import {RunListItemModel} from "../../models/run_list"
 import {List} from "./list"
 
 import "./empty_runs_list.scss"
-import Search from "../utils/search";
 
 
 export function EmptyRunsList() {
