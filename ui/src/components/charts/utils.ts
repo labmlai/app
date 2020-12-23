@@ -32,13 +32,17 @@ export function getExtentWithoutOutliers(series: PointValue[], func: (d: PointVa
     return [values[extent[0]], values[extent[1]]]
 }
 
-export function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false): [number, number] {
+export function getExtent(series: PointValue[][], func: (d: PointValue) => number, forceZero: boolean = false, skipZero: boolean = false): [number, number] {
     let extent = getExtentWithoutOutliers(series[0], func)
 
     for (let s of series) {
         let e = getExtentWithoutOutliers(s, func)
         extent[0] = Math.min(e[0], extent[0])
         extent[1] = Math.max(e[1], extent[1])
+    }
+
+    if (skipZero) {
+        return extent
     }
 
     if (forceZero || (extent[0] > 0 && extent[0] / extent[1] < 0.1)) {
@@ -55,12 +59,8 @@ export function getScale(extent: [number, number], size: number): d3.ScaleLinear
 }
 
 export function getLogScale(extent: [number, number], size: number): d3.ScaleLogarithmic<number, number> {
-    if (extent[0] <= 0) {
-        extent = [1e-6, extent[1]]
-    }
-
     return d3.scaleLog<number, number>()
-        .domain(extent).nice()
+        .domain(extent)
         .range([0, size])
 }
 
@@ -95,5 +95,5 @@ export function toPointValues(track: SeriesModel[]) {
 }
 
 export function getChartType(index: number): 'log' | 'normal' {
-        return index === 0 ? 'normal' : 'log'
-    }
+    return index === 0 ? 'normal' : 'log'
+}

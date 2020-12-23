@@ -130,7 +130,7 @@ function LineChart(props: LineChartProps) {
     const xScale = getScale(stepExtent, chartWidth)
 
     if (props.chartType && props.chartType === 'log') {
-        yScale = getLogScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
+        yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -chartHeight)
     }
 
     let isChartFill = true
