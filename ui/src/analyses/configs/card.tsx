@@ -11,7 +11,8 @@ import useWindowDimensions from "../../utils/window_dimensions"
 import {CardProps, ViewProps} from "../types"
 import {LabLoader} from "../../components/utils/loader"
 import {RunHeaderCard} from "../experiments/run_header/card"
-import {BackButton} from "../../components/utils/util_buttons"
+import {BackButton, RefreshButton} from "../../components/utils/util_buttons"
+import {Status} from "../../models/status"
 
 
 function Card(props: CardProps) {
@@ -52,30 +53,54 @@ function Card(props: CardProps) {
 function View(props: ViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
+
     const runCache = CACHE.getRun(runUUID)
-    let [run, setRun] = useState(null as unknown as Run)
+    const statusCache = CACHE.getRunStatus(runUUID)
+
+    const [run, setRun] = useState(null as unknown as Run)
+    const [status, setStatus] = useState(null as unknown as Status)
+
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
     useEffect(() => {
         async function load() {
             setRun(await runCache.get())
+            setStatus(await statusCache.get())
+
+            if (status && !status.isRunning) {
+                clearInterval(interval)
+            }
         }
 
-        mixpanel.track('Configs View', {uuid: runUUID});
-        load().then()
-    }, [runCache, runUUID])
+        mixpanel.track('Configs View', {uuid: runUUID})
 
-    let configsView = null
+        load().then()
+        let interval = setInterval(load, 2 * 60 * 1000)
+        return () => clearInterval(interval)
+    }, [runCache, status, statusCache, runUUID])
+
+    let configsView
     if (run != null) {
         configsView = <ConfigsView configs={run.configs} width={actualWidth} isHyperParamOnly={false}/>
     } else {
         configsView = <LabLoader/>
     }
 
+    async function load() {
+        setRun(await runCache.get(true))
+    }
+
+    function onRefresh() {
+        load().then()
+    }
+
+    const title = 'Configs View'
+
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
-            <BackButton parent={'Configs View'}/>
+            <BackButton parent={title}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={title}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth}/>
         <h2 className={'header text-center'}>Configurations</h2>

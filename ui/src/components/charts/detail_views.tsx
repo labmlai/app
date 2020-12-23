@@ -51,6 +51,8 @@ function BasicView(props: ViewCardProps) {
             preference.current = await preferenceCache.get()
 
             if (preference.current) {
+                setCurrentChart(preference.current.chart_type)
+
                 let analysis_preferences = preference.current.series_preferences
                 if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx([...analysis_preferences])
@@ -73,6 +75,7 @@ function BasicView(props: ViewCardProps) {
     function updatePreferences() {
         if (preference.current) {
             preference.current.series_preferences = plotIdx
+            preference.current.chart_type = currentChart
             preferenceCache.setPreference(preference.current).then()
             setIsDisabled(true)
         }
@@ -101,6 +104,8 @@ function BasicView(props: ViewCardProps) {
     }, [plotIdx])
 
     function onChartClick() {
+        setIsDisabled(false)
+
         if (currentChart === 1) {
             setCurrentChart(0)
         } else {
