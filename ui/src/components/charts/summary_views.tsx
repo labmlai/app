@@ -7,6 +7,7 @@ import {BarLines} from "./barline"
 import {SeriesModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, CardProps} from "../../analyses/types"
+import {getChartType} from "./utils"
 
 
 import "./style.scss"
@@ -26,6 +27,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
     const preferenceCache = props.cache.getPreferences(props.uuid)
 
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
+    const [currentChart, setCurrentChart] = useState(0)
 
     let preference = useRef(null) as any
 
@@ -34,6 +36,8 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
             preference.current = await preferenceCache.get()
 
             if (preference.current) {
+                setCurrentChart(preference.current.chart_type)
+
                 let analysis_preferences = preference.current.series_preferences
                 if (analysis_preferences && analysis_preferences.length > 0) {
                     setPlotIdx([...analysis_preferences])
@@ -75,7 +79,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getChart('normal', track, plotIdx, props.width)}
+                {props.isChartView && getChart(getChartType(currentChart), track, plotIdx, props.width)}
                 {getSparkLines(track, plotIdx, props.width)}
             </div>
             : <div/>

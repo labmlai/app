@@ -93,3 +93,7 @@ export function toPointValues(track: SeriesModel[]) {
 
     return series
 }
+
+export function getChartType(index: number): 'log' | 'normal' {
+        return index === 0 ? 'normal' : 'log'
+    }

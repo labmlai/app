@@ -9,6 +9,7 @@ import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
 import {ViewCardProps} from "../../analyses/types"
 import {Status} from "../../models/status"
+import {getChartType} from "./utils"
 
 function BasicView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
@@ -111,10 +112,6 @@ function BasicView(props: ViewCardProps) {
         } else {
             setCurrentChart(currentChart + 1)
         }
-    }
-
-    function getChartType(index: number): 'log' | 'normal' {
-        return index === 0 ? 'normal' : 'log'
     }
 
     let dots: JSX.Element[] = []
