@@ -15,14 +15,10 @@ export function BarLine(props: BarLineProps) {
     const titleWidth = Math.min(150, Math.round(props.width * .375))
     const chartWidth = props.width - titleWidth
 
-    return <ListGroup.Item className={'sparkline-list-item'}>
-        <div className={'sparkline-content'} style={{width: `${titleWidth + chartWidth}px`}}>
-            <svg className={'sparkline'} height={15} width={chartWidth}>
-                <g>
-                    <rect width={props.value * chartWidth} height={15} fill={props.color} opacity={0.7}/>
-                </g>
-            </svg>
-        </div>
+    return <ListGroup.Item className={'sparkline-list-item bar-line'}>
+        <svg className={'sparkline'} height={5} width={chartWidth}>
+            <rect  className={'sparkline'} width={props.value * chartWidth} height={5} fill={props.color} opacity={0.7}/>
+        </svg>
     </ListGroup.Item>
 }
 

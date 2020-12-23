@@ -111,6 +111,11 @@ button.sparkline-list-item {
   background-color: firebrick;
 }
 
-.pointer-cursor{
+.pointer-cursor {
   cursor: pointer;
+}
+
+.bar-line {
+  line-height: 0.1;
+  padding: .03rem 5px;
 }
