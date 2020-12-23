@@ -1,9 +1,11 @@
 export interface AnalysisPreferenceModel {
     series_preferences: number[]
+    chart_type: number
 }
 
 export class AnalysisPreference {
-    public series_preferences: number[]
+    series_preferences: number[]
+    chart_type: number
 
     constructor(preference: AnalysisPreferenceModel) {
         if (preference.series_preferences) {
@@ -11,5 +13,6 @@ export class AnalysisPreference {
         } else {
             this.series_preferences = []
         }
+        this.chart_type = preference.chart_type
     }
 }
