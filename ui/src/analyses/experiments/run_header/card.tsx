@@ -129,42 +129,33 @@ function RunHeaderCard(props: RunHeaderProps) {
     </div>
 }
 
-interface RunItemProps {
-    item: string
-    value: any
-}
-
-function RunItem(props: RunItemProps) {
-    return <li>
-        <span className={'item-key'}>
-            {props.item}
-        </span>
-        <span className={'item-value'}>
-             {props.value}
-        </span>
-    </li>
-}
-
 interface RunItemEditableProps {
     item: string
     value: any
     ref: any
+    isEditable?: boolean
 }
 
-function RunItemEditElem(props: RunItemEditableProps, ref: any) {
+function InputElem(props: RunItemEditableProps, ref: any) {
     return <li>
         <span className={'item-key'}>
             {props.item}
         </span>
-        <div className={'input-container'}>
-            <div className={'input-content'}>
-                <input placeholder={props.value} ref={ref}/>
+        {props.isEditable ?
+            <div className={'input-container'}>
+                <div className={'input-content'}>
+                    <input placeholder={props.value} ref={ref}/>
+                </div>
             </div>
-        </div>
+            :
+            <span className={'item-value'}>
+             {props.value}
+        </span>
+        }
     </li>
 }
 
-let RunItemEditable = forwardRef(RunItemEditElem)
+let InputEditable = forwardRef(InputElem)
 
 function RunHeaderView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
@@ -200,34 +191,17 @@ function RunHeaderView(props: ViewCardProps) {
 
     let items: ReactElement[] = []
     if (run && status) {
-        const runItem = 'Run Name'
-        let runNameElement = isEditMode ?
-            <RunItemEditable key={1} item={runItem} value={run.name} ref={runNameElementRef}/>
-            :
-            <RunItem key={1} item={runItem} value={run.name}/>
-
-        const commentItem = 'Comment'
-        let commentElement = isEditMode ?
-            <RunItemEditable key={2} item={commentItem} value={run.comment} ref={commentElementRef}/>
-            :
-            <RunItem key={2} item={commentItem} value={run.comment}/>
-
-        const noteItem = 'Note'
-        const noteValue = run.note ? run.note : 'write your note here'
-        let noteElement = isEditMode ?
-            <RunItemEditable key={3} item={noteItem} value={noteValue} ref={noteElementRef}/>
-            :
-            <RunItem key={3} item={noteItem} value={noteValue}/>
-
         items = [
-            runNameElement,
-            commentElement,
-            noteElement,
-            <RunItem key={4} item={'Run Status'} value={<StatusView status={status.run_status}/>}/>,
-            <RunItem key={5} item={'UUID'} value={run.run_uuid}/>,
-            <RunItem key={6} item={'Start Time'} value={formatTime(run.start_time)}/>,
-            <RunItem key={7} item={'Last Recorded'}
-                     value={status.isRunning ? getTimeDiff(status.last_updated_time * 1000) : formatTime(status.last_updated_time)}/>,
+            <InputEditable key={1} item={'Run Name'} value={run.name} ref={runNameElementRef} isEditable={isEditMode}/>,
+            <InputEditable key={2} item={'Comment'} value={run.comment} ref={commentElementRef}
+                           isEditable={isEditMode}/>,
+            <InputEditable key={3} item={'Note'} value={run.note ? run.note : 'write your note here'}
+                           ref={noteElementRef} isEditable={isEditMode}/>,
+            <InputEditable key={4} item={'Run Status'} value={<StatusView status={status.run_status}/>}/>,
+            <InputEditable key={5} item={'UUID'} value={run.run_uuid}/>,
+            <InputEditable key={6} item={'Start Time'} value={formatTime(run.start_time)}/>,
+            <InputEditable key={7} item={'Last Recorded'}
+                           value={status.isRunning ? getTimeDiff(status.last_updated_time * 1000) : formatTime(status.last_updated_time)}/>,
         ]
     }
 
