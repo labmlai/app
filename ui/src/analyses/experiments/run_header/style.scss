@@ -55,6 +55,7 @@
 
   ul li {
     display: flex;
+    flex-wrap: wrap;
     background: rgba(174, 178, 174, .1);
     padding: 10px 20px;
     color: black;
@@ -74,6 +75,26 @@
     opacity: 0.7;
     font-weight: bold;
     overflow: hidden;
+  }
+
+  @media screen and (max-width: 480px) {
+    .item-key {
+      margin-top: 5px;
+      flex: 1 0 100%;
+      text-transform: uppercase;
+      color: dimgrey;
+      font-weight: bolder;
+      width: 150px;
+    }
+
+    .item-value {
+      margin-top: 5px;
+      flex: 1 0 100%;
+      color: black;
+      opacity: 0.7;
+      font-weight: bold;
+      overflow: hidden;
+    }
   }
 }
 

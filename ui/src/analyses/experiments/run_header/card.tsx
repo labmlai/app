@@ -138,11 +138,11 @@ interface RunItemEditableProps {
 
 function InputElem(props: RunItemEditableProps, ref: any) {
     return <li>
-        <span className={'item-key'}>
+            <span className={'item-key'}>
             {props.item}
         </span>
         {props.isEditable ?
-            <div className={'input-container'}>
+            <div className={'input-container mt-2'}>
                 <div className={'input-content'}>
                     <input placeholder={props.value} ref={ref}/>
                 </div>
