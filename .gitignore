@@ -44,3 +44,4 @@ labml
 
 # labml
 /logs/
+/server/app/analyses/
