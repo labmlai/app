@@ -1,0 +1,25 @@
+.insight-container {
+  border: 2px solid lightgray;
+  border-radius: 7px;
+  padding: 10px 10px 10px 10px;
+  margin-top: 3px ;
+  color: dimgrey;
+
+  .time-left {
+    display: flex;
+    float: right;
+    color: #999;
+  }
+}
+
+.danger {
+  background-color: rgba(240, 52, 52, 0.3);
+}
+
+.warning {
+  background-color: rgba(247, 202, 24, 0.3);
+}
+
+.success {
+  background-color: rgba(38, 166, 91, 0.3);
+}
