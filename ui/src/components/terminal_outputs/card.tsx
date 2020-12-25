@@ -1,6 +1,7 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useState, useRef} from "react"
 
 import {useHistory} from "react-router-dom"
+
 import mixpanel from "mixpanel-browser"
 
 import {BasicProps, CardProps, ViewCardProps} from "../../analyses/types"
@@ -22,7 +23,8 @@ interface StdOutCardProps extends BasicProps, CardProps {
 }
 
 function StdOut(props: StdOutCardProps, ref: any) {
-    let [run, setRun] = useState(null as unknown as Run)
+    const [run, setRun] = useState(null as unknown as Run)
+
     const runCache = CACHE.getRun(props.uuid)
 
     const history = useHistory()
@@ -55,14 +57,18 @@ function StdOut(props: StdOutCardProps, ref: any) {
         lastUpdated: runCache.lastUpdated,
     }))
 
-    const terminalRef = useRef(null) as any
+    function getLastTenLines(inputStr: string) {
+        let split = inputStr.split("\n")
 
-    useEffect(() => {
-        if (terminalRef.current) {
-            terminalRef.current.scrollTop = Number.MAX_SAFE_INTEGER
+        let last10Lines
+        if (split.length > 10) {
+            last10Lines = split.slice(Math.max(split.length - 10, 1))
+        } else {
+            last10Lines = split
         }
-    }, [terminalRef])
 
+        return last10Lines.join("\n")
+    }
 
     return <div>{!run ?
         <div className={'labml-card labml-card-action'}>
@@ -75,8 +81,8 @@ function StdOut(props: StdOutCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                <div className={'terminal-card no-scroll'} ref={terminalRef}>
-                    {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(run[props.type])}}/>}
+                <div className={'terminal-card no-scroll'}>
+                    {run && <pre dangerouslySetInnerHTML={{__html: f.toHtml(getLastTenLines(run[props.type]))}}/>}
                 </div>
             </div>
             : <div/>
