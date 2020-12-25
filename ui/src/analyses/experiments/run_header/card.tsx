@@ -132,6 +132,7 @@ function RunHeaderCard(props: RunHeaderProps) {
 interface RunItemEditableProps {
     item: string
     value: any
+    placeholder?: string
     ref: any
     isEditable?: boolean
 }
@@ -144,7 +145,7 @@ function InputElem(props: RunItemEditableProps, ref: any) {
         {props.isEditable ?
             <div className={'input-container mt-2'}>
                 <div className={'input-content'}>
-                    <input placeholder={props.value} ref={ref}/>
+                    <input defaultValue={props.value} ref={ref} placeholder={props.placeholder}/>
                 </div>
             </div>
             :
@@ -195,7 +196,7 @@ function RunHeaderView(props: ViewCardProps) {
             <InputEditable key={1} item={'Run Name'} value={run.name} ref={runNameElementRef} isEditable={isEditMode}/>,
             <InputEditable key={2} item={'Comment'} value={run.comment} ref={commentElementRef}
                            isEditable={isEditMode}/>,
-            <InputEditable key={3} item={'Note'} value={run.note ? run.note : 'write your note here'}
+            <InputEditable key={3} item={'Note'} value={run.note} placeholder={'write your note here'}
                            ref={noteElementRef} isEditable={isEditMode}/>,
             <InputEditable key={4} item={'Run Status'} value={<StatusView status={status.run_status}/>}/>,
             <InputEditable key={5} item={'UUID'} value={run.run_uuid}/>,

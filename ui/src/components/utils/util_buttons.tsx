@@ -57,7 +57,7 @@ export function BackButton(props: ButtonProps) {
         mixpanel.track('Back Button Clicked', {parent: props.parent})
     }
 
-    return <Nav.Link className={'tab'} onClick={onBackButtonClick} type={"button"}>
+    return <Nav.Link className={'tab'} onClick={onBackButtonClick}>
         <FontAwesomeIcon icon={faChevronLeft}/>
         <span>{text}</span>
     </Nav.Link>
