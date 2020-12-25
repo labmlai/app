@@ -117,7 +117,7 @@ input[type="email"], input[type="text"] {
   flex: 1 0 100%;
 
   .input-content {
-    display: block;
+    display: flex;
     border-radius: 10px;
     box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
 
