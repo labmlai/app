@@ -3,6 +3,7 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 import {useHistory} from "react-router-dom"
 
 import {getChart, getSparkLines} from "./components"
+import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barline"
 import {SeriesDataModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
@@ -79,6 +80,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
+                <InsightsList insightList={track.insights}/>
                 {props.isChartView && getChart(getChartType(currentChart), track.series, plotIdx, props.width)}
                 {getSparkLines(track.series, plotIdx, props.width)}
             </div>

@@ -1,6 +1,6 @@
 import React from "react"
 
-import {InsightModel} from "../../models/insight"
+import {InsightModel} from "../../models/run"
 
 import "./insights_list.scss"
 
