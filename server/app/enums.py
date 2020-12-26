@@ -23,6 +23,12 @@ class COMPUTEREnums:
     PROCESS = 'process'
 
 
+class InsightEnums:
+    DANGER = 'danger'
+    WARNING = 'warning'
+    SUCCESS = 'success'
+
+
 INDICATORS = [SeriesEnums.GRAD,
               SeriesEnums.PARAM,
               SeriesEnums.TIME,

@@ -6,6 +6,7 @@ import "./insights_list.scss"
 
 function Insight(props: InsightModel) {
     let className = 'insight-container'
+
     if (props.type === 'danger') {
         className += ' danger'
     } else if (props.type === 'warning') {
