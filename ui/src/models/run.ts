@@ -1,4 +1,4 @@
-import {Config, ConfigModel} from "./config";
+import {Config, ConfigModel} from "./config"
 
 export interface RunModel {
     run_uuid: string
@@ -26,6 +26,17 @@ export interface SeriesModel {
     smoothed: number[]
     mean: number
     series: PointValue[]
+}
+
+export interface InsightModel {
+    message: string
+    type: string
+    time: number
+}
+
+export interface SeriesDataModel {
+    series: SeriesModel[]
+    insights: InsightModel[]
 }
 
 export class Run {

@@ -1,5 +1,5 @@
 import NETWORK from "../network"
-import {Run, SeriesModel} from "../models/run"
+import {Run, SeriesDataModel} from "../models/run"
 import {Status} from "../models/status"
 import {RunListItemModel, RunsList} from "../models/run_list"
 import {AnalysisPreference} from "../models/preferences"
@@ -245,7 +245,7 @@ class RunsListCache extends CacheObject<RunsList> {
     }
 }
 
-export class SeriesCache extends CacheObject<SeriesModel[]> {
+export class SeriesCache extends CacheObject<SeriesDataModel[]> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: RunStatusCache | ComputerStatusCache
@@ -257,13 +257,13 @@ export class SeriesCache extends CacheObject<SeriesModel[]> {
         this.url = url
     }
 
-    async load(): Promise<SeriesModel[]> {
+    async load(): Promise<SeriesDataModel[]> {
         return this.broadcastPromise.create(async () => {
             return await NETWORK.getAnalysis(this.url, this.uuid)
         })
     }
 
-    async get(isRefresh = false): Promise<SeriesModel[]> {
+    async get(isRefresh = false): Promise<SeriesDataModel[]> {
         let status = await this.statusCache.get()
 
         if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {

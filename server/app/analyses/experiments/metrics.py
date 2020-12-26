@@ -92,7 +92,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv(track_data))
+    response = make_response(format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response

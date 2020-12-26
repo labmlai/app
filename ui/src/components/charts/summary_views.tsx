@@ -4,7 +4,7 @@ import {useHistory} from "react-router-dom"
 
 import {getChart, getSparkLines} from "./components"
 import {BarLines} from "./barline"
-import {SeriesModel} from "../../models/run"
+import {SeriesDataModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, CardProps} from "../../analyses/types"
 import {getChartType} from "./utils"
@@ -19,7 +19,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 }
 
 function SparkLinesCard(props: BasicCardProps, ref: any) {
-    const [track, setTrack] = useState(null as (SeriesModel[] | null))
+    const [track, setTrack] = useState(null as (SeriesDataModel | null))
 
     const history = useHistory()
 
@@ -72,15 +72,15 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
             <h3 className={'header'}>{props.title}</h3>
             <LabLoader/>
         </div>
-        : track && track.length > 0 ?
+        : track && track.series.length > 0 ?
             <div className={'labml-card labml-card-action'} onClick={
                 () => {
                     history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getChart(getChartType(currentChart), track, plotIdx, props.width)}
-                {getSparkLines(track, plotIdx, props.width)}
+                {props.isChartView && getChart(getChartType(currentChart), track.series, plotIdx, props.width)}
+                {getSparkLines(track.series, plotIdx, props.width)}
             </div>
             : <div/>
     }
@@ -88,7 +88,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
 }
 
 function BarLinesCard(props: BasicCardProps, ref: any) {
-    const [track, setTrack] = useState(null as (SeriesModel[] | null))
+    const [track, setTrack] = useState(null as (SeriesDataModel | null))
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
 
@@ -115,14 +115,14 @@ function BarLinesCard(props: BasicCardProps, ref: any) {
             <h3 className={'header'}>{props.title}</h3>
             <LabLoader/>
         </div>
-        : track && track.length > 0 ?
+        : track && track.series.length > 0 ?
             <div className={'labml-card labml-card-action'} onClick={
                 () => {
                     history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                <BarLines width={props.width} series={track}/>
+                <BarLines width={props.width} series={track.series}/>
             </div>
             : <div/>
     }

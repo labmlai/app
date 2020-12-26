@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react"
 
 import mixpanel from "mixpanel-browser"
 
-import {SeriesModel} from "../../models/run"
+import {SeriesDataModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {getChart, getSparkLines} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
@@ -19,7 +19,7 @@ function BasicView(props: ViewCardProps) {
     const analysisCache = props.cache.getAnalysis(UUID)
     const preferenceCache = props.cache.getPreferences(UUID)
 
-    const [track, setTrack] = useState(null as unknown as SeriesModel[])
+    const [track, setTrack] = useState(null as unknown as SeriesDataModel)
     const [status, setStatus] = useState(null as unknown as Status)
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const [currentChart, setCurrentChart] = useState(0)
@@ -59,7 +59,7 @@ function BasicView(props: ViewCardProps) {
                     setPlotIdx([...analysis_preferences])
                 } else if (track) {
                     let res: number[] = []
-                    for (let i = 0; i < track.length; i++) {
+                    for (let i = 0; i < track.series.length; i++) {
                         res.push(i)
                     }
                     setPlotIdx(res)
@@ -123,8 +123,8 @@ function BasicView(props: ViewCardProps) {
         }
     }
 
-    let chart = getChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)
-    let sparkLines = getSparkLines(track, plotIdx, actualWidth, toggleChart)
+    let chart = getChart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)
+    let sparkLines = getSparkLines(track.series, plotIdx, actualWidth, toggleChart)
 
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
@@ -134,7 +134,7 @@ function BasicView(props: ViewCardProps) {
         </div>
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
-        {track && track.length > 0 && preference.current ?
+        {track && track.series.length > 0 && preference.current ?
             <div className={'labml-card'}>
                 <div className={'pointer-cursor'} onClick={onChartClick}>
                     <div className={'text-center mb-3'}>
