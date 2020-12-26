@@ -15,7 +15,7 @@ function Insight(props: InsightModel) {
     }
 
     return <div className={className}>
-        <span>{props.insight}</span>
+        <span>{props.message}</span>
         <span className="time-left">{props.time}</span>
     </div>
 }
@@ -28,7 +28,7 @@ function InsightsList(props: InsightsListProps) {
     return <div>
         {props.insightList.map((insight, idx) => (
             <Insight key={idx}
-                     insight={insight.insight}
+                     message={insight.message}
                      type={insight.type}
                      time={insight.time}/>
         ))}
