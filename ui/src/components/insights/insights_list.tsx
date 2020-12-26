@@ -1,6 +1,7 @@
 import React from "react"
 
 import {InsightModel} from "../../models/run"
+import {formatTime} from "../../utils/time"
 
 import "./insights_list.scss"
 
@@ -17,7 +18,7 @@ function Insight(props: InsightModel) {
 
     return <div className={className}>
         <span>{props.message}</span>
-        <span className="time-left">{props.time}</span>
+        <span className="time-left">{formatTime(props.time * 1000)}</span>
     </div>
 }
 
