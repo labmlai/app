@@ -123,9 +123,6 @@ function BasicView(props: ViewCardProps) {
         }
     }
 
-    let chart = getChart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)
-    let sparkLines = getSparkLines(track.series, plotIdx, actualWidth, toggleChart)
-
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -140,9 +137,9 @@ function BasicView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {chart}
+                    {getChart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
                 </div>
-                {sparkLines}
+                {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
             </div>
             :
             <LabLoader/>
