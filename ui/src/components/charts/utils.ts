@@ -37,6 +37,11 @@ export function getExtent(series: PointValue[][], func: (d: PointValue) => numbe
 
     for (let s of series) {
         let e = getExtentWithoutOutliers(s, func)
+
+        if (skipZero && e[0] === 0) {
+            continue
+        }
+
         extent[0] = Math.min(e[0], extent[0])
         extent[1] = Math.max(e[1], extent[1])
     }
