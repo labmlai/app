@@ -4,7 +4,7 @@ import {useHistory} from "react-router-dom"
 
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faRunning, faUserCircle, faBook, faComments, faBars, faTimes} from "@fortawesome/free-solid-svg-icons"
+import {faRunning, faUserCircle, faBook, faComments, faBars} from "@fortawesome/free-solid-svg-icons"
 import "./hamburger_menu.scss"
 
 interface HamburgerMenuBarProps {
