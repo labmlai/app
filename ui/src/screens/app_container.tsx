@@ -13,7 +13,6 @@ import PageNotFound from "./page_not_found_view"
 import RunsView from "./runs_list_view"
 import SettingsView from "./settings_view"
 import {RunHeaderView} from "../analyses/experiments/run_header/card"
-import ConfigsCard from "../analyses/configs/card"
 import {experiment_analyses, computer_analyses} from "../analyses/all_analyses"
 import NETWORK from "../network"
 import {LabLoader} from "../components/utils/loader"
@@ -129,7 +128,6 @@ function AppContainer() {
                 <Route path="/404" component={PageNotFound}/>
                 <Route path="/run" component={RunView}/>
                 <Route path="/computer" component={ComputerView}/>
-                <Route path="/configs" component={ConfigsCard.View}/>
                 <Route path="/run_header" component={RunHeaderView}/>
                 <Route path="/user" component={SettingsView}/>
                 <Route path="/runs" component={RunsView}/>

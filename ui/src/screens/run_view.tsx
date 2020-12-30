@@ -5,7 +5,6 @@ import mixpanel from "mixpanel-browser"
 
 import {BackButton, RefreshButton} from "../components/utils/util_buttons"
 import {WarningMessage} from "../components/utils/alert"
-import ConfigsCard from "../analyses/configs/card"
 import {experiment_analyses} from "../analyses/all_analyses"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {Footer} from '../components/utils/footer'
@@ -39,6 +38,7 @@ function RunView(props: RunProps) {
 
     //TODO should create from a loop
     let refreshArray: any[] = [
+        useRef(null) as any,
         useRef(null) as any,
         useRef(null) as any,
         useRef(null) as any,
@@ -115,7 +115,6 @@ function RunView(props: RunProps) {
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={'Run View'}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated} isMainView={true}/>
-        <ConfigsCard.Card uuid={runUUID} width={actualWidth}/>
         {experiment_analyses.map((analysis, i) => {
             return <analysis.card key={i} uuid={runUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>

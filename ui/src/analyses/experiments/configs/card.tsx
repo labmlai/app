@@ -1,21 +1,22 @@
-import React, {useEffect, useState} from "react"
+import React, {forwardRef, useEffect, useImperativeHandle, useState} from "react"
 
 import {useHistory} from "react-router-dom"
 
 import mixpanel from "mixpanel-browser"
 
 import {ConfigsView} from "./components"
-import {Run} from "../../models/run"
-import CACHE from "../../cache/cache"
-import useWindowDimensions from "../../utils/window_dimensions"
-import {CardProps, ViewProps} from "../types"
-import {LabLoader} from "../../components/utils/loader"
-import {RunHeaderCard} from "../experiments/run_header/card"
-import {BackButton, RefreshButton} from "../../components/utils/util_buttons"
-import {Status} from "../../models/status"
+import {Run} from "../../../models/run"
+import CACHE from "../../../cache/cache"
+import useWindowDimensions from "../../../utils/window_dimensions"
+import {Analysis, SummaryCardProps, ViewProps} from "../../types"
+import {LabLoader} from "../../../components/utils/loader"
+import {RunHeaderCard} from "../run_header/card"
+import {BackButton, RefreshButton} from "../../../components/utils/util_buttons"
+import {Status} from "../../../models/status"
 
+const URL = 'configs'
 
-function Card(props: CardProps) {
+function Card(props: SummaryCardProps, ref: any) {
     let [run, setRun] = useState(null as unknown as Run)
     const runCache = CACHE.getRun(props.uuid)
     const history = useHistory()
@@ -27,6 +28,24 @@ function Card(props: CardProps) {
 
         load().then()
     }, [runCache])
+
+    async function onRefresh() {
+        setRun(await runCache.get(true))
+    }
+
+    async function onLoad() {
+        setRun(await runCache.get())
+    }
+
+    useImperativeHandle(ref, () => ({
+        refresh: () => {
+            onRefresh().then()
+        },
+        load: () => {
+            onLoad().then()
+        },
+        lastUpdated: runCache.lastUpdated,
+    }))
 
     let configsView
     if (run != null) {
@@ -50,7 +69,7 @@ function Card(props: CardProps) {
     </div>
 }
 
-function View(props: ViewProps) {
+function ConfigsDetails(props: ViewProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('run_uuid') as string
 
@@ -108,7 +127,12 @@ function View(props: ViewProps) {
     </div>
 }
 
-export default {
-    Card,
-    View
+let ConfigsSummary = forwardRef(Card)
+
+let ConfigsAnalysis: Analysis = {
+    card: ConfigsSummary,
+    view: ConfigsDetails,
+    route: `${URL}`
 }
+
+export default ConfigsAnalysis

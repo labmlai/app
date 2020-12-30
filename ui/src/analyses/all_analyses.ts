@@ -8,6 +8,7 @@ import moduleAnalysis from "./experiments/modules/card"
 import stdOutAnalysis from "./experiments/stdout/card"
 import stderrAnalysis from "./experiments/stderror/card"
 import loggerAnalysis from "./experiments/logger/card"
+import ConfigsAnalysis from "./experiments/configs/card"
 
 
 import CpuAnalysis from "./computers/cpu/card"
@@ -18,6 +19,7 @@ import ProcessAnalysis from "./computers/process/card"
 
 let experiment_analyses: Analysis[] = [
     metricAnalysis,
+    ConfigsAnalysis,
     gradientAnalysis,
     parameterAnalysis,
     moduleAnalysis,
