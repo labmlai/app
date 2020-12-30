@@ -42,7 +42,7 @@ function ListItem(props: ListItemProps) {
         }
     } else {
         onClick = () => {
-            history.push(`/${props.itemKey}?${uuidKey}=${item[uuidKey]}`, history.location.pathname)
+            history.push(`/${props.itemKey}?uuid=${item[uuidKey]}`, history.location.pathname)
         }
     }
 

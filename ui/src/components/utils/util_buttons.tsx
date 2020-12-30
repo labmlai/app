@@ -7,6 +7,8 @@ import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons"
 
+import {experiment_analyses} from "../../analyses/all_analyses"
+
 import "./util_buttons.scss"
 
 interface ButtonProps {
@@ -20,6 +22,7 @@ export function BackButton(props: ButtonProps) {
     const location = useLocation()
 
     const [isPrevious, setIsPrevious] = useState(false)
+    const [syntheticPath, setSyntheticPath] = useState('')
     const [text, setText] = useState('')
 
     useEffect(() => {
@@ -36,10 +39,16 @@ export function BackButton(props: ButtonProps) {
             if (previous_path !== '/login') {
                 setIsPrevious(true)
             }
+        } else {
+            experiment_analyses.forEach((analysis) => {
+                if (location.pathname === '/' + analysis.route) {
+                    setText('Run')
+                    setSyntheticPath('/run' + location.search)
+                }
+            })
         }
 
     }, [location])
-
 
     function onBackButtonClick() {
         if (props.onButtonClick) {
@@ -49,9 +58,11 @@ export function BackButton(props: ButtonProps) {
         if (isPrevious) {
             history.goBack()
         } else {
-            // let uri = location.pathname + location.search
-            //history.push('/runs', uri)
-            history.push('/runs')
+            if (syntheticPath) {
+                history.push(syntheticPath)
+            } else {
+                history.push('/runs')
+            }
         }
 
         mixpanel.track('Back Button Clicked', {parent: props.parent})

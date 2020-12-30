@@ -23,7 +23,7 @@ function RunView(props: RunProps) {
     const history = useHistory()
 
     const params = new URLSearchParams(props.location.search)
-    const runUUID = params.get('run_uuid') as string
+    const runUUID = params.get('uuid') as string
 
     const statusCache = CACHE.getRunStatus(runUUID)
     const runCache = CACHE.getRun(runUUID)
