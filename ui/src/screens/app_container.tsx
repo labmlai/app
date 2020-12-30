@@ -22,7 +22,6 @@ import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
 
 
-
 function AppContainer() {
     const location = useLocation()
     const history = useHistory()
@@ -33,6 +32,10 @@ function AppContainer() {
     const isUserLoggedCache = CACHE.getIsUserLogged()
 
     useEffect(() => {
+            //TODO fix for ::active not working on mobile. Check for a better solution in react
+            document.addEventListener("touchstart", function () {
+            }, false)
+
             function isRunPath(): boolean {
                 const runPath = '/run'
 
