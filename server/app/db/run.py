@@ -54,7 +54,7 @@ class Run(Model['Run']):
 
     @property
     def url(self) -> str:
-        return f'{settings.WEB_URL}/run?run_uuid={self.run_uuid}'
+        return f'{settings.WEB_URL}/run?uuid={self.run_uuid}'
 
     def update_run(self, data: Dict[str, any]) -> None:
         if not self.name:
