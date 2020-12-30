@@ -14,7 +14,6 @@ interface HamburgerMenuBarProps {
 
 function HamburgerMenuBar(props: HamburgerMenuBarProps) {
     const [navLinksClass, setNavLinksClass] = useState('')
-    const [crossBurger, setCrossBurger] = useState(false)
     const [overlayClass, setOverlayClass] = useState('')
 
     const history = useHistory()
@@ -38,9 +37,6 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
             setNavLinksClass(' nav-active')
         }
 
-        // Burger Animation
-        setCrossBurger(!crossBurger)
-
         // turn on overlay
         if (overlayClass) {
             setOverlayClass('')
@@ -51,39 +47,33 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
 
     return <div>
         <div className={'nav-container'}>
-            <div>
-                <div className={'nav-links' + navLinksClass}>
-                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Runs')} href={'/runs'}>
-                        <FontAwesomeIcon icon={faRunning}/>
-                        <span>Runs</span>
-                    </Nav.Link>
-                    <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
-                        <FontAwesomeIcon icon={faUserCircle}/>
-                        <span>Profile</span>
-                    </Nav.Link>
-                    <Nav.Link className={'tab'} href={'http://lab-ml.com/'} target="_blank">
-                        <FontAwesomeIcon icon={faBook}/>
-                        <span>Documentation</span>
-                    </Nav.Link>
-                    <Nav.Link className={'tab'}
-                              href={'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/'}
-                              target="_blank">
-                        <FontAwesomeIcon icon={faComments}/>
-                        <span>Join Our Slack</span>
-                    </Nav.Link>
-                </div>
-                <Nav.Link className={'burger'} onClick={onBurgerClick}>
-                    {crossBurger ?
-                        <FontAwesomeIcon icon={faTimes}/>
-                        :
-                        <FontAwesomeIcon icon={faBars}/>
-                    }
+            <div className={'nav-links' + navLinksClass}>
+                <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Runs')} href={'/runs'}>
+                    <FontAwesomeIcon icon={faRunning}/>
+                    <span>Runs</span>
                 </Nav.Link>
-                <div className={'title ml-2'}>
-                    <h5>{props.title}</h5>
-                </div>
-                {props.children}
+                <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
+                    <FontAwesomeIcon icon={faUserCircle}/>
+                    <span>Profile</span>
+                </Nav.Link>
+                <Nav.Link className={'tab'} href={'http://lab-ml.com/'} target="_blank">
+                    <FontAwesomeIcon icon={faBook}/>
+                    <span>Documentation</span>
+                </Nav.Link>
+                <Nav.Link className={'tab'}
+                          href={'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/'}
+                          target="_blank">
+                    <FontAwesomeIcon icon={faComments}/>
+                    <span>Join Our Slack</span>
+                </Nav.Link>
             </div>
+            <Nav.Link className={'burger'} onClick={onBurgerClick}>
+                <FontAwesomeIcon icon={faBars}/>
+            </Nav.Link>
+            <div className={'title'}>
+                <h5>{props.title}</h5>
+            </div>
+            {props.children}
         </div>
         {(() => {
         })()}

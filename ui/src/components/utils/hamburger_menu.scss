@@ -8,7 +8,6 @@ html, body {
   display: none;
   width: 100%;
   height: 100%;
-  top: 8vh;
   left: 0;
   right: 0;
   bottom: 0;
@@ -29,6 +28,7 @@ html, body {
     letter-spacing: 5px;
     font-size: 10px;
     margin-top: 12px;
+    margin-left: 8px;
   }
 }
 
@@ -37,8 +37,9 @@ html, body {
   z-index: 3;
   background-color: #eee;
   left: -10px;
-  height: 92vh;
-  top: 8vh;
+  height: 100%;
+  padding-top: 8vh;
+  margin-top: -10px;
   width: 250px;
   transform: translate(-100%);
   transition: transform 0.5s ease-in;
