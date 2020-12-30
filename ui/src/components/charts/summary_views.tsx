@@ -80,9 +80,9 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                <InsightsList insightList={track.insights}/>
                 {props.isChartView && getChart(getChartType(currentChart), track.series, plotIdx, props.width)}
                 {getSparkLines(track.series, plotIdx, props.width)}
+                <InsightsList insightList={track.insights}/>
             </div>
             : <div/>
     }
