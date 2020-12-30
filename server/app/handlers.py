@@ -1,5 +1,6 @@
 import sys
 import typing
+from importlib import import_module
 
 import flask
 import werkzeug.wrappers
@@ -15,7 +16,8 @@ from .db import session
 from .db import user
 from .db import project
 from .utils import mix_panel
-from .analyses import AnalysisManager
+
+AnalysisManager = getattr(import_module(settings.ANALYSES_MODULE, package='app'), "AnalysisManager")
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 

@@ -1,4 +1,5 @@
 import redis
+from importlib import import_module
 
 from labml_db import Model, Index
 from labml_db.driver.redis import RedisDbDriver
@@ -6,15 +7,15 @@ from labml_db.index_driver.redis import RedisIndexDbDriver
 from labml_db.serializer.json import JsonSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from .. import settings
 from .project import Project, ProjectIndex, create_project
 from .user import User, UserIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
 from .computer import Computer, ComputerIndex
-from ..analyses import AnalysisManager
 
-from .. import settings
+AnalysisManager = getattr(import_module(settings.ANALYSES_MODULE, package='app'), "AnalysisManager")
 
 DATA_PATH = settings.DATA_PATH
 
