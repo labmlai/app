@@ -60,7 +60,7 @@ function Card(props: SummaryCardProps, ref: any) {
     return <div>
         <div className={'labml-card labml-card-action'} onClick={
             () => {
-                history.push(`/configs?run_uuid=${run.run_uuid}`, history.location.pathname);
+                history.push(`/configs?uuid=${run.run_uuid}`, history.location.pathname);
             }
         }>
             <h3 className={'header'}>Configurations</h3>
@@ -71,7 +71,7 @@ function Card(props: SummaryCardProps, ref: any) {
 
 function ConfigsDetails(props: ViewProps) {
     const params = new URLSearchParams(props.location.search)
-    const runUUID = params.get('run_uuid') as string
+    const runUUID = params.get('uuid') as string
 
     const runCache = CACHE.getRun(runUUID)
     const statusCache = CACHE.getRunStatus(runUUID)
