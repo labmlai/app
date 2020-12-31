@@ -45,14 +45,14 @@ class Computer(Model['Computer']):
         self.save()
 
     def get_data(self) -> Dict[str, Union[str, any]]:
-        configs = [{'key': k, **c} for k, c in self.configs.items()]
+        # configs = [{'key': k, **c} for k, c in self.configs.items()]
 
         return {
             'computer_uuid': self.computer_uuid,
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,
-            'configs': configs,
+            # 'configs': configs,
         }
 
     def get_summary(self) -> Dict[str, str]:
