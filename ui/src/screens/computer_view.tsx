@@ -17,7 +17,8 @@ interface RunProps {
 
 function ComputerView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
-    const computerUUID = params.get('computer_uuid') as string
+    const computerUUID = params.get('uuid') as string
+
     const statusCache = CACHE.getComputerStatus(computerUUID)
 
     const [status, setStatus] = useState(null as unknown as Status)

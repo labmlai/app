@@ -5,6 +5,7 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
+from app.utils import format_rv
 from app.logging import logger
 from app.enums import COMPUTEREnums
 from ..analysis import Analysis
@@ -85,7 +86,7 @@ def get_memory_tracking(computer_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(jsonify(track_data))
+    response = make_response(format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
@@ -102,7 +103,7 @@ def get_memory_preferences(computer_uuid: str) -> Any:
     mp: MemoryPreferencesModel = preferences_key.load()
     preferences_data = mp.get_data()
 
-    response = make_response(jsonify(preferences_data))
+    response = make_response(format_rv(preferences_data))
 
     return response
 
@@ -119,4 +120,4 @@ def set_memory_preferences(computer_uuid: str) -> Any:
 
     logger.debug(f'update memory preferences: {mp.key}')
 
-    return jsonify({'errors': mp.errors})
+    return format_rv({'errors': mp.errors})
