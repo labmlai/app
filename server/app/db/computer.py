@@ -52,7 +52,7 @@ class Computer(Model['Computer']):
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,
-            # 'configs': configs,
+            'configs': [],
         }
 
     def get_summary(self) -> Dict[str, str]:
