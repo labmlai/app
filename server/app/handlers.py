@@ -123,7 +123,7 @@ def update_computer() -> flask.Response:
     logger.debug(
         f'update_computer, computer_uuid: {computer_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return utils.format_rv({'errors': errors, 'url': c.url})
+    return jsonify({'errors': errors, 'url': c.url})
 
 
 @auth.login_required
