@@ -68,6 +68,7 @@ def sign_out() -> flask.Response:
     return response
 
 
+@mix_panel.MixPanelEvent.time_this(0.4)
 def update_computer() -> flask.Response:
     errors = []
 
@@ -127,6 +128,7 @@ def update_computer() -> flask.Response:
 
 
 @auth.login_required
+@mix_panel.MixPanelEvent.time_this(None)
 def get_computer(computer_uuid: str) -> flask.Response:
     computer_data = {}
     status_code = 400
@@ -146,6 +148,7 @@ def get_computer(computer_uuid: str) -> flask.Response:
 
 @auth.login_required
 @auth.check_labml_token_permission
+@mix_panel.MixPanelEvent.time_this(None)
 def get_computers(labml_token: str) -> flask.Response:
     u = auth.get_auth_user()
 
@@ -297,6 +300,7 @@ def get_run_status(run_uuid: str) -> flask.Response:
     return response
 
 
+@mix_panel.MixPanelEvent.time_this(None)
 def get_computer_status(computer_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
