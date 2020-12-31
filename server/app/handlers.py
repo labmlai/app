@@ -72,17 +72,56 @@ def update_computer() -> flask.Response:
     errors = []
 
     token = request.args.get('labml_token', '')
-    # TODO change this in client
     computer_uuid = request.args.get('computer_uuid', '')
+    version = request.args.get('labml_version', '')
+
+    if len(computer_uuid) < 10:
+        error = {'error': 'invalid_computer_uuid',
+                 'message': f'Invalid Computer UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
+    if utils.check_version(version, settings.LABML_VERSION):
+        error = {'error': 'labml_outdated',
+                 'message': f'Your labml client is outdated, please upgrade: '
+                            'pip install labml --upgrade'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
+    p = project.get_project(labml_token=token)
+    if not p:
+        token = settings.FLOAT_PROJECT_TOKEN
+
+    c = computer.get(computer_uuid, token)
+    if not c and not p:
+        if request.args.get('labml_token', ''):
+            error = {'error': 'invalid_token',
+                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                                'Click on the experiment link to monitor the experiment and '
+                                'add it to your experiments list.'}
+        else:
+            error = {'warning': 'empty_token',
+                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                                'Click on the experiment link to monitor the experiment and '
+                                'add it to your experiments list.'}
+        errors.append(error)
 
     c = computer.get_or_create(computer_uuid, token, request.remote_addr)
     s = c.status.load()
 
-    c.update_computer(request.json)
-    s.update_time_status(request.json)
-    # TODO change this in client
-    if 'track' in request.json:
-        AnalysisManager.track_computer(computer_uuid, request.json['track'])
+    if isinstance(request.json, list):
+        data = request.json
+    else:
+        data = [request.json]
+
+    for d in data:
+        c.update_computer(d)
+        s.update_time_status(d)
+        if 'track' in d:
+            AnalysisManager.track_computer(computer_uuid, d['track'])
+
+    logger.debug(
+        f'update_computer, computer_uuid: {computer_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     return utils.format_rv({'errors': errors, 'url': c.url})
 
