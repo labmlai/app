@@ -6,7 +6,6 @@ import {ListGroup} from "react-bootstrap"
 import {SeriesModel} from "../../models/run"
 import {getColor} from "./constants"
 import {LinePlot} from "./lineplot"
-import {DensityPlot} from "./densityplot"
 import {defaultSeriesToPlot, getExtent, getScale, getLogScale, toPointValues} from "./utils"
 import {SparkLine} from "./sparkline"
 import {LabLoader} from "../utils/loader"
@@ -167,6 +166,23 @@ function LineChart(props: LineChartProps) {
     </div>
 }
 
+// Function to compute density
+function kernelDensityEstimator(kernel: (k: number) => number, X: number[]) {
+    return function (V: number[]) {
+        return X.map(function (x): any[] {
+            return [x, d3.mean(V, function (v: number) {
+                return kernel(x - v)
+            })]
+        })
+    }
+}
+
+function kernelEpanechnikov(bandwidth: number): (v: number) => number {
+    return function (v: number): number {
+        return Math.abs(v /= bandwidth) <= 1 ? 0.75 * (1 - v * v) / bandwidth : 0
+    }
+}
+
 function DensityChart(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
@@ -185,13 +201,35 @@ function DensityChart(props: SeriesProps) {
         }
     });
 
-
     if (track.length === 0) {
         return <div/>
     }
 
-    const yScale = getScale([0, 1], -chartHeight)
     const xScale = getScale(getExtent(track.map(s => s.series), d => d.value), chartWidth)
+
+    // Compute kernel density estimation
+    let kde = kernelDensityEstimator(kernelEpanechnikov(1), xScale.ticks(plot.length))
+    let density = kde(plot)
+
+    let yValues: number[] = []
+    for (let i = 0; i < density.length; i++) {
+        yValues.push(density[i][1])
+    }
+
+    const yScale = getScale([Math.min(...yValues), Math.max(...yValues)], -chartHeight)
+
+    let densityLine = d3.line<number[]>()
+        .curve(d3.curveBasis)
+        .x((d) => {
+            return xScale(d[0])
+        })
+        .y((d) => {
+            return yScale(d[1])
+        })
+
+    let d: string = densityLine(density) as string
+
+    let densityPath = <path className={'smoothed-line'} fill={'none'} stroke={'#4E79A7'} d={d}/>
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
@@ -200,7 +238,9 @@ function DensityChart(props: SeriesProps) {
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
-                <DensityPlot series={plot} xScale={xScale} yScale={yScale} color={'#4E79A7'}/>
+                <g>
+                    {densityPath}
+                </g>
             </g>
 
             <g className={'bottom-axis'}
