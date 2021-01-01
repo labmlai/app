@@ -2,7 +2,7 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 
 import {useHistory} from "react-router-dom"
 
-import {getChart, getSparkLines} from "./components"
+import {getLineChart, getSparkLines, getDensityChart} from "./components"
 import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barline"
 import {SeriesDataModel} from "../../models/run"
@@ -80,7 +80,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getChart(getChartType(currentChart), track.series, plotIdx, props.width)}
+                {props.isChartView && getLineChart(getChartType(currentChart), track.series, plotIdx, props.width)}
                 {getSparkLines(track.series, plotIdx, props.width)}
                 <InsightsList insightList={track.insights}/>
             </div>
@@ -131,10 +131,55 @@ function BarLinesCard(props: BasicCardProps, ref: any) {
     </div>
 }
 
+function DensityLinesCard(props: BasicCardProps, ref: any) {
+    const [track, setTrack] = useState(null as (SeriesDataModel | null))
+    const analysisCache = props.cache.getAnalysis(props.uuid)
+    const history = useHistory()
+
+    async function onRefresh() {
+        setTrack(await analysisCache.get(true))
+    }
+
+    async function onLoad() {
+        setTrack(await analysisCache.get())
+    }
+
+    useImperativeHandle(ref, () => ({
+        refresh: () => {
+            onRefresh().then()
+        },
+        load: () => {
+            onLoad().then()
+        },
+        lastUpdated: analysisCache.lastUpdated
+    }))
+
+    return <div>{!track ?
+        <div className={'labml-card labml-card-action'}>
+            <h3 className={'header'}>{props.title}</h3>
+            <LabLoader/>
+        </div>
+        : track && track.series.length > 0 ?
+            <div className={'labml-card labml-card-action'} onClick={
+                () => {
+                    history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
+                }
+            }>
+                <h3 className={'header'}>{props.title}</h3>
+                {getDensityChart(track.series, props.width)}
+            </div>
+            : <div/>
+    }
+    </div>
+}
+
+
 let BasicSparkLines = forwardRef(SparkLinesCard)
 let BasicBarLines = forwardRef(BarLinesCard)
+let BasicDensityLines = forwardRef(DensityLinesCard)
 
 export {
     BasicSparkLines,
-    BasicBarLines
+    BasicBarLines,
+    BasicDensityLines
 }
