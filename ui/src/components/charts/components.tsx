@@ -25,11 +25,14 @@ import "./style.scss"
 interface AxisProps {
     chartId: string
     scale: d3.ScaleLinear<number, number>
+    specifier?: string
 }
 
 function BottomAxis(props: AxisProps) {
+    let specifier = props.specifier !==undefined ? props.specifier : ".2s"
+
     const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>)
-        .ticks(5, ".2s")
+        .ticks(5, specifier)
     const id = `${props.chartId}_axis_bottom`
     useEffect(() => {
         let layer = d3.select(`#${id}`)
@@ -185,7 +188,7 @@ function DensityChart(props: DensityChartProps) {
 
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
-    const chartHeight = Math.round(chartWidth / 6)
+    const chartHeight = Math.round(chartWidth / 4)
 
     let track: SeriesModel[] = props.series
 
@@ -227,7 +230,7 @@ function DensityChart(props: DensityChartProps) {
 
     let d: string = densityLine(density) as string
 
-    let densityPath = <path className={'smoothed-line'} fill={'none'} stroke={props.color} d={d}/>
+    let densityPath = <path className={'density-line'} fill={'none'} stroke={props.color} d={d}/>
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
@@ -253,7 +256,7 @@ function DensityChart(props: DensityChartProps) {
 
             <g className={'bottom-axis'}
                transform={`translate(${margin}, ${margin + chartHeight})`}>
-                <BottomAxis chartId={chartId} scale={xScale}/>
+                <BottomAxis chartId={chartId} scale={xScale} specifier={""}/>
             </g>
             <g className={'right-axis'}
                transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>

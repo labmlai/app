@@ -117,12 +117,15 @@ export function kernelDensityEstimator(kernel: (k: number) => number, X: number[
 
 export function kernelEpanechnikov(bandwidth: number): (v: number) => number {
     return function (v: number): number {
-        return Math.abs(v /= bandwidth) <= 1 ? 0.75 * (1 - v * v) / bandwidth : 0
+        // according to https://bookdown.org/egarpor/NP-UC3M/kde-i-kde.html
+        let z = v / bandwidth
+
+        return Math.abs(z) <= 1 ? 0.75 * (1 - z) : 0
     }
 }
 
 export function silvermansRuleOfThumb(values: number[]) {
     let stdDev = d3.deviation(values)!
 
-    return Math.pow((4 * Math.pow(stdDev, 5)) / (3 * values.length), 0.2)
+    return (1.06 * stdDev) / Math.pow(values.length, 0.2)
 }
