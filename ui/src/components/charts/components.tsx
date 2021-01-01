@@ -6,7 +6,16 @@ import {ListGroup} from "react-bootstrap"
 import {SeriesModel} from "../../models/run"
 import {getColor} from "./constants"
 import {LinePlot} from "./lineplot"
-import {defaultSeriesToPlot, getExtent, getScale, getLogScale, toPointValues} from "./utils"
+import {
+    defaultSeriesToPlot,
+    getExtent,
+    getScale,
+    getLogScale,
+    toPointValues,
+    kernelDensityEstimator,
+    kernelEpanechnikov,
+    silvermansRuleOfThumb
+} from "./utils"
 import {SparkLine} from "./sparkline"
 import {LabLoader} from "../utils/loader"
 
@@ -166,23 +175,6 @@ function LineChart(props: LineChartProps) {
     </div>
 }
 
-// Function to compute density
-function kernelDensityEstimator(kernel: (k: number) => number, X: number[]) {
-    return function (V: number[]) {
-        return X.map(function (x): any[] {
-            return [x, d3.mean(V, function (v: number) {
-                return kernel(x - v)
-            })]
-        })
-    }
-}
-
-function kernelEpanechnikov(bandwidth: number): (v: number) => number {
-    return function (v: number): number {
-        return Math.abs(v /= bandwidth) <= 1 ? 0.75 * (1 - v * v) / bandwidth : 0
-    }
-}
-
 interface DensityChartProps extends SeriesProps {
     color: string
 }
@@ -211,8 +203,10 @@ function DensityChart(props: DensityChartProps) {
 
     const xScale = getScale(getExtent(track.map(s => s.series), d => d.value), chartWidth)
 
+    const bandwidth = silvermansRuleOfThumb(plot)
+
     // Compute kernel density estimation
-    let kde = kernelDensityEstimator(kernelEpanechnikov(4), xScale.ticks(plot.length))
+    let kde = kernelDensityEstimator(kernelEpanechnikov(bandwidth), xScale.ticks(plot.length))
     let density = kde(plot)
 
     let yValues: number[] = []

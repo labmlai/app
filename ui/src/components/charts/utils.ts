@@ -102,3 +102,27 @@ export function toPointValues(track: SeriesModel[]) {
 export function getChartType(index: number): 'log' | 'normal' {
     return index === 0 ? 'normal' : 'log'
 }
+
+
+// Function to compute density
+export function kernelDensityEstimator(kernel: (k: number) => number, X: number[]) {
+    return function (V: number[]) {
+        return X.map(function (x): any[] {
+            return [x, d3.mean(V, function (v: number) {
+                return kernel(x - v)
+            })]
+        })
+    }
+}
+
+export function kernelEpanechnikov(bandwidth: number): (v: number) => number {
+    return function (v: number): number {
+        return Math.abs(v /= bandwidth) <= 1 ? 0.75 * (1 - v * v) / bandwidth : 0
+    }
+}
+
+export function silvermansRuleOfThumb(values: number[]) {
+    let stdDev = d3.deviation(values)!
+
+    return Math.pow((4 * Math.pow(stdDev, 5)) / (3 * values.length), 0.2)
+}
