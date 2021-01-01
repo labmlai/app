@@ -4,7 +4,7 @@ import mixpanel from "mixpanel-browser"
 
 import {SeriesDataModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
-import {getChart, getSparkLines} from "./components"
+import {getLineChart, getSparkLines} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
 import {ViewCardProps} from "../../analyses/types"
@@ -137,7 +137,7 @@ function BasicView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {getChart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
+                    {getLineChart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
                 </div>
                 {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
             </div>

@@ -24,6 +24,10 @@ svg#chart {
   path.unsmoothed-line {
     stroke-width: 0.5;
   }
+
+  path.density-line {
+    stroke-width: 2;
+  }
 }
 
 div.sparkline-list-item {

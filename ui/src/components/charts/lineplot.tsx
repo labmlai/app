@@ -15,6 +15,7 @@ interface LinePlotProps {
 
 export function LinePlot(props: LinePlotProps) {
     let series = props.series
+
     let smoothedLine = d3.line<PointValue>()
         .curve(d3.curveMonotoneX)
         .x((d) => {

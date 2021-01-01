@@ -6,7 +6,16 @@ import {ListGroup} from "react-bootstrap"
 import {SeriesModel} from "../../models/run"
 import {getColor} from "./constants"
 import {LinePlot} from "./lineplot"
-import {defaultSeriesToPlot, getExtent, getScale, getLogScale, toPointValues} from "./utils"
+import {
+    defaultSeriesToPlot,
+    getExtent,
+    getScale,
+    getLogScale,
+    toPointValues,
+    kernelDensityEstimator,
+    kernelEpanechnikov,
+    silvermansRuleOfThumb
+} from "./utils"
 import {SparkLine} from "./sparkline"
 import {LabLoader} from "../utils/loader"
 
@@ -16,11 +25,14 @@ import "./style.scss"
 interface AxisProps {
     chartId: string
     scale: d3.ScaleLinear<number, number>
+    specifier?: string
 }
 
 function BottomAxis(props: AxisProps) {
+    let specifier = props.specifier !==undefined ? props.specifier : ".2s"
+
     const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>)
-        .ticks(5, ".2s")
+        .ticks(5, specifier)
     const id = `${props.chartId}_axis_bottom`
     useEffect(() => {
         let layer = d3.select(`#${id}`)
@@ -101,6 +113,7 @@ interface LineChartProps extends SeriesProps {
 function LineChart(props: LineChartProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
+
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
@@ -165,9 +178,98 @@ function LineChart(props: LineChartProps) {
     </div>
 }
 
+interface DensityChartProps extends SeriesProps {
+    color: string
+}
+
+function DensityChart(props: DensityChartProps) {
+    const windowWidth = props.width
+    const margin = Math.floor(windowWidth / 64)
+
+    const axisSize = 30
+    const chartWidth = windowWidth - 2 * margin - axisSize
+    const chartHeight = Math.round(chartWidth / 4)
+
+    let track: SeriesModel[] = props.series
+
+    let plot: number[] = []
+    track.forEach(function (series) {
+        const values = series.value
+        for (let i = 0; i < values.length; i++) {
+            plot.push(values[i])
+        }
+    });
+
+    if (track.length === 0) {
+        return <div/>
+    }
+
+    const xScale = getScale(getExtent(track.map(s => s.series), d => d.value), chartWidth)
+
+    const bandwidth = silvermansRuleOfThumb(plot)
+
+    // Compute kernel density estimation
+    let kde = kernelDensityEstimator(kernelEpanechnikov(bandwidth), xScale.ticks(plot.length))
+    let density = kde(plot)
+
+    let yValues: number[] = []
+    for (let i = 0; i < density.length; i++) {
+        yValues.push(density[i][1])
+    }
+
+    const yScale = getScale([Math.min(...yValues), Math.max(...yValues)], -chartHeight)
+
+    let densityLine = d3.line<number[]>()
+        .curve(d3.curveBasis)
+        .x((d) => {
+            return xScale(d[0])
+        })
+        .y((d) => {
+            return yScale(d[1])
+        })
+
+    let d: string = densityLine(density) as string
+
+    let densityPath = <path className={'density-line'} fill={'none'} stroke={props.color} d={d}/>
+
+    const chartId = `chart_${Math.round(Math.random() * 1e9)}`
+
+    let dFill = ''
+    const plotSorted = plot.sort()
+    dFill = `M${xScale(plotSorted[0])},0L` +
+        d.substr(1) +
+        `L${xScale(plotSorted[plotSorted.length - 1])},0`
+
+
+    let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
+                         d={dFill}/>
+
+    return <div>
+        <svg id={'chart'}
+             height={2 * margin + axisSize + chartHeight}
+             width={2 * margin + axisSize + chartWidth}>
+            <g transform={`translate(${margin}, ${margin + chartHeight})`}>
+                <g>
+                    {densityPath}{pathFill}
+                </g>
+            </g>
+
+            <g className={'bottom-axis'}
+               transform={`translate(${margin}, ${margin + chartHeight})`}>
+                <BottomAxis chartId={chartId} scale={xScale} specifier={""}/>
+            </g>
+            <g className={'right-axis'}
+               transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
+                <RightAxis chartId={chartId} scale={yScale}/>
+            </g>
+        </svg>
+    </div>
+
+}
+
 let chartTypes: 'log' | 'normal'
 
-export function getChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -194,6 +296,20 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
 
         let series: SeriesModel[] = toPointValues(track)
         return <SparkLines series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+    } else {
+        return <LabLoader/>
+    }
+}
+
+export function getDensityChart(track: SeriesModel[] | null, width: number, color: string) {
+    if (track != null) {
+        if (track.length === 0) {
+            return null
+        }
+
+        let series: SeriesModel[] = toPointValues(track)
+
+        return <DensityChart series={series} width={width} plotIdx={[]} color={color}/>
     } else {
         return <LabLoader/>
     }

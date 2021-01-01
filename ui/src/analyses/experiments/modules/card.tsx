@@ -3,7 +3,7 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SummaryCardProps, Analysis} from "../../types"
-import {BasicBarLines} from "../../../components/charts/summary_views"
+import {BasicDensityLines} from "../../../components/charts/summary_views"
 import {BasicView} from "../../../components/charts/detail_views"
 import {RunHeaderCard} from "../run_header/card"
 import {Cache} from "../../common"
@@ -29,13 +29,14 @@ class OutputPreferenceCache extends SeriesPreferenceCache {
 let cache = new Cache('run', OutputAnalysisCache, OutputPreferenceCache)
 
 function AnalysisSummary(props: SummaryCardProps) {
-    return <BasicBarLines title={TITLE}
-                          uuid={props.uuid}
-                          url={URL}
-                          cache={cache}
-                          ref={props.refreshRef}
-                          isChartView={false}
-                          width={props.width}/>
+    return <BasicDensityLines title={TITLE}
+                              uuid={props.uuid}
+                              url={URL}
+                              cache={cache}
+                              color={'#59A14F'}
+                              ref={props.refreshRef}
+                              isChartView={false}
+                              width={props.width}/>
 
 }
 
