@@ -183,13 +183,17 @@ function kernelEpanechnikov(bandwidth: number): (v: number) => number {
     }
 }
 
-function DensityChart(props: SeriesProps) {
+interface DensityChartProps extends SeriesProps {
+    color: string
+}
+
+function DensityChart(props: DensityChartProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
-    const chartHeight = Math.round(chartWidth / 2)
+    const chartHeight = Math.round(chartWidth / 6)
 
     let track: SeriesModel[] = props.series
 
@@ -208,7 +212,7 @@ function DensityChart(props: SeriesProps) {
     const xScale = getScale(getExtent(track.map(s => s.series), d => d.value), chartWidth)
 
     // Compute kernel density estimation
-    let kde = kernelDensityEstimator(kernelEpanechnikov(1), xScale.ticks(plot.length))
+    let kde = kernelDensityEstimator(kernelEpanechnikov(4), xScale.ticks(plot.length))
     let density = kde(plot)
 
     let yValues: number[] = []
@@ -229,9 +233,19 @@ function DensityChart(props: SeriesProps) {
 
     let d: string = densityLine(density) as string
 
-    let densityPath = <path className={'smoothed-line'} fill={'none'} stroke={'#4E79A7'} d={d}/>
+    let densityPath = <path className={'smoothed-line'} fill={'none'} stroke={props.color} d={d}/>
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
+
+    let dFill = ''
+    const plotSorted = plot.sort()
+    dFill = `M${xScale(plotSorted[0])},0L` +
+        d.substr(1) +
+        `L${xScale(plotSorted[plotSorted.length - 1])},0`
+
+
+    let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
+                         d={dFill}/>
 
     return <div>
         <svg id={'chart'}
@@ -239,7 +253,7 @@ function DensityChart(props: SeriesProps) {
              width={2 * margin + axisSize + chartWidth}>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 <g>
-                    {densityPath}
+                    {densityPath}{pathFill}
                 </g>
             </g>
 
@@ -290,7 +304,7 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
     }
 }
 
-export function getDensityChart(track: SeriesModel[] | null, width: number) {
+export function getDensityChart(track: SeriesModel[] | null, width: number, color: string) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -298,7 +312,7 @@ export function getDensityChart(track: SeriesModel[] | null, width: number) {
 
         let series: SeriesModel[] = toPointValues(track)
 
-        return <DensityChart series={series} width={width} plotIdx={[]}/>
+        return <DensityChart series={series} width={width} plotIdx={[]} color={color}/>
     } else {
         return <LabLoader/>
     }

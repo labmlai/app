@@ -3,7 +3,7 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SummaryCardProps, Analysis} from "../../types"
-import {BasicDensityLines, BasicBarLines} from "../../../components/charts/summary_views"
+import {BasicDensityLines} from "../../../components/charts/summary_views"
 import {BasicView} from "../../../components/charts/detail_views"
 import {RunHeaderCard} from "../run_header/card"
 import {Cache} from "../../common"
@@ -30,12 +30,13 @@ let cache = new Cache('run', GradientAnalysisCache, GradientPreferenceCache)
 
 function AnalysisSummary(props: SummaryCardProps) {
     return <BasicDensityLines title={TITLE}
-                          uuid={props.uuid}
-                          url={URL}
-                          cache={cache}
-                          ref={props.refreshRef}
-                          isChartView={false}
-                          width={props.width}/>
+                              uuid={props.uuid}
+                              url={URL}
+                              cache={cache}
+                              color={'#AF7AA1'}
+                              ref={props.refreshRef}
+                              isChartView={false}
+                              width={props.width}/>
 }
 
 function AnalysisDetails() {

@@ -131,7 +131,11 @@ function BarLinesCard(props: BasicCardProps, ref: any) {
     </div>
 }
 
-function DensityLinesCard(props: BasicCardProps, ref: any) {
+interface DensityLinesCardProps extends BasicCardProps {
+    color: string
+}
+
+function DensityLinesCard(props: DensityLinesCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesDataModel | null))
     const analysisCache = props.cache.getAnalysis(props.uuid)
     const history = useHistory()
@@ -166,7 +170,7 @@ function DensityLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {getDensityChart(track.series, props.width)}
+                {getDensityChart(track.series, props.width, props.color)}
             </div>
             : <div/>
     }
