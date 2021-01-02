@@ -19,7 +19,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'process_index.yaml')
+@Analysis.db_index(PickleSerializer, 'process_index')
 class ProcessIndex(Index['Process']):
     pass
 
@@ -29,7 +29,7 @@ class ProcessPreferencesModel(Model['ProcessPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'process_preferences_index.yaml')
+@Analysis.db_index(PickleSerializer, 'process_preferences_index')
 class ProcessPreferencesIndex(Index['ProcessPreferences']):
     pass
 
@@ -70,6 +70,10 @@ class ProcessAnalysis(Analysis):
             c = ProcessModel()
             c.save()
             ProcessIndex.set(computer_uuid, c.key)
+
+            pp = ProcessPreferencesModel()
+            pp.save()
+            ProcessPreferencesIndex.set(computer_uuid, pp.key)
 
             return ProcessAnalysis(c)
 
@@ -113,7 +117,7 @@ def set_process_preferences(computer_uuid: str) -> Any:
     preferences_key = ProcessPreferencesIndex.get(computer_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     pp = preferences_key.load()
     pp.update_preferences(request.json)

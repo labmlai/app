@@ -19,7 +19,7 @@ class MemoryModel(Model['MemoryModel'], SeriesCollection):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'memory_index.yaml')
+@Analysis.db_index(YamlSerializer, 'memory_index')
 class MemoryIndex(Index['Memory']):
     pass
 
@@ -29,7 +29,7 @@ class MemoryPreferencesModel(Model['MemoryPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'memory_preferences_index.yaml')
+@Analysis.db_index(YamlSerializer, 'memory_preferences_index')
 class MemoryPreferencesIndex(Index['MemoryPreferences']):
     pass
 
@@ -70,6 +70,10 @@ class MemoryAnalysis(Analysis):
             c = MemoryModel()
             c.save()
             MemoryIndex.set(computer_uuid, c.key)
+
+            mp = MemoryPreferencesModel()
+            mp.save()
+            MemoryPreferencesIndex.set(computer_uuid, mp.key)
 
             return MemoryAnalysis(c)
 
@@ -113,7 +117,7 @@ def set_memory_preferences(computer_uuid: str) -> Any:
     preferences_key = MemoryPreferencesIndex.get(computer_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     mp = preferences_key.load()
     mp.update_preferences(request.json)

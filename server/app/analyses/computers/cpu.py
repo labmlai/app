@@ -19,7 +19,7 @@ class CPUModel(Model['CPUModel'], SeriesCollection):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'cpu_index.yaml')
+@Analysis.db_index(PickleSerializer, 'cpu_index')
 class CPUIndex(Index['CPU']):
     pass
 
@@ -29,7 +29,7 @@ class CPUPreferencesModel(Model['CPUPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'cpu_preferences_index.yaml')
+@Analysis.db_index(PickleSerializer, 'cpu_preferences_index')
 class CPUPreferencesIndex(Index['CPUPreferences']):
     pass
 
@@ -70,6 +70,10 @@ class CPUAnalysis(Analysis):
             c = CPUModel()
             c.save()
             CPUIndex.set(computer_uuid, c.key)
+
+            cp = CPUPreferencesModel()
+            cp.save()
+            CPUPreferencesIndex.set(computer_uuid, cp.key)
 
             return CPUAnalysis(c)
 
@@ -113,7 +117,7 @@ def set_cpu_preferences(computer_uuid: str) -> Any:
     preferences_key = CPUPreferencesIndex.get(computer_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     cp = preferences_key.load()
     cp.update_preferences(request.json)

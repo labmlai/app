@@ -19,7 +19,7 @@ class DiskModel(Model['DiskModel'], SeriesCollection):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'disk_index.yaml')
+@Analysis.db_index(PickleSerializer, 'disk_index')
 class DiskIndex(Index['Disk']):
     pass
 
@@ -29,7 +29,7 @@ class DiskPreferencesModel(Model['DiskPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'disk_preferences_index.yaml')
+@Analysis.db_index(PickleSerializer, 'disk_preferences_index')
 class DiskPreferencesIndex(Index['DiskPreferences']):
     pass
 
@@ -71,6 +71,10 @@ class DiskAnalysis(Analysis):
             d.save()
             DiskIndex.set(computer_uuid, d.key)
 
+            dp = DiskPreferencesModel()
+            dp.save()
+            DiskPreferencesIndex.set(computer_uuid, dp.key)
+
             return DiskAnalysis(d)
 
         return DiskAnalysis(disk_key.load())
@@ -103,6 +107,8 @@ def get_disk_preferences(computer_uuid: str) -> Any:
     dp: DiskPreferencesModel = preferences_key.load()
     preferences_data = dp.get_data()
 
+    print(preferences_data)
+
     response = make_response(format_rv(preferences_data))
 
     return response
@@ -113,7 +119,7 @@ def set_disk_preferences(computer_uuid: str) -> Any:
     preferences_key = DiskPreferencesIndex.get(computer_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     dp = preferences_key.load()
     dp.update_preferences(request.json)

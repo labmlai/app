@@ -19,7 +19,7 @@ class NetworkModel(Model['NetworkModel'], SeriesCollection):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'network_index.yaml')
+@Analysis.db_index(YamlSerializer, 'network_index')
 class NetworkIndex(Index['Network']):
     pass
 
@@ -29,7 +29,7 @@ class NetworkPreferencesModel(Model['NetworkPreferencesModel'], Preferences):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'network_preferences_index.yaml')
+@Analysis.db_index(PickleSerializer, 'network_preferences_index')
 class NetworkPreferencesIndex(Index['NetworkPreferences']):
     pass
 
@@ -70,6 +70,10 @@ class NetworkAnalysis(Analysis):
             c = NetworkModel()
             c.save()
             NetworkIndex.set(computer_uuid, c.key)
+
+            np = NetworkPreferencesModel()
+            np.save()
+            NetworkPreferencesIndex.set(computer_uuid, np.key)
 
             return NetworkAnalysis(c)
 
@@ -113,7 +117,7 @@ def set_network_preferences(computer_uuid: str) -> Any:
     preferences_key = NetworkPreferencesIndex.get(computer_uuid)
 
     if not preferences_key:
-        return jsonify({})
+        return format_rv({})
 
     np = preferences_key.load()
     np.update_preferences(request.json)

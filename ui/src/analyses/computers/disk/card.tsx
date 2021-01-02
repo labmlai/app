@@ -21,7 +21,7 @@ class DiskAnalysisCache extends SeriesCache {
 
 class DiskPreferenceCache extends SeriesPreferenceCache {
     constructor(uuid: string) {
-        super(uuid, 'cpu')
+        super(uuid, 'disk')
     }
 }
 
