@@ -32,8 +32,7 @@ interface AxisProps {
 function BottomAxis(props: AxisProps) {
     let specifier = props.specifier !== undefined ? props.specifier : ".2s"
 
-    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>)
-        .ticks(5, specifier)
+    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5, specifier)
     const id = `${props.chartId}_axis_bottom`
     useEffect(() => {
         let layer = d3.select(`#${id}`)
@@ -46,7 +45,9 @@ function BottomAxis(props: AxisProps) {
 }
 
 function RightAxis(props: AxisProps) {
-    const axis = d3.axisRight(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5)
+    let specifier = props.specifier !== undefined ? props.specifier : ""
+
+    const axis = d3.axisRight(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5, specifier)
     const id = `${props.chartId}_axis_right`
     useEffect(() => {
         let layer = d3.select(`#${id}`)
@@ -221,6 +222,14 @@ function LineChart(props: LineChartProps) {
                          color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}/>
     })
 
+    let specifier = ''
+    let yTicks = yScale.ticks()
+    for (let i = 0; i < yTicks.length; i++) {
+        if(yTicks[i] > 1000){
+            specifier = '.1s'
+        }
+    }
+
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div>
@@ -237,7 +246,7 @@ function LineChart(props: LineChartProps) {
             </g>
             <g className={'right-axis'}
                transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
-                <RightAxis chartId={chartId} scale={yScale}/>
+                <RightAxis chartId={chartId} scale={yScale} specifier={specifier}/>
             </g>
         </svg>
     </div>
