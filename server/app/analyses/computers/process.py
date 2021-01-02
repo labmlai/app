@@ -67,15 +67,15 @@ class ProcessAnalysis(Analysis):
         cpu_key = ProcessIndex.get(computer_uuid)
 
         if not cpu_key:
-            c = ProcessModel()
-            c.save()
-            ProcessIndex.set(computer_uuid, c.key)
+            p = ProcessModel()
+            p.save()
+            ProcessIndex.set(computer_uuid, p.key)
 
             pp = ProcessPreferencesModel()
             pp.save()
             ProcessPreferencesIndex.set(computer_uuid, pp.key)
 
-            return ProcessAnalysis(c)
+            return ProcessAnalysis(p)
 
         return ProcessAnalysis(cpu_key.load())
 
@@ -115,6 +115,7 @@ def get_process_preferences(computer_uuid: str) -> Any:
 @Analysis.route('POST', 'process/preferences/<computer_uuid>')
 def set_process_preferences(computer_uuid: str) -> Any:
     preferences_key = ProcessPreferencesIndex.get(computer_uuid)
+
 
     if not preferences_key:
         return format_rv({})

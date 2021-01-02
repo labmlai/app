@@ -67,15 +67,15 @@ class NetworkAnalysis(Analysis):
         cpu_key = NetworkIndex.get(computer_uuid)
 
         if not cpu_key:
-            c = NetworkModel()
-            c.save()
-            NetworkIndex.set(computer_uuid, c.key)
+            n = NetworkModel()
+            n.save()
+            NetworkIndex.set(computer_uuid, n.key)
 
             np = NetworkPreferencesModel()
             np.save()
             NetworkPreferencesIndex.set(computer_uuid, np.key)
 
-            return NetworkAnalysis(c)
+            return NetworkAnalysis(n)
 
         return NetworkAnalysis(cpu_key.load())
 

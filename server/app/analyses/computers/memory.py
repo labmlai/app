@@ -67,15 +67,15 @@ class MemoryAnalysis(Analysis):
         cpu_key = MemoryIndex.get(computer_uuid)
 
         if not cpu_key:
-            c = MemoryModel()
-            c.save()
-            MemoryIndex.set(computer_uuid, c.key)
+            m = MemoryModel()
+            m.save()
+            MemoryIndex.set(computer_uuid, m.key)
 
             mp = MemoryPreferencesModel()
             mp.save()
             MemoryPreferencesIndex.set(computer_uuid, mp.key)
 
-            return MemoryAnalysis(c)
+            return MemoryAnalysis(m)
 
         return MemoryAnalysis(cpu_key.load())
 
