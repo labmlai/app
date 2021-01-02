@@ -4,7 +4,7 @@ import * as d3 from "d3"
 import {ListGroup} from "react-bootstrap"
 
 import {SeriesModel, SeriesSummaryModel} from "../../models/run"
-import {getColor} from "./constants"
+import {getColor, L1_COLOR, L2_COLOR, MEAN_COLOR} from "./constants"
 import {LinePlot} from "./lineplot"
 import {SimpleLinePlot} from "./simplelineplot"
 import {
@@ -154,10 +154,9 @@ function SimpleLineChart(props: SimpleLinesProps) {
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
-                <g>
-                    <SimpleLinePlot series={l1} xScale={xScale} yScale={yScale} color={getColor(4)} key={1}/>
-                    <SimpleLinePlot series={l2} xScale={xScale} yScale={yScale} color={getColor(5)} key={2}/>
-                    <SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={getColor(2)} key={3}/>
+                <g><SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={MEAN_COLOR} key={3}/>
+                    <SimpleLinePlot series={l1} xScale={xScale} yScale={yScale} color={L1_COLOR} key={1}/>
+                    <SimpleLinePlot series={l2} xScale={xScale} yScale={yScale} color={L2_COLOR} key={2}/>
                 </g>
             </g>
             <g className={'right-axis'}

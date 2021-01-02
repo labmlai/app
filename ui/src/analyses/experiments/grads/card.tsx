@@ -9,7 +9,8 @@ import {RunHeaderCard} from "../run_header/card"
 import {Cache} from "../../common"
 import {SeriesCache, RunStatusCache, SeriesPreferenceCache} from "../../../cache/cache"
 
-const TITLE = 'Gradients - L2 Norm'
+const DETAILS_TITLE = 'Gradients - L2 Norm'
+const SUMMARY_TITLE = 'Gradients'
 const URL = 'gradients'
 
 class GradientAnalysisCache extends SeriesCache {
@@ -29,7 +30,7 @@ let cache = new Cache('run', GradientAnalysisCache, GradientPreferenceCache)
 
 
 function AnalysisSummary(props: SummaryCardProps) {
-    return <L1L2MeanLines title={TITLE}
+    return <L1L2MeanLines title={SUMMARY_TITLE}
                           uuid={props.uuid}
                           url={URL}
                           cache={cache}
@@ -41,7 +42,7 @@ function AnalysisSummary(props: SummaryCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView title={TITLE}
+    return <BasicView title={DETAILS_TITLE}
                       cache={cache}
                       location={location}
                       headerCard={RunHeaderCard}/>

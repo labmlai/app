@@ -10,7 +10,8 @@ import {Cache} from "../../common"
 import {SeriesCache, SeriesPreferenceCache, RunStatusCache} from "../../../cache/cache"
 
 
-const TITLE = 'Parameters - L2 Norm'
+const DETAIL_TITLE = 'Parameters - L2 Norm'
+const SUMMARY_TITLE = 'Parameters'
 const URL = 'parameters'
 
 
@@ -31,7 +32,7 @@ class ParameterPreferenceCache extends SeriesPreferenceCache {
 let cache = new Cache('run', ParameterAnalysisCache, ParameterPreferenceCache)
 
 function AnalysisSummary(props: SummaryCardProps) {
-    return <L1L2MeanLines title={TITLE}
+    return <L1L2MeanLines title={SUMMARY_TITLE}
                           uuid={props.uuid}
                           url={URL}
                           cache={cache}
@@ -44,7 +45,7 @@ function AnalysisSummary(props: SummaryCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView title={TITLE}
+    return <BasicView title={DETAIL_TITLE}
                       cache={cache}
                       location={location}
                       headerCard={RunHeaderCard}/>
