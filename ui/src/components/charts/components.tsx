@@ -151,7 +151,7 @@ function SimpleLineChart(props: SimpleLinesProps) {
 
     return <div>
         <svg id={'chart'}
-             height={2 * margin + axisSize + chartHeight}
+             height={2 * margin + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 <g><SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={MEAN_COLOR} key={3}/>
@@ -164,6 +164,14 @@ function SimpleLineChart(props: SimpleLinesProps) {
                 <RightAxis chartId={chartId} scale={yScale}/>
             </g>
         </svg>
+        <div className={'text-center labels text-secondary'}>
+            <div className='box' style={{backgroundColor: MEAN_COLOR}}></div>
+            Mean
+            <div className='box' style={{backgroundColor: L1_COLOR}}></div>
+            L1 - Norm
+            <div className='box' style={{backgroundColor: L2_COLOR}}></div>
+            L2 - Norm
+        </div>
     </div>
 }
 

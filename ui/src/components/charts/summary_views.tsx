@@ -3,7 +3,6 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 import {useHistory} from "react-router-dom"
 
 import {getLineChart, getSparkLines, getDensityChart, getSimpleLineChart} from "./components"
-import {L1_COLOR, L2_COLOR, MEAN_COLOR} from "./constants"
 import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barline"
 import {SeriesDataModel} from "../../models/run"
@@ -213,14 +212,7 @@ function L1L2MeanLinesCard(props: BasicCardProps, ref: any) {
                     history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
                 }
             }>
-                <h3 className={'header'}>{props.title}
-                    <div className='box red' style={{backgroundColor: MEAN_COLOR}}></div>
-                    Mean
-                    <div className='box red' style={{backgroundColor: L1_COLOR}}></div>
-                    L1 - Norm
-                    <div className='box red' style={{backgroundColor: L2_COLOR}}></div>
-                    l2 - Norm
-                </h3>
+                <h3 className={'header'}>{props.title}</h3>
                 {getSimpleLineChart(track.summary, props.width)}
             </div>
             : <div/>

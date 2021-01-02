@@ -130,6 +130,10 @@ button.sparkline-list-item {
   width: 10px;
   margin-left: 15px;
   margin-right: 5px;
-  border: 1px solid black;
+  border: 0.5px solid lightgray;
   clear: both;
+}
+
+.labels {
+  font-size: .7rem;
 }
