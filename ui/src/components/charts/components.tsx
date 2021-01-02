@@ -3,9 +3,10 @@ import React, {useEffect} from "react"
 import * as d3 from "d3"
 import {ListGroup} from "react-bootstrap"
 
-import {SeriesModel} from "../../models/run"
+import {SeriesModel, SeriesSummaryModel} from "../../models/run"
 import {getColor} from "./constants"
 import {LinePlot} from "./lineplot"
+import {SimpleLinePlot} from "./simplelineplot"
 import {
     defaultSeriesToPlot,
     getExtent,
@@ -29,7 +30,7 @@ interface AxisProps {
 }
 
 function BottomAxis(props: AxisProps) {
-    let specifier = props.specifier !==undefined ? props.specifier : ".2s"
+    let specifier = props.specifier !== undefined ? props.specifier : ".2s"
 
     const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>)
         .ticks(5, specifier)
@@ -108,6 +109,63 @@ function SparkLines(props: SeriesProps) {
 
 interface LineChartProps extends SeriesProps {
     chartType?: 'log' | 'normal'
+}
+
+interface SimpleLinesProps {
+    seriesSummary: SeriesSummaryModel[]
+    width: number
+}
+
+function SimpleLineChart(props: SimpleLinesProps) {
+    const windowWidth = props.width
+    const margin = Math.floor(windowWidth / 64)
+
+    const axisSize = 30
+    const chartWidth = windowWidth - 2 * margin - axisSize
+    const chartHeight = Math.round(chartWidth / 4)
+
+    let track = props.seriesSummary
+
+    if (track.length === 0) {
+        return <div/>
+    }
+
+    let l1: number[] = []
+    let l2: number[] = []
+    let mean: number[] = []
+    track.forEach(function (summary) {
+        l1.push(summary.l1)
+        l2.push(summary.l2)
+        mean.push(summary.mean)
+    })
+
+    let plot: number[] = []
+    plot.push(...l1)
+    plot.push(...l2)
+    plot.push(...mean)
+
+    const xScale = getScale([0, l1.length - 1], chartWidth)
+    const yScale = getScale([Math.min(...plot), Math.max(...plot)], -chartHeight)
+
+    const chartId = `chart_${Math.round(Math.random() * 1e9)}`
+
+    return <div>
+        <svg id={'chart'}
+             height={2 * margin + axisSize + chartHeight}
+             width={2 * margin + axisSize + chartWidth}>
+            <g transform={`translate(${margin}, ${margin + chartHeight})`}>
+                <g>
+                    <SimpleLinePlot series={l1} xScale={xScale} yScale={yScale} color={getColor(4)} key={1}/>
+                    <SimpleLinePlot series={l2} xScale={xScale} yScale={yScale} color={getColor(5)} key={2}/>
+                    <SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={getColor(2)} key={3}/>
+                </g>
+            </g>
+            <g className={'right-axis'}
+               transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
+                <RightAxis chartId={chartId} scale={yScale}/>
+            </g>
+        </svg>
+    </div>
 }
 
 function LineChart(props: LineChartProps) {
@@ -264,7 +322,6 @@ function DensityChart(props: DensityChartProps) {
             </g>
         </svg>
     </div>
-
 }
 
 let chartTypes: 'log' | 'normal'
@@ -310,6 +367,18 @@ export function getDensityChart(track: SeriesModel[] | null, width: number, colo
         let series: SeriesModel[] = toPointValues(track)
 
         return <DensityChart series={series} width={width} plotIdx={[]} color={color}/>
+    } else {
+        return <LabLoader/>
+    }
+}
+
+export function getSimpleLineChart(seriesSummary: SeriesSummaryModel[] | null, width: number) {
+    if (seriesSummary != null) {
+        if (seriesSummary.length === 0) {
+            return null
+        }
+
+        return <SimpleLineChart seriesSummary={seriesSummary} width={width}/>
     } else {
         return <LabLoader/>
     }

@@ -35,7 +35,8 @@ export interface InsightModel {
 }
 
 export interface SeriesSummaryModel {
-    name: string
+    l1: number
+    l2: number
     mean: number
 }
 
