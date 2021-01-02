@@ -98,7 +98,7 @@ def get_network_preferences(computer_uuid: str) -> Any:
 
     preferences_key = NetworkPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        return jsonify(preferences_data)
+        return format_rv(preferences_data)
 
     np: NetworkPreferencesModel = preferences_key.load()
     preferences_data = np.get_data()

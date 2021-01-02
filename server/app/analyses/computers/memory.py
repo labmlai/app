@@ -98,7 +98,7 @@ def get_memory_preferences(computer_uuid: str) -> Any:
 
     preferences_key = MemoryPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        return jsonify(preferences_data)
+        return format_rv(preferences_data)
 
     mp: MemoryPreferencesModel = preferences_key.load()
     preferences_data = mp.get_data()

@@ -98,7 +98,7 @@ def get_cpu_preferences(computer_uuid: str) -> Any:
 
     preferences_key = CPUPreferencesIndex.get(computer_uuid)
     if not preferences_key:
-        return jsonify(preferences_data)
+        return format_rv(preferences_data)
 
     cp: CPUPreferencesModel = preferences_key.load()
     preferences_data = cp.get_data()
