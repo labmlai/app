@@ -47,7 +47,7 @@ class SeriesCollection:
 
         res = [v for k, v in data.items()]
 
-        sorted_res = sorted(res, key=lambda k: k['mean'])
+        sorted_res = sorted(res, key=lambda k: k['l2'])
 
         return sorted_res
 
