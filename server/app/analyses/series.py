@@ -28,11 +28,17 @@ class Series:
         return self.value[-1]
 
     @property
-    def summary(self) -> Dict[str, List[float]]:
+    def detail(self) -> Dict[str, List[float]]:
         return {
             'step': self.last_step,
             'value': self.value,
             'smoothed': self.smooth_45(),
+            'mean': np.mean(self.value)
+        }
+
+    @property
+    def summary(self) -> Dict[str, np.ndarray]:
+        return {
             'mean': np.mean(self.value)
         }
 

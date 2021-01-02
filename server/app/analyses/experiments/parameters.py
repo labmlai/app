@@ -51,6 +51,11 @@ class ParametersAnalysis(Analysis):
 
         self.parameters.track(res)
 
+    def get_track_summaries(self):
+        res = self.parameters.get_track_summaries()
+
+        return res
+
     def get_tracking(self):
         res = self.parameters.get_tracks()
 
@@ -82,14 +87,16 @@ class ParametersAnalysis(Analysis):
 @Analysis.route('GET', 'parameters/<run_uuid>')
 def get_params_tracking(run_uuid: str) -> Any:
     track_data = []
+    summary_data = []
     status_code = 400
 
     ans = ParametersAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
+        summary_data = ans.get_track_summaries()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response

@@ -60,6 +60,11 @@ class GradientsAnalysis(Analysis):
 
         return res
 
+    def get_track_summaries(self):
+        res = self.gradients.get_track_summaries()
+
+        return res
+
     @staticmethod
     def get_or_create(run_uuid: str):
         gradients_key = GradientsIndex.get(run_uuid)
@@ -82,14 +87,16 @@ class GradientsAnalysis(Analysis):
 @Analysis.route('GET', 'gradients/<run_uuid>')
 def get_grads_tracking(run_uuid: str) -> Any:
     track_data = []
+    summary_data = []
     status_code = 400
 
     ans = GradientsAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
+        summary_data = ans.get_track_summaries()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response

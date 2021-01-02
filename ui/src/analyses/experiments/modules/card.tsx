@@ -3,13 +3,14 @@ import React from "react"
 import {useLocation} from "react-router-dom"
 
 import {SummaryCardProps, Analysis} from "../../types"
-import {BasicDensityLines} from "../../../components/charts/summary_views"
+import {L1L2MeanLines} from "../../../components/charts/summary_views"
 import {BasicView} from "../../../components/charts/detail_views"
 import {RunHeaderCard} from "../run_header/card"
 import {Cache} from "../../common"
 import {SeriesCache, SeriesPreferenceCache, RunStatusCache} from "../../../cache/cache"
 
-const TITLE = 'Activations - L2 Norm'
+const DETAIL_TITLE = 'Activations - L2 Norm'
+const SUMMARY_TITLE = 'Activations'
 const URL = 'outputs'
 
 
@@ -29,21 +30,20 @@ class OutputPreferenceCache extends SeriesPreferenceCache {
 let cache = new Cache('run', OutputAnalysisCache, OutputPreferenceCache)
 
 function AnalysisSummary(props: SummaryCardProps) {
-    return <BasicDensityLines title={TITLE}
-                              uuid={props.uuid}
-                              url={URL}
-                              cache={cache}
-                              color={'#59A14F'}
-                              ref={props.refreshRef}
-                              isChartView={false}
-                              width={props.width}/>
+    return <L1L2MeanLines title={SUMMARY_TITLE}
+                          uuid={props.uuid}
+                          url={URL}
+                          cache={cache}
+                          ref={props.refreshRef}
+                          isChartView={false}
+                          width={props.width}/>
 
 }
 
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView title={TITLE}
+    return <BasicView title={DETAIL_TITLE}
                       cache={cache}
                       location={location}
                       headerCard={RunHeaderCard}/>

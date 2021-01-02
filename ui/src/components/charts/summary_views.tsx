@@ -2,7 +2,8 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 
 import {useHistory} from "react-router-dom"
 
-import {getLineChart, getSparkLines, getDensityChart} from "./components"
+import {getLineChart, getSparkLines, getDensityChart, getSimpleLineChart} from "./components"
+import {L1_COLOR, L2_COLOR, MEAN_COLOR} from "./constants"
 import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barline"
 import {SeriesDataModel} from "../../models/run"
@@ -178,12 +179,64 @@ function DensityLinesCard(props: DensityLinesCardProps, ref: any) {
 }
 
 
+function L1L2MeanLinesCard(props: BasicCardProps, ref: any) {
+    const [track, setTrack] = useState(null as (SeriesDataModel | null))
+    const analysisCache = props.cache.getAnalysis(props.uuid)
+    const history = useHistory()
+
+    async function onRefresh() {
+        setTrack(await analysisCache.get(true))
+    }
+
+    async function onLoad() {
+        setTrack(await analysisCache.get())
+    }
+
+    useImperativeHandle(ref, () => ({
+        refresh: () => {
+            onRefresh().then()
+        },
+        load: () => {
+            onLoad().then()
+        },
+        lastUpdated: analysisCache.lastUpdated
+    }))
+
+    return <div>{!track ?
+        <div className={'labml-card labml-card-action'}>
+            <h3 className={'header'}>{props.title}</h3>
+            <LabLoader/>
+        </div>
+        : track && track.summary.length > 0 ?
+            <div className={'labml-card labml-card-action'} onClick={
+                () => {
+                    history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
+                }
+            }>
+                <h3 className={'header'}>{props.title}
+                    <div className='box red' style={{backgroundColor: MEAN_COLOR}}></div>
+                    Mean
+                    <div className='box red' style={{backgroundColor: L1_COLOR}}></div>
+                    L1 - Norm
+                    <div className='box red' style={{backgroundColor: L2_COLOR}}></div>
+                    l2 - Norm
+                </h3>
+                {getSimpleLineChart(track.summary, props.width)}
+            </div>
+            : <div/>
+    }
+    </div>
+}
+
+
 let BasicSparkLines = forwardRef(SparkLinesCard)
 let BasicBarLines = forwardRef(BarLinesCard)
+let L1L2MeanLines = forwardRef(L1L2MeanLinesCard)
 let BasicDensityLines = forwardRef(DensityLinesCard)
 
 export {
     BasicSparkLines,
     BasicBarLines,
+    L1L2MeanLines,
     BasicDensityLines
 }
