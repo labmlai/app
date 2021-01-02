@@ -24,12 +24,25 @@ class SeriesCollection:
                 name = name[:-1]
             name = name[1:]
 
+            series: Dict[str, Any] = Series().load(track).detail
+            series['name'] = '.'.join(name)
+
+            res.append(series)
+
+        return res
+
+    def get_track_summaries(self):
+        res = []
+        for ind, track in self.tracking.items():
+            name = ind.split('.')[1:]
+
             series: Dict[str, Any] = Series().load(track).summary
             series['name'] = '.'.join(name)
 
             res.append(series)
 
         return res
+
 
     def track(self, data: Dict[str, SeriesModel]) -> None:
         for ind, series in data.items():

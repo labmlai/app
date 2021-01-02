@@ -51,6 +51,11 @@ class OutputsAnalysis(Analysis):
 
         self.outputs.track(res)
 
+    def get_track_summaries(self):
+        res = self.outputs.get_track_summaries()
+
+        return res
+
     def get_tracking(self):
         res = self.outputs.get_tracks()
 
@@ -82,14 +87,16 @@ class OutputsAnalysis(Analysis):
 @Analysis.route('GET', 'outputs/<run_uuid>')
 def get_modules_tracking(run_uuid: str) -> Any:
     track_data = []
+    summary_data = []
     status_code = 400
 
     ans = OutputsAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
+        summary_data = ans.get_track_summaries()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response

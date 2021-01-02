@@ -34,9 +34,15 @@ export interface InsightModel {
     time: number
 }
 
+export interface SeriesSummaryModel {
+    name: string
+    mean: number
+}
+
 export interface SeriesDataModel {
     series: SeriesModel[]
     insights: InsightModel[]
+    summary: SeriesSummaryModel[]
 }
 
 export class Run {
