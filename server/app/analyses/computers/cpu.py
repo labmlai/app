@@ -53,7 +53,7 @@ class CPUAnalysis(Analysis):
         res = []
         for ind, track in self.cpu.tracking.items():
             name = ind.split('.')
-            series: Dict[str, Any] = Series().load(track).summary
+            series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name)
 
             res.append(series)

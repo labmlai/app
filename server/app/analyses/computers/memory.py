@@ -53,7 +53,7 @@ class MemoryAnalysis(Analysis):
         res = []
         for ind, track in self.memory.tracking.items():
             name = ind.split('.')
-            series: Dict[str, Any] = Series().load(track).summary
+            series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name)
 
             res.append(series)
