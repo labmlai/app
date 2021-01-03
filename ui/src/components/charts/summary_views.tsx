@@ -2,7 +2,7 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 
 import {useHistory} from "react-router-dom"
 
-import {getLineChart, getSparkLines, getDensityChart, getSimpleLineChart} from "./components"
+import {getLineChart, getSparkLines, getDensityChart, getSimpleLineChart, getTimeSeriesChart} from "./components"
 import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barline"
 import {SeriesDataModel} from "../../models/run"
@@ -16,6 +16,7 @@ import "./style.scss"
 
 interface BasicCardProps extends BasicProps, CardProps {
     isChartView: boolean
+    isTimeSeries? : boolean
     url: string
 }
 
@@ -68,6 +69,8 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
         lastUpdated: analysisCache.lastUpdated,
     }))
 
+    const chart = props.isTimeSeries ? getTimeSeriesChart : getLineChart
+
     return <div>{!track ?
         <div className={'labml-card labml-card-action'}>
             <h3 className={'header'}>{props.title}</h3>
@@ -80,7 +83,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getLineChart(getChartType(currentChart), track.series, plotIdx, props.width)}
+                {props.isChartView && chart(getChartType(currentChart), track.series, plotIdx, props.width)}
                 {getSparkLines(track.series, plotIdx, props.width)}
                 <InsightsList insightList={track.insights}/>
             </div>

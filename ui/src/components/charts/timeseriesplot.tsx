@@ -43,9 +43,9 @@ export function TimeSeriesPlot(props: TimeSeriesPlotProps) {
 
     let dFill = ''
     if (props.isChartFill) {
-        dFill = `M${props.xScale(series[0].step)},0L` +
+        dFill = `M${props.xScale(toDate(series[0].step))},0L` +
             d.substr(1) +
-            `L${props.xScale(props.series[series.length - 1].step)},0`
+            `L${props.xScale(toDate(props.series[series.length - 1].step))},0`
     }
 
     let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}

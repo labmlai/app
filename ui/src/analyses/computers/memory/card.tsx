@@ -33,6 +33,7 @@ function AnalysisSummary(props: SummaryCardProps) {
     return <BasicSparkLines title={TITLE}
                             url={URL}
                             cache={cache}
+                            isTimeSeries={true}
                             uuid={props.uuid}
                             ref={props.refreshRef}
                             isChartView={true}

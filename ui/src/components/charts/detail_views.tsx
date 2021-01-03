@@ -4,7 +4,7 @@ import mixpanel from "mixpanel-browser"
 
 import {SeriesDataModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
-import {getLineChart, getSparkLines} from "./components"
+import {getLineChart, getSparkLines, getTimeSeriesChart} from "./components"
 import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
 import {ViewCardProps} from "../../analyses/types"
@@ -123,6 +123,8 @@ function BasicView(props: ViewCardProps) {
         }
     }
 
+    const chart = props.isTimeSeries ? getTimeSeriesChart : getLineChart
+
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -137,7 +139,7 @@ function BasicView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {getLineChart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
+                    {chart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
                 </div>
                 {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
             </div>

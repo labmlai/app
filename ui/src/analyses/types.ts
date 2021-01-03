@@ -13,6 +13,7 @@ export interface ViewProps {
 
 export interface ViewCardProps extends BasicProps, ViewProps {
     headerCard: any
+    isTimeSeries?:boolean
 }
 
 export interface BasicProps {

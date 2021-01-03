@@ -34,6 +34,7 @@ function AnalysisSummary(props: SummaryCardProps) {
                             url={URL}
                             cache={cache}
                             uuid={props.uuid}
+                            isTimeSeries={true}
                             ref={props.refreshRef}
                             isChartView={true}
                             width={props.width}/>
