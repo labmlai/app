@@ -1,5 +1,9 @@
 import React from "react"
 
+import * as d3 from "d3"
+
+const FORMAT = d3.format(".3s")
+
 function numberWithCommas(x: string) {
     const parts = x.split('.')
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -16,6 +20,10 @@ export function formatScalar(value: number) {
 }
 
 export function formatFixed(value: number, decimals: number) {
+    if (value > 10000) {
+        return FORMAT(value)
+    }
+
     let str = value.toFixed(decimals)
 
     return numberWithCommas(str)
