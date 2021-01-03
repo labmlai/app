@@ -69,6 +69,16 @@ export function getLogScale(extent: [number, number], size: number): d3.ScaleLog
         .range([0, size])
 }
 
+export function getTimeScale(extent: [Date, Date], size: number): d3.ScaleTime<number, number> {
+    return d3.scaleTime<number, number>()
+        .domain(extent).nice()
+        .range([0, size])
+}
+
+export function toDate(time: number) {
+    return new Date(time * 1000)
+}
+
 export function defaultSeriesToPlot(series: SeriesModel[]) {
     let count = 0
     let plotIdx = []
@@ -83,20 +93,6 @@ export function defaultSeriesToPlot(series: SeriesModel[]) {
     }
 
     return plotIdx
-}
-
-
-export function toPointValues(track: SeriesModel[]) {
-    let series: SeriesModel[] = [...track]
-    for (let s of series) {
-        let res: PointValue[] = []
-        for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
-        }
-        s.series = res
-    }
-
-    return series
 }
 
 export function getChartType(index: number): 'log' | 'normal' {
@@ -129,3 +125,18 @@ export function silvermansRuleOfThumb(values: number[]) {
 
     return (1.06 * stdDev) / Math.pow(values.length, 0.2)
 }
+
+export function toPointValues(track: SeriesModel[]) {
+    let series: SeriesModel[] = [...track]
+    for (let s of series) {
+        let res: PointValue[] = []
+        for (let i = 0; i < s.step.length; ++i) {
+            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
+        }
+        s.series = res
+    }
+
+    return series
+}
+
+

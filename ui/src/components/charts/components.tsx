@@ -5,8 +5,9 @@ import {ListGroup} from "react-bootstrap"
 
 import {SeriesModel, SeriesSummaryModel} from "../../models/run"
 import {getColor, L1_COLOR, L2_COLOR, MEAN_COLOR} from "./constants"
-import {LinePlot} from "./lineplot"
+import {TimeSeriesPlot} from "./timeseriesplot"
 import {SimpleLinePlot} from "./simplelineplot"
+import {LinePlot} from "./lineplot"
 import {
     defaultSeriesToPlot,
     getExtent,
@@ -15,7 +16,9 @@ import {
     toPointValues,
     kernelDensityEstimator,
     kernelEpanechnikov,
-    silvermansRuleOfThumb
+    silvermansRuleOfThumb,
+    toDate,
+    getTimeScale
 } from "./utils"
 import {SparkLine} from "./sparkline"
 import {LabLoader} from "../utils/loader"
@@ -40,6 +43,24 @@ function BottomAxis(props: AxisProps) {
         layer.append('g').call(axis)
     }, [id, axis])
 
+    return <g id={id}/>
+}
+
+interface TimeAxisProps {
+    chartId: string
+    scale: d3.ScaleTime<number, number>
+    specifier?: string
+}
+
+function BottomTimeAxis(props: TimeAxisProps) {
+    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(5, d3.timeFormat("%m-%d:%H:%M"))
+
+    const id = `${props.chartId}_axis_bottom`
+    useEffect(() => {
+        let layer = d3.select(`#${id}`)
+        layer.selectAll('g').remove()
+        layer.append('g').call(axis)
+    }, [id, axis])
 
     return <g id={id}/>
 }
@@ -222,14 +243,6 @@ function LineChart(props: LineChartProps) {
                          color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}/>
     })
 
-    let specifier = ''
-    let yTicks = yScale.ticks()
-    for (let i = 0; i < yTicks.length; i++) {
-        if(yTicks[i] > 1000){
-            specifier = '.1s'
-        }
-    }
-
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div>
@@ -246,7 +259,76 @@ function LineChart(props: LineChartProps) {
             </g>
             <g className={'right-axis'}
                transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
-                <RightAxis chartId={chartId} scale={yScale} specifier={specifier}/>
+                <RightAxis chartId={chartId} scale={yScale}/>
+            </g>
+        </svg>
+    </div>
+}
+
+
+function TimeSeriesChart(props: LineChartProps) {
+    const windowWidth = props.width
+    const margin = Math.floor(windowWidth / 64)
+
+    const axisSize = 30
+    const chartWidth = windowWidth - 2 * margin - axisSize
+    const chartHeight = Math.round(chartWidth / 2)
+
+    let track = props.series
+
+    if (track.length === 0) {
+        return <div/>
+    }
+
+    let plot: SeriesModel[] = []
+    let filteredPlotIdx: number[] = []
+    for (let i = 0; i < props.plotIdx.length; i++) {
+        if (props.plotIdx[i] >= 0) {
+            filteredPlotIdx.push(i)
+            plot.push(track[i])
+        }
+    }
+    if (props.plotIdx.length > 0 && Math.max(...props.plotIdx) < 0) {
+        plot = [track[0]]
+        filteredPlotIdx = [0]
+    }
+
+    let plotSeries = plot.map(s => s.series)
+    let yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
+    const stepExtent = getExtent(track.map(s => s.series), d => d.step)
+    const xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], chartWidth)
+
+    if (props.chartType && props.chartType === 'log') {
+        yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -chartHeight)
+    }
+
+    let isChartFill = true
+    if (plot && plot.length > 3) {
+        isChartFill = false
+    }
+
+    let lines = plot.map((s, i) => {
+        return <TimeSeriesPlot series={s.series} xScale={xScale} yScale={yScale}
+                               color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}/>
+    })
+
+    const chartId = `chart_${Math.round(Math.random() * 1e9)}`
+
+    return <div>
+        <svg id={'chart'}
+             height={2 * margin + axisSize + chartHeight}
+             width={2 * margin + axisSize + chartWidth}>
+            <g transform={`translate(${margin}, ${margin + chartHeight})`}>
+                {lines}
+            </g>
+
+            <g className={'bottom-axis'}
+               transform={`translate(${margin}, ${margin + chartHeight})`}>
+                <BottomTimeAxis chartId={chartId} scale={xScale}/>
+            </g>
+            <g className={'right-axis'}
+               transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
+                <RightAxis chartId={chartId} scale={yScale} specifier={'.1s'}/>
             </g>
         </svg>
     </div>
@@ -353,6 +435,23 @@ export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] 
         let series: SeriesModel[] = toPointValues(track)
         return <LineChart key={1} chartType={chartType} series={series} width={width} plotIdx={plotIdx}
                           onSelect={onSelect}/>
+    } else {
+        return <LabLoader/>
+    }
+}
+
+
+export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null, width: number, onSelect?: ((i: number) => void)) {
+    if (track != null) {
+        if (track.length === 0) {
+            return null
+        }
+        if (plotIdx == null) {
+            plotIdx = defaultSeriesToPlot(track)
+        }
+        let series: SeriesModel[] = toPointValues(track)
+        return <TimeSeriesChart key={1} chartType={chartType} series={series} width={width} plotIdx={plotIdx}
+                                onSelect={onSelect}/>
     } else {
         return <LabLoader/>
     }
