@@ -20,9 +20,15 @@ class Run(Model['Run']):
     name: str
     comment: str
     note: str
+    tags: List[str]
     start_time: float
     run_ip: str
     run_uuid: str
+    python_file: str
+    repo_remotes: str
+    commit: str
+    commit_message: str
+    start_step: int
     is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
@@ -38,8 +44,14 @@ class Run(Model['Run']):
         return dict(name='',
                     comment='',
                     note='',
+                    tags=[],
                     start_time=None,
                     run_uuid='',
+                    python_file='',
+                    repo_remotes='',
+                    commit='',
+                    commit_message='',
+                    start_step=None,
                     run_ip='',
                     is_claimed=True,
                     status=None,
@@ -61,6 +73,19 @@ class Run(Model['Run']):
             self.name = data.get('name', '')
         if not self.comment:
             self.comment = data.get('comment', '')
+        if not self.tags:
+            self.tags = data.get('tags', '')
+        if not self.python_file:
+            self.python_file = data.get('python_file', '')
+        if not self.repo_remotes:
+            self.repo_remotes = data.get('repo_remotes', '')
+        if not self.commit:
+            self.commit = data.get('commit', '')
+        if not self.commit_message:
+            self.commit_message = data.get('commit_message', '')
+        if self.start_step == None:
+            self.start_step = data.get('start_step', '')
+
         if 'configs' in data:
             self.configs.update(data.get('configs', {}))
         if 'stdout' in data and data['stdout']:
@@ -69,6 +94,7 @@ class Run(Model['Run']):
             self.logger = self.merge_output(self.logger, data['logger'])
         if 'stderr' in data and data['stderr']:
             self.stderr = self.merge_output(self.stderr, data['stderr'])
+
         if not self.indicators:
             self.indicators = data.get('indicators', {})
         if not self.wildcard_indicators:
@@ -113,7 +139,13 @@ class Run(Model['Run']):
             'name': self.name,
             'comment': self.comment,
             'note': self.note,
+            'tags': self.tags,
             'start_time': self.start_time,
+            'start_step': self.start_step,
+            'python_file': self.python_file,
+            'repo_remotes': self.repo_remotes,
+            'commit': self.commit,
+            'commit_message': self.commit_message,
             'is_claimed': self.is_claimed,
             'configs': configs,
             'stdout': self.stdout,

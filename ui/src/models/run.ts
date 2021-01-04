@@ -4,8 +4,14 @@ export interface RunModel {
     run_uuid: string
     name: string
     comment: string
+    tags: string[]
     note: string
     start_time: number
+    python_file: string
+    repo_remotes: string
+    commit: string
+    commit_message: string
+    start_step: number
     is_claimed: boolean
     configs: ConfigModel[]
     stdout: string
@@ -51,7 +57,13 @@ export class Run {
     name: string
     comment: string
     note: string
+    tags: string[]
     start_time: number
+    python_file: string
+    repo_remotes: string
+    commit: string
+    commit_message: string
+    start_step: number
     is_claimed: boolean
     configs: Config[]
     stdout: string
@@ -63,7 +75,13 @@ export class Run {
         this.name = run.name
         this.comment = run.comment
         this.note = run.note
+        this.tags = run.tags
         this.start_time = run.start_time
+        this.python_file = run.python_file
+        this.repo_remotes = run.repo_remotes
+        this.commit = run.commit
+        this.commit_message = run.commit_message
+        this.start_step = run.start_step
         this.is_claimed = run.is_claimed
         this.configs = []
         for (let c of run.configs) {

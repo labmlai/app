@@ -24,3 +24,11 @@ export function StatusView(props: StatusProps) {
         return <div className={'status'}>{status.status}</div>
     }
 }
+
+export interface BadgeViewProps {
+    text : string
+}
+
+export function BadgeView(props: BadgeViewProps) {
+    return <div className="label label-info mr-3">{props.text}</div>
+}

@@ -136,3 +136,11 @@ input[type="email"], input[type="text"] {
     }
   }
 }
+
+.label {
+  display: inline-block;
+  padding: 4px;
+  border-radius: .25rem;
+}
+
+.label-info {background-color: #2196F3;} /* Blue */

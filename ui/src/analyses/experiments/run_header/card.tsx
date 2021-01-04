@@ -10,7 +10,7 @@ import {Status} from "../../../models/status"
 import CACHE from "../../../cache/cache"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {LabLoader} from "../../../components/utils/loader"
-import {StatusView} from "../../../utils/status"
+import {StatusView, BadgeView} from "../../../utils/status"
 import {BackButton, CancelButton, EditButton, SaveButton} from "../../../components/utils/util_buttons"
 import useWindowDimensions from "../../../utils/window_dimensions"
 
@@ -196,6 +196,15 @@ function RunHeaderView(props: ViewCardProps) {
             <InputEditable key={1} item={'Run Name'} value={run.name} ref={runNameElementRef} isEditable={isEditMode}/>,
             <InputEditable key={2} item={'Comment'} value={run.comment} ref={commentElementRef}
                            isEditable={isEditMode}/>,
+            <InputEditable key={13} item={'Tags'}
+                           value={
+                               <div>
+                                   {run.tags.map((tag, idx) => (
+                                       <BadgeView text={tag}/>
+                                   ))}
+                               </div>
+                           }
+            />,
             <InputEditable key={3} item={'Note'} value={run.note} placeholder={'write your note here'}
                            ref={noteElementRef} isEditable={isEditMode}/>,
             <InputEditable key={4} item={'Run Status'} value={<StatusView status={status.run_status}/>}/>,
@@ -203,6 +212,11 @@ function RunHeaderView(props: ViewCardProps) {
             <InputEditable key={6} item={'Start Time'} value={formatTime(run.start_time)}/>,
             <InputEditable key={7} item={'Last Recorded'}
                            value={status.isRunning ? getTimeDiff(status.last_updated_time * 1000) : formatTime(status.last_updated_time)}/>,
+            <InputEditable key={8} item={'Start Step'} value={run.start_step}/>,
+            <InputEditable key={9} item={'Python File'} value={run.python_file}/>,
+            <InputEditable key={10} item={'Remote Repo'} value={<a href={run.repo_remotes}>{run.repo_remotes}</a>}/>,
+            <InputEditable key={11} item={'Commit'} value={run.commit}/>,
+            <InputEditable key={12} item={'Commit Message'} value={run.commit_message}/>,
         ]
     }
 
