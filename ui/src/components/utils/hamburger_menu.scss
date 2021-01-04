@@ -38,7 +38,7 @@ html, body {
   background-color: #eee;
   left: -10px;
   height: 100%;
-  padding-top: 8vh;
+  padding-top: 2vh;
   margin-top: -10px;
   width: 250px;
   transform: translate(-100%);
@@ -56,6 +56,20 @@ html, body {
     margin-left: 15px;
     font-size: 15px;
     font-weight: bold;
+  }
+
+  h6 {
+    font-size: .7rem;
+    font-weight: bolder;
+  }
+
+  h5 {
+    font-size: .9rem;
+    font-weight: bold;
+  }
+
+  .image-style {
+    width: 30%;
   }
 }
 
