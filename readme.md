@@ -13,7 +13,7 @@
 <img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" alt=""/>
 </div>
 
-This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?run_uuid=df8ed3ba2ee711eb9640acde48001122).
+This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?uuid=39b03a1e454011ebbaff2b26e3148b3d).
 
 [You can host this on your own](https://github.com/lab-ml/app/blob/master/docs/installation.rst).
 We also have a small [AWS instance running](https://web.lab-ml.com). and you are welcome to use it. Please consider using your own installation if you are running lots of
