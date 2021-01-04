@@ -7,7 +7,7 @@ import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons"
 
-import {experiment_analyses} from "../../analyses/all_analyses"
+import {experiment_analyses, computer_analyses} from "../../analyses/all_analyses"
 
 import "./util_buttons.scss"
 
@@ -40,12 +40,21 @@ export function BackButton(props: ButtonProps) {
                 setIsPrevious(true)
             }
         } else {
-            experiment_analyses.forEach((analysis) => {
-                if (location.pathname === '/' + analysis.route) {
+            for (let i = 0; i < experiment_analyses.length; i++) {
+                if (location.pathname === '/' + experiment_analyses[i].route) {
                     setText('Run')
                     setSyntheticPath('/run' + location.search)
+                    break
                 }
-            })
+            }
+
+            for (let i = 0; i < computer_analyses.length; i++) {
+                if (location.pathname === '/' + computer_analyses[i].route) {
+                    setText('Computer')
+                    setSyntheticPath('/computer' + location.search)
+                    break
+                }
+            }
         }
 
     }, [location])

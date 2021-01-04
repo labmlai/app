@@ -8,7 +8,6 @@ import {captureException} from "@sentry/react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
 import {
     faRunning,
-    faUserCircle,
     faBook,
     faComments,
     faBars,
@@ -71,9 +70,8 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
             history.push('/runs')
         } else if ('Computers') {
             history.push('/computers')
-        } else if ('User Profile') {
-            history.push('/user')
         }
+
         onBurgerClick()
     }
 
@@ -119,10 +117,6 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                 <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Computers')} href={'/computers'}>
                     <FontAwesomeIcon icon={faDesktop}/>
                     <span>Computers</span>
-                </Nav.Link>
-                <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'User Profile')} href={'/user'}>
-                    <FontAwesomeIcon icon={faUserCircle}/>
-                    <span>Profile</span>
                 </Nav.Link>
                 <Nav.Link className={'tab'} href={'http://lab-ml.com/'} target="_blank">
                     <FontAwesomeIcon icon={faBook}/>
