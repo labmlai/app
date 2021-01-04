@@ -127,6 +127,24 @@ def update_computer() -> flask.Response:
     return jsonify({'errors': errors, 'url': c.url})
 
 
+def claim_computer(computer_uuid: str, c: computer.Computer) -> None:
+    s = auth.get_session()
+
+    if not s.user:
+        return
+
+    default_project = s.user.load().default_project
+
+    if computer_uuid not in default_project.computers:
+        float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
+
+        if computer_uuid in float_project.computers:
+            default_project.computers[computer_uuid] = c.key
+            default_project.save()
+            c.is_claimed = True
+            c.save()
+
+
 @auth.login_required
 @mix_panel.MixPanelEvent.time_this(None)
 def get_computer(computer_uuid: str) -> flask.Response:
@@ -137,6 +155,9 @@ def get_computer(computer_uuid: str) -> flask.Response:
     if c:
         computer_data = c.get_data()
         status_code = 200
+
+        if not c.is_claimed:
+            claim_computer(computer_uuid, c)
 
     response = make_response(utils.format_rv(computer_data))
     response.status_code = status_code

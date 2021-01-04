@@ -110,7 +110,7 @@ function ComputersListView() {
     const view = 'Computer List View'
 
     return <div>
-        <HamburgerMenuBar title={'Experiments'}>
+        <HamburgerMenuBar title={'Computers'}>
             <div className={'mb-2 float-right d-flex'}>
                 {computers.length > 0 && isEditMode && <DeleteButton onButtonClick={onDelete} parent={view}/>}
                 {computers.length > 0 && !isEditMode && <EditButton onButtonClick={onToggleEdit} parent={view}/>}

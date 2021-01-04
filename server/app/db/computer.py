@@ -14,6 +14,7 @@ class Computer(Model['Computer']):
     start_time: float
     computer_ip: str
     computer_uuid: str
+    is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
     errors: List[Dict[str, str]]
@@ -24,6 +25,7 @@ class Computer(Model['Computer']):
                     comment='',
                     start_time=None,
                     computer_uuid='',
+                    is_claimed=True,
                     computer_ip='',
                     status=None,
                     configs={},
@@ -81,12 +83,17 @@ def get_or_create(computer_uuid: str, labml_token: str = '', computer_ip: str = 
     if computer_uuid in p.computers:
         return p.computers[computer_uuid].load()
 
+    is_claimed = True
+    if labml_token == settings.FLOAT_PROJECT_TOKEN:
+        is_claimed = False
+
     time_now = time.time()
 
     status = create_status()
     computer = Computer(computer_uuid=computer_uuid,
                         start_time=time_now,
                         computer_ip=computer_ip,
+                        is_claimed=is_claimed,
                         status=status.key,
                         )
     p.computers[computer.computer_uuid] = computer.key

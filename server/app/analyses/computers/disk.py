@@ -107,8 +107,6 @@ def get_disk_preferences(computer_uuid: str) -> Any:
     dp: DiskPreferencesModel = preferences_key.load()
     preferences_data = dp.get_data()
 
-    print(preferences_data)
-
     response = make_response(format_rv(preferences_data))
 
     return response
