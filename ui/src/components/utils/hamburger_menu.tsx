@@ -98,7 +98,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                     <LabLoader/>
                     :
                     <div className={'text-center'}>
-                        <Image className={'mt-2'}
+                        <Image className={'mt-2 image-style'}
                                src={user.picture ? user.picture : DEFAULT_IMAGE}
                                roundedCircle/>
                         <div className={'text-secondary mt-2'}>
