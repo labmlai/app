@@ -85,6 +85,10 @@ class Network {
         return this.axiosInstance.put(`/runs`, {'run_uuids': runUUIDS})
     }
 
+    async deleteComputers(computerUUIDS: string[]): Promise<any> {
+        return this.axiosInstance.put(`/computers`, {'computer_uuids': computerUUIDS})
+    }
+
     async getUser(): Promise<any> {
         return this.axiosInstance.get(`/user`, {})
     }

@@ -355,6 +355,17 @@ def delete_runs() -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
+@mix_panel.MixPanelEvent.time_this(None)
+@auth.login_required
+def delete_computers() -> flask.Response:
+    computer_uuids = request.json['computer_uuids']
+
+    u = auth.get_auth_user()
+    u.default_project.delete_computers(computer_uuids)
+
+    return utils.format_rv({'is_successful': True})
+
+
 @auth.login_required
 @mix_panel.MixPanelEvent.time_this(None)
 def get_user() -> flask.Response:
@@ -384,6 +395,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'GET', get_computers, 'computers/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
+    _add_ui(app, 'PUT', delete_computers, 'computers')
     _add_ui(app, 'GET', get_user, 'user')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')

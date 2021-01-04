@@ -214,8 +214,9 @@ class ComputersListCache extends CacheObject<ComputersList> {
         })
     }
 
-    async deleteRuns(computers: ComputerListItemModel[], computerUUIDS: string[]): Promise<void> {
-
+    async deleteComputers(computers: ComputerListItemModel[], computerUUIDS: string[]): Promise<void> {
+        this.data.computers = computers
+        await NETWORK.deleteComputers(computerUUIDS)
     }
 }
 

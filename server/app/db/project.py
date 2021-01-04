@@ -50,6 +50,13 @@ class Project(Model['Project']):
 
         self.save()
 
+    def delete_computers(self, computer_uuids: List[str]):
+        for computer_uuid in computer_uuids:
+            if computer_uuid in self.computers:
+                self.computers.pop(computer_uuid)
+
+        self.save()
+
 
 class ProjectIndex(Index['Project']):
     pass

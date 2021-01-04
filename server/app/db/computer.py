@@ -45,8 +45,6 @@ class Computer(Model['Computer']):
         self.save()
 
     def get_data(self) -> Dict[str, Union[str, any]]:
-        # configs = [{'key': k, **c} for k, c in self.configs.items()]
-
         return {
             'computer_uuid': self.computer_uuid,
             'name': self.name,
