@@ -321,7 +321,6 @@ function TimeSeriesChart(props: LineChartProps) {
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 {lines}
             </g>
-
             <g className={'bottom-axis'}
                transform={`translate(${margin}, ${margin + chartHeight})`}>
                 <BottomTimeAxis chartId={chartId} scale={xScale}/>

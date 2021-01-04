@@ -12,7 +12,6 @@ import {EmptyComputersList} from "../components/lists/empty_computers_list"
 import './runs_list_view.scss'
 
 
-
 function ComputersListView() {
     const [isLoading, setIsLoading] = useState(true)
     const [computers, setComputers] = useState<ComputerListItemModel[]>([])

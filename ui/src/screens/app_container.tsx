@@ -11,6 +11,7 @@ import RunView from "./run_view"
 import ComputerView from "./computer_view"
 import PageNotFound from "./page_not_found_view"
 import RunsView from "./runs_list_view"
+import ComputersView from "./computers_list_view"
 import SettingsView from "./settings_view"
 import {RunHeaderView} from "../analyses/experiments/run_header/card"
 import {experiment_analyses, computer_analyses} from "../analyses/all_analyses"
@@ -134,6 +135,7 @@ function AppContainer() {
                 <Route path="/run_header" component={RunHeaderView}/>
                 <Route path="/user" component={SettingsView}/>
                 <Route path="/runs" component={RunsView}/>
+                <Route path="/computers" component={ComputersView}/>
                 {experiment_analyses.map((analysis, i) => {
                     return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
                 })}
