@@ -12,7 +12,8 @@ import {
     faComments,
     faBars,
     faDesktop,
-    faPowerOff
+    faPowerOff,
+    faSlidersH
 } from "@fortawesome/free-solid-svg-icons"
 
 import {LabLoader} from "./loader"
@@ -64,12 +65,16 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
     }
 
     function clickHandle(e: Event, tab: string) {
+        console.log(tab)
+
         // setCurrentTab(tab)
         e.preventDefault()
         if (tab === 'Runs') {
             history.push('/runs')
-        } else if ('Computers') {
+        } else if (tab === 'Computers') {
             history.push('/computers')
+        } else if (tab === 'Settings') {
+            history.push('/settings')
         }
 
         onBurgerClick()
@@ -117,15 +122,19 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                     <FontAwesomeIcon icon={faBook}/>
                     <span>Documentation</span>
                 </Nav.Link>
+                <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Settings')} href={'/settings'}>
+                    <FontAwesomeIcon icon={faSlidersH}/>
+                    <span>Settings</span>
+                </Nav.Link>
+                <Nav.Link className={'tab mt-5'} onClick={logOut}>
+                    <FontAwesomeIcon icon={faPowerOff}/>
+                    <span>Log out</span>
+                </Nav.Link>
                 <Nav.Link className={'tab'}
                           href={'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/'}
                           target="_blank">
                     <FontAwesomeIcon icon={faComments}/>
                     <span>Join our Slack</span>
-                </Nav.Link>
-                <Nav.Link className={'tab mt-5'} onClick={logOut}>
-                    <FontAwesomeIcon icon={faPowerOff}/>
-                    <span>Log out</span>
                 </Nav.Link>
             </div>
             <Nav.Link className={'burger'} onClick={onBurgerClick}>

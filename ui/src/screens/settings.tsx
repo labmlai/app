@@ -33,7 +33,7 @@ function SettingsView() {
     }, [])
 
     return <div>
-        <HamburgerMenuBar title={'Profile'}>
+        <HamburgerMenuBar title={'Settings'}>
         </HamburgerMenuBar>
         {isLoading ?
             <LabLoader/>
