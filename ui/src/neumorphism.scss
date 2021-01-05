@@ -107,10 +107,10 @@ body.light {
   .list-group {
     .list-group-item {
       &.list-group-item-action {
-        box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px $light-shadow2;
+        box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
 
         &.selected {
-          box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px $light-shadow2;
+          box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
         }
       }
     }
@@ -247,6 +247,12 @@ body.light {
       input {
         color: $light-input-pointer;
       }
+    }
+  }
+
+  .configs {
+    .info_list {
+      border-bottom: 1px solid $light-header-line;
     }
   }
 }
@@ -436,6 +442,12 @@ body.dark {
       input {
         color: $dark-input-pointer;
       }
+    }
+  }
+
+  .configs {
+    .info_list {
+      border-bottom: 1px solid $dark-header-line;
     }
   }
 

@@ -36,7 +36,6 @@ $keyFontSize: 0.8rem;
         content: ':';
         opacity: 0.3 !important;
         margin-right: 5px;
-        //font-family: $normalFont;
       }
     }
   }
@@ -106,7 +105,6 @@ $keyFontSize: 0.8rem;
     }
 
     .computed {
-      //font-weight: bold;
       margin-right: 5px;
       @include mono();
     }
@@ -155,21 +153,11 @@ $keyFontSize: 0.8rem;
     > span {
       line-height: 2;
     }
-
-    //&:hover {
-    //  background: $tableHighlight !important;
-    //
-    //  > span {
-    //    opacity: 1.0 !important;
-    //    text-decoration: none;
-    //  }
-    //}
   }
 }
 
 .configs {
   .info_list {
-    border-bottom: 1px solid #ddd;
     &:last-child {
       border-bottom: none;
     }
@@ -178,7 +166,6 @@ $keyFontSize: 0.8rem;
 
 .key_icon {
   margin-right: 8px;
-  //color: $iconColor;
   opacity: 0.3;
 }
 
@@ -213,9 +200,7 @@ $keyFontSize: 0.8rem;
 }
 
 .size_unit {
-  //font-weight: bold;
   color: $hoverColor;
-  //font-family: $normalFont;
 }
 
 .size {
@@ -240,11 +225,4 @@ $keyFontSize: 0.8rem;
       background: mix($rowColor, $tableValue, 95%);
     }
   }
-
-  //&:hover {
-  //  div.cell {
-  //    background: $tableHighlight !important;
-  //  }
-  //}
-
 }

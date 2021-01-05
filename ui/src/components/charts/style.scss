@@ -40,6 +40,7 @@ svg#chart {
     stroke-width: 2;
   }
 }
+
 @keyframes raise {
   0% {
     transform: scaleY(0.01);
@@ -52,6 +53,7 @@ svg#chart {
   }
 
 }
+
 div.sparkline-list-item {
   border: none;
 }
@@ -63,9 +65,9 @@ button.sparkline-list-item {
     background-color: transparent;
   }
 
-  &.selected {
-    background-color: #f8f9fa;
-  }
+  //&.selected {
+  //  background-color: #f8f9fa;
+  //}
 }
 
 .sparkline-list-item {
