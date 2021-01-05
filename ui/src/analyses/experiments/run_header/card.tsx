@@ -249,7 +249,7 @@ function RunHeaderView(props: ViewCardProps) {
             {!isEditMode && <EditButton onButtonClick={onToggleEdit} parent={title}/>}
         </div>
         <h2 className={'header text-center'}>{title}</h2>
-        <div className={'list-container'}>
+        <div className={'run-header-container'}>
             {items.length > 0 ?
                 <ul>
                     {items}

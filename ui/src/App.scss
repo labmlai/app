@@ -113,12 +113,10 @@ input[type="email"], input[type="text"] {
   .input-content {
     display: flex;
     border-radius: 10px;
-    box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
 
     input {
       flex: 1 1 auto;
       padding: .375rem .75rem;
-      color: #444;
       border: none;
       outline: none;
       background: none;

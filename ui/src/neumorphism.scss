@@ -57,6 +57,10 @@ $dark-overlay: rgba(0, 0, 0, 0.5);
 $light-text-secondary: #7f8c8d;
 $dark-text-secondary: #ccc;
 $light-shadow3: rgba(0, 0, 0, 0.15);
+$dark-text: white;
+$light-text: black;
+$light-list-item-bg: rgba(174, 178, 174, .1);
+$dark-list-item-bg: rgba(174, 178, 174, .1); //TODO change this
 
 body.light {
   background-color: $light-background;
@@ -199,6 +203,49 @@ body.light {
 
       .status {
         color: $light-text-secondary;
+      }
+    }
+  }
+
+  .run-info {
+    .run-uuid {
+      color: $light-text-secondary;
+    }
+
+    .status {
+      color: $light-text-secondary;
+    }
+
+    h3 {
+      color: $light-header
+    }
+
+    h4, h5 {
+      color: $light-text-secondary;
+    }
+  }
+
+  .run-header-container {
+    ul li {
+      background: $light-list-item-bg;
+      color: $light-text
+    }
+
+    .item-key {
+      color: $light-text-secondary
+    }
+
+    .item-value {
+      color: $light-text
+    }
+  }
+
+  .input-container {
+    .input-content {
+      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
+
+      input {
+        color: $light-input-pointer;
       }
     }
   }
@@ -347,5 +394,62 @@ body.dark {
         color: $dark-text-secondary;
       }
     }
+  }
+
+  .run-info {
+    .run-uuid {
+      color: $dark-text-secondary;
+    }
+
+    .status {
+      color: $dark-text-secondary;
+    }
+
+    h3 {
+      color: $dark-header
+    }
+
+    h4, h5 {
+      color: $dark-text-secondary;
+    }
+  }
+
+  .run-header-container {
+    ul li {
+      background: $dark-list-item-bg;
+      color: $dark-text
+    }
+
+    .item-key {
+      color: $dark-text-secondary
+    }
+
+    .item-value {
+      color: $dark-text
+    }
+  }
+
+  .input-container {
+    .input-content {
+      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+
+      input {
+        color: $dark-input-pointer;
+      }
+    }
+  }
+
+  // TODO discuss to change this, applies in titles in empty runs list
+  h5 {
+    color: $dark-header;
+  }
+
+  p {
+    color: $dark-text-secondary;
+  }
+
+  // TODO used in last recorded time
+  div {
+    color: #ffffff;
   }
 }
