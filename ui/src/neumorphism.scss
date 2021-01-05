@@ -31,11 +31,18 @@
   border: none;
 }
 
+$dark-background: #292d32;
+$light-background: #eee;
+$dark-shadow1: #2a2d32; // rgba(0, 0, 0, 0.10)
+$dark-shadow2: #30343a;
+$light-shadow1: #b8b9be; // rgba(0, 0, 0, 0.10)
+$light-shadow2: #fff;
+
 body.light {
-  background-color: #eee;
+  background-color: $light-background;
 
   .labml-card {
-    background-color: #eee;
+    background-color: $light-background;
     box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
 
     h3 {
@@ -43,22 +50,22 @@ body.light {
     }
 
     &.labml-card-action {
-      box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+      box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
     }
 
     &.selected {
-      box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
+      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
     }
   }
 
   .nav-link {
-    box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+    box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
     color: #34495e;
   }
 
   .btn.btn-primary {
-    box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
-    background: #eee;
+    box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+    background: $light-background;
     color: #34495e;
 
     &:hover {
@@ -67,8 +74,8 @@ body.light {
     }
 
     &:not(disabled):not(.disabled):active {
-      box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
-      background: #eee;
+      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
+      background: $light-background;
       color: #34495e;
 
     }
@@ -77,14 +84,70 @@ body.light {
   .list-group {
     .list-group-item {
       &.list-group-item-action {
-        box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+        box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px $light-shadow2;
 
         &.selected {
-          box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
+          box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px $light-shadow2;
         }
       }
     }
 
   }
+}
 
+body.dark {
+  background-color: $dark-background;
+
+  .labml-card {
+    background-color: $dark-background;
+    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
+
+    h3 {
+      color: #7f8c8d;
+    }
+
+    &.labml-card-action {
+      box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+    }
+
+    &.selected {
+      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+    }
+  }
+
+  .nav-link {
+    box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+    color: #34495e;
+  }
+
+  .btn.btn-primary {
+    box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+    background: $dark-background;
+    color: #34495e;
+
+    &:hover {
+      background: #fff;
+      color: #34495e;
+    }
+
+    &:not(disabled):not(.disabled):active {
+      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+      background: $dark-background;
+      color: #34495e;
+
+    }
+  }
+
+  .list-group {
+    .list-group-item {
+      &.list-group-item-action {
+        box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+
+        &.selected {
+          box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+        }
+      }
+    }
+
+  }
 }

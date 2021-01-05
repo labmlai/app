@@ -126,7 +126,7 @@ function AppContainer() {
         </div>
     }
 
-    document.getElementsByTagName('body')[0].className = 'light'
+    document.getElementsByTagName('body')[0].className = 'dark'
 
     return (
         <main>
