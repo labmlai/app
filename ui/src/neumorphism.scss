@@ -1,56 +1,34 @@
 @mixin neu-list {
+}
+
+.list-group {
   .list-group-item {
-    background: None;
+    background: none;
 
     &.list-group-item-action {
       border: none;
       border-radius: 5px;
       margin-bottom: 10px;
-      box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
-
-      &.selected {
-        box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
-      }
     }
   }
+
 }
 
 .labml-card {
   box-shadow: none;
-
-  .sparkline-list.list-group {
-    @include neu-list();
-  }
 }
 
-.runs-list {
-  @include neu-list();
-}
+//.runs-list {
+//  @include neu-list();
+//}
 
 .nav-link {
-  box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
   margin: 4px;
   border-radius: 15px;
-  color: #34495e;
 }
 
 .btn.btn-primary {
-  box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
-  background: #eee;
-  color: #34495e;
   border: none;
-
-  &:hover {
-    background: #fff;
-    color: #34495e;
-  }
-
-  &:not(disabled):not(.disabled):active {
-    box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
-    background: #eee;
-    color: #34495e;
-
-  }
 }
 
 body.light {
@@ -72,4 +50,41 @@ body.light {
       box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
     }
   }
+
+  .nav-link {
+    box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+    color: #34495e;
+  }
+
+  .btn.btn-primary {
+    box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+    background: #eee;
+    color: #34495e;
+
+    &:hover {
+      background: #fff;
+      color: #34495e;
+    }
+
+    &:not(disabled):not(.disabled):active {
+      box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
+      background: #eee;
+      color: #34495e;
+
+    }
+  }
+
+  .list-group {
+    .list-group-item {
+      &.list-group-item-action {
+        box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+
+        &.selected {
+          box-shadow: inset 2px 2px 5px #b8b9be, inset -3px -3px 7px #fff;
+        }
+      }
+    }
+
+  }
+
 }
