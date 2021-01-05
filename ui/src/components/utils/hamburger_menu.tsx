@@ -101,13 +101,8 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                         <Image className={'mt-2 image-style'}
                                src={user.picture ? user.picture : DEFAULT_IMAGE}
                                roundedCircle/>
-                        <div className={'mt-2'}>
-                            <h6>Token:</h6>
-                            <h6 className={'mt-2'}>{user && user.default_project}</h6>
-                        </div>
-                        <div className={'mb-5 mt-3'}>
+                        <div className={'mb-5 mt-3 mt-2'}>
                             <h5>{user.name}</h5>
-                            <h5>{user.email}</h5>
                         </div>
                     </div>}
                 <Nav.Link className={'tab'} onClick={(e: any) => clickHandle(e, 'Runs')} href={'/runs'}>

@@ -1,4 +1,4 @@
-import React, {forwardRef, ReactElement, useEffect, useRef, useState} from "react"
+import React, {ReactElement, useEffect, useRef, useState} from "react"
 
 import {useHistory} from "react-router-dom"
 
@@ -10,6 +10,7 @@ import {Status} from "../../../models/status"
 import CACHE from "../../../cache/cache"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {LabLoader} from "../../../components/utils/loader"
+import InputEditable from "../../../components/utils/input"
 import {StatusView, BadgeView} from "../../../utils/status"
 import {BackButton, CancelButton, EditButton, SaveButton} from "../../../components/utils/util_buttons"
 import useWindowDimensions from "../../../utils/window_dimensions"
@@ -129,34 +130,7 @@ function RunHeaderCard(props: RunHeaderProps) {
     </div>
 }
 
-interface RunItemEditableProps {
-    item: string
-    value: any
-    placeholder?: string
-    ref: any
-    isEditable?: boolean
-}
 
-function InputElem(props: RunItemEditableProps, ref: any) {
-    return <li>
-            <span className={'item-key'}>
-            {props.item}
-        </span>
-        {props.isEditable ?
-            <div className={'input-container mt-2'}>
-                <div className={'input-content'}>
-                    <input defaultValue={props.value} ref={ref} placeholder={props.placeholder}/>
-                </div>
-            </div>
-            :
-            <span className={'item-value'}>
-             {props.value}
-        </span>
-        }
-    </li>
-}
-
-let InputEditable = forwardRef(InputElem)
 
 function RunHeaderView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
@@ -249,7 +223,7 @@ function RunHeaderView(props: ViewCardProps) {
             {!isEditMode && <EditButton onButtonClick={onToggleEdit} parent={title}/>}
         </div>
         <h2 className={'header text-center'}>{title}</h2>
-        <div className={'run-header-container'}>
+        <div className={'input-list-container'}>
             {items.length > 0 ?
                 <ul>
                     {items}
