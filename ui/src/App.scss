@@ -43,20 +43,16 @@ button.submit-btn {
 }
 
 body {
-  background-color: #f3f6f8;
   font-size: .9rem;
 }
 
 .labml-card {
   border-radius: .25rem;
-  background-color: #fff;
   padding-top: 10px;
   padding-bottom: 10px;
   margin: 20px 0;
-  box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
 
   h3 {
-    color: #7f8c8d;
     font-size: 1rem;
     padding: 0 10px;
   }
@@ -65,11 +61,12 @@ body {
     text-align: center;
     opacity: 0.7;
   }
+
+  &.labml-card-action {
+    cursor: pointer;
+  }
 }
 
-.labml-card.labml-card-action {
-  cursor: pointer;
-}
 
 /* Fix for some bootstrap thing messing up with react-bootstrap */
 .list-group-item {
@@ -143,4 +140,9 @@ input[type="email"], input[type="text"] {
   border-radius: .25rem;
 }
 
-.label-info {background-color: #2196F3;} /* Blue */
+.label-info {
+  background-color: #2196F3;
+}
+
+/* Blue */
+
