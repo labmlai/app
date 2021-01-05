@@ -37,6 +37,10 @@ svg#chart {
   path.density-line {
     stroke-width: 2;
   }
+
+  g.tick{
+    text-anchor: start;
+  }
 }
 @keyframes raise {
   0% {
