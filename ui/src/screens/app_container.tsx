@@ -125,6 +125,9 @@ function AppContainer() {
             <LabLoader/>
         </div>
     }
+
+    document.getElementsByTagName('body')[0].className = 'light'
+
     return (
         <main>
             <Switch>
