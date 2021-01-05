@@ -25,7 +25,7 @@ import {
     getScale,
     toPointValues
 } from "../../../components/charts/utils"
-import {getColor} from "../../../components/charts/constants";
+import {CHART_COLORS, getColor} from "../../../components/charts/constants";
 import * as d3 from "d3";
 import {PointValue} from "../../../models/run"
 
@@ -64,6 +64,7 @@ interface LinePlotProps {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
+    colorIdx: number
     isChartFill?: boolean
 }
 
@@ -101,11 +102,40 @@ export function LinePlot(props: LinePlotProps) {
             `L${props.xScale(props.series[series.length - 1].step)},0`
     }
 
+    return <g>
+        {smoothedPath}{unsmoothedPath}
+    </g>
+}
+
+export function LineFill(props: LinePlotProps) {
+    let series = props.series
+
+    let smoothedLine = d3.line<PointValue>()
+        .curve(d3.curveMonotoneX)
+        .x((d) => {
+            return props.xScale(d.step)
+        })
+        .y((d) => {
+            return props.yScale(d.smoothed)
+        })
+
+    let d: string = smoothedLine(series) as string
+
+
+
+    let dFill = ''
+    if (props.isChartFill) {
+        dFill = `M${props.xScale(series[0].step)},0L` +
+            d.substr(1) +
+            `L${props.xScale(props.series[series.length - 1].step)},0`
+    }
+
     let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
+                         style={{fill: `url(#gradient-${props.colorIdx}`}}
                          d={dFill}/>
 
     return <g>
-        {smoothedPath}{unsmoothedPath}{pathFill}
+        {pathFill}
     </g>
 }
 
@@ -199,10 +229,24 @@ function LineChart(props: LineChartProps) {
 
     let lines = plot.map((s, i) => {
         return <LinePlot series={s.series} xScale={xScale} yScale={yScale}
-                         color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}/>
+                         color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}
+                        colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
+    })
+
+    let fills = plot.map((s, i) => {
+        return <LineFill series={s.series} xScale={xScale} yScale={yScale}
+                         color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}
+                        colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
+
+    const gradients = CHART_COLORS.map((c, i) => {
+        return <linearGradient id={`gradient-${i}`} x1={'0%'} x2={'0%'} y1={'0%'} y2={'100%'}>
+            <stop offset={'0%'} stopColor={c} stopOpacity={1.0}/>
+            <stop offset={'100%'} stopColor={c} stopOpacity={0.0}/>
+        </linearGradient>
+    })
 
     return <div>
         <svg id={'chart'}
@@ -210,19 +254,20 @@ function LineChart(props: LineChartProps) {
              width={2 * margin + axisSize + chartWidth}>
             <defs>
                 <filter id="dropshadow">
-                    <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
-                    <feOffset dx="0" dy="0" result="offsetblur" />
+                    <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+                    <feOffset dx="0" dy="0" result="offsetblur"/>
                     <feComponentTransfer>
-                        <feFuncA slope="0.2" type="linear" />
+                        <feFuncA slope="0.2" type="linear"/>
                     </feComponentTransfer>
                     <feMerge>
-                        <feMergeNode />
-                        <feMergeNode in="SourceGraphic" />
+                        <feMergeNode/>
+                        <feMergeNode in="SourceGraphic"/>
                     </feMerge>
                 </filter>
+                {gradients}
             </defs>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
-                {lines}
+                {fills} {lines}
             </g>
 
             <g className={'bottom-axis'}
