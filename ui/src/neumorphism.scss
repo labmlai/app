@@ -52,6 +52,10 @@ $light-input-icon: #555;
 $dark-input-icon: #ccc;
 $light-input-pointer: #444;
 $dark-input-pointer: #ddd;
+$light-overlay: rgba(0, 0, 0, 0.5);
+$dark-overlay: rgba(0, 0, 0, 0.5);
+$light-text-secondary: #868e96;
+$dark-text-secondary: #f7f7f7;
 
 body.light {
   background-color: $light-background;
@@ -148,6 +152,28 @@ body.light {
 
   .tab:active {
     box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
+  }
+
+  .overlay {
+    background-color: $light-overlay;
+  }
+
+  .nav-container {
+    .title {
+      color: $light-header
+    }
+  }
+
+  .nav-links {
+    background-color: $light-background;
+
+    h6 {
+      color: $light-text-secondary;
+    }
+
+    h5 {
+      color: $light-header;
+    }
   }
 }
 
@@ -246,5 +272,27 @@ body.dark {
 
   .tab:active {
     box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+  }
+
+  .overlay {
+    background-color: $dark-overlay;
+  }
+
+  .nav-container {
+    .title {
+      color: $dark-header
+    }
+  }
+
+  .nav-links {
+    background-color: $dark-background;
+
+    h6 {
+      color: $dark-text-secondary;
+    }
+
+    h5 {
+      color: $dark-header;
+    }
   }
 }
