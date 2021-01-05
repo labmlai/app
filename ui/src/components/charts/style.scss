@@ -7,6 +7,7 @@ svg#chart {
     }
 
     g.tick {
+      text-anchor: start;
       line {
         color: #bdc3c7;
       }
@@ -14,7 +15,7 @@ svg#chart {
   }
 
   path.line-fill {
-    opacity: 0.1;
+    opacity: 0.4;
   }
 
   path.smoothed-line {
@@ -36,10 +37,6 @@ svg#chart {
 
   path.density-line {
     stroke-width: 2;
-  }
-
-  g.tick{
-    text-anchor: start;
   }
 }
 @keyframes raise {
@@ -105,7 +102,9 @@ button.sparkline-list-item {
       }
 
       path.line-fill {
-        opacity: 0.1;
+        opacity: 0.3;
+    fill: url(#gradient-grey);
+
       }
     }
 

@@ -64,8 +64,14 @@ export function SparkLine(props: SparkLineProps) {
         <div className={'sparkline-content'} style={{width: `${titleWidth * 2 + chartWidth}px`}}>
             <span style={{color: color, width: `${titleWidth}px`}}>{props.name}</span>
             <svg className={'sparkline'} height={25} width={chartWidth}>
+                <defs>
+                    <linearGradient id={`gradient-grey`} x1={'0%'} x2={'0%'} y1={'0%'} y2={'100%'}>
+                        <stop offset={'0%'} stopColor={'#7f8c8d'} stopOpacity={1.0}/>
+                        <stop offset={'100%'} stopColor={'#7f8c8d'} stopOpacity={0.0}/>
+                    </linearGradient>
+                </defs>
                 <g transform={`translate(${0}, 25)`}>
-                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
+                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'} isChartFill={true}/>
                 </g>
             </svg>
             {value}

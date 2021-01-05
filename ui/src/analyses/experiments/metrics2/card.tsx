@@ -424,7 +424,7 @@ function BasicView(props: ViewCardProps) {
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.series.length > 0 && preference.current ?
-            <div className={'labml-card'}>
+            <div className={''}>
                 <div className={'pointer-cursor'} onClick={onChartClick}>
                     <div className={'text-center mb-3'}>
                         {dots}
