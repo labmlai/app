@@ -9,8 +9,6 @@ import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawes
 
 import {experiment_analyses, computer_analyses} from "../../analyses/all_analyses"
 
-import "./util_buttons.scss"
-
 interface ButtonProps {
     onButtonClick?: () => void
     isDisabled?: boolean
