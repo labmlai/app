@@ -79,7 +79,7 @@ export function BackButton(props: ButtonProps) {
 
     return <Nav.Link className={'tab'} onClick={onBackButtonClick}>
         <FontAwesomeIcon icon={faChevronLeft}/>
-        <span>{text}</span>
+        <span className={'ml-1'}>{text}</span>
     </Nav.Link>
 }
 
