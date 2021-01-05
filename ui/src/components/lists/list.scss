@@ -1,7 +1,6 @@
 .list {
   .list-item {
     font-size: 12px;
-    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.15), 0px 1px 20px 0px rgba(0, 0, 0, 0.15);
 
     .badge {
       font-size: 9px;
@@ -10,31 +9,14 @@
 
     outline: none;
 
-    &:focus {
-      background-color: transparent;
-    }
-
     h3, h4, h5, h6, p {
       overflow-wrap: break-word;
       padding: 0;
       margin: 2px 0;
     }
 
-    h5 {
-      color: #34495e;
-    }
-
-    h6 {
-      color: #7f8c8d;
-    }
-
-    p {
-      color: #7f8c8d;
-    }
-
     .status {
       text-transform: uppercase;
-      color: #7f8c8d;
       font-size: 8px;
     }
 
