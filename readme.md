@@ -34,7 +34,7 @@ pip install labml
 ```
 
 2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html). Refer to the examples below.
-3. A link to view your on our app will be printed in the terminal [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+3. The library will print to the terminal a link to monitor on our app [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
 
 ### Examples
 
