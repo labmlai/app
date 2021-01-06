@@ -7,6 +7,8 @@ svg#chart {
     }
 
     g.tick {
+      text-anchor: start;
+      opacity: 0.7;
       line {
         color: #bdc3c7;
       }
@@ -14,20 +16,42 @@ svg#chart {
   }
 
   path.line-fill {
-    opacity: 0.1;
+    opacity: 0.4;
   }
 
   path.smoothed-line {
     stroke-width: 3;
+    &.dropshadow {
+      filter: url(#dropshadow);
+    }
   }
 
   path.unsmoothed-line {
     stroke-width: 0.5;
   }
 
+  path.line-fill, path.smoothed-line, path.unsmoothed-line {
+    //transform-origin: bottom;
+    transform: scaleY(0.01);
+    animation: raise 0.5s ease 0.2s forwards;
+  }
+
   path.density-line {
     stroke-width: 2;
   }
+}
+
+@keyframes raise {
+  0% {
+    transform: scaleY(0.01);
+  }
+  75% {
+    transform: scaleY(1.1);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+
 }
 
 div.sparkline-list-item {
@@ -41,9 +65,9 @@ button.sparkline-list-item {
     background-color: transparent;
   }
 
-  &.selected {
-    background-color: #f8f9fa;
-  }
+  //&.selected {
+  //  background-color: #f8f9fa;
+  //}
 }
 
 .sparkline-list-item {
@@ -81,7 +105,9 @@ button.sparkline-list-item {
       }
 
       path.line-fill {
-        opacity: 0.1;
+        opacity: 0.3;
+    fill: url(#gradient-grey);
+
       }
     }
 

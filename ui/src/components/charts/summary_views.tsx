@@ -2,9 +2,12 @@ import React, {forwardRef, useEffect, useImperativeHandle, useRef, useState} fro
 
 import {useHistory} from "react-router-dom"
 
-import {getLineChart, getSparkLines, getDensityChart, getSimpleLineChart, getTimeSeriesChart} from "./components"
+import {getLineChart} from "./lines/chart"
+import {getSparkLines} from "./sparklines/chart"
+import {getSimpleLineChart} from "./simplelines/chart"
+import {getTimeSeriesChart} from "./timeseries/chart"
 import InsightsList from "../insights/insights_list"
-import {BarLines} from "./barline"
+import {BarLines} from "./barlines/chart"
 import {SeriesDataModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, CardProps} from "../../analyses/types"
@@ -16,7 +19,7 @@ import "./style.scss"
 
 interface BasicCardProps extends BasicProps, CardProps {
     isChartView: boolean
-    isTimeSeries? : boolean
+    isTimeSeries?: boolean
     url: string
 }
 
@@ -134,53 +137,6 @@ function BarLinesCard(props: BasicCardProps, ref: any) {
     </div>
 }
 
-interface DensityLinesCardProps extends BasicCardProps {
-    color: string
-}
-
-function DensityLinesCard(props: DensityLinesCardProps, ref: any) {
-    const [track, setTrack] = useState(null as (SeriesDataModel | null))
-    const analysisCache = props.cache.getAnalysis(props.uuid)
-    const history = useHistory()
-
-    async function onRefresh() {
-        setTrack(await analysisCache.get(true))
-    }
-
-    async function onLoad() {
-        setTrack(await analysisCache.get())
-    }
-
-    useImperativeHandle(ref, () => ({
-        refresh: () => {
-            onRefresh().then()
-        },
-        load: () => {
-            onLoad().then()
-        },
-        lastUpdated: analysisCache.lastUpdated
-    }))
-
-    return <div>{!track ?
-        <div className={'labml-card labml-card-action'}>
-            <h3 className={'header'}>{props.title}</h3>
-            <LabLoader/>
-        </div>
-        : track && track.series.length > 0 ?
-            <div className={'labml-card labml-card-action'} onClick={
-                () => {
-                    history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
-                }
-            }>
-                <h3 className={'header'}>{props.title}</h3>
-                {getDensityChart(track.series, props.width, props.color)}
-            </div>
-            : <div/>
-    }
-    </div>
-}
-
-
 function L1L2MeanLinesCard(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as (SeriesDataModel | null))
     const analysisCache = props.cache.getAnalysis(props.uuid)
@@ -227,11 +183,9 @@ function L1L2MeanLinesCard(props: BasicCardProps, ref: any) {
 let BasicSparkLines = forwardRef(SparkLinesCard)
 let BasicBarLines = forwardRef(BarLinesCard)
 let L1L2MeanLines = forwardRef(L1L2MeanLinesCard)
-let BasicDensityLines = forwardRef(DensityLinesCard)
 
 export {
     BasicSparkLines,
     BasicBarLines,
     L1L2MeanLines,
-    BasicDensityLines
 }

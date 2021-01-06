@@ -1,0 +1,48 @@
+.input-list-container {
+  ul {
+    font-size: 12px;
+    margin: 50px auto 0;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  ul li {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 10px 20px;
+    margin: 8px 0;
+    transition: .5s;
+  }
+
+  .item-key {
+    text-transform: uppercase;
+    font-weight: bolder;
+    width: 150px;
+  }
+
+  .item-value {
+    opacity: 0.7;
+    font-weight: bold;
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 480px) {
+    .item-key {
+      margin-top: 5px;
+      flex: 1 0 100%;
+      text-transform: uppercase;
+      color: dimgrey;
+      font-weight: bolder;
+      width: 150px;
+    }
+
+    .item-value {
+      margin-top: 5px;
+      flex: 1 0 100%;
+      color: black;
+      opacity: 0.7;
+      font-weight: bold;
+      overflow: hidden;
+    }
+  }
+}

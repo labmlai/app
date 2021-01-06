@@ -3,6 +3,7 @@ export interface UserModel {
     email: string
     name: string
     picture: string
+    theme: string
     email_verified: boolean
     projects: object
     default_project: object
@@ -13,6 +14,7 @@ export class User {
     email: string
     name: string
     picture: string
+    theme: string
     email_verified: boolean
     projects: object
     default_project: object
@@ -23,6 +25,7 @@ export class User {
         this.email = user.email
         this.name = user.name
         this.picture = user.picture
+        this.theme = user.theme
         this.email_verified = user.email_verified
         this.projects = user.projects
         this.default_project = user.default_project

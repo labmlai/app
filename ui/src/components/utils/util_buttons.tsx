@@ -9,8 +9,6 @@ import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawes
 
 import {experiment_analyses, computer_analyses} from "../../analyses/all_analyses"
 
-import "./util_buttons.scss"
-
 interface ButtonProps {
     onButtonClick?: () => void
     isDisabled?: boolean
@@ -79,7 +77,7 @@ export function BackButton(props: ButtonProps) {
 
     return <Nav.Link className={'tab'} onClick={onBackButtonClick}>
         <FontAwesomeIcon icon={faChevronLeft}/>
-        <span>{text}</span>
+        <span className={'ml-1'}>{text}</span>
     </Nav.Link>
 }
 

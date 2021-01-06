@@ -75,7 +75,7 @@ ReactDOM.render(
             <Router>
                 <Auth0ProviderWithHistory>
                     <AppContainer/>
-                </Auth0ProviderWithHistory>,
+                </Auth0ProviderWithHistory>
             </Router>
         </Sentry.ErrorBoundary>
     </React.StrictMode>,

@@ -12,11 +12,12 @@ import ComputerView from "./computer_view"
 import PageNotFound from "./page_not_found_view"
 import RunsView from "./runs_list_view"
 import ComputersView from "./computers_list_view"
+import SettingsView from "./settings"
 import {RunHeaderView} from "../analyses/experiments/run_header/card"
 import {experiment_analyses, computer_analyses} from "../analyses/all_analyses"
 import NETWORK from "../network"
 import {LabLoader} from "../components/utils/loader"
-import {UserModel} from "../models/user"
+import {User, UserModel} from "../models/user"
 import logo from "../assets/lab_logo.png"
 import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
@@ -30,6 +31,9 @@ function AppContainer() {
     const [loggedIn, setLoggedIn] = useState(false)
 
     const isUserLoggedCache = CACHE.getIsUserLogged()
+    const userCache = CACHE.getUser()
+    const [appUser, setAppUser] = useState(null as unknown as User)
+
 
     useEffect(() => {
             //TODO fix for ::active not working on mobile. Check for a better solution in react
@@ -46,15 +50,25 @@ function AppContainer() {
                 return false
             }
 
+            async function SetTheme() {
+                setAppUser(await userCache.get())
+
+                if (appUser) {
+                    document.getElementsByTagName('body')[0].className = appUser.theme
+                }
+            }
+
+            // SetTheme().then()
+
             let isUserLogged: IsUserLogged
 
-            async function load(): Promise<boolean> {
+            async function loadIsUserLogged(): Promise<boolean> {
                 isUserLogged = await isUserLoggedCache.get()
 
                 return isUserLogged.is_user_logged
             }
 
-            load().then((is_user_logged) => {
+            loadIsUserLogged().then((is_user_logged) => {
                 let currentState = is_user_logged || isRunPath()
                 setLoggedIn(currentState)
 
@@ -96,7 +110,7 @@ function AppContainer() {
             })
 
         },
-        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect, isUserLoggedCache]
+        [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect, isUserLoggedCache, appUser, userCache]
     )
 
     NETWORK.handleError = function (error: any) {
@@ -125,6 +139,9 @@ function AppContainer() {
             <LabLoader/>
         </div>
     }
+
+    document.getElementsByTagName('body')[0].className = 'light'
+
     return (
         <main>
             <Switch>
@@ -134,6 +151,7 @@ function AppContainer() {
                 <Route path="/run_header" component={RunHeaderView}/>
                 <Route path="/runs" component={RunsView}/>
                 <Route path="/computers" component={ComputersView}/>
+                <Route path="/settings" component={SettingsView}/>
                 {experiment_analyses.map((analysis, i) => {
                     return <Route key={i} path={`/${analysis.route}`} component={analysis.view}/>
                 })}
