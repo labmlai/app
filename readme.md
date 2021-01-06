@@ -33,7 +33,7 @@ experiments. Thanks.
 pip install labml
 ```
 2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html).
-3. A link to view your experiment logs will be appeared in the terminal [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d).
+3. A link to view your experiment logs will be appeared in the terminal [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
 ### Examples
 
 1. Pytorch ([Google Colab](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) and  [Kaggle Notebook](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone))
