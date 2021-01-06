@@ -61,9 +61,9 @@ function SimpleLineChart(props: SimpleLinesProps) {
                                     colorIdx={2}/>
                     <SimpleLineFill series={l2} xScale={xScale} yScale={yScale} color={getColor(3)} key={3}
                                     colorIdx={3}/>
-                    <SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={getColor(1)} key={1}/>
-                    <SimpleLinePlot series={l1} xScale={xScale} yScale={yScale} color={getColor(2)} key={2}/>
-                    <SimpleLinePlot series={l2} xScale={xScale} yScale={yScale} color={getColor(3)} key={3}/>
+                    <SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={getColor(1)} key={4}/>
+                    <SimpleLinePlot series={l1} xScale={xScale} yScale={yScale} color={getColor(2)} key={5}/>
+                    <SimpleLinePlot series={l2} xScale={xScale} yScale={yScale} color={getColor(3)} key={6}/>
                 </g>
             </g>
             <g className={'right-axis'}
