@@ -27,15 +27,13 @@ experiments. Thanks.
 * **Standard ouptut:** Check the terminal output from your mobile. No need to SSH.
 
 ### How to use it ?
-
-1. Go to  the [App](https://web.lab-ml.com) and generate a **token**.
-2. Install the [labml client library](https://github.com/lab-ml/labml).
+1. Install the [labml client library](https://github.com/lab-ml/labml).
 
 ```
 pip install labml
 ```
-3. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html).
-
+2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html).
+3. A link to view the experiment will be generated in the terminal.
 ### Examples
 
 1. Pytorch ([Google Colab](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) and  [Kaggle Notebook](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone))
