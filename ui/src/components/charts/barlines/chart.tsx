@@ -6,7 +6,6 @@ import {getColor} from "../constants"
 
 import {SeriesModel} from "../../../models/run"
 
-import "../style.scss"
 
 interface BarLineProps {
     value: number

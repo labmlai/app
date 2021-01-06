@@ -8,8 +8,6 @@ import {LineChartProps, chartTypes} from "../types"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {LabLoader} from "../../utils/loader"
 
-import "../style.scss"
-
 
 function TimeSeriesChart(props: LineChartProps) {
     const windowWidth = props.width

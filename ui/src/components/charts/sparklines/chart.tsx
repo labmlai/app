@@ -9,8 +9,6 @@ import {SeriesProps} from "../types"
 import {SeriesModel} from "../../../models/run"
 import {LabLoader} from "../../utils/loader"
 
-import "../style.scss"
-
 function SparkLines(props: SeriesProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)

@@ -32,8 +32,8 @@ svg#chart {
 
   path.line-fill, path.smoothed-line, path.unsmoothed-line {
     //transform-origin: bottom;
-    transform: scaleY(0.01);
-    animation: raise 0.5s ease 0.2s forwards;
+    //transform: scaleY(0.01);
+    //animation: raise 0.5s ease 0.2s forwards;
   }
 
   path.density-line {
@@ -41,18 +41,18 @@ svg#chart {
   }
 }
 
-@keyframes raise {
-  0% {
-    transform: scaleY(0.01);
-  }
-  75% {
-    transform: scaleY(1.1);
-  }
-  100% {
-    transform: scaleY(1);
-  }
-
-}
+//@keyframes raise {
+//  0% {
+//    transform: scaleY(0.01);
+//  }
+//  75% {
+//    transform: scaleY(1.1);
+//  }
+//  100% {
+//    transform: scaleY(1);
+//  }
+//
+//}
 
 div.sparkline-list-item {
   border: none;
