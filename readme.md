@@ -9,6 +9,7 @@
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
 [![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
+<a href="https://twitter.com/LabML1?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @LabML1</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 <img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" alt=""/>
 </div>
