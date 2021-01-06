@@ -1,3 +1,8 @@
+<head>
+    <meta charset="utf-8"/>
+    <script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+</head>
+
 <div align="center" style="margin-bottom: 100px;">
 <h1>LabML App</h1>
 <h2>Mobile first web app to monitor PyTorch & TensorFlow model training</h2>
@@ -9,6 +14,8 @@
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
 [![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
+<a href="https://twitter.com/LabML1?ref_src=twsrc%5Etfw" className="twitter-follow-button" data-show-count="false">Follow @LabML1</a>
+                       
 
 
 <img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" alt=""/>
