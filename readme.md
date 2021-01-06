@@ -12,7 +12,7 @@
 [![Twitter](https://img.shields.io/twitter/url.svg?label=Follow%20%40LabML&style=social&url=https%3A%2F%2Ftwitter.com%2FLabML)](https://twitter.com/LabML1?ref_src=twsrc%5Etfw)
 </div>
 
-This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?uuid=39b03a1e454011ebbaff2b26e3148b3d).
+This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?uuid=39b03a1e454011ebbaff2b26e3148b3d)
 
 [You can host this on your own](https://github.com/lab-ml/app/blob/master/docs/installation.rst).
 We also have a small [AWS instance running](https://web.lab-ml.com). and you are welcome to use it. Please consider using your own installation if you are running lots of
