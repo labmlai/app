@@ -11,6 +11,7 @@ class User(Model['User']):
     sub: str
     email: str
     picture: str
+    theme: str
     email_verified: bool
     projects: List[Key[Project]]
 
@@ -20,6 +21,7 @@ class User(Model['User']):
                     sub='',
                     email='',
                     picture='',
+                    theme='light',
                     email_verified=False,
                     projects=[]
                     )
@@ -29,10 +31,12 @@ class User(Model['User']):
         return self.projects[0].load()
 
     def get_data(self) -> Dict[str, any]:
+        print(self.theme)
         return {
             'name': self.name,
             'email': self.email,
             'picture': self.picture,
+            'theme': self.theme,
             'projects': [p.load().labml_token for p in self.projects],
             'default_project': self.default_project.labml_token
         }

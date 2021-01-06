@@ -2,8 +2,8 @@ import React from "react"
 
 import * as d3 from "d3"
 
-import {PointValue} from "../../models/run"
-import {toDate} from "./utils"
+import {PointValue} from "../../../models/run"
+import {toDate} from "../utils"
 
 
 interface TimeSeriesPlotProps {

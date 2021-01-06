@@ -2,11 +2,11 @@ import React from "react"
 
 import {ListGroup} from "react-bootstrap"
 
-import {PointValue} from "../../models/run"
-import {formatFixed, pickHex, scaleValue} from "../../utils/value"
-import {getExtent, getScale} from "./utils"
-import {LinePlot} from "./lineplot"
-import {BASE_COLOR} from "./constants"
+import {PointValue} from "../../../models/run"
+import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
+import {getExtent, getScale} from "../utils"
+import {LinePlot, LineFill} from "../lines/plot"
+import {BASE_COLOR} from "../constants"
 
 interface SparkLineProps {
     name: string
@@ -71,7 +71,8 @@ export function SparkLine(props: SparkLineProps) {
                     </linearGradient>
                 </defs>
                 <g transform={`translate(${0}, 25)`}>
-                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'} isChartFill={true}/>
+                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
+                    <LineFill series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
                 </g>
             </svg>
             {value}

@@ -1,9 +1,12 @@
 import React from "react"
-import {getColor} from "./constants"
-import {ListGroup} from "react-bootstrap"
-import {SeriesModel} from "../../models/run"
 
-import "./style.scss"
+import {ListGroup} from "react-bootstrap"
+
+import {getColor} from "../constants"
+
+import {SeriesModel} from "../../../models/run"
+
+import "../style.scss"
 
 interface BarLineProps {
     value: number

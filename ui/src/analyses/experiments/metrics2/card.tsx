@@ -12,7 +12,8 @@ import mixpanel from "mixpanel-browser"
 
 import {SeriesDataModel, SeriesModel} from "../../../models/run"
 import useWindowDimensions from "../../../utils/window_dimensions"
-import {getSparkLines, getTimeSeriesChart} from "../../../components/charts/components"
+import {getTimeSeriesChart} from "../../../components/charts/timeseries/chart"
+import {getSparkLines} from "../../../components/charts/sparklines/chart"
 import {BackButton, RefreshButton, SaveButton} from "../../../components/utils/util_buttons"
 import {LabLoader} from "../../../components/utils/loader"
 import {ViewCardProps} from "../../types"
@@ -25,7 +26,7 @@ import {
     getScale,
     toPointValues
 } from "../../../components/charts/utils"
-import {CHART_COLORS, getColor} from "../../../components/charts/constants";
+import {CHART_COLORS, getColor} from "../../../components/charts/constants"
 import * as d3 from "d3";
 import {PointValue} from "../../../models/run"
 
@@ -95,13 +96,6 @@ export function LinePlot(props: LinePlotProps) {
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
 
-    let dFill = ''
-    if (props.isChartFill) {
-        dFill = `M${props.xScale(series[0].step)},0L` +
-            d.substr(1) +
-            `L${props.xScale(props.series[series.length - 1].step)},0`
-    }
-
     return <g>
         {smoothedPath}{unsmoothedPath}
     </g>
@@ -122,7 +116,6 @@ export function LineFill(props: LinePlotProps) {
     let d: string = smoothedLine(series) as string
 
 
-
     let dFill = ''
     if (props.isChartFill) {
         dFill = `M${props.xScale(series[0].step)},0L` +
@@ -131,8 +124,7 @@ export function LineFill(props: LinePlotProps) {
     }
 
     let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
-                         style={{fill: `url(#gradient-${props.colorIdx}`}}
-                         d={dFill}/>
+                         style={{fill: `url(#gradient-${props.colorIdx}`}} d={dFill}/>
 
     return <g>
         {pathFill}
@@ -186,6 +178,13 @@ interface LineChartProps extends SeriesProps {
     chartType?: 'log' | 'normal'
 }
 
+const gradients = CHART_COLORS.map((c, i) => {
+        return <linearGradient id={`gradient-${i}`} x1={'0%'} x2={'0%'} y1={'0%'} y2={'100%'}>
+            <stop offset={'0%'} stopColor={c} stopOpacity={1.0}/>
+            <stop offset={'100%'} stopColor={c} stopOpacity={0.0}/>
+        </linearGradient>
+    })
+
 function LineChart(props: LineChartProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
@@ -230,23 +229,16 @@ function LineChart(props: LineChartProps) {
     let lines = plot.map((s, i) => {
         return <LinePlot series={s.series} xScale={xScale} yScale={yScale}
                          color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}
-                        colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
+                         colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
     })
 
     let fills = plot.map((s, i) => {
         return <LineFill series={s.series} xScale={xScale} yScale={yScale}
                          color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}
-                        colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
+                         colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
-
-    const gradients = CHART_COLORS.map((c, i) => {
-        return <linearGradient id={`gradient-${i}`} x1={'0%'} x2={'0%'} y1={'0%'} y2={'100%'}>
-            <stop offset={'0%'} stopColor={c} stopOpacity={1.0}/>
-            <stop offset={'100%'} stopColor={c} stopOpacity={0.0}/>
-        </linearGradient>
-    })
 
     return <div>
         <svg id={'chart'}
