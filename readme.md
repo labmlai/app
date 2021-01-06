@@ -32,8 +32,10 @@ experiments. Thanks.
 ```
 pip install labml
 ```
-2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html).
-3. A link to view your experiment logs will be appeared in the terminal [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+
+2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html). Refer to the examples below.
+3. A link to view your on our app will be printed in the terminal [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+
 ### Examples
 
 1. Pytorch ([Google Colab](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) and  [Kaggle Notebook](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone))
@@ -60,7 +62,7 @@ with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
 
 ```
 
-3. TensorFlow 2.0 Keras ([Google Colab](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) and `[Kaggle Notebook](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone))
+3. TensorFlow 2.0 Keras ([Google Colab](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) and [Kaggle Notebook](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone))
 
 ```python
 from labml import experiment
