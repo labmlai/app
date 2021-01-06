@@ -50,13 +50,13 @@ function AppContainer() {
                 return false
             }
 
-            async function SetTheme() {
-                setAppUser(await userCache.get())
-
-                if (appUser) {
-                    document.getElementsByTagName('body')[0].className = appUser.theme
-                }
-            }
+            // async function SetTheme() {
+            //     setAppUser(await userCache.get())
+            //
+            //     if (appUser) {
+            //         document.getElementsByTagName('body')[0].className = appUser.theme
+            //     }
+            // }
 
             // SetTheme().then()
 
@@ -140,7 +140,7 @@ function AppContainer() {
         </div>
     }
 
-    document.getElementsByTagName('body')[0].className = 'light'
+    document.getElementsByTagName('body')[0].className = 'dark'
 
     return (
         <main>

@@ -19,7 +19,3 @@ export const CHART_COLORS = [
     '#BAB0AB'
 ]
 
-
-export const L1_COLOR = '#5ba167'
-export const L2_COLOR = '#e1cc6c'
-export const MEAN_COLOR = '#de425b'
