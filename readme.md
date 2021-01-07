@@ -1,4 +1,5 @@
 <div align="center" style="margin-bottom: 100px;">
+    
 <h1>LabML App</h1>
 <h2>Mobile first web app to monitor PyTorch & TensorFlow model training</h2>
 <h3>Relax while your models are training instead of sitting in front of a computer</h3>
@@ -10,6 +11,7 @@
 [![PyPI Status](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/)
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
 [![Twitter](https://img.shields.io/twitter/url.svg?label=Follow%20%40LabML&style=social&url=https%3A%2F%2Ftwitter.com%2FLabML)](https://twitter.com/LabML1?ref_src=twsrc%5Etfw)
+
 <img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" alt=""/>
 </div>
 
