@@ -8,6 +8,7 @@ interface InputEditableProps {
     placeholder?: string
     ref: any
     isEditable?: boolean
+    rows?: number
 }
 
 function InputElem(props: InputEditableProps, ref: any) {
@@ -18,7 +19,12 @@ function InputElem(props: InputEditableProps, ref: any) {
         {props.isEditable ?
             <div className={'input-container mt-2'}>
                 <div className={'input-content'}>
-                    <input defaultValue={props.value} ref={ref} placeholder={props.placeholder}/>
+                    {props.rows ?
+                        <textarea  rows={5} placeholder={props.placeholder} defaultValue={props.value}
+                                  ref={ref}/>
+                        :
+                        <input defaultValue={props.value} ref={ref} placeholder={props.placeholder}/>
+                    }
                 </div>
             </div>
             :

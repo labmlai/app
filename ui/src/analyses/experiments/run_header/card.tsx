@@ -180,7 +180,7 @@ function RunHeaderView(props: ViewCardProps) {
                            }
             />,
             <InputEditable key={3} item={'Note'} value={run.note} placeholder={'write your note here'}
-                           ref={noteElementRef} isEditable={isEditMode}/>,
+                           ref={noteElementRef} isEditable={isEditMode} rows={5}/>,
             <InputEditable key={4} item={'Run Status'} value={<StatusView status={status.run_status}/>}/>,
             <InputEditable key={5} item={'UUID'} value={run.run_uuid}/>,
             <InputEditable key={6} item={'Start Time'} value={formatTime(run.start_time)}/>,

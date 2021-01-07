@@ -26,6 +26,10 @@
     overflow: hidden;
   }
 
+  textarea{
+    width: 100%;
+  }
+
   @media screen and (max-width: 480px) {
     .item-key {
       margin-top: 5px;
