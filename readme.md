@@ -24,7 +24,7 @@ experiments. Thanks.
 ### Notable Features
 
 * **Mobile first design:** web version, that gives you a great mobile experience on a mobile browser.
-* **Model Gradients, Activations and Parameters:** Now you can track and compare these indicators independently. We provide a separate analysis for each of the indicator types.
+* **Model Gradients, Activations and Parameters:** Track and compare these indicators independently. We provide a separate analysis for each of the indicator types.
 * **Summary and Detail Views:** Summary views would help you to quickly scan and understand your model progress. You can use detail views for more in-depth analysis.
 * **Track only what you need:** You can pick and save the indicators that you want to track in the detail view. This would give you a customised summary view where you can focus on specific model indicators.
 * **Standard ouptut:** Check the terminal output from your mobile. No need to SSH.
@@ -41,7 +41,7 @@ pip install labml
 
 ### Examples
 
-1. Pytorch ([Google Colab](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) and  [Kaggle Notebook](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone))
+1. Pytorch ([![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Ldu5tr0oYN_XcYQORgOkIY_Ohsi152fz?usp=sharing) and [Kaggle Notebook](https://www.kaggle.com/hnipun/monitoring-ml-model-training-on-your-mobile-phone))
 
 ```python
 from labml import tracker, experiment
@@ -65,7 +65,7 @@ with experiment.record(name='sample', exp_conf=conf, disable_screen=True):
 
 ```
 
-3. TensorFlow 2.0 Keras ([Google Colab](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) and [Kaggle Notebook](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone))
+3. TensorFlow 2.0 Keras ([![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1lx1dUG3MGaIDnq47HVFlzJ2lytjSa9Zy?usp=sharing) and [Kaggle Notebook](https://www.kaggle.com/hnipun/monitor-keras-model-training-on-your-mobile-phone))
 
 ```python
 from labml import experiment
