@@ -40,7 +40,7 @@ function LineChart(props: LineChartProps) {
     let plotSeries = plot.map(s => s.series)
     let yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
-    const xScale = getScale(stepExtent, chartWidth)
+    const xScale = getScale(stepExtent, chartWidth, false)
 
     if (props.chartType && props.chartType === 'log') {
         yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -chartHeight)

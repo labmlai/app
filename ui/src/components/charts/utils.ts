@@ -57,10 +57,16 @@ export function getExtent(series: PointValue[][], func: (d: PointValue) => numbe
     return extent
 }
 
-export function getScale(extent: [number, number], size: number): d3.ScaleLinear<number, number> {
-    return d3.scaleLinear<number, number>()
-        .domain(extent).nice()
-        .range([0, size])
+export function getScale(extent: [number, number], size: number, isNice: boolean = true): d3.ScaleLinear<number, number> {
+    if (isNice) {
+        return d3.scaleLinear<number, number>()
+            .domain(extent).nice()
+            .range([0, size])
+    } else {
+        return d3.scaleLinear<number, number>()
+            .domain(extent)
+            .range([0, size])
+    }
 }
 
 export function getLogScale(extent: [number, number], size: number): d3.ScaleLogarithmic<number, number> {

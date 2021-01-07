@@ -42,7 +42,7 @@ function SimpleLineChart(props: SimpleLinesProps) {
     plot.push(...l2)
     plot.push(...mean)
 
-    const xScale = getScale([0, l1.length - 1], chartWidth)
+    const xScale = getScale([0, l1.length - 1], chartWidth, false)
     const yScale = getScale([Math.min(...plot), Math.max(...plot)], -chartHeight)
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
