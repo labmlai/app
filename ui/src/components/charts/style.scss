@@ -9,6 +9,7 @@ svg#chart {
     g.tick {
       text-anchor: start;
       opacity: 0.7;
+
       line {
         color: #bdc3c7;
       }
@@ -21,6 +22,7 @@ svg#chart {
 
   path.smoothed-line {
     stroke-width: 3;
+
     &.dropshadow {
       filter: url(#dropshadow);
     }
@@ -106,7 +108,7 @@ button.sparkline-list-item {
 
       path.line-fill {
         opacity: 0.3;
-    fill: url(#gradient-grey);
+        fill: url(#gradient-grey);
 
       }
     }
@@ -162,4 +164,9 @@ button.sparkline-list-item {
 
 .labels {
   font-size: .7rem;
+}
+
+.sparklines {
+  height: 540px;
+  overflow: scroll;
 }

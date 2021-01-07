@@ -2,6 +2,7 @@ export function formatTime(time: number): string {
     let date = new Date(time * 1000)
     let timeStr = date.toTimeString().substr(0, 8)
     let dateStr = date.toDateString()
+
     return `on ${dateStr} at ${timeStr}`
 }
 

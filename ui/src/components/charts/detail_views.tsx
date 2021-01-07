@@ -13,6 +13,8 @@ import {ViewCardProps} from "../../analyses/types"
 import {Status} from "../../models/status"
 import {getChartType} from "./utils"
 
+import "./style.scss"
+
 function BasicView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
     const UUID = params.get('uuid') as string
@@ -143,7 +145,9 @@ function BasicView(props: ViewCardProps) {
                     </div>
                     {chart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
                 </div>
-                {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
+                <div className={'sparklines'}>
+                    {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
+                </div>
             </div>
             :
             <LabLoader/>
