@@ -36,9 +36,9 @@ function BasicView(props: ViewCardProps) {
 
     useEffect(() => {
         async function load() {
-            let res : SeriesDataModel = await analysisCache.get()
+            let res: SeriesDataModel = await analysisCache.get()
             if (res) {
-                 setTrack(toPointValues(res.series))
+                setTrack(toPointValues(res.series))
             }
 
             setStatus(await statusCache.get())

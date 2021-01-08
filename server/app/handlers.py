@@ -264,6 +264,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
 
         if run_uuid in float_project.runs:
             default_project.runs[run_uuid] = r.key
+            default_project.is_run_added = True
             default_project.save()
             r.is_claimed = True
             r.save()
