@@ -17,29 +17,25 @@ from .computer import Computer, ComputerIndex
 
 AnalysisManager = getattr(import_module(settings.ANALYSES_MODULE, package='app'), "AnalysisManager")
 
+Models = [(YamlSerializer(), User), (YamlSerializer(), Project), (JsonSerializer(), Status),
+          (JsonSerializer(), RunStatus), (JsonSerializer(), Session), (JsonSerializer(), Run),
+          (JsonSerializer(), Computer)] + [(s(), m) for s, m, p in AnalysisManager.get_db_models()]
+
+Indexes = [ProjectIndex, UserIndex, SessionIndex, RunIndex, ComputerIndex] + [m for s, m, p in
+                                                                              AnalysisManager.get_db_indexes()]
+
 DATA_PATH = settings.DATA_PATH
 
 db = redis.Redis(host='localhost', port=6379, db=0)
 
 Model.set_db_drivers(
-    [RedisDbDriver(s(), m, db) for s, m, p in AnalysisManager.get_db_models()] + [
-        RedisDbDriver(YamlSerializer(), User, db),
-        RedisDbDriver(YamlSerializer(), Project, db),
-        RedisDbDriver(JsonSerializer(), Status, db),
-        RedisDbDriver(JsonSerializer(), RunStatus, db),
-        RedisDbDriver(JsonSerializer(), Session, db),
-        RedisDbDriver(JsonSerializer(), Run, db),
-        RedisDbDriver(JsonSerializer(), Computer, db),
-    ])
+    [RedisDbDriver(s, m, db) for s, m in Models]
+
+),
 
 Index.set_db_drivers(
-    [RedisIndexDbDriver(m, db) for s, m, p in AnalysisManager.get_db_indexes()] + [
-        RedisIndexDbDriver(ProjectIndex, db),
-        RedisIndexDbDriver(UserIndex, db),
-        RedisIndexDbDriver(SessionIndex, db),
-        RedisIndexDbDriver(RunIndex, db),
-        RedisIndexDbDriver(ComputerIndex, db),
-    ])
+    [RedisIndexDbDriver(m, db) for m in Indexes]
+)
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
