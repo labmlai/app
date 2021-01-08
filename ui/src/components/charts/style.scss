@@ -167,6 +167,9 @@ button.sparkline-list-item {
 }
 
 .fixed-chart {
-  //height: 540px;
-  //overflow: scroll;
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 1;
 }

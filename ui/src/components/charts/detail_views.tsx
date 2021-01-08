@@ -145,15 +145,13 @@ function BasicView(props: ViewCardProps) {
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>
-                <div className={'pointer-cursor'} onClick={onChartClick}>
+                <div className={'pointer-cursor fixed-chart'} onClick={onChartClick}>
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
                     {chart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
                 </div>
-                <div className={'sparklines'}>
-                    {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
-                </div>
+                {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
             </div>
             :
             <LabLoader/>
