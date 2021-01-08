@@ -2,10 +2,11 @@ import React from "react"
 
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate, toPointValues} from "../utils"
-import {TimeSeriesPlot} from "./plot"
-import {getColor} from "../constants"
+import {TimeSeriesPlot, TimeSeriesFill} from "./plot"
+import {CHART_COLORS, getColor} from "../constants"
 import {LineChartProps, chartTypes} from "../types"
 import {BottomTimeAxis, RightAxis} from "../axis"
+import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 
 
@@ -51,8 +52,14 @@ function TimeSeriesChart(props: LineChartProps) {
     }
 
     let lines = plot.map((s, i) => {
-        return <TimeSeriesPlot series={s.series} xScale={xScale} yScale={yScale}
-                               color={getColor(filteredPlotIdx[i])} key={s.name} isChartFill={isChartFill}/>
+        return <TimeSeriesPlot series={s.series} xScale={xScale} yScale={yScale} color={getColor(filteredPlotIdx[i])}
+                               key={s.name}/>
+
+    })
+
+    let fills = plot.map((s, i) => {
+        return <TimeSeriesFill series={s.series} xScale={xScale} yScale={yScale} color={getColor(filteredPlotIdx[i])}
+                               key={s.name} colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
     })
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -61,8 +68,9 @@ function TimeSeriesChart(props: LineChartProps) {
         <svg id={'chart'}
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
+            <Gradients/>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
-                {lines}
+                {isChartFill && fills}{lines}
             </g>
             <g className={'bottom-axis'}
                transform={`translate(${margin}, ${margin + chartHeight})`}>

@@ -11,7 +11,7 @@ interface TimeSeriesPlotProps {
     xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
-    isChartFill?: boolean
+    colorIdx?: number
 }
 
 export function TimeSeriesPlot(props: TimeSeriesPlotProps) {
@@ -41,17 +41,37 @@ export function TimeSeriesPlot(props: TimeSeriesPlotProps) {
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
 
-    let dFill = ''
-    if (props.isChartFill) {
-        dFill = `M${props.xScale(toDate(series[0].step))},0L` +
-            d.substr(1) +
-            `L${props.xScale(toDate(props.series[series.length - 1].step))},0`
-    }
-
-    let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
-                         d={dFill}/>
 
     return <g>
-        {smoothedPath}{unsmoothedPath}{pathFill}
+        {smoothedPath}{unsmoothedPath}
+    </g>
+}
+
+export function TimeSeriesFill(props: TimeSeriesPlotProps) {
+    let series = props.series
+
+    let smoothedLine = d3.line<PointValue>()
+        .curve(d3.curveMonotoneX)
+        .x((d) => {
+            return props.xScale(toDate(d.step))
+        })
+        .y((d) => {
+            return props.yScale(d.smoothed)
+        })
+
+    let d: string = smoothedLine(series) as string
+
+    let dFill = ''
+    dFill = `M${props.xScale(toDate(series[0].step))},0L` +
+        d.substr(1) +
+        `L${props.xScale(toDate(props.series[series.length - 1].step))},0`
+
+
+    let pathFill = <path className={'line-fill'} fill={props.color} stroke={'none'}
+                         style={{fill: `url(#gradient-${props.colorIdx}`}} d={dFill}/>
+
+
+    return <g>
+        {pathFill}
     </g>
 }
