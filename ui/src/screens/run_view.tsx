@@ -112,7 +112,7 @@ function RunView(props: RunProps) {
         }
         <div className={'flex-container'}>
             <BackButton parent={'Run View'}/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={'Run View'}/>}
+            {status && status.isStatusInProgress && <RefreshButton onButtonClick={onRefresh} parent={'Run View'}/>}
         </div>
         <RunHeaderCard uuid={runUUID} width={actualWidth} lastUpdated={lastUpdated} isMainView={true}/>
         {experiment_analyses.map((analysis, i) => {

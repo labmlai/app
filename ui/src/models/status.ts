@@ -41,4 +41,9 @@ export class Status {
             return false
         }
     }
+
+    get isStatusInProgress(){
+        return this.run_status.status === 'in progress'
+    }
+
 }
