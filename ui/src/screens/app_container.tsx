@@ -22,6 +22,10 @@ import logo from "../assets/lab_logo.png"
 import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
 
+const excludePaths: any[] = ['/run']
+for (let i = 0; i < experiment_analyses.length; i++) {
+    excludePaths.push('/' + experiment_analyses[i].route)
+}
 
 function AppContainer() {
     const location = useLocation()
@@ -37,14 +41,11 @@ function AppContainer() {
 
     useEffect(() => {
             //TODO fix for ::active not working on mobile. Check for a better solution in react
-            document.addEventListener("touchstart", function () {
-            }, false)
+            document.addEventListener("touchstart", function () {}, false)
 
             function isRunPath(): boolean {
-                const runPath = '/run'
-
                 if (location && location.state !== '/login') {
-                    return location.state === runPath || location.pathname === runPath
+                    return excludePaths.includes(location.state) || excludePaths.includes(location.pathname)
                 }
 
                 return false
