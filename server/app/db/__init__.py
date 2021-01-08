@@ -1,9 +1,12 @@
-import redis
+from pathlib import Path
 from importlib import import_module
 
+import redis
 from labml_db import Model, Index
 from labml_db.driver.redis import RedisDbDriver
+from labml_db.driver.file import FileDbDriver
 from labml_db.index_driver.redis import RedisIndexDbDriver
+from labml_db.index_driver.file import FileIndexDbDriver
 from labml_db.serializer.json import JsonSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
@@ -28,14 +31,17 @@ DATA_PATH = settings.DATA_PATH
 
 db = redis.Redis(host='localhost', port=6379, db=0)
 
-Model.set_db_drivers(
-    [RedisDbDriver(s, m, db) for s, m in Models]
+if settings.IS_LOCAL_SETUP:
+    Model.set_db_drivers([FileDbDriver(JsonSerializer(), m, Path(f'{DATA_PATH}/{m.__name__}')) for s, m in Models])
+else:
+    Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
 
-),
+if settings.IS_LOCAL_SETUP:
+    Index.set_db_drivers(
+        [FileIndexDbDriver(YamlSerializer(), m, Path(f'{DATA_PATH}/{m.__name__}.yaml')) for m in Indexes])
 
-Index.set_db_drivers(
-    [RedisIndexDbDriver(m, db) for m in Indexes]
-)
+else:
+    Index.set_db_drivers([RedisIndexDbDriver(m, db) for m in Indexes])
 
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')

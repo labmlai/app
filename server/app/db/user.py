@@ -31,7 +31,6 @@ class User(Model['User']):
         return self.projects[0].load()
 
     def get_data(self) -> Dict[str, any]:
-        print(self.theme)
         return {
             'name': self.name,
             'email': self.email,
