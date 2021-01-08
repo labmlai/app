@@ -6,12 +6,12 @@ import {getLineChart} from "./lines/chart"
 import {getSparkLines} from "./sparklines/chart"
 import {getSimpleLineChart} from "./simplelines/chart"
 import {getTimeSeriesChart} from "./timeseries/chart"
-import InsightsList from "../insights/insights_list"
+// import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barlines/chart"
-import {SeriesDataModel} from "../../models/run"
+import {SeriesDataModel, SeriesModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, CardProps} from "../../analyses/types"
-import {getChartType} from "./utils"
+import {getChartType, toPointValues} from "./utils"
 
 
 import "./style.scss"
@@ -24,7 +24,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 }
 
 function SparkLinesCard(props: BasicCardProps, ref: any) {
-    const [track, setTrack] = useState(null as (SeriesDataModel | null))
+    const [track, setTrack] = useState(null as unknown as SeriesModel[])
 
     const history = useHistory()
 
@@ -55,11 +55,17 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
 
 
     async function onRefresh() {
-        setTrack(await analysisCache.get(true))
+        let res: SeriesDataModel = await analysisCache.get(true)
+        if (res) {
+            setTrack(toPointValues(res.series))
+        }
     }
 
     async function onLoad() {
-        setTrack(await analysisCache.get())
+        let res: SeriesDataModel = await analysisCache.get()
+        if (res) {
+            setTrack(toPointValues(res.series))
+        }
     }
 
     useImperativeHandle(ref, () => ({
@@ -79,16 +85,16 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
             <h3 className={'header'}>{props.title}</h3>
             <LabLoader/>
         </div>
-        : track && track.series.length > 0 ?
+        : track && track.length > 0 ?
             <div className={'labml-card labml-card-action'} onClick={
                 () => {
                     history.push(`/${props.url}?uuid=${props.uuid}`, history.location.pathname);
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && chart(getChartType(currentChart), track.series, plotIdx, props.width)}
-                {getSparkLines(track.series, plotIdx, props.width)}
-                <InsightsList insightList={track.insights}/>
+                {props.isChartView && chart(getChartType(currentChart), track, plotIdx, props.width)}
+                {getSparkLines(track, plotIdx, props.width)}
+                {/*<InsightsList insightList={track.insights}/>*/}
             </div>
             : <div/>
     }

@@ -115,6 +115,8 @@ function BasicView(props: ViewCardProps) {
     function onChartClick() {
         setIsDisabled(false)
 
+        mixpanel.track('Move between Logarithm charts', {uuid: UUID, analysis: props.title})
+
         if (currentChart === 1) {
             setCurrentChart(0)
         } else {
