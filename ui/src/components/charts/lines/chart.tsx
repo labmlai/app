@@ -96,8 +96,8 @@ export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] 
         if (plotIdx == null) {
             plotIdx = defaultSeriesToPlot(track)
         }
-        let series: SeriesModel[] = toPointValues(track)
-        return <LineChart key={1} chartType={chartType} series={series} width={width} plotIdx={plotIdx}
+
+        return <LineChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
                           onSelect={onSelect}/>
     } else {
         return <LabLoader/>

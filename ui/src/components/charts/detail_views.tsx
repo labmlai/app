@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useRef, useState} from "react"
 
 import mixpanel from "mixpanel-browser"
 
-import {SeriesDataModel} from "../../models/run"
+import {SeriesDataModel, SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {getLineChart} from "./lines/chart"
 import {getSparkLines} from "./sparklines/chart"
@@ -11,7 +11,7 @@ import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
 import {ViewCardProps} from "../../analyses/types"
 import {Status} from "../../models/status"
-import {getChartType} from "./utils"
+import {getChartType, toPointValues} from "./utils"
 
 import "./style.scss"
 
@@ -129,6 +129,11 @@ function BasicView(props: ViewCardProps) {
 
     const chart = props.isTimeSeries ? getTimeSeriesChart : getLineChart
 
+    let series: SeriesModel[] = []
+    if (track) {
+        series = toPointValues(track.series)
+    }
+
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -143,7 +148,7 @@ function BasicView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {chart(getChartType(currentChart), track.series, plotIdx, actualWidth, toggleChart)}
+                    {chart(getChartType(currentChart), series, plotIdx, actualWidth, toggleChart)}
                 </div>
                 <div className={'sparklines'}>
                     {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
