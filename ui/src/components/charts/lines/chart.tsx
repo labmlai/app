@@ -1,7 +1,7 @@
 import React from "react"
 
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale, toPointValues} from "../utils"
+import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
 import {CHART_COLORS, getColor} from "../constants"
 import {LineChartProps, chartTypes} from "../types"
 import {LinePlot, LineFill} from "./plot"

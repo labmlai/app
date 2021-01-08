@@ -2,7 +2,7 @@ import React from "react"
 
 import {ListGroup} from "react-bootstrap"
 
-import {defaultSeriesToPlot, getExtent, toPointValues} from "../utils"
+import {defaultSeriesToPlot, getExtent} from "../utils"
 import {SparkLine} from "./sparkline"
 import {getColor} from "../constants"
 import {SeriesProps} from "../types"
@@ -62,8 +62,7 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
             plotIdx = defaultSeriesToPlot(track)
         }
 
-        let series: SeriesModel[] = toPointValues(track)
-        return <SparkLines series={series} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+        return <SparkLines series={track} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
     } else {
         return <LabLoader/>
     }

@@ -23,7 +23,7 @@ function BasicView(props: ViewCardProps) {
     const analysisCache = props.cache.getAnalysis(UUID)
     const preferenceCache = props.cache.getPreferences(UUID)
 
-    const [track, setTrack] = useState(null as unknown as SeriesDataModel)
+    const [track, setTrack] = useState(null as unknown as SeriesModel[])
     const [status, setStatus] = useState(null as unknown as Status)
     const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
     const [currentChart, setCurrentChart] = useState(0)
@@ -36,7 +36,11 @@ function BasicView(props: ViewCardProps) {
 
     useEffect(() => {
         async function load() {
-            setTrack(await analysisCache.get())
+            let res : SeriesDataModel = await analysisCache.get()
+            if (res) {
+                 setTrack(toPointValues(res.series))
+            }
+
             setStatus(await statusCache.get())
 
             if (status && !status.isRunning) {
@@ -63,7 +67,7 @@ function BasicView(props: ViewCardProps) {
                     setPlotIdx([...analysis_preferences])
                 } else if (track) {
                     let res: number[] = []
-                    for (let i = 0; i < track.series.length; i++) {
+                    for (let i = 0; i < track.length; i++) {
                         res.push(i)
                     }
                     setPlotIdx(res)
@@ -129,11 +133,6 @@ function BasicView(props: ViewCardProps) {
 
     const chart = props.isTimeSeries ? getTimeSeriesChart : getLineChart
 
-    let series: SeriesModel[] = []
-    if (track) {
-        series = toPointValues(track.series)
-    }
-
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -142,16 +141,16 @@ function BasicView(props: ViewCardProps) {
         </div>
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
-        {track && track.series.length > 0 && preference.current ?
+        {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>
                 <div className={'pointer-cursor'} onClick={onChartClick}>
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {chart(getChartType(currentChart), series, plotIdx, actualWidth, toggleChart)}
+                    {chart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
                 </div>
                 <div className={'sparklines'}>
-                    {getSparkLines(track.series, plotIdx, actualWidth, toggleChart)}
+                    {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
                 </div>
             </div>
             :
