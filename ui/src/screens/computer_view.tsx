@@ -80,7 +80,7 @@ function ComputerView(props: RunProps) {
     return <div className={'run page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={'Computer View'}/>
-            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={'Computer View'}/>}
+            {status && status.isStatusInProgress && <RefreshButton onButtonClick={onRefresh} parent={'Computer View'}/>}
         </div>
         <ComputerHeaderCard uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         {computer_analyses.map((analysis, i) => {

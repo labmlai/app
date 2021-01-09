@@ -1,9 +1,8 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response, request
+from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
-from labml_db.serializer.yaml import YamlSerializer
 
 from app.utils import format_rv
 from app.logging import logger
@@ -53,6 +52,10 @@ class CPUAnalysis(Analysis):
         res = []
         for ind, track in self.cpu.tracking.items():
             name = ind.split('.')
+
+            if any(x in ['freq', 'system', 'idle', 'user'] for x in name):
+                continue
+
             series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name)
 

@@ -18,6 +18,7 @@ interface SparkLineProps {
     maxLastValue: number
     onClick?: () => void
     color: string
+    decimals?: number
 }
 
 export function SparkLine(props: SparkLineProps) {

@@ -94,8 +94,8 @@ export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesMo
         if (plotIdx == null) {
             plotIdx = defaultSeriesToPlot(track)
         }
-        let series: SeriesModel[] = toPointValues(track)
-        return <TimeSeriesChart key={1} chartType={chartType} series={series} width={width} plotIdx={plotIdx}
+
+        return <TimeSeriesChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
                                 onSelect={onSelect}/>
     } else {
         return <LabLoader/>

@@ -53,6 +53,10 @@ class DiskAnalysis(Analysis):
         res = []
         for ind, track in self.disk.tracking.items():
             name = ind.split('.')
+
+            if any(x in ['total'] for x in name):
+                continue
+
             series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name)
 
