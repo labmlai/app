@@ -46,6 +46,7 @@ function AnalysisDetails() {
     return <BasicView title={TITLE}
                       cache={cache}
                       location={location}
+                      isTimeSeries={true}
                       headerCard={ComputerHeaderCard}/>
 }
 
