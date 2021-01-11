@@ -37,7 +37,7 @@ export function TimeSeriesPlot(props: TimeSeriesPlotProps) {
             return props.yScale(d.value)
         })
 
-    let smoothedPath = <path className={'smoothed-line'} fill={'none'} stroke={props.color} d={d}/>
+    let smoothedPath = <path className={'smoothed-line dropshadow'} fill={'none'} stroke={props.color} d={d}/>
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
 

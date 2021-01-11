@@ -15,7 +15,7 @@ import {getChartType, toPointValues} from "./utils"
 
 import "./style.scss"
 
-function BasicView(props: ViewCardProps) {
+function BasicLineView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
     const UUID = params.get('uuid') as string
 
@@ -133,8 +133,6 @@ function BasicView(props: ViewCardProps) {
         }
     }
 
-    const chart = props.isTimeSeries ? getTimeSeriesChart : getLineChart
-
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -149,7 +147,125 @@ function BasicView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {chart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
+                    {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
+                </div>
+                {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
+            </div>
+            :
+            <LabLoader/>
+        }
+    </div>
+}
+
+interface TimeSeriesViewCardProps extends ViewCardProps {
+    yExtend?: [number, number] | null
+}
+
+function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
+    const params = new URLSearchParams(props.location.search)
+    const UUID = params.get('uuid') as string
+
+    const statusCache = props.cache.getStatus(UUID)
+    const analysisCache = props.cache.getAnalysis(UUID)
+    const preferenceCache = props.cache.getPreferences(UUID)
+
+    const [track, setTrack] = useState(null as unknown as SeriesModel[])
+    const [status, setStatus] = useState(null as unknown as Status)
+    const [plotIdx, setPlotIdx] = useState(null as unknown as number[])
+    const [isDisabled, setIsDisabled] = useState(true)
+
+    const {width: windowWidth} = useWindowDimensions()
+    const actualWidth = Math.min(800, windowWidth)
+
+    let preference = useRef(null) as any
+
+    useEffect(() => {
+        async function load() {
+            let res: SeriesDataModel = await analysisCache.get()
+            if (res) {
+                setTrack(toPointValues(res.series))
+            }
+
+            setStatus(await statusCache.get())
+
+            if (status && !status.isRunning) {
+                clearInterval(interval)
+            }
+        }
+
+        mixpanel.track('Analysis View', {uuid: UUID, analysis: props.title})
+
+        load().then()
+        let interval = setInterval(load, 2 * 60 * 1000)
+        return () => clearInterval(interval)
+    }, [analysisCache, statusCache, UUID, status, props.title])
+
+    useEffect(() => {
+        async function load() {
+            preference.current = await preferenceCache.get()
+
+            if (preference.current) {
+                let analysis_preferences = preference.current.series_preferences
+                if (analysis_preferences && analysis_preferences.length > 0) {
+                    setPlotIdx([...analysis_preferences])
+                } else if (track) {
+                    let res: number[] = []
+                    for (let i = 0; i < track.length; i++) {
+                        res.push(i)
+                    }
+                    setPlotIdx(res)
+                }
+            }
+        }
+
+        if (plotIdx === null) {
+            load().then()
+        }
+
+    }, [track, preference, preferenceCache, plotIdx])
+
+    function updatePreferences() {
+        if (preference.current) {
+            preference.current.series_preferences = plotIdx
+            preferenceCache.setPreference(preference.current).then()
+            setIsDisabled(true)
+        }
+    }
+
+    async function load() {
+        setTrack(await analysisCache.get(true))
+    }
+
+    function onRefresh() {
+        load().then()
+    }
+
+    let toggleChart = useCallback((idx: number) => {
+        setIsDisabled(false)
+
+        if (plotIdx[idx] >= 0) {
+            plotIdx[idx] = -1
+        } else {
+            plotIdx[idx] = Math.max(...plotIdx) + 1
+        }
+
+        if (plotIdx.length > 1) {
+            setPlotIdx(new Array<number>(...plotIdx))
+        }
+    }, [plotIdx])
+
+    return <div className={'page'} style={{width: actualWidth}}>
+        <div className={'flex-container'}>
+            <BackButton parent={props.title}/>
+            <SaveButton onButtonClick={updatePreferences} isDisabled={isDisabled} parent={props.title}/>
+            {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={props.title}/>}
+        </div>
+        <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
+        <h2 className={'header text-center'}>{props.title}</h2>
+        {track && track.length > 0 && preference.current ?
+            <div className={'labml-card'}>
+                <div className={'pointer-cursor fixed-chart'}>
+                    {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend)}
                 </div>
                 {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
             </div>
@@ -160,5 +276,6 @@ function BasicView(props: ViewCardProps) {
 }
 
 export {
-    BasicView,
+    BasicLineView,
+    BasicTimeSeriesView
 }

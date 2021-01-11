@@ -65,8 +65,6 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
     }
 
     function clickHandle(e: Event, tab: string) {
-        console.log(tab)
-
         // setCurrentTab(tab)
         e.preventDefault()
         if (tab === 'Runs') {
