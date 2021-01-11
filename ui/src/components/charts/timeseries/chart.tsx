@@ -10,7 +10,7 @@ import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 
 interface TimeSeriesChartProps extends LineChartProps {
-    yExtend?: number[]
+    yExtend?: [number, number] | null
 }
 
 
@@ -42,7 +42,8 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
     }
 
     let plotSeries = plot.map(s => s.series)
-    let yScale = getScale(getExtent(plotSeries, d => d.value, false), -chartHeight)
+    let yExtend = props.yExtend ? props.yExtend : getExtent(plotSeries, d => d.value, false)
+    let yScale = getScale(yExtend, -chartHeight)
     const stepExtent = getExtent(track.map(s => s.series), d => d.step)
     const xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], chartWidth)
 
@@ -90,7 +91,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
 
 export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
-                                   width: number, onSelect?: ((i: number) => void)) {
+                                   width: number, onSelect?: ((i: number) => void), yExtend: [number, number] | null = null) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -100,7 +101,7 @@ export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesMo
         }
 
         return <TimeSeriesChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
-                                onSelect={onSelect}/>
+                                onSelect={onSelect} yExtend={yExtend}/>
     } else {
         return <LabLoader/>
     }

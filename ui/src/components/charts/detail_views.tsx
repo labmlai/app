@@ -157,7 +157,11 @@ function BasicLineView(props: ViewCardProps) {
     </div>
 }
 
-function BasicTimeSeriesView(props: ViewCardProps) {
+interface TimeSeriesViewCardProps extends ViewCardProps {
+    yExtend?: [number, number] | null
+}
+
+function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
     const params = new URLSearchParams(props.location.search)
     const UUID = params.get('uuid') as string
 
@@ -261,7 +265,7 @@ function BasicTimeSeriesView(props: ViewCardProps) {
         {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>
                 <div className={'pointer-cursor fixed-chart'}>
-                    {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart)}
+                    {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend)}
                 </div>
                 {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
             </div>
