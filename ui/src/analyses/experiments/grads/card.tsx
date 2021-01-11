@@ -4,7 +4,7 @@ import {useLocation} from "react-router-dom"
 
 import {SummaryCardProps, Analysis} from "../../types"
 import {L1L2MeanLines} from "../../../components/charts/summary_views"
-import {BasicView} from "../../../components/charts/detail_views"
+import {BasicLineView} from "../../../components/charts/detail_views"
 import {RunHeaderCard} from "../run_header/card"
 import {Cache} from "../../common"
 import {SeriesCache, RunStatusCache, SeriesPreferenceCache} from "../../../cache/cache"
@@ -42,10 +42,10 @@ function AnalysisSummary(props: SummaryCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView title={DETAILS_TITLE}
-                      cache={cache}
-                      location={location}
-                      headerCard={RunHeaderCard}/>
+    return <BasicLineView title={DETAILS_TITLE}
+                          cache={cache}
+                          location={location}
+                          headerCard={RunHeaderCard}/>
 }
 
 let gradientAnalysis: Analysis = {

@@ -5,7 +5,7 @@ import {useLocation} from "react-router-dom"
 import {SummaryCardProps, Analysis} from "../../types"
 import {BasicSparkTimeLines} from "../../../components/charts/summary_views"
 import ComputerHeaderCard from "../computer_header/card"
-import {BasicView} from "../../../components/charts/detail_views"
+import {BasicTimeSeriesView} from "../../../components/charts/detail_views"
 import {Cache} from "../../common"
 import {SeriesCache, SeriesPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
 
@@ -42,11 +42,10 @@ function AnalysisSummary(props: SummaryCardProps) {
 function AnalysisDetails() {
     const location = useLocation()
 
-    return <BasicView title={TITLE}
-                      cache={cache}
-                      location={location}
-                      isTimeSeries={true}
-                      headerCard={ComputerHeaderCard}/>
+    return <BasicTimeSeriesView title={TITLE}
+                          cache={cache}
+                          location={location}
+                          headerCard={ComputerHeaderCard}/>
 }
 
 
