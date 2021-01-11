@@ -7,6 +7,7 @@ from ..utils.mix_panel import MixPanelEvent
 from . import project
 from .status import create_status, Status
 from .. import settings
+from ..logging import logger
 
 
 class CardInfo(NamedTuple):
@@ -131,8 +132,33 @@ class Run(Model['Run']):
 
         return ''.join(res)
 
+    @staticmethod
+    def format_remote_repo(urls: str):
+        url = urls[0]
+        split = url.split(':')
+
+        if not url:
+            pass
+        elif 'git' not in url:
+            logger.error(f'unknown repo url: {url}')
+            return ''
+        elif split[0] != 'https':
+            split[0] = 'https'
+            return '://github.com/'.join(split)[:-4]
+
+        return url[:-4]
+
+    @staticmethod
+    def format_commit(url: str, commit: str):
+        if 'git' not in url:
+            logger.error(f'unknown repo url: {url}, commit:{commit}')
+            return ''
+
+        return url + f'/commit/{commit}'
+
     def get_data(self) -> Dict[str, Union[str, any]]:
         configs = [{'key': k, **c} for k, c in self.configs.items()]
+        formatted_repo = self.format_remote_repo(self.repo_remotes)
 
         return {
             'run_uuid': self.run_uuid,
@@ -143,8 +169,8 @@ class Run(Model['Run']):
             'start_time': self.start_time,
             'start_step': self.start_step,
             'python_file': self.python_file,
-            'repo_remotes': self.repo_remotes,
-            'commit': self.commit,
+            'repo_remotes': formatted_repo,
+            'commit': self.format_commit(formatted_repo, self.commit),
             'commit_message': self.commit_message,
             'is_claimed': self.is_claimed,
             'configs': configs,
