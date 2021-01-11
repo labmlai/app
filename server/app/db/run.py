@@ -135,14 +135,16 @@ class Run(Model['Run']):
     @staticmethod
     def format_remote_repo(urls: str):
         url = urls[0]
-        split = url.split(':')
 
         if not url:
-            pass
-        elif 'git' not in url:
+            return ''
+        if 'git' not in url:
             logger.error(f'unknown repo url: {url}')
             return ''
-        elif split[0] != 'https':
+
+        split = url.split(':')
+
+        if split[0] != 'https':
             split[0] = 'https'
             return '://github.com/'.join(split)[:-4]
 
