@@ -9,8 +9,12 @@ import {BottomTimeAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 
+interface TimeSeriesChartProps extends LineChartProps {
+    yExtend?: number[]
+}
 
-function TimeSeriesChart(props: LineChartProps) {
+
+function TimeSeriesChart(props: TimeSeriesChartProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
