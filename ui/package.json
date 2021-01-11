@@ -32,6 +32,7 @@
     "source-map-explorer": "^2.5.1",
     "typescript": "^3.9.7"
   },
+  "homepage": "./",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",

@@ -69,15 +69,27 @@ function ErrorFallback({error}: any) {
 }
 
 
-ReactDOM.render(
-    <React.StrictMode>
-        <Sentry.ErrorBoundary fallback={ErrorFallback}>
-            <Router>
-                <Auth0ProviderWithHistory>
-                    <AppContainer/>
-                </Auth0ProviderWithHistory>
-            </Router>
-        </Sentry.ErrorBoundary>
-    </React.StrictMode>,
-    document.getElementById('root')
-)
+const renderReactDom = () => {
+    ReactDOM.render(
+        <React.StrictMode>
+            <Sentry.ErrorBoundary fallback={ErrorFallback}>
+                <Router>
+                    <Auth0ProviderWithHistory>
+                        <AppContainer/>
+                    </Auth0ProviderWithHistory>
+                </Router>
+            </Sentry.ErrorBoundary>
+        </React.StrictMode>,
+        document.getElementById('root')
+    )
+}
+
+declare let window: any
+
+if (window.cordova) {
+    document.addEventListener('deviceready', () => {
+        renderReactDom()
+    }, false)
+} else {
+    renderReactDom()
+}

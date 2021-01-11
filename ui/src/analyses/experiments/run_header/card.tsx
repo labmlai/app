@@ -131,7 +131,6 @@ function RunHeaderCard(props: RunHeaderProps) {
 }
 
 
-
 function RunHeaderView(props: ViewCardProps) {
     const params = new URLSearchParams(props.location.search)
     const runUUID = params.get('uuid') as string
@@ -173,7 +172,7 @@ function RunHeaderView(props: ViewCardProps) {
             <InputEditable key={13} item={'Tags'}
                            value={
                                <div>
-                                   {run.tags.map((tag, idx) => (
+                                   {run.tags && run.tags.map((tag, idx) => (
                                        <BadgeView text={tag}/>
                                    ))}
                                </div>
