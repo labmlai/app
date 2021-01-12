@@ -135,7 +135,7 @@ function HamburgerMenuBar(props: HamburgerMenuBarProps) {
                     <span>Join our Slack</span>
                 </Nav.Link>
             </div>
-            <Nav.Link className={'burger'} onClick={onBurgerClick}>
+            <Nav.Link className={'burger tab'} onClick={onBurgerClick}>
                 <FontAwesomeIcon icon={faBars}/>
             </Nav.Link>
             <div className={'title'}>
