@@ -134,6 +134,9 @@ class Run(Model['Run']):
 
     @staticmethod
     def format_remote_repo(urls: str):
+        if not urls:
+            return ''
+
         url = urls[0]
 
         if not url:
