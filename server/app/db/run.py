@@ -155,9 +155,11 @@ class Run(Model['Run']):
 
     @staticmethod
     def format_commit(url: str, commit: str):
-        if 'git' not in url:
-            logger.error(f'unknown repo url: {url}, commit:{commit}')
+        if not url:
             return ''
+        if 'unknown' in commit:
+            logger.error(f'unknown repo url: {url}, commit:{commit}')
+            return 'unknown'
 
         return url + f'/commit/{commit}'
 
