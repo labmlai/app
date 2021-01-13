@@ -74,7 +74,7 @@ function ComputersListView() {
 
             let res: ComputerListItemModel[] = []
             for (let computer of currentComputers) {
-                if (!computersDeleteSet.has(computer.computer_uuid)) {
+                if (!computersDeleteSet.has(computer.session_uuid)) {
                     res.push(computer)
                 }
             }
@@ -126,7 +126,7 @@ function ComputersListView() {
             } else {
                 return <div className={'runs-list'}>
                     <Search inputElement={inputElement} onInputChange={onInputChange}/>
-                    <List items={computers} onItemClick={onItemClick} isEditMode={isEditMode} itemKey={'computer'}/>
+                    <List items={computers} onItemClick={onItemClick} isEditMode={isEditMode} itemKey={'session'}/>
                 </div>
             }
         })()}

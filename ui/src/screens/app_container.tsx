@@ -148,7 +148,7 @@ function AppContainer() {
             <Switch>
                 <Route path="/404" component={PageNotFound}/>
                 <Route path="/run" component={RunView}/>
-                <Route path="/computer" component={ComputerView}/>
+                <Route path="/session" component={ComputerView}/>
                 <Route path="/run_header" component={RunHeaderView}/>
                 <Route path="/runs" component={RunsView}/>
                 <Route path="/computers" component={ComputersView}/>

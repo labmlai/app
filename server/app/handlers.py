@@ -73,12 +73,19 @@ def update_computer() -> flask.Response:
     errors = []
 
     token = request.args.get('labml_token', '')
+    session_uuid = request.args.get('session_uuid', '')
     computer_uuid = request.args.get('computer_uuid', '')
     version = request.args.get('labml_version', '')
 
     if len(computer_uuid) < 10:
         error = {'error': 'invalid_computer_uuid',
                  'message': f'Invalid Computer UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
+    if len(session_uuid) < 10:
+        error = {'error': 'invalid_session_uuid',
+                 'message': f'Invalid Session UUID'}
         errors.append(error)
         return jsonify({'errors': errors})
 
@@ -93,7 +100,7 @@ def update_computer() -> flask.Response:
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
-    c = computer.get(computer_uuid, token)
+    c = computer.get(session_uuid, token)
     if not c and not p:
         if request.args.get('labml_token', ''):
             error = {'error': 'invalid_token',
@@ -107,7 +114,7 @@ def update_computer() -> flask.Response:
                                 'add it to your experiments list.'}
         errors.append(error)
 
-    c = computer.get_or_create(computer_uuid, token, request.remote_addr)
+    c = computer.get_or_create(session_uuid, computer_uuid, token, request.remote_addr)
     s = c.status.load()
 
     if isinstance(request.json, list):
@@ -119,15 +126,15 @@ def update_computer() -> flask.Response:
         c.update_computer(d)
         s.update_time_status(d)
         if 'track' in d:
-            AnalysisManager.track_computer(computer_uuid, d['track'])
+            AnalysisManager.track_computer(session_uuid, d['track'])
 
     logger.debug(
-        f'update_computer, computer_uuid: {computer_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
+        f'update_computer, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     return jsonify({'errors': errors, 'url': c.url})
 
 
-def claim_computer(computer_uuid: str, c: computer.Computer) -> None:
+def claim_computer(session_uuid: str, c: computer.Computer) -> None:
     s = auth.get_session()
 
     if not s.user:
@@ -135,11 +142,11 @@ def claim_computer(computer_uuid: str, c: computer.Computer) -> None:
 
     default_project = s.user.load().default_project
 
-    if computer_uuid not in default_project.computers:
+    if session_uuid not in default_project.computers:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
-        if computer_uuid in float_project.computers:
-            default_project.computers[computer_uuid] = c.key
+        if session_uuid in float_project.computers:
+            default_project.computers[session_uuid] = c.key
             default_project.save()
             c.is_claimed = True
             c.save()
@@ -147,22 +154,22 @@ def claim_computer(computer_uuid: str, c: computer.Computer) -> None:
 
 @auth.login_required
 @mix_panel.MixPanelEvent.time_this(None)
-def get_computer(computer_uuid: str) -> flask.Response:
+def get_computer(session_uuid: str) -> flask.Response:
     computer_data = {}
     status_code = 400
 
-    c = computer.get_computer(computer_uuid)
+    c = computer.get_computer(session_uuid)
     if c:
         computer_data = c.get_data()
         status_code = 200
 
         if not c.is_claimed:
-            claim_computer(computer_uuid, c)
+            claim_computer(session_uuid, c)
 
     response = make_response(utils.format_rv(computer_data))
     response.status_code = status_code
 
-    logger.debug(f'computer, computer_uuid: {computer_uuid}')
+    logger.debug(f'computer, session_uuid: {session_uuid}')
 
     return response
 
@@ -182,8 +189,8 @@ def get_computers(labml_token: str) -> flask.Response:
 
     res = []
     for c in computers_list:
-        s = computer.get_status(c.computer_uuid)
-        if c.computer_uuid:
+        s = computer.get_status(c.session_uuid)
+        if c.session_uuid:
             res.append({**c.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
@@ -323,11 +330,11 @@ def get_run_status(run_uuid: str) -> flask.Response:
 
 
 @mix_panel.MixPanelEvent.time_this(None)
-def get_computer_status(computer_uuid: str) -> flask.Response:
+def get_computer_status(session_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 400
 
-    s = computer.get_status(computer_uuid)
+    s = computer.get_status(session_uuid)
     if s:
         status_data = s.get_data()
         status_code = 200
@@ -335,7 +342,7 @@ def get_computer_status(computer_uuid: str) -> flask.Response:
     response = make_response(utils.format_rv(status_data))
     response.status_code = status_code
 
-    logger.debug(f'computer_status, computer_uuid: {computer_uuid}')
+    logger.debug(f'computer_status, session_uuid: {session_uuid}')
 
     return response
 
@@ -380,10 +387,10 @@ def delete_runs() -> flask.Response:
 @mix_panel.MixPanelEvent.time_this(None)
 @auth.login_required
 def delete_computers() -> flask.Response:
-    computer_uuids = request.json['computer_uuids']
+    session_uuids = request.json['session_uuids']
 
     u = auth.get_auth_user()
-    u.default_project.delete_computers(computer_uuids)
+    u.default_project.delete_computers(session_uuids)
 
     return utils.format_rv({'is_successful': True})
 
@@ -422,9 +429,9 @@ def add_handlers(app: flask.Flask):
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
-    _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
+    _add_ui(app, 'GET', get_computer, 'computer/<session_uuid>')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
-    _add_ui(app, 'GET', get_computer_status, 'computer/status/<computer_uuid>')
+    _add_ui(app, 'GET', get_computer_status, 'computer/status/<session_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')

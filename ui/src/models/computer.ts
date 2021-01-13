@@ -2,6 +2,7 @@ import {Config, ConfigModel} from "./config";
 
 export interface ComputerModel {
     computer_uuid: string
+    session_uuid: string
     name: string
     comment: string
     start_time: number
@@ -10,6 +11,7 @@ export interface ComputerModel {
 
 export class Computer {
     computer_uuid: string
+    session_uuid: string
     name: string
     comment: string
     start_time: number
@@ -17,6 +19,7 @@ export class Computer {
 
     constructor(computer: ComputerModel) {
         this.computer_uuid = computer.computer_uuid
+        this.session_uuid = computer.session_uuid
         this.name = computer.name
         this.comment = computer.comment
         this.start_time = computer.start_time
@@ -26,3 +29,5 @@ export class Computer {
         }
     }
 }
+
+

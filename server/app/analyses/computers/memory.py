@@ -67,29 +67,29 @@ class MemoryAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_or_create(computer_uuid: str):
-        cpu_key = MemoryIndex.get(computer_uuid)
+    def get_or_create(session_uuid: str):
+        cpu_key = MemoryIndex.get(session_uuid)
 
         if not cpu_key:
             m = MemoryModel()
             m.save()
-            MemoryIndex.set(computer_uuid, m.key)
+            MemoryIndex.set(session_uuid, m.key)
 
             mp = MemoryPreferencesModel()
             mp.save()
-            MemoryPreferencesIndex.set(computer_uuid, mp.key)
+            MemoryPreferencesIndex.set(session_uuid, mp.key)
 
             return MemoryAnalysis(m)
 
         return MemoryAnalysis(cpu_key.load())
 
 
-@Analysis.route('GET', 'memory/<computer_uuid>')
-def get_memory_tracking(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'memory/<session_uuid>')
+def get_memory_tracking(session_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    ans = MemoryAnalysis.get_or_create(computer_uuid)
+    ans = MemoryAnalysis.get_or_create(session_uuid)
     if ans:
         track_data = ans.get_tracking()
         status_code = 200
@@ -100,11 +100,11 @@ def get_memory_tracking(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('GET', 'memory/preferences/<computer_uuid>')
-def get_memory_preferences(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'memory/preferences/<session_uuid>')
+def get_memory_preferences(session_uuid: str) -> Any:
     preferences_data = {}
 
-    preferences_key = MemoryPreferencesIndex.get(computer_uuid)
+    preferences_key = MemoryPreferencesIndex.get(session_uuid)
     if not preferences_key:
         return format_rv(preferences_data)
 
@@ -116,9 +116,9 @@ def get_memory_preferences(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('POST', 'memory/preferences/<computer_uuid>')
-def set_memory_preferences(computer_uuid: str) -> Any:
-    preferences_key = MemoryPreferencesIndex.get(computer_uuid)
+@Analysis.route('POST', 'memory/preferences/<session_uuid>')
+def set_memory_preferences(session_uuid: str) -> Any:
+    preferences_key = MemoryPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
         return format_rv({})

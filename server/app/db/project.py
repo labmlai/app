@@ -38,7 +38,7 @@ class Project(Model['Project']):
 
     def get_computers(self) -> List[Computer]:
         res = []
-        for computer_uuid, computer_key in self.computers.items():
+        for session_uuid, computer_key in self.computers.items():
             res.append(computer_key.load())
 
         return res
@@ -50,10 +50,10 @@ class Project(Model['Project']):
 
         self.save()
 
-    def delete_computers(self, computer_uuids: List[str]):
-        for computer_uuid in computer_uuids:
-            if computer_uuid in self.computers:
-                self.computers.pop(computer_uuid)
+    def delete_computers(self, session_uuids: List[str]):
+        for session_uuid in session_uuids:
+            if session_uuid in self.computers:
+                self.computers.pop(session_uuid)
 
         self.save()
 

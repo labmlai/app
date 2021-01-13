@@ -17,9 +17,9 @@ interface RunProps {
 
 function ComputerView(props: RunProps) {
     const params = new URLSearchParams(props.location.search)
-    const computerUUID = params.get('uuid') as string
+    const sessionUUID = params.get('uuid') as string
 
-    const statusCache = CACHE.getComputerStatus(computerUUID)
+    const statusCache = CACHE.getComputerStatus(sessionUUID)
 
     const [status, setStatus] = useState(null as unknown as Status)
 
@@ -57,8 +57,8 @@ function ComputerView(props: RunProps) {
     }, [statusCache, refreshArray, status])
 
     useEffect(() => {
-        mixpanel.track('Computer View', {uuid: computerUUID})
-    }, [computerUUID])
+        mixpanel.track('Computer View', {uuid: sessionUUID})
+    }, [sessionUUID])
 
     // call when load, 2 minutes interval and when refresh button clicks
     function onRefresh() {
@@ -82,9 +82,9 @@ function ComputerView(props: RunProps) {
             <BackButton parent={'Computer View'}/>
             {status && status.isStatusInProgress && <RefreshButton onButtonClick={onRefresh} parent={'Computer View'}/>}
         </div>
-        <ComputerHeaderCard uuid={computerUUID} width={actualWidth} lastUpdated={lastUpdated}/>
+        <ComputerHeaderCard uuid={sessionUUID} width={actualWidth} lastUpdated={lastUpdated}/>
         {computer_analyses.map((analysis, i) => {
-            return <analysis.card key={i} uuid={computerUUID} width={actualWidth}
+            return <analysis.card key={i} uuid={sessionUUID} width={actualWidth}
                                   refreshRef={refreshArray[i]}/>
         })}
         <Footer/>

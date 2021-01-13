@@ -67,29 +67,29 @@ class DiskAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_or_create(computer_uuid: str):
-        disk_key = DiskIndex.get(computer_uuid)
+    def get_or_create(session_uuid: str):
+        disk_key = DiskIndex.get(session_uuid)
 
         if not disk_key:
             d = DiskModel()
             d.save()
-            DiskIndex.set(computer_uuid, d.key)
+            DiskIndex.set(session_uuid, d.key)
 
             dp = DiskPreferencesModel()
             dp.save()
-            DiskPreferencesIndex.set(computer_uuid, dp.key)
+            DiskPreferencesIndex.set(session_uuid, dp.key)
 
             return DiskAnalysis(d)
 
         return DiskAnalysis(disk_key.load())
 
 
-@Analysis.route('GET', 'disk/<computer_uuid>')
-def get_disk_tracking(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'disk/<session_uuid>')
+def get_disk_tracking(session_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    ans = DiskAnalysis.get_or_create(computer_uuid)
+    ans = DiskAnalysis.get_or_create(session_uuid)
     if ans:
         track_data = ans.get_tracking()
         status_code = 200
@@ -100,11 +100,11 @@ def get_disk_tracking(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('GET', 'disk/preferences/<computer_uuid>')
-def get_disk_preferences(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'disk/preferences/<session_uuid>')
+def get_disk_preferences(session_uuid: str) -> Any:
     preferences_data = {}
 
-    preferences_key = DiskPreferencesIndex.get(computer_uuid)
+    preferences_key = DiskPreferencesIndex.get(session_uuid)
     if not preferences_key:
         return format_rv(preferences_data)
 
@@ -116,9 +116,9 @@ def get_disk_preferences(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('POST', 'disk/preferences/<computer_uuid>')
-def set_disk_preferences(computer_uuid: str) -> Any:
-    preferences_key = DiskPreferencesIndex.get(computer_uuid)
+@Analysis.route('POST', 'disk/preferences/<session_uuid>')
+def set_disk_preferences(session_uuid: str) -> Any:
+    preferences_key = DiskPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
         return format_rv({})

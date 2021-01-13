@@ -63,29 +63,29 @@ class ProcessAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_or_create(computer_uuid: str):
-        cpu_key = ProcessIndex.get(computer_uuid)
+    def get_or_create(session_uuid: str):
+        cpu_key = ProcessIndex.get(session_uuid)
 
         if not cpu_key:
             p = ProcessModel()
             p.save()
-            ProcessIndex.set(computer_uuid, p.key)
+            ProcessIndex.set(session_uuid, p.key)
 
             pp = ProcessPreferencesModel()
             pp.save()
-            ProcessPreferencesIndex.set(computer_uuid, pp.key)
+            ProcessPreferencesIndex.set(session_uuid, pp.key)
 
             return ProcessAnalysis(p)
 
         return ProcessAnalysis(cpu_key.load())
 
 
-@Analysis.route('GET', 'process/<computer_uuid>')
-def get_process_tracking(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'process/<session_uuid>')
+def get_process_tracking(session_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    ans = ProcessAnalysis.get_or_create(computer_uuid)
+    ans = ProcessAnalysis.get_or_create(session_uuid)
     if ans:
         track_data = ans.get_tracking()
         status_code = 200
@@ -96,11 +96,11 @@ def get_process_tracking(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('GET', 'process/preferences/<computer_uuid>')
-def get_process_preferences(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'process/preferences/<session_uuid>')
+def get_process_preferences(session_uuid: str) -> Any:
     preferences_data = {}
 
-    preferences_key = ProcessPreferencesIndex.get(computer_uuid)
+    preferences_key = ProcessPreferencesIndex.get(session_uuid)
     if not preferences_key:
         return format_rv(preferences_data)
 
@@ -112,9 +112,9 @@ def get_process_preferences(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('POST', 'process/preferences/<computer_uuid>')
-def set_process_preferences(computer_uuid: str) -> Any:
-    preferences_key = ProcessPreferencesIndex.get(computer_uuid)
+@Analysis.route('POST', 'process/preferences/<session_uuid>')
+def set_process_preferences(session_uuid: str) -> Any:
+    preferences_key = ProcessPreferencesIndex.get(session_uuid)
 
 
     if not preferences_key:

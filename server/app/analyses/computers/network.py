@@ -63,29 +63,29 @@ class NetworkAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_or_create(computer_uuid: str):
-        cpu_key = NetworkIndex.get(computer_uuid)
+    def get_or_create(session_uuid: str):
+        cpu_key = NetworkIndex.get(session_uuid)
 
         if not cpu_key:
             n = NetworkModel()
             n.save()
-            NetworkIndex.set(computer_uuid, n.key)
+            NetworkIndex.set(session_uuid, n.key)
 
             np = NetworkPreferencesModel()
             np.save()
-            NetworkPreferencesIndex.set(computer_uuid, np.key)
+            NetworkPreferencesIndex.set(session_uuid, np.key)
 
             return NetworkAnalysis(n)
 
         return NetworkAnalysis(cpu_key.load())
 
 
-@Analysis.route('GET', 'network/<computer_uuid>')
-def get_network_tracking(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'network/<session_uuid>')
+def get_network_tracking(session_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    ans = NetworkAnalysis.get_or_create(computer_uuid)
+    ans = NetworkAnalysis.get_or_create(session_uuid)
     if ans:
         track_data = ans.get_tracking()
         status_code = 200
@@ -96,11 +96,11 @@ def get_network_tracking(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('GET', 'network/preferences/<computer_uuid>')
-def get_network_preferences(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'network/preferences/<session_uuid>')
+def get_network_preferences(session_uuid: str) -> Any:
     preferences_data = {}
 
-    preferences_key = NetworkPreferencesIndex.get(computer_uuid)
+    preferences_key = NetworkPreferencesIndex.get(session_uuid)
     if not preferences_key:
         return format_rv(preferences_data)
 
@@ -112,9 +112,9 @@ def get_network_preferences(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('POST', 'network/preferences/<computer_uuid>')
-def set_network_preferences(computer_uuid: str) -> Any:
-    preferences_key = NetworkPreferencesIndex.get(computer_uuid)
+@Analysis.route('POST', 'network/preferences/<session_uuid>')
+def set_network_preferences(session_uuid: str) -> Any:
+    preferences_key = NetworkPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
         return format_rv({})

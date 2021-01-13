@@ -66,29 +66,29 @@ class CPUAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_or_create(computer_uuid: str):
-        cpu_key = CPUIndex.get(computer_uuid)
+    def get_or_create(session_uuid: str):
+        cpu_key = CPUIndex.get(session_uuid)
 
         if not cpu_key:
             c = CPUModel()
             c.save()
-            CPUIndex.set(computer_uuid, c.key)
+            CPUIndex.set(session_uuid, c.key)
 
             cp = CPUPreferencesModel()
             cp.save()
-            CPUPreferencesIndex.set(computer_uuid, cp.key)
+            CPUPreferencesIndex.set(session_uuid, cp.key)
 
             return CPUAnalysis(c)
 
         return CPUAnalysis(cpu_key.load())
 
 
-@Analysis.route('GET', 'cpu/<computer_uuid>')
-def get_cpu_tracking(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'cpu/<session_uuid>')
+def get_cpu_tracking(session_uuid: str) -> Any:
     track_data = []
     status_code = 400
 
-    ans = CPUAnalysis.get_or_create(computer_uuid)
+    ans = CPUAnalysis.get_or_create(session_uuid)
     if ans:
         track_data = ans.get_tracking()
         status_code = 200
@@ -99,11 +99,11 @@ def get_cpu_tracking(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('GET', 'cpu/preferences/<computer_uuid>')
-def get_cpu_preferences(computer_uuid: str) -> Any:
+@Analysis.route('GET', 'cpu/preferences/<session_uuid>')
+def get_cpu_preferences(session_uuid: str) -> Any:
     preferences_data = {}
 
-    preferences_key = CPUPreferencesIndex.get(computer_uuid)
+    preferences_key = CPUPreferencesIndex.get(session_uuid)
     if not preferences_key:
         return format_rv(preferences_data)
 
@@ -115,9 +115,9 @@ def get_cpu_preferences(computer_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('POST', 'cpu/preferences/<computer_uuid>')
-def set_cpu_preferences(computer_uuid: str) -> Any:
-    preferences_key = CPUPreferencesIndex.get(computer_uuid)
+@Analysis.route('POST', 'cpu/preferences/<session_uuid>')
+def set_cpu_preferences(session_uuid: str) -> Any:
+    preferences_key = CPUPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
         return format_rv({})
