@@ -22,7 +22,7 @@ import logo from "../assets/lab_logo.png"
 import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
 
-const excludePaths: any[] = ['/run']
+const excludePaths: any[] = ['/run', '/session']
 for (let i = 0; i < experiment_analyses.length; i++) {
     excludePaths.push('/' + experiment_analyses[i].route)
 }
@@ -44,7 +44,7 @@ function AppContainer() {
             document.addEventListener("touchstart", function () {
             }, false)
 
-            function isRunPath(): boolean {
+            function isExcludePath(): boolean {
                 if (location && location.state !== '/login') {
                     return excludePaths.includes(location.state) || excludePaths.includes(location.pathname)
                 }
@@ -77,7 +77,7 @@ function AppContainer() {
                         document.getElementsByTagName('body')[0].className = theme
                     }
 
-                    let currentState = is_user_logged || isRunPath()
+                    let currentState = is_user_logged || isExcludePath()
                     setLoggedIn(currentState)
 
                     if (error) {
