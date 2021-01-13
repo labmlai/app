@@ -159,6 +159,7 @@ function BasicLineView(props: ViewCardProps) {
 
 interface TimeSeriesViewCardProps extends ViewCardProps {
     yExtend?: [number, number] | null
+    forceYStart?: number | null
 }
 
 function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
@@ -265,7 +266,8 @@ function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
         {track && track.length > 0 && preference.current ?
             <div className={'labml-card'}>
                 <div className={'pointer-cursor fixed-chart'}>
-                    {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend)}
+                    {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend,
+                        1, props.forceYStart)}
                 </div>
                 {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
             </div>

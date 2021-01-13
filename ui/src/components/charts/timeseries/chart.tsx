@@ -9,9 +9,12 @@ import {BottomTimeAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 
+
 interface TimeSeriesChartProps extends LineChartProps {
-    yExtend?: [number, number]  | null
+    yExtend?: [number, number] | null
+    stepExtend?: [number, number] | null
     chartHeightFraction?: number
+    forceYStart?: number | null
 }
 
 
@@ -48,8 +51,11 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     let plotSeries = plot.map(s => s.series)
     let yExtend = props.yExtend ? props.yExtend : getExtent(plotSeries, d => d.value, false)
+    if(typeof props.forceYStart === 'number'){
+        yExtend[0] = props.forceYStart
+    }
     let yScale = getScale(yExtend, -chartHeight)
-    const stepExtent = getExtent(track.map(s => s.series), d => d.step)
+    const stepExtent = props.stepExtend ? props.stepExtend : getExtent(track.map(s => s.series), d => d.step)
     const xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], chartWidth)
 
     if (props.chartType && props.chartType === 'log') {
@@ -97,7 +103,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
 export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
                                    width: number, onSelect?: ((i: number) => void), yExtend: [number, number] | null = null,
-                                   chartHeightFraction: number = 1) {
+                                   chartHeightFraction: number = 1, forceYStart: number | null = null) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -106,8 +112,11 @@ export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesMo
             plotIdx = defaultSeriesToPlot(track)
         }
 
+        const ref = track[0].step
+
         return <TimeSeriesChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
-                                onSelect={onSelect} yExtend={yExtend} chartHeightFraction={chartHeightFraction}/>
+                                onSelect={onSelect} yExtend={yExtend} stepExtend={[ref[0], ref[ref.length - 1]]}
+                                chartHeightFraction={chartHeightFraction} forceYStart={forceYStart}/>
     } else {
         return <LabLoader/>
     }
