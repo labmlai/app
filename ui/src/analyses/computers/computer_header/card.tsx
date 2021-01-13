@@ -36,7 +36,7 @@ function ComputerView(props: ComputerViewProps) {
                 {props.isClicked &&
                 <div>
                     <div className={"run-uuid"}>
-                        <span role={'img'} aria-label={'running'}>📌 UUID:</span>{props.computer.computer_uuid}
+                        <span role={'img'} aria-label={'running'}>📌 Session UUID:</span>{props.computer.session_uuid}
                     </div>
                     <div className={'start-time'}>Started {formatTime(props.computer.start_time)}</div>
                 </div>
