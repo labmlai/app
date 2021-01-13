@@ -145,7 +145,7 @@ function BasicLineView(props: ViewCardProps) {
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
-            <div className={'labml-card'}>
+            <div className={'detail-card'}>
                 <div className={'pointer-cursor fixed-chart'} onClick={onChartClick}>
                     <div className={'text-center mb-3'}>
                         {dots}
@@ -270,8 +270,8 @@ function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
-            <div className={'labml-card'}>
-                <div className={'pointer-cursor fixed-chart'}>
+            <div className={'detail-card'}>
+                <div className={'fixed-chart'}>
                     {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend,
                         1, props.forceYStart)}
                 </div>

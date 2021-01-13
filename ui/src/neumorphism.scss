@@ -65,6 +65,10 @@ $dark-list-item-bg: rgba(174, 178, 174, .1); //TODO change this
 body.light {
   background-color: $light-background;
 
+  .detail-card {
+    background-color: $light-background;
+  }
+
   .labml-card {
     background-color: $light-background;
     box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
@@ -259,6 +263,10 @@ body.light {
 
 body.dark {
   background-color: $dark-background;
+
+  .detail-card {
+    background-color: $dark-background;
+  }
 
   .labml-card {
     background-color: $dark-background;
