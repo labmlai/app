@@ -152,7 +152,6 @@ def claim_computer(session_uuid: str, c: computer.Computer) -> None:
             c.save()
 
 
-@auth.login_required
 @mix_panel.MixPanelEvent.time_this(None)
 def get_computer(session_uuid: str) -> flask.Response:
     computer_data = {}

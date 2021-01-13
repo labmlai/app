@@ -41,7 +41,8 @@ function AppContainer() {
 
     useEffect(() => {
             //TODO fix for ::active not working on mobile. Check for a better solution in react
-            document.addEventListener("touchstart", function () {}, false)
+            document.addEventListener("touchstart", function () {
+            }, false)
 
             function isRunPath(): boolean {
                 if (location && location.state !== '/login') {
@@ -51,15 +52,18 @@ function AppContainer() {
                 return false
             }
 
-            // async function SetTheme() {
-            //     setAppUser(await userCache.get())
-            //
-            //     if (appUser) {
-            //         document.getElementsByTagName('body')[0].className = appUser.theme
-            //     }
-            // }
-
-            // SetTheme().then()
+            async function SetTheme(isUserLogged: boolean) {
+                let theme = 'light'
+                if (isUserLogged) {
+                    setAppUser(await userCache.get())
+                    if (appUser) {
+                        theme = appUser.theme
+                    }
+                }
+                if(!document.getElementsByTagName('body')[0].className){
+                    document.getElementsByTagName('body')[0].className = theme
+                }
+            }
 
             let isUserLogged: IsUserLogged
 
@@ -70,6 +74,8 @@ function AppContainer() {
             }
 
             loadIsUserLogged().then((is_user_logged) => {
+                SetTheme(is_user_logged).then()
+
                 let currentState = is_user_logged || isRunPath()
                 setLoggedIn(currentState)
 
@@ -140,8 +146,6 @@ function AppContainer() {
             <LabLoader/>
         </div>
     }
-
-    document.getElementsByTagName('body')[0].className = 'light'
 
     return (
         <main>
