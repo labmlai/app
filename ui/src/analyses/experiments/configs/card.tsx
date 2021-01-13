@@ -8,26 +8,19 @@ import {ConfigsView} from "./components"
 import {Run} from "../../../models/run"
 import CACHE from "../../../cache/cache"
 import useWindowDimensions from "../../../utils/window_dimensions"
-import {Analysis, SummaryCardProps, ViewProps} from "../../types"
+import {Analysis, CardProps, SummaryCardProps, ViewProps} from "../../types"
 import {LabLoader} from "../../../components/utils/loader"
 import {RunHeaderCard} from "../run_header/card"
 import {BackButton, RefreshButton} from "../../../components/utils/util_buttons"
 import {Status} from "../../../models/status"
 
+
 const URL = 'configs'
 
-function Card(props: SummaryCardProps, ref: any) {
+function Card(props: CardProps, ref: any) {
     let [run, setRun] = useState(null as unknown as Run)
     const runCache = CACHE.getRun(props.uuid)
     const history = useHistory()
-
-    useEffect(() => {
-        async function load() {
-            setRun(await runCache.get())
-        }
-
-        load().then()
-    }, [runCache])
 
     async function onRefresh() {
         setRun(await runCache.get(true))
@@ -48,7 +41,7 @@ function Card(props: SummaryCardProps, ref: any) {
     }))
 
     let configsView
-    if (run != null) {
+    if (run !== null) {
         configsView = <ConfigsView configs={run.configs} width={props.width} isHyperParamOnly={true}/>
         if (run.configs.length === 0) {
             return null
@@ -127,10 +120,17 @@ function ConfigsDetails(props: ViewProps) {
     </div>
 }
 
-let ConfigsSummary = forwardRef(Card)
+const BasicConfigSummary = forwardRef(Card)
+
+function ConfigSummary(props: SummaryCardProps) {
+    return <BasicConfigSummary uuid={props.uuid}
+                               ref={props.refreshRef}
+                               width={props.width}/>
+}
+
 
 let ConfigsAnalysis: Analysis = {
-    card: ConfigsSummary,
+    card: ConfigSummary,
     view: ConfigsDetails,
     route: `${URL}`
 }

@@ -91,7 +91,10 @@ function BasicLineView(props: ViewCardProps) {
     }
 
     async function load() {
-        setTrack(await analysisCache.get(true))
+        let res: SeriesDataModel = await analysisCache.get(true)
+            if (res) {
+                setTrack(toPointValues(res.series))
+            }
     }
 
     function onRefresh() {
