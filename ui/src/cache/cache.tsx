@@ -214,9 +214,9 @@ class ComputersListCache extends CacheObject<ComputersList> {
         })
     }
 
-    async deleteComputers(computers: ComputerListItemModel[], computerUUIDS: string[]): Promise<void> {
+    async deleteSessions(computers: ComputerListItemModel[], sessionUUIDS: string[]): Promise<void> {
         this.data.computers = computers
-        await NETWORK.deleteComputers(computerUUIDS)
+        await NETWORK.deleteSessions(sessionUUIDS)
     }
 }
 

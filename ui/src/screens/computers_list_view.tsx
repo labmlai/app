@@ -80,7 +80,7 @@ function ComputersListView() {
             }
 
             setComputers(res)
-            computerListCache.deleteComputers(res, Array.from(computersDeleteSet)).then()
+            computerListCache.deleteSessions(res, Array.from(computersDeleteSet)).then()
         }
 
         load().then()
