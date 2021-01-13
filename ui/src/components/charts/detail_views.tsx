@@ -92,9 +92,9 @@ function BasicLineView(props: ViewCardProps) {
 
     async function load() {
         let res: SeriesDataModel = await analysisCache.get(true)
-            if (res) {
-                setTrack(toPointValues(res.series))
-            }
+        if (res) {
+            setTrack(toPointValues(res.series))
+        }
     }
 
     function onRefresh() {
@@ -237,7 +237,10 @@ function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
     }
 
     async function load() {
-        setTrack(await analysisCache.get(true))
+        let res: SeriesDataModel = await analysisCache.get(true)
+        if (res) {
+            setTrack(toPointValues(res.series))
+        }
     }
 
     function onRefresh() {
