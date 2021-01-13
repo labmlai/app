@@ -54,7 +54,7 @@ class GradientsAnalysis(Analysis):
     def get_tracking(self):
         res = self.gradients.get_tracks()
 
-        res.sort(key=lambda s: s['name'])
+        res.sort(key=lambda s: s['mean'], reverse=True)
 
         utils.remove_common_prefix(res, 'name')
 
