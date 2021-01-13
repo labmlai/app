@@ -188,8 +188,8 @@ function RunHeaderView(props: ViewCardProps) {
                            value={status.isRunning ? getTimeDiff(status.last_updated_time * 1000) : formatTime(status.last_updated_time)}/>,
             <InputEditable key={8} item={'Start Step'} value={run.start_step}/>,
             <InputEditable key={9} item={'Python File'} value={run.python_file}/>,
-            <InputEditable key={10} item={'Remote Repo'} value={<a href={run.repo_remotes} target="_blank">{run.repo_remotes}</a>}/>,
-            <InputEditable key={11} item={'Commit'} value={<a href={run.commit} target="_blank">{run.commit}</a>}/>,
+            <InputEditable key={10} item={'Remote Repo'} value={<a href={run.repo_remotes} target="_blank" rel="noopener noreferrer">{run.repo_remotes}</a>}/>,
+            <InputEditable key={11} item={'Commit'} value={<a href={run.commit} target="_blank" rel="noopener noreferrer">{run.commit}</a>}/>,
             <InputEditable key={12} item={'Commit Message'} value={run.commit_message}/>,
         ]
     }

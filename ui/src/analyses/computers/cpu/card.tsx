@@ -37,6 +37,7 @@ function AnalysisSummary(props: SummaryCardProps) {
                                 uuid={props.uuid}
                                 ref={props.refreshRef}
                                 isChartView={true}
+                                chartHeightFraction={2}
                                 width={props.width}/>
 }
 

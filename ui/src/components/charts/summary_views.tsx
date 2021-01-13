@@ -184,6 +184,7 @@ function L1L2MeanLinesCard(props: BasicCardProps, ref: any) {
 
 interface SparkTimeLinesCardProps extends BasicCardProps {
     yExtend?: [number, number] | null
+    chartHeightFraction?: number
 }
 
 function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
@@ -256,7 +257,7 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
             }>
                 <h3 className={'header'}>{props.title}</h3>
                 {props.isChartView && getTimeSeriesChart(getChartType(0), track, plotIdx, props.width, () => {
-                }, props.yExtend)}
+                }, props.yExtend, props.chartHeightFraction)}
             </div>
             : <div/>
     }

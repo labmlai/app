@@ -31,21 +31,22 @@ let cache = new Cache('computer', MemoryAnalysisCache, MemoryPreferenceCache)
 
 function AnalysisSummary(props: SummaryCardProps) {
     return <BasicSparkTimeLines title={TITLE}
-                            url={URL}
-                            cache={cache}
-                            uuid={props.uuid}
-                            ref={props.refreshRef}
-                            isChartView={true}
-                            width={props.width}/>
+                                url={URL}
+                                cache={cache}
+                                uuid={props.uuid}
+                                ref={props.refreshRef}
+                                isChartView={true}
+                                chartHeightFraction={2}
+                                width={props.width}/>
 }
 
 function AnalysisDetails() {
     const location = useLocation()
 
     return <BasicTimeSeriesView title={TITLE}
-                          cache={cache}
-                          location={location}
-                          headerCard={ComputerHeaderCard}/>
+                                cache={cache}
+                                location={location}
+                                headerCard={ComputerHeaderCard}/>
 }
 
 
