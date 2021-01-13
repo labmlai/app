@@ -76,48 +76,47 @@ function AppContainer() {
                     if (!document.getElementsByTagName('body')[0].className) {
                         document.getElementsByTagName('body')[0].className = theme
                     }
-                })
 
-                let currentState = is_user_logged || isRunPath()
-                setLoggedIn(currentState)
+                    let currentState = is_user_logged || isRunPath()
+                    setLoggedIn(currentState)
 
-                if (error) {
-                    captureException(error)
-                } else if (isLoading) {
-                } else if (!isAuthenticated && !currentState) {
-                    let uri = location.pathname + location.search
-                    if (location.state) {
-                        uri = location.state.toString()
-                    }
-                    loginWithRedirect({appState: {returnTo: uri}}).then()
-                } else if (isAuthenticated && !currentState) {
-                    let data = {} as UserModel
-
-                    mixpanel.people.set({
-                        $name: user.name,
-                        $email: user.email,
-                    })
-                    mixpanel.identify(user.email)
-
-                    data.name = user.name
-                    data.email = user.email
-                    data.sub = user.sub
-                    data.email_verified = user.email_verified
-                    data.picture = user.picture
-
-                    NETWORK.signIn(data).then((res) => {
-                        if (res.is_successful) {
-                            setLoggedIn(true)
-                            isUserLoggedCache.UserLogged = true
-                            mixpanel.track('Successful login')
-                        } else {
-                            captureException(Error('error in login'))
-                            mixpanel.track('Login failed')
+                    if (error) {
+                        captureException(error)
+                    } else if (isLoading) {
+                    } else if (!isAuthenticated && !currentState) {
+                        let uri = location.pathname + location.search
+                        if (location.state) {
+                            uri = location.state.toString()
                         }
-                    })
-                }
-            })
+                        loginWithRedirect({appState: {returnTo: uri}}).then()
+                    } else if (isAuthenticated && !currentState) {
+                        let data = {} as UserModel
 
+                        mixpanel.people.set({
+                            $name: user.name,
+                            $email: user.email,
+                        })
+                        mixpanel.identify(user.email)
+
+                        data.name = user.name
+                        data.email = user.email
+                        data.sub = user.sub
+                        data.email_verified = user.email_verified
+                        data.picture = user.picture
+
+                        NETWORK.signIn(data).then((res) => {
+                            if (res.is_successful) {
+                                setLoggedIn(true)
+                                isUserLoggedCache.UserLogged = true
+                                mixpanel.track('Successful login')
+                            } else {
+                                captureException(Error('error in login'))
+                                mixpanel.track('Login failed')
+                            }
+                        })
+                    }
+                })
+            })
         },
         [loggedIn, isLoading, user, isAuthenticated, location, error, loginWithRedirect, isUserLoggedCache, appUser, userCache]
     )
