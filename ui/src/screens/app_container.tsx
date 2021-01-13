@@ -60,9 +60,7 @@ function AppContainer() {
                         theme = appUser.theme
                     }
                 }
-                if(!document.getElementsByTagName('body')[0].className){
-                    document.getElementsByTagName('body')[0].className = theme
-                }
+                return theme
             }
 
             let isUserLogged: IsUserLogged
@@ -74,7 +72,11 @@ function AppContainer() {
             }
 
             loadIsUserLogged().then((is_user_logged) => {
-                SetTheme(is_user_logged).then()
+                SetTheme(is_user_logged).then((theme: string) => {
+                    if (!document.getElementsByTagName('body')[0].className) {
+                        document.getElementsByTagName('body')[0].className = theme
+                    }
+                })
 
                 let currentState = is_user_logged || isRunPath()
                 setLoggedIn(currentState)
