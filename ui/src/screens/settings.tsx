@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 import {Image} from "react-bootstrap"
 
@@ -9,7 +9,11 @@ import CACHE from "../cache/cache"
 import HamburgerMenuBar from "../components/utils/hamburger_menu"
 import InputEditable from "../components/utils/input"
 
+import './settings.scss'
+
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
+const LIGHT = 'light'
+const DARK = 'dark'
 
 function SettingsView() {
     const [user, setUser] = useState(null as unknown as User)
@@ -18,19 +22,46 @@ function SettingsView() {
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
-    useEffect(() => {
-        const userCache = CACHE.getUser()
+    let lightRef = useRef(null) as any
+    let darkRef = useRef(null) as any
 
+    const userCache = CACHE.getUser()
+
+    useEffect(() => {
         async function load() {
             let currentUser = await userCache.get()
             if (currentUser) {
                 setUser(currentUser)
+
+                if (user) {
+                    if (user.theme === LIGHT) {
+                        if (lightRef.current) {
+                            lightRef.current.defaultChecked = true
+                        }
+                    } else {
+                        if (darkRef.current) {
+                            darkRef.current.defaultChecked = true
+                        }
+                    }
+                }
+
                 setIsLoading(false)
             }
         }
 
         load().then()
-    }, [])
+    }, [lightRef, user, darkRef, userCache])
+
+
+    function onThemeChange() {
+        let theme = LIGHT
+        if (darkRef.current.checked) {
+            theme = DARK
+        }
+        user.theme = theme
+        userCache.setUser(user).then()
+        document.getElementsByTagName('body')[0].className = theme
+    }
 
     return <div>
         <HamburgerMenuBar title={'Settings'}>
@@ -50,6 +81,18 @@ function SettingsView() {
                             <InputEditable key={1} item={'Token'} value={user.default_project}/>
                             <InputEditable key={2} item={'Name'} value={user.name}/>
                             <InputEditable key={3} item={'email'} value={user.email}/>
+                            <InputEditable key={4} item={'Theme'} value={
+                                <div onChange={onThemeChange}>
+                                    <div className={'radio-button'}>
+                                        <input type="radio" id="l-option" name="selector" ref={lightRef}/>
+                                        <label htmlFor="l-option" className={'ml-2'}>Light</label>
+                                    </div>
+                                    <div className={'radio-button'}>
+                                        <input type="radio" id="d-option" name="selector" ref={darkRef}/>
+                                        <label htmlFor="d-option" className={'ml-2'}>Dark</label>
+                                    </div>
+                                </div>
+                            }/>
                         </ul>
                     </div>
                 </div>

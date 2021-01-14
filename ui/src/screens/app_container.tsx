@@ -53,6 +53,7 @@ function AppContainer() {
             }
 
             async function SetTheme(isUserLogged: boolean) {
+                //TODO use cookies to save theme in the browser
                 let theme = 'light'
                 if (isUserLogged) {
                     setAppUser(await userCache.get())
@@ -73,9 +74,7 @@ function AppContainer() {
 
             loadIsUserLogged().then((is_user_logged) => {
                 SetTheme(is_user_logged).then((theme: string) => {
-                    if (!document.getElementsByTagName('body')[0].className) {
-                        document.getElementsByTagName('body')[0].className = theme
-                    }
+                    document.getElementsByTagName('body')[0].className = theme
 
                     let currentState = is_user_logged || isExcludePath()
                     setLoggedIn(currentState)
@@ -107,7 +106,7 @@ function AppContainer() {
                         NETWORK.signIn(data).then((res) => {
                             if (res.is_successful) {
                                 setLoggedIn(true)
-                                isUserLoggedCache.UserLogged = true
+                                isUserLoggedCache.userLogged = true
                                 mixpanel.track('Successful login')
                             } else {
                                 captureException(Error('error in login'))

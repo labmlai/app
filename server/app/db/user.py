@@ -40,6 +40,11 @@ class User(Model['User']):
             'default_project': self.default_project.labml_token
         }
 
+    def set_user(self, data):
+        if 'theme' in data:
+            self.theme = data['theme']
+            self.save()
+
 
 class UserIndex(Index['User']):
     pass

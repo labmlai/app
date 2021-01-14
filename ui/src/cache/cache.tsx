@@ -190,6 +190,10 @@ class UserCache extends CacheObject<User> {
             return new User(res)
         })
     }
+
+    async setUser(user: User) {
+        await NETWORK.setUser(user)
+    }
 }
 
 
@@ -201,7 +205,7 @@ class IsUserLoggedCache extends CacheObject<IsUserLogged> {
         })
     }
 
-    set UserLogged(is_user_logged: boolean) {
+    set userLogged(is_user_logged: boolean) {
         this.data = new IsUserLogged({is_user_logged: is_user_logged})
     }
 }

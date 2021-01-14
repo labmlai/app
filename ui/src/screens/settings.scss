@@ -1,0 +1,19 @@
+.radio-button {
+  input {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+
+    border: 2px solid #999;
+    transition: 0.2s all linear;
+    margin-right: 5px;
+
+    position: relative;
+    top: 4px;
+  }
+
+  label {
+    font-size: 15px;
+    font-weight: bold;
+  }
+}

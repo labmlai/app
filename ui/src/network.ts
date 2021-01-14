@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from 'axios'
 
-import {UserModel} from "./models/user"
+import {User, UserModel} from "./models/user"
 import CACHE from "./cache/cache"
 
 interface MetaProps {
@@ -91,6 +91,10 @@ class Network {
 
     async getUser(): Promise<any> {
         return this.axiosInstance.get(`/user`, {})
+    }
+
+    async setUser(user: User): Promise<any> {
+        return this.axiosInstance.post(`/user`, {'user': user})
     }
 
     async signIn(data: UserModel): Promise<any> {
