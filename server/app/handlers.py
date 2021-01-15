@@ -275,6 +275,8 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
             r.is_claimed = True
             r.save()
 
+            mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid})
+
 
 @mix_panel.MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
