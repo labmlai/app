@@ -26,7 +26,7 @@ interface InsightsListProps {
 
 function InsightsList(props: InsightsListProps) {
     return <div>
-        {props.insightList.map((insight, idx) => (
+        {props.insightList && props.insightList.map((insight, idx) => (
             <Insight key={idx}
                      message={insight.message}
                      type={insight.type}

@@ -6,9 +6,9 @@ import {getLineChart} from "./lines/chart"
 import {getSparkLines} from "./sparklines/chart"
 import {getSimpleLineChart} from "./simplelines/chart"
 import {getTimeSeriesChart} from "./timeseries/chart"
-// import InsightsList from "../insights/insights_list"
+import InsightsList from "../insights/insights_list"
 import {BarLines} from "./barlines/chart"
-import {SeriesDataModel, SeriesModel} from "../../models/run"
+import {SeriesDataModel, SeriesModel, InsightModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, CardProps} from "../../analyses/types"
 import {getChartType, toPointValues} from "./utils"
@@ -24,6 +24,7 @@ interface BasicCardProps extends BasicProps, CardProps {
 
 function SparkLinesCard(props: BasicCardProps, ref: any) {
     const [track, setTrack] = useState(null as unknown as SeriesModel[])
+    const [insights, setInsights] = useState(null as unknown as InsightModel[])
 
     const history = useHistory()
 
@@ -57,6 +58,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
         let res: SeriesDataModel = await analysisCache.get(true)
         if (res) {
             setTrack(toPointValues(res.series))
+            setInsights(res.insights)
         }
     }
 
@@ -64,6 +66,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
         let res: SeriesDataModel = await analysisCache.get()
         if (res) {
             setTrack(toPointValues(res.series))
+            setInsights(res.insights)
         }
     }
 
@@ -91,7 +94,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 <h3 className={'header'}>{props.title}</h3>
                 {props.isChartView && getLineChart(getChartType(currentChart), track, plotIdx, props.width)}
                 {getSparkLines(track, plotIdx, props.width)}
-                {/*<InsightsList insightList={track.insights}/>*/}
+                <InsightsList insightList={insights}/>
             </div>
             : <div/>
     }
