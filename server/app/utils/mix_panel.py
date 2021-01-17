@@ -1,13 +1,16 @@
-import time
-import re
 import queue
+import re
 import threading
+import time
 from functools import wraps
 from typing import NamedTuple, Dict, Union
 
 from flask import request
 
-import mixpanel
+try:
+    import mixpanel
+except ImportError:
+    mixpanel = None
 
 from .. import auth
 
@@ -22,19 +25,22 @@ class EnqueueingConsumer(object):
 
 class Event:
     def __init__(self):
-        self.mp = mixpanel.Mixpanel("7e19de9c3c68ba5a897f19837042a826", EnqueueingConsumer())
+        if mixpanel:
+            self.__mp = mixpanel.Mixpanel("7e19de9c3c68ba5a897f19837042a826", EnqueueingConsumer())
+        else:
+            self.__mp = None
 
-    def _track(self, identifier: str, event: str, data: Dict) -> None:
+    def _track(self, identifier: str, event: str, data: Dict):
+        if self.__mp:
+            self.__mp.track(identifier, event, data)
 
-        return self.mp.track(identifier, event, data)
-
-    def people_set(self, identifier: str, first_name: str, last_name: str, email: str) -> None:
-
-        return self.mp.people_set(identifier, {
-            '$first_name': first_name,
-            '$last_name': last_name,
-            '$email': email,
-        })
+    def people_set(self, identifier: str, first_name: str, last_name: str, email: str):
+        if self.__mp:
+            self.__mp.people_set(identifier, {
+                '$first_name': first_name,
+                '$last_name': last_name,
+                '$email': email,
+            })
 
     @staticmethod
     def has_numbers(input_string):
@@ -106,12 +112,16 @@ class Event:
 class MixPanelThread(threading.Thread):
     def __init__(self):
         super().__init__(daemon=True)
-        self.consumer = mixpanel.Consumer()
+        if mixpanel:
+            self.__consumer = mixpanel.Consumer()
+        else:
+            self.__consumer = None
 
     def run(self):
         while True:
             job = QUEUE.get()
-            self.consumer.send(*job)
+            if self.__consumer:
+                self.__consumer.send(*job)
 
             time.sleep(5)
 
