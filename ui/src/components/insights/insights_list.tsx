@@ -1,6 +1,8 @@
 import React from "react"
 
 import {InsightModel} from "../../models/run"
+import {faLightbulb} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
 import "./insights_list.scss"
 
@@ -16,6 +18,7 @@ function Insight(props: InsightModel) {
     }
 
     return <div className={className}>
+        <span className='icon'><FontAwesomeIcon icon={faLightbulb}/></span>
         <span>{props.message}</span>
     </div>
 }
