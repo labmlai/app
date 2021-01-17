@@ -2,28 +2,7 @@ from typing import Dict
 
 from . import analysis
 from .series import SeriesModel
-from .experiments.parameters import ParametersAnalysis
-from .experiments.time_tracking import TimeTrackingAnalysis
-from .experiments.gradients import GradientsAnalysis
-from .experiments.metrics import MetricsAnalysis
-from .experiments.outputs import OutputsAnalysis
-from .computers.cpu import CPUAnalysis
-from .computers.memory import MemoryAnalysis
-from .computers.network import NetworkAnalysis
-from .computers.disk import DiskAnalysis
-from .computers.process import ProcessAnalysis
-
-experiment_analyses = [GradientsAnalysis,
-                       OutputsAnalysis,
-                       ParametersAnalysis,
-                       TimeTrackingAnalysis,
-                       MetricsAnalysis]
-
-computer_analyses = [CPUAnalysis,
-                     MemoryAnalysis,
-                     NetworkAnalysis,
-                     DiskAnalysis,
-                     ProcessAnalysis]
+from ..analysses_settings import experiment_analyses, computer_analyses
 
 
 class AnalysisManager:

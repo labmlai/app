@@ -16,8 +16,7 @@ from .db import session
 from .db import user
 from .db import project
 from .utils import mix_panel
-
-AnalysisManager = getattr(import_module(settings.ANALYSES_MODULE, package='app'), "AnalysisManager")
+from .analyses import AnalysisManager
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
