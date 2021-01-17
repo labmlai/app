@@ -1,13 +1,13 @@
-from .analyses.experiments.parameters import ParametersAnalysis
-from .analyses.experiments.time_tracking import TimeTrackingAnalysis
-from .analyses.experiments.gradients import GradientsAnalysis
-from .analyses.experiments.metrics import MetricsAnalysis
-from .analyses.experiments.outputs import OutputsAnalysis
-from .analyses.computers.cpu import CPUAnalysis
-from .analyses.computers.memory import MemoryAnalysis
-from .analyses.computers.network import NetworkAnalysis
-from .analyses.computers.disk import DiskAnalysis
-from .analyses.computers.process import ProcessAnalysis
+from .app_analyses.experiments.parameters import ParametersAnalysis
+from .app_analyses.experiments.time_tracking import TimeTrackingAnalysis
+from .app_analyses.experiments.gradients import GradientsAnalysis
+from .app_analyses.experiments.metrics import MetricsAnalysis
+from .app_analyses.experiments.outputs import OutputsAnalysis
+from .app_analyses.computers.cpu import CPUAnalysis
+from .app_analyses.computers.memory import MemoryAnalysis
+from .app_analyses.computers.network import NetworkAnalysis
+from .app_analyses.computers.disk import DiskAnalysis
+from .app_analyses.computers.process import ProcessAnalysis
 
 experiment_analyses = [GradientsAnalysis,
                        OutputsAnalysis,
