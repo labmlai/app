@@ -14,6 +14,7 @@ from .computers.disk import DiskAnalysis
 from .computers.process import ProcessAnalysis
 from ..analyses_settings import experiment_analyses, computer_analyses
 
+
 class AnalysisManager:
     @staticmethod
     def track(run_uuid: str, data: Dict[str, SeriesModel]):
