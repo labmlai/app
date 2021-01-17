@@ -12,19 +12,7 @@ from .computers.memory import MemoryAnalysis
 from .computers.network import NetworkAnalysis
 from .computers.disk import DiskAnalysis
 from .computers.process import ProcessAnalysis
-
-experiment_analyses = [GradientsAnalysis,
-                       OutputsAnalysis,
-                       ParametersAnalysis,
-                       TimeTrackingAnalysis,
-                       MetricsAnalysis]
-
-computer_analyses = [CPUAnalysis,
-                     MemoryAnalysis,
-                     NetworkAnalysis,
-                     DiskAnalysis,
-                     ProcessAnalysis]
-
+from ..analyses_settings import experiment_analyses, computer_analyses
 
 class AnalysisManager:
     @staticmethod

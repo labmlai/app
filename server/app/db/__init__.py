@@ -17,8 +17,7 @@ from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
 from .computer import Computer, ComputerIndex
-
-AnalysisManager = getattr(import_module(settings.ANALYSES_MODULE, package='app'), "AnalysisManager")
+from ..analyses import AnalysisManager
 
 Models = [(YamlSerializer(), User), (YamlSerializer(), Project), (JsonSerializer(), Status),
           (JsonSerializer(), RunStatus), (JsonSerializer(), Session), (JsonSerializer(), Run),
