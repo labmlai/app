@@ -227,14 +227,14 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
     async function onRefresh() {
         let res: SeriesDataModel = await analysisCache.get(true)
         if (res) {
-            setTrack(toPointValues(res.series))
+            setTrack(toPointValues(res.summary))
         }
     }
 
     async function onLoad() {
         let res: SeriesDataModel = await analysisCache.get()
         if (res) {
-            setTrack(toPointValues(res.series))
+            setTrack(toPointValues(res.summary))
         }
     }
 

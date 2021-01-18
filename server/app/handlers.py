@@ -1,6 +1,5 @@
 import sys
 import typing
-from importlib import import_module
 
 import flask
 import werkzeug.wrappers

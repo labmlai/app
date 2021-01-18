@@ -49,7 +49,7 @@ export interface SeriesSummaryModel {
 export interface SeriesDataModel {
     series: SeriesModel[]
     insights: InsightModel[]
-    summary: SeriesSummaryModel[]
+    summary: any[]
 }
 
 export class Run {

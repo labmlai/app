@@ -90,7 +90,7 @@ def get_process_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': track_data}))
     response.status_code = status_code
 
     return response
@@ -115,7 +115,6 @@ def get_process_preferences(session_uuid: str) -> Any:
 @Analysis.route('POST', 'process/preferences/<session_uuid>')
 def set_process_preferences(session_uuid: str) -> Any:
     preferences_key = ProcessPreferencesIndex.get(session_uuid)
-
 
     if not preferences_key:
         return format_rv({})

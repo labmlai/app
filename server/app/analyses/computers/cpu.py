@@ -50,6 +50,7 @@ class CPUAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
+        summary = []
         for ind, track in self.cpu.tracking.items():
             name = ind.split('.')
 
@@ -61,9 +62,15 @@ class CPUAnalysis(Analysis):
 
             res.append(series)
 
+        if res:
+            mean_value = [sum(x) / len(x) for x in zip(*[s['value'] for s in res])]
+            mean_smoothed = [sum(x) / len(x) for x in zip(*[s['smoothed'] for s in res])]
+            step = res[0]['step']
+            summary = [{'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'cpu.perc.total'}]
+
         res.sort(key=lambda s: s['name'])
 
-        return res
+        return res, summary
 
     @staticmethod
     def get_or_create(session_uuid: str):
@@ -86,14 +93,15 @@ class CPUAnalysis(Analysis):
 @Analysis.route('GET', 'cpu/<session_uuid>')
 def get_cpu_tracking(session_uuid: str) -> Any:
     track_data = []
+    summary_data = []
     status_code = 400
 
     ans = CPUAnalysis.get_or_create(session_uuid)
     if ans:
-        track_data = ans.get_tracking()
+        track_data, summary_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response
