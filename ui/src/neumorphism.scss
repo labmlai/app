@@ -272,15 +272,21 @@ body.light {
       color: $light-danger;
     }
   }
+
   .warning {
     .icon {
       color: $light-warning;
     }
   }
+
   .success {
     .icon {
       color: $light-success;
     }
+  }
+
+  .error-container {
+    background-image: linear-gradient(125deg, $light-shadow2, $light-shadow1);
   }
 }
 
@@ -501,14 +507,20 @@ body.dark {
       color: $dark-danger;
     }
   }
+
   .warning {
     .icon {
       color: $dark-warning;
     }
   }
+
   .success {
     .icon {
       color: $dark-success;
     }
+  }
+
+  .error-container {
+    background-image: linear-gradient(125deg, $dark-shadow2, $dark-shadow1);
   }
 }
