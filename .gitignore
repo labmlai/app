@@ -41,6 +41,7 @@ geckodriver.log
 labml
 /server/app.log
 /server/labml_db
+/server/app/analyses_settings.py
 
 # labml
 /logs/
