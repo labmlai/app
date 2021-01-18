@@ -1,8 +1,8 @@
-from .app_analyses.experiments.parameters import ParametersAnalysis
-from .app_analyses.experiments.time_tracking import TimeTrackingAnalysis
-from .app_analyses.experiments.gradients import GradientsAnalysis
-from .app_analyses.experiments.metrics import MetricsAnalysis
-from .app_analyses.experiments.outputs import OutputsAnalysis
+from .analyses.experiments.parameters import ParametersAnalysis
+from .analyses.experiments.time_tracking import TimeTrackingAnalysis
+from .analyses.experiments.gradients import GradientsAnalysis
+from .analyses.experiments.metrics import MetricsAnalysis
+from .analyses.experiments.outputs import OutputsAnalysis
 
 from .analyses.computers.cpu import CPUAnalysis
 from .analyses.computers.memory import MemoryAnalysis
