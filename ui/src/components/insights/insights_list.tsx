@@ -19,7 +19,7 @@ function Insight(props: InsightModel) {
 
     return <div className={className}>
         <span className='icon'><FontAwesomeIcon icon={faLightbulb}/></span>
-        <span>{props.message}</span>
+        <span className={'info'}>{props.message}</span>
     </div>
 }
 
