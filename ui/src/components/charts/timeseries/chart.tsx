@@ -24,7 +24,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
-    let chartHeight = Math.round(chartWidth / 2)
+    let chartHeight = Math.round(chartWidth / 4)
 
     if (props.chartHeightFraction) {
         chartHeight = chartHeight / props.chartHeightFraction
@@ -81,7 +81,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div>
-        <svg id={'chart'}
+        <svg id={'time-series-chart'}
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
             <Gradients/>

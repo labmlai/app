@@ -12,7 +12,7 @@ import {SeriesDataModel, SeriesModel, InsightModel} from "../../models/run"
 import {LabLoader} from "../utils/loader"
 import {BasicProps, CardProps} from "../../analyses/types"
 import {getChartType, toPointValues} from "./utils"
-
+import Labels from "./labels"
 
 import "./style.scss"
 
@@ -262,6 +262,7 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
                 <h3 className={'header'}>{props.title}</h3>
                 {props.isChartView && getTimeSeriesChart(getChartType(0), track, plotIdx, props.width, () => {
                 }, props.yExtend, props.chartHeightFraction, props.forceYStart)}
+                <Labels labels={Array.from(track, x => x['name'])}/>
             </div>
             : <div/>
     }
