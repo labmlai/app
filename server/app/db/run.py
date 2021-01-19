@@ -34,8 +34,12 @@ class Run(Model['Run']):
     status: Key[Status]
     configs: Dict[str, any]
     stdout: str
+    stdout_unmerged: str
     logger: str
+    logger_unmerged: str
     stderr: str
+    stderr_unmerged: str
+
     wildcard_indicators: Dict[str, Dict[str, Union[str, bool]]]
     indicators: Dict[str, Dict[str, Union[str, bool]]]
     errors: List[Dict[str, str]]
@@ -58,8 +62,11 @@ class Run(Model['Run']):
                     status=None,
                     configs={},
                     stdout='',
+                    stdout_unmerged='',
                     logger='',
+                    logger_unmerged='',
                     stderr='',
+                    stderr_unmerged='',
                     wildcard_indicators={},
                     indicators={},
                     errors=[]
@@ -90,11 +97,13 @@ class Run(Model['Run']):
         if 'configs' in data:
             self.configs.update(data.get('configs', {}))
         if 'stdout' in data and data['stdout']:
-            self.stdout = self.merge_output(self.stdout, data['stdout'])
+            stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
+            self.stdout += stdout_processed
         if 'logger' in data and data['logger']:
-            self.logger = self.merge_output(self.logger, data['logger'])
+            logger_processed, self.logger_unmerged = self.merge_output(self.logger_unmerged, data['logger'])
+            self.logger += logger_processed
         if 'stderr' in data and data['stderr']:
-            self.stderr = self.merge_output(self.stderr, data['stderr'])
+            stderr_processed, self.stderr_unmerged = self.merge_output(self.stderr_unmerged, data['stderr'])
 
         if not self.indicators:
             self.indicators = data.get('indicators', {})
@@ -103,16 +112,16 @@ class Run(Model['Run']):
 
         self.save()
 
-    def merge_output(self, current: str, new: str):
-        # TODO optimize to keep all the completed lines and current line separately
-        current += new
+    def merge_output(self, unmerged: str, new: str):
+        unmerged += new
+        processed = ''
         if len(new) > 1:
-            current = self.format_output(current)
+            processed, unmerged = self.format_output(unmerged)
 
-        return current
+        return processed, unmerged
 
     @staticmethod
-    def format_output(output: str) -> str:
+    def format_output(output: str) -> (str, str):
         res = []
         temp = ''
         for i, c in enumerate(output):
@@ -130,7 +139,7 @@ class Run(Model['Run']):
         if temp:
             res.append(temp)
 
-        return ''.join(res)
+        return ''.join(res), temp
 
     @staticmethod
     def format_remote_repo(urls: str):
