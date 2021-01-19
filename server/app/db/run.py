@@ -224,10 +224,10 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     if run_uuid in p.runs:
         return p.runs[run_uuid].load()
 
-    is_claimed = True
     if labml_token == settings.FLOAT_PROJECT_TOKEN:
         is_claimed = False
     else:
+        is_claimed = True
         MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid})
 
     time_now = time.time()
