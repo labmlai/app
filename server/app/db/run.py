@@ -136,9 +136,6 @@ class Run(Model['Run']):
             else:
                 temp += c
 
-        if temp:
-            res.append(temp)
-
         return ''.join(res), temp
 
     @staticmethod
@@ -190,9 +187,9 @@ class Run(Model['Run']):
             'commit_message': self.commit_message,
             'is_claimed': self.is_claimed,
             'configs': configs,
-            'stdout': self.stdout,
-            'logger': self.logger,
-            'stderr': self.stderr,
+            'stdout': self.stdout + self.stdout_unmerged,
+            'logger': self.logger + self.logger_unmerged,
+            'stderr': self.stderr + self.stderr_unmerged,
         }
 
     def get_summary(self) -> Dict[str, str]:
