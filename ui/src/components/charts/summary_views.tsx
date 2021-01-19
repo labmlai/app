@@ -18,7 +18,6 @@ import "./style.scss"
 
 
 interface BasicCardProps extends BasicProps, CardProps {
-    isChartView: boolean
     url: string
 }
 
@@ -92,7 +91,7 @@ function SparkLinesCard(props: BasicCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getLineChart(getChartType(currentChart), track, plotIdx, props.width)}
+                {getLineChart(getChartType(currentChart), track, plotIdx, props.width)}
                 {getSparkLines(track, plotIdx, props.width)}
                 <InsightsList insightList={insights}/>
             </div>
@@ -189,6 +188,7 @@ interface SparkTimeLinesCardProps extends BasicCardProps {
     yExtend?: [number, number] | null
     forceYStart?: number | null
     chartHeightFraction?: number
+    isSetPreferences: boolean
 }
 
 function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
@@ -209,7 +209,7 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
 
             if (preference.current) {
                 let analysis_preferences = preference.current.series_preferences
-                if (analysis_preferences && analysis_preferences.length > 0) {
+                if (analysis_preferences && analysis_preferences.length > 0 && props.isSetPreferences) {
                     setPlotIdx([...analysis_preferences])
                 } else if (track) {
                     let res: number[] = []
@@ -260,7 +260,7 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
                 }
             }>
                 <h3 className={'header'}>{props.title}</h3>
-                {props.isChartView && getTimeSeriesChart(getChartType(0), track, plotIdx, props.width, () => {
+                {getTimeSeriesChart(getChartType(0), track, plotIdx, props.width, () => {
                 }, props.yExtend, props.chartHeightFraction, props.forceYStart)}
                 <Labels labels={Array.from(track, x => x['name'])}/>
             </div>

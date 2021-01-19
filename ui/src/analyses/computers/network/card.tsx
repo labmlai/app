@@ -35,9 +35,9 @@ function AnalysisSummary(props: SummaryCardProps) {
                                 cache={cache}
                                 uuid={props.uuid}
                                 ref={props.refreshRef}
-                                isChartView={true}
-                                chartHeightFraction={2}
-                                 forceYStart={0}
+                                chartHeightFraction={4}
+                                isSetPreferences={true}
+                                forceYStart={0}
                                 width={props.width}/>
 }
 
@@ -47,7 +47,7 @@ function AnalysisDetails() {
     return <BasicTimeSeriesView title={TITLE}
                                 cache={cache}
                                 location={location}
-                                 forceYStart={0}
+                                forceYStart={0}
                                 headerCard={ComputerHeaderCard}/>
 }
 

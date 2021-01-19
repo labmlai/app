@@ -24,7 +24,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
-    let chartHeight = Math.round(chartWidth / 4)
+    let chartHeight = Math.round(chartWidth / 2)
 
     if (props.chartHeightFraction) {
         chartHeight = chartHeight / props.chartHeightFraction

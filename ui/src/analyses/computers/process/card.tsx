@@ -35,8 +35,8 @@ function AnalysisSummary(props: SummaryCardProps) {
                                 cache={cache}
                                 uuid={props.uuid}
                                 ref={props.refreshRef}
-                                isChartView={true}
-                                chartHeightFraction={2}
+                                chartHeightFraction={4}
+                                isSetPreferences={true}
                                 forceYStart={0}
                                 width={props.width}/>
 }
