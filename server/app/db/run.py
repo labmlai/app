@@ -104,6 +104,7 @@ class Run(Model['Run']):
             self.logger += logger_processed
         if 'stderr' in data and data['stderr']:
             stderr_processed, self.stderr_unmerged = self.merge_output(self.stderr_unmerged, data['stderr'])
+            self.stderr += stderr_processed
 
         if not self.indicators:
             self.indicators = data.get('indicators', {})
