@@ -30,7 +30,7 @@ export function BackButton(props: ButtonProps) {
         if (previous_path) {
             if (previous_path === '/run') {
                 setText('Run')
-            } else if (previous_path === '/computer') {
+            } else if (previous_path === '/session') {
                 setText('Computer')
             }
 

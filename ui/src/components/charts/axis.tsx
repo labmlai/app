@@ -30,7 +30,7 @@ export function BottomAxis(props: AxisProps) {
 }
 
 export function BottomTimeAxis(props: TimeAxisProps) {
-    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(3, d3.timeFormat("%b-%d:%H:%M"))
+    const axis = d3.axisBottom(props.scale as d3.AxisScale<d3.AxisDomain>).ticks(4, d3.timeFormat("%b-%d:%H:%M"))
 
     const id = `${props.chartId}_axis_bottom`
     useEffect(() => {

@@ -9,7 +9,7 @@ interface LabelsProps {
 export default function Labels(props: LabelsProps) {
     return <div className={'text-center labels text-secondary'}>
         {props.labels.map((label, i) => {
-            return <span>
+            return <span key={i}>
                 <div className='box' style={{backgroundColor: getColor(i)}}></div>
                 {label}
             </span>
