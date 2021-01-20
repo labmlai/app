@@ -91,7 +91,7 @@ function RunHeaderCard(props: RunHeaderProps) {
             setRun(run)
             // TODO change this based on discussion
             let lastUpdated = props.lastUpdated ? props.lastUpdated : statusCache.lastUpdated
-            if (status && status.isRunning && lastUpdated > 0) {
+            if (status && status.isStatusInProgress && lastUpdated > 0) {
                 setLastUpdated(getTimeDiff(lastUpdated))
             }
         }
