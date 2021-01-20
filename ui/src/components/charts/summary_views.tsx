@@ -261,7 +261,7 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
             }>
                 <h3 className={'header'}>{props.title}</h3>
                 {getTimeSeriesChart(getChartType(0), track, plotIdx, props.width, () => {
-                }, props.yExtend, props.chartHeightFraction, props.forceYStart)}
+                }, props.yExtend, props.chartHeightFraction, props.forceYStart, 3)}
                 <Labels labels={Array.from(track, x => x['name'])}/>
             </div>
             : <div/>

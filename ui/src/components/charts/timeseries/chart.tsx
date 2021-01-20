@@ -15,6 +15,7 @@ interface TimeSeriesChartProps extends LineChartProps {
     stepExtend?: [number, number] | null
     chartHeightFraction?: number
     forceYStart?: number | null
+    numTicks? : number
 }
 
 
@@ -51,7 +52,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     let plotSeries = plot.map(s => s.series)
     let yExtend = props.yExtend ? props.yExtend : getExtent(plotSeries, d => d.value, false)
-    if(typeof props.forceYStart === 'number'){
+    if (typeof props.forceYStart === 'number') {
         yExtend[0] = props.forceYStart
     }
     let yScale = getScale(yExtend, -chartHeight)
@@ -94,7 +95,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
             </g>
             <g className={'right-axis'}
                transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
-                <RightAxis chartId={chartId} scale={yScale} specifier={'.1s'}/>
+                <RightAxis chartId={chartId} scale={yScale} specifier={'.1s'} numTicks={props.numTicks}/>
             </g>
         </svg>
     </div>
@@ -103,7 +104,7 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
 export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
                                    width: number, onSelect?: ((i: number) => void), yExtend: [number, number] | null = null,
-                                   chartHeightFraction: number = 1, forceYStart: number | null = null) {
+                                   chartHeightFraction: number = 1, forceYStart: number | null = null, numTicks: number = 5) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -116,7 +117,7 @@ export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesMo
 
         return <TimeSeriesChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
                                 onSelect={onSelect} yExtend={yExtend} stepExtend={[ref[0], ref[ref.length - 1]]}
-                                chartHeightFraction={chartHeightFraction} forceYStart={forceYStart}/>
+                                chartHeightFraction={chartHeightFraction} forceYStart={forceYStart} numTicks={numTicks}/>
     } else {
         return <LabLoader/>
     }
