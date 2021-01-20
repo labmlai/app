@@ -20,11 +20,11 @@ export function formatScalar(value: number) {
 }
 
 export function formatFixed(value: number, decimals: number) {
-    if (value > 10000) {
+    if (Math.abs(value) > 10000) {
         return FORMAT(value)
     }
 
-    if (value > 1) {
+    if (Math.abs(value) > 1) {
         decimals = 3
     }
 
