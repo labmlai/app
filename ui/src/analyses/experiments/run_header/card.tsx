@@ -32,7 +32,7 @@ function RunView(props: RunViewProps) {
 
         runView = <div>
             <div className={'last-updated mb-2'}>
-                Last Recorded {props.status.isRunning ? getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}
+                Last Recorded {props.status.isStatusInProgress ? getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}
             </div>
             <div className={'run-info'}>
                 <StatusView status={props.status.run_status}/>
@@ -48,7 +48,7 @@ function RunView(props: RunViewProps) {
                 }
             </div>
             {
-                props.status.isRunning &&
+                props.status.isStatusInProgress &&
                 <div className={'last-updated text-info'}>{props.lastUpdated}</div>
             }
         </div>

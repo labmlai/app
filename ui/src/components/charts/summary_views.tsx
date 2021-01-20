@@ -222,7 +222,7 @@ function SparkTimeLinesCard(props: SparkTimeLinesCardProps, ref: any) {
         }
 
         load().then()
-    }, [preference, preferenceCache, track])
+    }, [preference, preferenceCache, track, props.isSetPreferences])
 
     async function onRefresh() {
         let res: SeriesDataModel = await analysisCache.get(true)
