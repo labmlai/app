@@ -235,7 +235,10 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
         is_claimed = False
     else:
         is_claimed = True
-        MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid})
+
+        from . import user
+        identifier = user.get_token_owner(labml_token)
+        MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
 
     time_now = time.time()
 

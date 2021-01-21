@@ -1,4 +1,4 @@
-from typing import List, NamedTuple, Dict
+from typing import List, NamedTuple, Dict, Optional
 
 from labml_db import Model, Key, Index
 
@@ -50,6 +50,20 @@ class UserIndex(Index['User']):
     pass
 
 
+class TokenOwnerIndex(Index['TokenOwner']):
+    pass
+
+
+def get_token_owner(labml_token: str) -> Optional[str]:
+    user_key = TokenOwnerIndex.get(labml_token)
+
+    if user_key:
+        user = user_key.load()
+        return user.email
+
+    return None
+
+
 class AuthOInfo(NamedTuple):
     name: str
     sub: str
@@ -62,20 +76,21 @@ def get_or_create_user(info: AuthOInfo) -> User:
     user_key = UserIndex.get(info.email)
 
     if not user_key:
-        project = Project(labml_token=gen_token())
+        p = Project(labml_token=gen_token())
         user = User(name=info.name,
                     sub=info.sub,
                     email=info.email,
                     picture=info.picture,
                     email_verified=info.email_verified,
-                    projects=[project.key]
+                    projects=[p.key]
                     )
 
         user.save()
-        project.save()
+        p.save()
 
         UserIndex.set(user.email, user.key)
-        ProjectIndex.set(project.labml_token, project.key)
+        ProjectIndex.set(p.labml_token, p.key)
+        TokenOwnerIndex.set(p.labml_token, user.key)
 
         return user
 

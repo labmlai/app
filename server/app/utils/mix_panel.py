@@ -74,15 +74,13 @@ class Event:
 
         return meta
 
-    def track(self, event: str, data: Union[NamedTuple, Dict]) -> None:
+    def track(self, event: str, data: Union[NamedTuple, Dict], identifier: str = '') -> None:
         if isinstance(data, NamedTuple):
             data = dict(data)
 
         user = auth.get_auth_user()
         if user:
             identifier = user.email
-        else:
-            identifier = ''
 
         data.update(self.get_meta_data())
 
