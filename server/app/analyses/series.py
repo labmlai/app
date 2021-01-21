@@ -51,14 +51,22 @@ class Series:
         }
 
     def update(self, steps: List[float], values: List[float]) -> None:
+        start_step = len(self.value)
         self.step += steps.copy()
         self.value += values.copy()
         self.last_step += steps.copy()
+        self._remove_nan(start_step)
 
         self.merge()
         while len(self) > MAX_BUFFER_LENGTH:
             self.step_gap *= 2
             self.merge()
+
+    def _remove_nan(self, start_step):
+        if len(self.value) == 0: return
+        for i in range(start_step, len(self.value)):
+            if not np.isfinite(self.value[i]):
+                self.value[i] = 0 if i == 0 else self.value[i - 1]
 
     def _find_gap(self) -> None:
         if self.step_gap:
@@ -184,5 +192,6 @@ class Series:
         self.step = data['step'].copy()
         self.last_step = data['last_step'].copy()
         self.value = data['value'].copy()
+        self._remove_nan(0)
 
         return self
