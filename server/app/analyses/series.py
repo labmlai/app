@@ -63,7 +63,6 @@ class Series:
             self.merge()
 
     def _remove_nan(self, start_step):
-        if len(self.value) == 0: return
         for i in range(start_step, len(self.value)):
             if not np.isfinite(self.value[i]):
                 self.value[i] = 0 if i == 0 else self.value[i - 1]
