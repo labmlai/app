@@ -50,7 +50,7 @@ export function LinePlot(props: LinePlotProps) {
             }
         }
 
-        selected = <circle r={10} cx={props.xScale(x)} cy={props.yScale(y)}/>
+        selected = <circle r={5} cx={props.xScale(x)} cy={props.yScale(y)} fill={props.color}/>
     }
 
     return <g>
