@@ -8,6 +8,7 @@ interface LinePlotProps {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
+    selectedX?: number
     color: string
     colorIdx?: number
 }
@@ -38,9 +39,22 @@ export function LinePlot(props: LinePlotProps) {
     let smoothedPath = <path className={'smoothed-line dropshadow'} fill={'none'} stroke={props.color} d={d}/>
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
+    let selected = null
+    if (props.selectedX != null) {
+        let y = props.series[0].value
+        let x = props.series[0].step
+        for (let d of props.series) {
+            if (d.step <= props.selectedX) {
+                y = d.value
+                x = d.step
+            }
+        }
+
+        selected = <circle r={10} cx={props.xScale(x)} cy={props.yScale(y)}/>
+    }
 
     return <g>
-        {smoothedPath}{unsmoothedPath}
+        {smoothedPath}{unsmoothedPath}{selected}
     </g>
 }
 

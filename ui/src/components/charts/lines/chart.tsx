@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useRef, useState} from "react"
 
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
@@ -8,15 +8,22 @@ import {LinePlot, LineFill} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
+import useMousePosition from "../../../utils/cursor"
 
 
 function LineChart(props: LineChartProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
+    const {x, y} = useMousePosition()
+    const [offset, setOffset] = useState({x: 0, y: 0})
+
+
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
+
+     let chart = useRef(null) as any
 
     let track = props.series
 
@@ -51,14 +58,16 @@ function LineChart(props: LineChartProps) {
         isChartFill = false
     }
 
+    let selectedStep = xScale.invert(x - offset.x - margin)
     let lines = plot.map((s, i) => {
-        return <LinePlot series={s.series} xScale={xScale} yScale={yScale} color={getColor(filteredPlotIdx[i])}
+        return <LinePlot series={s.series} xScale={xScale} yScale={yScale} selectedX={selectedStep} color={getColor(filteredPlotIdx[i])}
                          key={s.name}/>
 
     })
 
     let fills = plot.map((s, i) => {
         return <LineFill series={s.series} xScale={xScale} yScale={yScale}
+                         selectedX={selectedStep}
                          color={getColor(filteredPlotIdx[i])} key={s.name}
                          colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
 
@@ -66,11 +75,32 @@ function LineChart(props: LineChartProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
+    // console.log(chartWidth, chartHeight)
+
+    if (x !== null && y !== null) {
+        // console.log(xScale.invert(x - 125), yScale.invert(y - 630))
+        // console.log(x, y)
+    }
+
+
+    if(chart.current){
+        const info = chart.current.getBoundingClientRect()
+        // console.log(info)
+        if(info.left !== offset.x || info.top !== offset.y) {
+            setOffset({x: info.left, y: info.top})
+        }
+    }
+
+    //https://bl.ocks.org/kdubbels/afd45c3aa341b6424f2c2208c26f5e86
+
     return <div>
-        <svg id={'chart'}
+        <svg id={'chart'} ref={chart}
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
             <Gradients/>
+            <g transform={`translate(${x - offset.x},${y - offset.y})`}>
+                <circle r={10} cx={0} cy={0} fill={'red'} />
+            </g>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 {isChartFill && fills} {lines}
             </g>
