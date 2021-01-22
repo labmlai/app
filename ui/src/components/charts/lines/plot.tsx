@@ -39,7 +39,9 @@ export function LinePlot(props: LinePlotProps) {
     let smoothedPath = <path className={'smoothed-line dropshadow'} fill={'none'} stroke={props.color} d={d}/>
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
+
     let selected = null
+    // TODO need an efficient way to get value and step
     if (props.selectedX != null) {
         let y = props.series[0].value
         let x = props.series[0].step

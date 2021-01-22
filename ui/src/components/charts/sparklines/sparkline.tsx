@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useRef} from "react"
 
 import {ListGroup} from "react-bootstrap"
 
@@ -19,6 +19,7 @@ interface SparkLineProps {
     onClick?: () => void
     color: string
     decimals?: number
+    currentX?: number
 }
 
 export function SparkLine(props: SparkLineProps) {
@@ -72,7 +73,8 @@ export function SparkLine(props: SparkLineProps) {
                     </linearGradient>
                 </defs>
                 <g transform={`translate(${0}, 25)`}>
-                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}/>
+                    <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}
+                              selectedX={props.selected >= 0 ? props.currentX : 0}/>
                     <LineFill series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'} colorIdx={9}/>
                 </g>
             </svg>

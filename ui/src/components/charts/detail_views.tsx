@@ -29,6 +29,8 @@ function BasicLineView(props: ViewCardProps) {
     const [currentChart, setCurrentChart] = useState(0)
     const [isDisabled, setIsDisabled] = useState(true)
 
+    const [currentX, setCurrentX] = useState(0)
+
     const {width: windowWidth} = useWindowDimensions()
     const actualWidth = Math.min(800, windowWidth)
 
@@ -136,6 +138,10 @@ function BasicLineView(props: ViewCardProps) {
         }
     }
 
+    let updateCurrentX = useCallback((currentX: number) => {
+        setCurrentX(currentX)
+    }, [])
+
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -150,9 +156,11 @@ function BasicLineView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
+                    <div>
+                        {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart, updateCurrentX)}
+                    </div>
                 </div>
-                {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
+                {getSparkLines(track, plotIdx, actualWidth, toggleChart, currentX)}
             </div>
             :
             <LabLoader/>

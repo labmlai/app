@@ -14,13 +14,12 @@ function LineChart(props: LineChartProps) {
     const windowWidth = props.width
     const margin = Math.floor(windowWidth / 64)
 
-    const [selectedStep, setSelectedStep] = useState(0)
-
     const axisSize = 30
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
 
-    let chart = useRef(null) as any
+    const [selectedStep, setSelectedStep] = useState(0)
+    const chartRef = useRef(null) as any
 
     let track = props.series
 
@@ -55,16 +54,25 @@ function LineChart(props: LineChartProps) {
         isChartFill = false
     }
 
+    function updateSelectedStep(ev: any) {
+        if (ev.clientX && chartRef.current) {
+            const info = chartRef.current.getBoundingClientRect()
+            let currentX = xScale.invert(ev.clientX - info.left - margin)
+            setSelectedStep(currentX)
+            if (props.updateCurrentX) {
+                props.updateCurrentX(currentX)
+            }
+        }
+    }
+
     let lines = plot.map((s, i) => {
         return <LinePlot series={s.series} xScale={xScale} yScale={yScale} selectedX={selectedStep}
-                         color={getColor(filteredPlotIdx[i])}
-                         key={s.name}/>
+                         color={getColor(filteredPlotIdx[i])} key={s.name}/>
 
     })
 
     let fills = plot.map((s, i) => {
         return <LineFill series={s.series} xScale={xScale} yScale={yScale}
-                         selectedX={selectedStep}
                          color={getColor(filteredPlotIdx[i])} key={s.name}
                          colorIdx={filteredPlotIdx[i] % CHART_COLORS.length}/>
 
@@ -72,13 +80,8 @@ function LineChart(props: LineChartProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
-    function updateSelectedStep(ev: any) {
-        const info = chart.current.getBoundingClientRect()
-        setSelectedStep(xScale.invert(ev.clientX - info.left - margin))
-    }
-
     return <div>
-        <svg id={'chart'} ref={chart}
+        <svg id={'chart'} ref={chartRef}
              height={2 * margin + axisSize + chartHeight}
              width={2 * margin + axisSize + chartWidth}
              onMouseMove={(ev: any) => updateSelectedStep(ev)}>
@@ -100,7 +103,7 @@ function LineChart(props: LineChartProps) {
 }
 
 export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
-                             width: number, onSelect?: ((i: number) => void)) {
+                             width: number, onSelect?: (i: number) => void, updateCurrentX?: (currentX: number) => void) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -110,7 +113,7 @@ export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] 
         }
 
         return <LineChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
-                          onSelect={onSelect}/>
+                          onSelect={onSelect} updateCurrentX={updateCurrentX}/>
     } else {
         return <LabLoader/>
     }

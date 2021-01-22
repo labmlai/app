@@ -43,7 +43,7 @@ function SparkLines(props: SeriesProps) {
         }
         return <SparkLine key={s.name} name={s.name} series={s.series} selected={props.plotIdx[i]}
                           stepExtent={stepExtent} width={rowWidth} onClick={onClick} minLastValue={minLastValue}
-                          maxLastValue={maxLastValue} color={getColor(colorIndices[i])}/>
+                          maxLastValue={maxLastValue} color={getColor(colorIndices[i])} currentX={props.currentX}/>
     })
 
     return <ListGroup className={'sparkline-list'}>
@@ -53,7 +53,7 @@ function SparkLines(props: SeriesProps) {
 
 
 export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null,
-                              width: number, onSelect?: ((i: number) => void)) {
+                              width: number, onSelect?: ((i: number) => void), currentX?: number) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -62,7 +62,7 @@ export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | n
             plotIdx = defaultSeriesToPlot(track)
         }
 
-        return <SparkLines series={track} width={width} plotIdx={plotIdx} onSelect={onSelect}/>
+        return <SparkLines series={track} width={width} plotIdx={plotIdx} onSelect={onSelect} currentX={currentX}/>
     } else {
         return <LabLoader/>
     }
