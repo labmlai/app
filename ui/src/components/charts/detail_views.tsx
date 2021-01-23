@@ -151,7 +151,7 @@ function BasicLineView(props: ViewCardProps) {
                         {dots}
                     </div>
                     <div>
-                        {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
+                        {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart, true)}
                     </div>
                 </div>
             </div>

@@ -53,7 +53,7 @@ function SparkLines(props: SeriesProps) {
 
 
 export function getSparkLines(track: SeriesModel[] | null, plotIdx: number[] | null,
-                              width: number, onSelect?: ((i: number) => void), currentX?: number) {
+                              width: number, onSelect?: ((i: number) => void), currentX?: number| null) {
     if (track != null) {
         if (track.length === 0) {
             return null

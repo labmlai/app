@@ -19,7 +19,7 @@ function LineChart(props: LineChartProps) {
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
 
-    const [selectedStep, setSelectedStep] = useState(0)
+    const [selectedStep, setSelectedStep] = useState<number | null>(0)
     const chartRef = useRef(null) as any
 
     let track = props.series
@@ -56,7 +56,7 @@ function LineChart(props: LineChartProps) {
     }
 
     function updateSelectedStep(ev: any) {
-        if (ev.clientX && chartRef.current) {
+        if (ev.clientX && chartRef.current && props.isMouseMoveAdded) {
             const info = chartRef.current.getBoundingClientRect()
             let currentX = xScale.invert(ev.clientX - info.left - margin)
             setSelectedStep(currentX)
@@ -64,7 +64,8 @@ function LineChart(props: LineChartProps) {
     }
 
     let lines = plot.map((s, i) => {
-        return <LinePlot series={s.series} xScale={xScale} yScale={yScale} currentX={selectedStep}
+        return <LinePlot series={s.series} xScale={xScale} yScale={yScale}
+                         currentX={props.isMouseMoveAdded ? selectedStep : null}
                          color={getColor(filteredPlotIdx[i])} key={s.name}/>
 
     })
@@ -97,12 +98,13 @@ function LineChart(props: LineChartProps) {
                 <RightAxis chartId={chartId} scale={yScale}/>
             </g>
         </svg>
-        {getSparkLines(track, props.plotIdx, props.width, props.onSelect, selectedStep)}
+        {getSparkLines(track, props.plotIdx, props.width, props.onSelect,
+            props.isMouseMoveAdded ? selectedStep : null)}
     </div>
 }
 
 export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
-                             width: number, onSelect?: (i: number) => void) {
+                             width: number, onSelect?: (i: number) => void, isMouseMoveAdded: boolean = false) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -113,7 +115,7 @@ export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] 
         }
 
         return <LineChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
-                          onSelect={onSelect}/>
+                          onSelect={onSelect} isMouseMoveAdded={isMouseMoveAdded}/>
     } else {
         return <LabLoader/>
     }

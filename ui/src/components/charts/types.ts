@@ -5,11 +5,12 @@ export interface SeriesProps {
     plotIdx: number[]
     width: number
     onSelect?: (i: number) => void
-    currentX?: number
+    currentX?: number| null
 }
 
 export interface LineChartProps extends SeriesProps {
     chartType?: 'log' | 'normal'
+    isMouseMoveAdded?: boolean
 }
 
 export let chartTypes: 'log' | 'normal'

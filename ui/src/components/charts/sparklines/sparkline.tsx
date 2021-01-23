@@ -20,7 +20,7 @@ interface SparkLineProps {
     onClick?: () => void
     color: string
     decimals?: number
-    currentX?: number
+    currentX?: number | null
 }
 
 export function SparkLine(props: SparkLineProps) {

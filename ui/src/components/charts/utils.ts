@@ -105,7 +105,6 @@ export function getChartType(index: number): 'log' | 'normal' {
     return index === 0 ? 'normal' : 'log'
 }
 
-
 export function toPointValues(track: SeriesModel[]) {
     let series: SeriesModel[] = [...track]
     for (let s of series) {
@@ -119,8 +118,7 @@ export function toPointValues(track: SeriesModel[]) {
     return series
 }
 
-
-export function getSelectedIdx(series: any[], bisect: any, currentX?: number) {
+export function getSelectedIdx(series: any[], bisect: any, currentX?: number | null) {
     let idx = series.length - 1
     if (currentX != null) {
         idx = bisect(series, currentX)

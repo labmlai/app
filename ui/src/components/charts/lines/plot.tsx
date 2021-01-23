@@ -9,7 +9,7 @@ interface LinePlotProps {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
-    currentX?: number
+    currentX?: number | null
     color: string
     colorIdx?: number
 }
