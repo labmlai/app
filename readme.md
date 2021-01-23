@@ -12,7 +12,7 @@
 [![Docs](https://img.shields.io/badge/labml-docs-blue)](http://lab-ml.com/)
 [![Twitter](https://img.shields.io/twitter/url.svg?label=Follow%20%40LabML&style=social&url=https%3A%2F%2Ftwitter.com%2FLabML)](https://twitter.com/labmlai?ref_src=twsrc%5Etfw)
 
-<img src="https://github.com/lab-ml/app/blob/master/images/labml-app.gif" width="300" alt=""/>
+<img src="https://github.com/lab-ml/lab/blob/master/images/cover.png" alt=""/>
 </div>
 
 This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?uuid=39b03a1e454011ebbaff2b26e3148b3d)
