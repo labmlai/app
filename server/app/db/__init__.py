@@ -11,7 +11,7 @@ from labml_db.serializer.yaml import YamlSerializer
 
 from .. import settings
 from .project import Project, ProjectIndex, create_project
-from .user import User, UserIndex
+from .user import User, UserIndex, TokenOwnerIndex
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
@@ -22,8 +22,8 @@ Models = [(YamlSerializer(), User), (YamlSerializer(), Project), (JsonSerializer
           (JsonSerializer(), RunStatus), (JsonSerializer(), Session), (JsonSerializer(), Run),
           (JsonSerializer(), Computer)] + [(s(), m) for s, m, p in AnalysisManager.get_db_models()]
 
-Indexes = [ProjectIndex, UserIndex, SessionIndex, RunIndex, ComputerIndex] + [m for s, m, p in
-                                                                              AnalysisManager.get_db_indexes()]
+Indexes = [ProjectIndex, UserIndex, TokenOwnerIndex, SessionIndex, RunIndex, ComputerIndex] + [m for s, m, p in
+                                                                            AnalysisManager.get_db_indexes()]
 
 DATA_PATH = settings.DATA_PATH
 
