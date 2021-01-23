@@ -150,9 +150,10 @@ function BasicLineView(props: ViewCardProps) {
                     <div className={'text-center mb-3'}>
                         {dots}
                     </div>
-                    {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart)}
+                    <div>
+                        {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart, true)}
+                    </div>
                 </div>
-                {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
             </div>
             :
             <LabLoader/>
