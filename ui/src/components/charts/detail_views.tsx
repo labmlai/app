@@ -7,7 +7,7 @@ import useWindowDimensions from "../../utils/window_dimensions"
 import {getLineChart} from "./lines/chart"
 import {getSparkLines} from "./sparklines/chart"
 import {getTimeSeriesChart} from "./timeseries/chart"
-import {BackButton, RefreshButton, SaveButton} from "../utils/util_buttons"
+import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
 import {ViewCardProps} from "../../analyses/types"
 import {Status} from "../../models/status"
@@ -127,15 +127,6 @@ function BasicLineView(props: ViewCardProps) {
         }
     }
 
-    let dots: JSX.Element[] = []
-    for (let i = 0; i < 2; i++) {
-        if (i === currentChart) {
-            dots.push(<span key={i} className={"dot color-dot"}/>)
-        } else {
-            dots.push(<span key={i} className={"dot"}/>)
-        }
-    }
-
     return <div className={'page'} style={{width: actualWidth}}>
         <div className={'flex-container'}>
             <BackButton parent={props.title}/>
@@ -143,7 +134,10 @@ function BasicLineView(props: ViewCardProps) {
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={props.title}/>}
         </div>
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
-        <h2 className={'header text-center'}>{props.title}</h2>
+        <div className={'text-center'}>
+            <h2 className={'header'}>{props.title}</h2>
+            <ToggleButton isToggled={currentChart > 0} parent={props.title} onButtonClick={onChartClick}/>
+        </div>
         {track && track.length > 0 && preference.current ?
             <div>
                 {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart,

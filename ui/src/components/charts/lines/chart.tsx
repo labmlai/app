@@ -82,7 +82,7 @@ function LineChart(props: LineChartProps) {
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div className={'detail-card'}>
-        <div className={'fixed-chart'}>
+        <div className={props.isMouseMoveAdded ? 'fixed-chart' : ''}>
             <svg id={'chart'} ref={chartRef}
                  height={2 * margin + axisSize + chartHeight}
                  width={2 * margin + axisSize + chartWidth}

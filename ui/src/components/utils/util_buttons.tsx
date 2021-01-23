@@ -5,9 +5,18 @@ import {useHistory, useLocation} from "react-router-dom"
 import mixpanel from "mixpanel-browser"
 import {Nav} from "react-bootstrap"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome"
-import {faChevronLeft, faSync, faTrash, faEdit, faSave, faTimes} from "@fortawesome/free-solid-svg-icons"
+import {
+    faChevronLeft,
+    faSync,
+    faTrash,
+    faEdit,
+    faSave,
+    faTimes,
+} from "@fortawesome/free-solid-svg-icons"
 
 import {experiment_analyses, computer_analyses} from "../../analyses/all_analyses"
+
+import "./util_buttons.scss"
 
 interface ButtonProps {
     onButtonClick?: () => void
@@ -149,4 +158,24 @@ export function CancelButton(props: ButtonProps) {
     return <Nav.Link onClick={onCancelButtonClick} className={'tab float-right'} disabled={props.isDisabled}>
         <FontAwesomeIcon icon={faTimes}/>
     </Nav.Link>
+}
+
+interface ToggleButtonProps extends ButtonProps {
+    isToggled: boolean
+}
+
+export function ToggleButton(props: ToggleButtonProps) {
+    function onToggleButtonClick() {
+        if (props.onButtonClick) {
+            props.onButtonClick()
+        }
+
+        mixpanel.track('Toggle Button Clicked', {parent: props.parent})
+    }
+
+    return <label className="switch">
+        <input type="checkbox" onClick={onToggleButtonClick}/>
+        <span className="slider round"/>
+    </label>
+
 }
