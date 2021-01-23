@@ -61,7 +61,7 @@ def get_token_owner(labml_token: str) -> Optional[str]:
         user = user_key.load()
         return user.email
 
-    return None
+    return ''
 
 
 class AuthOInfo(NamedTuple):
