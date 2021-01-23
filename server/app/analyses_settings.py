@@ -5,6 +5,7 @@ from .analyses.experiments.metrics import MetricsAnalysis
 from .analyses.experiments.outputs import OutputsAnalysis
 
 from .analyses.computers.cpu import CPUAnalysis
+from .analyses.computers.gpu import GPUAnalysis
 from .analyses.computers.memory import MemoryAnalysis
 from .analyses.computers.network import NetworkAnalysis
 from .analyses.computers.disk import DiskAnalysis
@@ -17,6 +18,7 @@ experiment_analyses = [GradientsAnalysis,
                        MetricsAnalysis]
 
 computer_analyses = [CPUAnalysis,
+                     GPUAnalysis,
                      MemoryAnalysis,
                      NetworkAnalysis,
                      DiskAnalysis,

@@ -12,6 +12,7 @@ import ConfigsAnalysis from "./experiments/configs/card"
 
 
 import CpuAnalysis from "./computers/cpu/card"
+import GPUAnalysis from "./computers/gpu/card"
 import MemoryAnalysis from "./computers/memory/card"
 import DiskAnalysis from "./computers/disk/card"
 import NetworkAnalysis from "./computers/network/card"
@@ -31,6 +32,7 @@ let experiment_analyses: Analysis[] = [
 
 let computer_analyses: Analysis[] = [
     CpuAnalysis,
+    GPUAnalysis,
     MemoryAnalysis,
     DiskAnalysis,
     NetworkAnalysis,

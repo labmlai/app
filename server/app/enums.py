@@ -17,6 +17,7 @@ class SeriesEnums:
 
 class COMPUTEREnums:
     CPU = 'cpu'
+    GPU = 'gpu'
     DISK = 'disk'
     MEMORY = 'memory'
     NETWORK = 'net'
