@@ -79,7 +79,7 @@ export function SparkLine(props: SparkLineProps) {
                 </defs>
                 <g transform={`translate(${0}, 25)`}>
                     <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}
-                              currentX={props.selected >= 0 ? props.currentX : 0}/>
+                              currentX={props.selected >= 0 ? props.currentX : null}/>
                     <LineFill series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'} colorIdx={9}/>
                 </g>
             </svg>
