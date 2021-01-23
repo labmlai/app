@@ -8,6 +8,7 @@ import {LinePlot, LineFill} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
+import {getSparkLines} from "../sparklines/chart"
 
 
 function LineChart(props: LineChartProps) {
@@ -59,14 +60,11 @@ function LineChart(props: LineChartProps) {
             const info = chartRef.current.getBoundingClientRect()
             let currentX = xScale.invert(ev.clientX - info.left - margin)
             setSelectedStep(currentX)
-            if (props.updateCurrentX) {
-                props.updateCurrentX(currentX)
-            }
         }
     }
 
     let lines = plot.map((s, i) => {
-        return <LinePlot series={s.series} xScale={xScale} yScale={yScale} selectedX={selectedStep}
+        return <LinePlot series={s.series} xScale={xScale} yScale={yScale} currentX={selectedStep}
                          color={getColor(filteredPlotIdx[i])} key={s.name}/>
 
     })
@@ -99,21 +97,23 @@ function LineChart(props: LineChartProps) {
                 <RightAxis chartId={chartId} scale={yScale}/>
             </g>
         </svg>
+        {getSparkLines(track, props.plotIdx, props.width, props.onSelect, selectedStep)}
     </div>
 }
 
 export function getLineChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
-                             width: number, onSelect?: (i: number) => void, updateCurrentX?: (currentX: number) => void) {
+                             width: number, onSelect?: (i: number) => void) {
     if (track != null) {
         if (track.length === 0) {
             return null
         }
+
         if (plotIdx == null) {
             plotIdx = defaultSeriesToPlot(track)
         }
 
         return <LineChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
-                          onSelect={onSelect} updateCurrentX={updateCurrentX}/>
+                          onSelect={onSelect}/>
     } else {
         return <LabLoader/>
     }

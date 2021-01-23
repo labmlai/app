@@ -1,3 +1,4 @@
+import math
 from typing import List, Dict, Any
 
 
@@ -31,3 +32,12 @@ def remove_common_prefix(series: List[Dict[str, Any]], key: str):
         name = s[key][len_removed:]
 
         s[key] = '.'.join(name)
+
+
+def replace_nans(series: List[Dict[str, Any]], keys: List[str]):
+    for s in series:
+        for key in keys:
+            if isinstance(s[key], list):
+                s[key] = [0 if math.isnan(x) else x for x in s[key]]
+            else:
+                s[key] = 0 if math.isnan(s[key]) else s[key]

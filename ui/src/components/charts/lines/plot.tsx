@@ -3,12 +3,13 @@ import React from "react"
 import * as d3 from "d3"
 
 import {PointValue} from "../../../models/run"
+import {getSelectedIdx} from "../utils"
 
 interface LinePlotProps {
     series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
-    selectedX?: number
+    currentX?: number
     color: string
     colorIdx?: number
 }
@@ -40,19 +41,16 @@ export function LinePlot(props: LinePlotProps) {
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
 
-    let selected = null
-    // TODO need an efficient way to get value and step
-    if (props.selectedX != null) {
-        let y = props.series[0].value
-        let x = props.series[0].step
-        for (let d of props.series) {
-            if (d.step <= props.selectedX) {
-                y = d.value
-                x = d.step
-            }
-        }
+    const bisect = d3.bisector(function (d: PointValue) {
+        return d.step
+    }).left
 
-        selected = <circle r={5} cx={props.xScale(x)} cy={props.yScale(y)} fill={props.color}/>
+    let selected = null
+    if (props.currentX != null) {
+        let idx = getSelectedIdx(props.series, bisect, props.currentX)
+        selected = <circle r={5} cx={props.xScale(props.series[idx].step)}
+                           cy={props.yScale(props.series[idx].smoothed)}
+                           fill={props.color}/>
     }
 
     return <g>

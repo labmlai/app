@@ -1,10 +1,11 @@
 import React from "react"
 
+import * as d3 from "d3"
 import {ListGroup} from "react-bootstrap"
 
 import {PointValue} from "../../../models/run"
 import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
-import {getExtent, getScale} from "../utils"
+import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LinePlot, LineFill} from "../lines/plot"
 import {BASE_COLOR} from "../constants"
 
@@ -35,7 +36,11 @@ export function SparkLine(props: SparkLineProps) {
     const yScale = getScale(getExtent([s], d => d.value, true), -25)
     const xScale = getScale(props.stepExtent, chartWidth)
 
-    const last = s[s.length - 1]
+    const bisect = d3.bisector(function (d: PointValue) {
+        return d.step
+    }).left
+
+    const last = s[props.selected >= 0 ? getSelectedIdx(props.series, bisect, props.currentX) : props.series.length - 1]
 
     let lastValue = scaleValue(last.value, props.minLastValue, props.maxLastValue)
     let valueColor = pickHex(lastValue)
@@ -74,7 +79,7 @@ export function SparkLine(props: SparkLineProps) {
                 </defs>
                 <g transform={`translate(${0}, 25)`}>
                     <LinePlot series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'}
-                              selectedX={props.selected >= 0 ? props.currentX : 0}/>
+                              currentX={props.selected >= 0 ? props.currentX : 0}/>
                     <LineFill series={s} xScale={xScale} yScale={yScale} color={'#7f8c8d'} colorIdx={9}/>
                 </g>
             </svg>
