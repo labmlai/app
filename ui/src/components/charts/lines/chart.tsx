@@ -10,6 +10,8 @@ import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 import {getSparkLines} from "../sparklines/chart"
 
+import "../style.scss"
+
 
 function LineChart(props: LineChartProps) {
     const windowWidth = props.width
@@ -79,25 +81,27 @@ function LineChart(props: LineChartProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
-    return <div>
-        <svg id={'chart'} ref={chartRef}
-             height={2 * margin + axisSize + chartHeight}
-             width={2 * margin + axisSize + chartWidth}
-             onMouseMove={(ev: any) => updateSelectedStep(ev)}>
-            <Gradients/>
-            <g transform={`translate(${margin}, ${margin + chartHeight})`}>
-                {isChartFill && fills} {lines}
-            </g>
+    return <div className={'detail-card'}>
+        <div className={'fixed-chart'}>
+            <svg id={'chart'} ref={chartRef}
+                 height={2 * margin + axisSize + chartHeight}
+                 width={2 * margin + axisSize + chartWidth}
+                 onMouseMove={(ev: any) => updateSelectedStep(ev)}>
+                <Gradients/>
+                <g transform={`translate(${margin}, ${margin + chartHeight})`}>
+                    {isChartFill && fills} {lines}
+                </g>
 
-            <g className={'bottom-axis'}
-               transform={`translate(${margin}, ${margin + chartHeight})`}>
-                <BottomAxis chartId={chartId} scale={xScale}/>
-            </g>
-            <g className={'right-axis'}
-               transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
-                <RightAxis chartId={chartId} scale={yScale}/>
-            </g>
-        </svg>
+                <g className={'bottom-axis'}
+                   transform={`translate(${margin}, ${margin + chartHeight})`}>
+                    <BottomAxis chartId={chartId} scale={xScale}/>
+                </g>
+                <g className={'right-axis'}
+                   transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
+                    <RightAxis chartId={chartId} scale={yScale}/>
+                </g>
+            </svg>
+        </div>
         {getSparkLines(track, props.plotIdx, props.width, props.onSelect,
             props.isMouseMoveAdded ? selectedStep : null)}
     </div>

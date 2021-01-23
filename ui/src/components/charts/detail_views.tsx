@@ -145,15 +145,9 @@ function BasicLineView(props: ViewCardProps) {
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
-            <div className={'detail-card'}>
-                <div className={'pointer-cursor fixed-chart'} onClick={onChartClick}>
-                    <div className={'text-center mb-3'}>
-                        {dots}
-                    </div>
-                    <div>
-                        {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart, true)}
-                    </div>
-                </div>
+            <div>
+                {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart,
+                    true)}
             </div>
             :
             <LabLoader/>
