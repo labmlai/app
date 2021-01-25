@@ -11,14 +11,14 @@ interface MessageProps {
 
 export function WarningMessage(props: MessageProps) {
     let cursor = props.onClick ? ' cursor' : ''
-    return <Alert className={'text-center mt-1 alert-message text-info' + cursor} variant={'warning'}
+    return <Alert className={'text-center text-info mt-1' + cursor} variant={'warning'}
                   onClick={props.onClick}>
         {props.children}
     </Alert>
 }
 
 export function ErrorMessage(props: MessageProps) {
-    return <Alert className={'text-center mt-1 alert-message text-info'} variant={'danger'}>
+    return <Alert className={'text-center text-info mt-1'} variant={'danger'}>
         {props.children}
     </Alert>
 }

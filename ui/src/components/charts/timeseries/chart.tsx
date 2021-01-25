@@ -8,6 +8,7 @@ import {LineChartProps, chartTypes} from "../types"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
+import {formatDateTime} from "../../../utils/time"
 import {getSparkTimeLines} from "../sparktimelines/chart"
 
 
@@ -96,7 +97,9 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
+
     return <div className={'detail-card'}>
+        {selectedStep && <h6 className={'text-center selected-step'}>{formatDateTime(selectedStep)}</h6>}
         <div className={props.isMouseMoveAdded ? 'fixed-chart' : ''}>
             <svg id={'time-series-chart'} ref={chartRef}
                  height={2 * margin + axisSize + chartHeight}

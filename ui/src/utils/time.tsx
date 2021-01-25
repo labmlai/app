@@ -15,7 +15,18 @@ export function getTimeDiff(timestamp: number): string {
     } else if (timeDiff < 600) {
         return `${Math.floor(timeDiff / 60)}m and ${Math.round(timeDiff % 60)}s ago`
     } else {
-        return formatTime(timestamp/1000)
+        return formatTime(timestamp / 1000)
     }
 }
 
+const monthNames = ["Jan", "Feb", "March", "April", "May", "June",
+    "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+
+
+export function formatDateTime(dateTime: Date) {
+    let date = dateTime.getDate()
+    let month = monthNames[dateTime.getMonth()]
+    let timeStr = dateTime.toTimeString().substr(0, 8)
+
+    return `${month}-${date}:${timeStr}`
+}

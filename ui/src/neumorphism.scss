@@ -138,6 +138,10 @@ body.light {
     }
   }
 
+  .selected-step{
+    color: $light-header;
+  }
+
   .terminal-card {
     background-color: $light-terminal-bg;
 
@@ -357,6 +361,10 @@ body.dark {
     h2.header {
       color: $dark-header;
     }
+  }
+
+  .selected-step{
+    color: $dark-header;
   }
 
   .terminal-card {
