@@ -22,7 +22,7 @@ import logo from "../assets/lab_logo.png"
 import CACHE from "../cache/cache"
 import {IsUserLogged} from "../models/user"
 
-const excludePaths: any[] = ['/run', '/session']
+const excludePaths: any[] = ['/run', '/session', '/404']
 for (let i = 0; i < experiment_analyses.length; i++) {
     excludePaths.push('/' + experiment_analyses[i].route)
 }
