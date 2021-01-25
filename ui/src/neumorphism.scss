@@ -98,6 +98,14 @@ body.light {
     color: $light-btn;
   }
 
+  .btn-group {
+    box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+  }
+
+  .v-line {
+    border-left: 2px solid $light-btn;
+  }
+
   .btn.btn-primary {
     box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
     background: $light-background;
@@ -138,7 +146,7 @@ body.light {
     }
   }
 
-  .selected-step{
+  .selected-step {
     color: $light-header;
   }
 
@@ -323,6 +331,14 @@ body.dark {
     color: $dark-btn;
   }
 
+  .btn-group {
+    box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+  }
+
+   .v-line {
+    border-left: 2px solid $dark-btn;
+  }
+
   .btn.btn-primary {
     box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
     background: $dark-background;
@@ -363,7 +379,7 @@ body.dark {
     }
   }
 
-  .selected-step{
+  .selected-step {
     color: $dark-header;
   }
 
@@ -507,7 +523,7 @@ body.dark {
 
   // TODO used in last recorded time
   div {
-    color: #ffffff;
+    color: $dark-btn;
   }
 
   .danger {

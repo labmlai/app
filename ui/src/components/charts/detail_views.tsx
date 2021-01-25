@@ -133,10 +133,8 @@ function BasicLineView(props: ViewCardProps) {
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={props.title}/>}
         </div>
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
-        <div className={'text-center'}>
-            <h2 className={'header'}>{props.title}</h2>
-            <ToggleButton isToggled={currentChart > 0} parent={props.title} onButtonClick={onChartClick}/>
-        </div>
+        <ToggleButton parent={props.title} onButtonClick={onChartClick} DefaultText={'Linear'} onToggleText={'Log'}/>
+        <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
             <div>
                 {getLineChart(getChartType(currentChart), track, plotIdx, actualWidth, toggleChart,

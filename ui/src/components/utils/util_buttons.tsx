@@ -169,21 +169,30 @@ export function CancelButton(props: ButtonProps) {
 }
 
 interface ToggleButtonProps extends ButtonProps {
-    isToggled: boolean
+    onToggleText?: string
+    DefaultText?: string
 }
 
 export function ToggleButton(props: ToggleButtonProps) {
+    const [defaultClass, setDefaultClass] = useState('selected')
+
+    function toggleClass(currentClass: string) {
+        return currentClass === 'selected' ? '' : 'selected'
+    }
+
     function onToggleButtonClick() {
         if (props.onButtonClick) {
             props.onButtonClick()
         }
 
+        setDefaultClass(toggleClass(defaultClass))
         mixpanel.track('Toggle Button Clicked', {parent: props.parent})
     }
 
-    return <label className="switch">
-        <input type="checkbox" onClick={onToggleButtonClick}/>
-        <span className="slider round"/>
-    </label>
+    return <div className={'btn-group'} onClick={onToggleButtonClick}>
+        <div className={defaultClass}>{props.DefaultText}</div>
+        <div className={'v-line'}/>
+        <div className={toggleClass(defaultClass)}>{props.onToggleText}</div>
+    </div>
 
 }
