@@ -5,13 +5,20 @@ import {RunStatusModel} from "../models/status"
 export interface StatusProps {
     status: RunStatusModel
     lastUpdatedTime?: number
+    type?: string
 }
 
 export function StatusView(props: StatusProps) {
     let status = props.status
 
     if (status.status === 'in progress') {
-        return <div className={'status text-info text-uppercase'}>experiment is running</div>
+        if (props.type === 'run') {
+            return <div className={'status text-info text-uppercase'}>experiment is running</div>
+        } else if (props.type === 'computer' || props.type === 'session') {
+            return <div className={'status text-info text-uppercase'}>computer is monitoring</div>
+        } else {
+            return <div className={'status text-info text-uppercase'}>experiment is running</div>
+        }
     } else if (status.status === 'no response') {
         return <div className={'status text-warning text-uppercase'}>no response</div>
     } else if (status.status === 'completed') {
@@ -26,7 +33,7 @@ export function StatusView(props: StatusProps) {
 }
 
 export interface BadgeViewProps {
-    text : string
+    text: string
 }
 
 export function BadgeView(props: BadgeViewProps) {

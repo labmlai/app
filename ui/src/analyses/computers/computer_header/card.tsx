@@ -30,7 +30,7 @@ function ComputerView(props: ComputerViewProps) {
                 Last Recorded {props.status.isRunning ? getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}
             </div>
             <div className={'run-info'}>
-                <StatusView status={props.status.run_status}/>
+                <StatusView status={props.status.run_status} type={'computer'}/>
                 <h3>{props.computer.name}</h3>
                 <h5>{props.computer.comment}</h5>
                 {props.isClicked &&

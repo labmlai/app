@@ -48,7 +48,7 @@ function ListItem(props: ListItemProps) {
 
     return <ListGroup.Item className={className} action>
         <div onClick={onClick}>
-            <StatusView status={item.run_status}/>
+            <StatusView status={item.run_status} type={props.itemKey}/>
             <p>Started on {formatTime(item.start_time)}</p>
             <h5>{item.name}</h5>
             <h6>{item.comment}</h6>

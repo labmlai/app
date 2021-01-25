@@ -33,19 +33,27 @@ export function BackButton(props: ButtonProps) {
     const [text, setText] = useState('')
 
     useEffect(() => {
-        setText('Home')
-
         let previous_path = location.state
         if (previous_path) {
             if (previous_path === '/run') {
                 setText('Run')
             } else if (previous_path === '/session') {
                 setText('Computer')
+            } else if (previous_path === '/runs') {
+                setText('Runs')
+            } else if (previous_path === '/computers') {
+                setText('Computers')
             }
 
             if (previous_path !== '/login') {
                 setIsPrevious(true)
             }
+        } else if (location.pathname === '/run') {
+            setText('Runs')
+            setSyntheticPath('/runs')
+        } else if (location.pathname === '/session') {
+            setText('Computers')
+            setSyntheticPath('/computers')
         } else {
             for (let i = 0; i < experiment_analyses.length; i++) {
                 if (location.pathname === '/' + experiment_analyses[i].route) {
