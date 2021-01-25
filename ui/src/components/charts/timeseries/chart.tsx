@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useRef, useState} from "react"
 
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
@@ -8,6 +8,7 @@ import {LineChartProps, chartTypes} from "../types"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
+import {getSparkTimeLines} from "../sparktimelines/chart"
 
 
 interface TimeSeriesChartProps extends LineChartProps {
@@ -15,7 +16,8 @@ interface TimeSeriesChartProps extends LineChartProps {
     stepExtend?: [number, number] | null
     chartHeightFraction?: number
     forceYStart?: number | null
-    numTicks? : number
+    numTicks?: number
+    isSparkLines: boolean
 }
 
 
@@ -30,6 +32,9 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
     if (props.chartHeightFraction) {
         chartHeight = chartHeight / props.chartHeightFraction
     }
+
+    const [selectedStep, setSelectedStep] = useState<Date | null>(null)
+    const chartRef = useRef(null) as any
 
     let track = props.series
 
@@ -68,8 +73,18 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
         isChartFill = false
     }
 
+    function updateSelectedStep(ev: any) {
+        if (ev.clientX && chartRef.current && props.isMouseMoveAdded) {
+            const info = chartRef.current.getBoundingClientRect()
+            let currentX = xScale.invert(ev.clientX - info.left - margin)
+            setSelectedStep(currentX)
+        }
+    }
+
     let lines = plot.map((s, i) => {
-        return <TimeSeriesPlot series={s.series} xScale={xScale} yScale={yScale} color={getColor(filteredPlotIdx[i])}
+        return <TimeSeriesPlot series={s.series} xScale={xScale} yScale={yScale}
+                               currentX={props.isMouseMoveAdded ? selectedStep : null}
+                               color={getColor(filteredPlotIdx[i])}
                                key={s.name}/>
 
     })
@@ -81,30 +96,36 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
-    return <div>
-        <svg id={'time-series-chart'}
-             height={2 * margin + axisSize + chartHeight}
-             width={2 * margin + axisSize + chartWidth}>
-            <Gradients/>
-            <g transform={`translate(${margin}, ${margin + chartHeight})`}>
-                {isChartFill && fills}{lines}
-            </g>
-            <g className={'bottom-axis'}
-               transform={`translate(${margin}, ${margin + chartHeight})`}>
-                <BottomTimeAxis chartId={chartId} scale={xScale}/>
-            </g>
-            <g className={'right-axis'}
-               transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
-                <RightAxis chartId={chartId} scale={yScale} specifier={'.1s'} numTicks={props.numTicks}/>
-            </g>
-        </svg>
+    return <div className={'detail-card'}>
+        <div className={props.isMouseMoveAdded ? 'fixed-chart' : ''}>
+            <svg id={'time-series-chart'} ref={chartRef}
+                 height={2 * margin + axisSize + chartHeight}
+                 width={2 * margin + axisSize + chartWidth}
+                 onMouseMove={(ev: any) => updateSelectedStep(ev)}>
+                <Gradients/>
+                <g transform={`translate(${margin}, ${margin + chartHeight})`}>
+                    {isChartFill && fills}{lines}
+                </g>
+                <g className={'bottom-axis'}
+                   transform={`translate(${margin}, ${margin + chartHeight})`}>
+                    <BottomTimeAxis chartId={chartId} scale={xScale}/>
+                </g>
+                <g className={'right-axis'}
+                   transform={`translate(${margin + chartWidth}, ${margin + chartHeight})`}>
+                    <RightAxis chartId={chartId} scale={yScale} specifier={'.1s'} numTicks={props.numTicks}/>
+                </g>
+            </svg>
+        </div>
+        {props.isSparkLines && getSparkTimeLines(track, props.plotIdx, props.width, props.onSelect,
+            props.isMouseMoveAdded ? selectedStep : null)}
     </div>
 }
 
 
 export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesModel[] | null, plotIdx: number[] | null,
                                    width: number, onSelect?: ((i: number) => void), yExtend: [number, number] | null = null,
-                                   chartHeightFraction: number = 1, forceYStart: number | null = null, numTicks: number = 5) {
+                                   chartHeightFraction: number = 1, forceYStart: number | null = null, numTicks: number = 5,
+                                   isMouseMoveAdded: boolean = false, isSparkLines: boolean = false) {
     if (track != null) {
         if (track.length === 0) {
             return null
@@ -117,7 +138,8 @@ export function getTimeSeriesChart(chartType: typeof chartTypes, track: SeriesMo
 
         return <TimeSeriesChart key={1} chartType={chartType} series={track} width={width} plotIdx={plotIdx}
                                 onSelect={onSelect} yExtend={yExtend} stepExtend={[ref[0], ref[ref.length - 1]]}
-                                chartHeightFraction={chartHeightFraction} forceYStart={forceYStart} numTicks={numTicks}/>
+                                chartHeightFraction={chartHeightFraction} forceYStart={forceYStart}
+                                numTicks={numTicks} isMouseMoveAdded={isMouseMoveAdded} isSparkLines={isSparkLines}/>
     } else {
         return <LabLoader/>
     }

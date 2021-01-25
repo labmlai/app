@@ -3,7 +3,7 @@ import React from "react"
 import * as d3 from "d3"
 
 import {PointValue} from "../../../models/run"
-import {toDate} from "../utils"
+import {getSelectedIdx, toDate} from "../utils"
 
 
 interface TimeSeriesPlotProps {
@@ -12,6 +12,7 @@ interface TimeSeriesPlotProps {
     yScale: d3.ScaleLinear<number, number>
     color: string
     colorIdx?: number
+    currentX?: Date | null
 }
 
 export function TimeSeriesPlot(props: TimeSeriesPlotProps) {
@@ -41,9 +42,21 @@ export function TimeSeriesPlot(props: TimeSeriesPlotProps) {
     let unsmoothedPath = <path className={'unsmoothed-line'} fill={'none'} stroke={props.color}
                                d={unsmoothedLine(series) as string}/>
 
+    const bisect = d3.bisector(function (d: PointValue) {
+        return toDate(d.step)
+    }).left
+
+    let selected = null
+    if (props.currentX != null) {
+        let idx = getSelectedIdx(props.series, bisect, props.currentX)
+        selected = <circle r={5} cx={props.xScale(toDate(props.series[idx].step))}
+                           cy={props.yScale(props.series[idx].smoothed)}
+                           fill={props.color}/>
+    }
+
 
     return <g>
-        {smoothedPath}{unsmoothedPath}
+        {smoothedPath}{unsmoothedPath}{selected}
     </g>
 }
 

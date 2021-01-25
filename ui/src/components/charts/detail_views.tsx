@@ -5,7 +5,6 @@ import mixpanel from "mixpanel-browser"
 import {SeriesDataModel, SeriesModel} from "../../models/run"
 import useWindowDimensions from "../../utils/window_dimensions"
 import {getLineChart} from "./lines/chart"
-import {getSparkLines} from "./sparklines/chart"
 import {getTimeSeriesChart} from "./timeseries/chart"
 import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../utils/util_buttons"
 import {LabLoader} from "../utils/loader"
@@ -259,12 +258,9 @@ function BasicTimeSeriesView(props: TimeSeriesViewCardProps) {
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
-            <div className={'detail-card'}>
-                <div className={'fixed-chart'}>
-                    {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend,
-                        1, props.forceYStart)}
-                </div>
-                {getSparkLines(track, plotIdx, actualWidth, toggleChart)}
+            <div>
+                {getTimeSeriesChart(getChartType(0), track, plotIdx, actualWidth, toggleChart, props.yExtend,
+                    1, props.forceYStart, 5, true, true)}
             </div>
             :
             <LabLoader/>

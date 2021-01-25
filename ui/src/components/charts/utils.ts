@@ -77,7 +77,7 @@ export function getLogScale(extent: [number, number], size: number): d3.ScaleLog
 
 export function getTimeScale(extent: [Date, Date], size: number): d3.ScaleTime<number, number> {
     return d3.scaleTime<number, number>()
-        .domain(extent).nice()
+        .domain(extent)
         .range([0, size])
 }
 
@@ -118,7 +118,7 @@ export function toPointValues(track: SeriesModel[]) {
     return series
 }
 
-export function getSelectedIdx(series: any[], bisect: any, currentX?: number | null) {
+export function getSelectedIdx(series: any[], bisect: any, currentX?: any | null) {
     let idx = series.length - 1
     if (currentX != null) {
         idx = bisect(series, currentX)

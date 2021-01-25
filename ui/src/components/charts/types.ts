@@ -5,7 +5,7 @@ export interface SeriesProps {
     plotIdx: number[]
     width: number
     onSelect?: (i: number) => void
-    currentX?: number| null
+    currentX?: any| null
 }
 
 export interface LineChartProps extends SeriesProps {
