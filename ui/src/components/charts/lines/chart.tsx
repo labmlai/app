@@ -9,8 +9,10 @@ import {BottomAxis, RightAxis} from "../axis"
 import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 import {getSparkLines} from "../sparklines/chart"
+import {formatStep} from "../../../utils/value"
 
 import "../style.scss"
+
 
 
 function LineChart(props: LineChartProps) {
@@ -21,7 +23,7 @@ function LineChart(props: LineChartProps) {
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 2)
 
-    const [selectedStep, setSelectedStep] = useState<number | null>(0)
+    const [selectedStep, setSelectedStep] = useState<number | null>(null)
     const chartRef = useRef(null) as any
 
     let track = props.series
@@ -61,7 +63,10 @@ function LineChart(props: LineChartProps) {
         if (ev.clientX && chartRef.current && props.isMouseMoveAdded) {
             const info = chartRef.current.getBoundingClientRect()
             let currentX = xScale.invert(ev.clientX - info.left - margin)
-            setSelectedStep(currentX)
+            if (currentX > 0) {
+                setSelectedStep(currentX)
+            }
+
         }
     }
 
@@ -82,6 +87,9 @@ function LineChart(props: LineChartProps) {
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div className={'detail-card'}>
+        {selectedStep !== null &&
+        <h6 className={'text-center selected-step'}>{'Step : ' + formatStep(selectedStep)}</h6>
+        }
         <div className={props.isMouseMoveAdded ? 'fixed-chart' : ''}>
             <svg id={'chart'} ref={chartRef}
                  height={2 * margin + axisSize + chartHeight}

@@ -19,6 +19,10 @@ export function formatScalar(value: number) {
     return numberWithCommas(str)
 }
 
+export function formatStep(step: number) {
+   return FORMAT(step)
+}
+
 export function formatFixed(value: number, decimals: number) {
     if (Math.abs(value) > 10000) {
         return FORMAT(value)
