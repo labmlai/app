@@ -10,9 +10,9 @@ import Gradients from "../gradients"
 import {LabLoader} from "../../utils/loader"
 import {getSparkLines} from "../sparklines/chart"
 import {formatStep} from "../../../utils/value"
+import isMobile from "../../../utils/mobile"
 
 import "../style.scss"
-
 
 
 function LineChart(props: LineChartProps) {
@@ -60,9 +60,10 @@ function LineChart(props: LineChartProps) {
     }
 
     function updateSelectedStep(ev: any) {
-        if (ev.clientX && chartRef.current && props.isMouseMoveAdded) {
+        let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
+        if (clientX && chartRef.current && props.isMouseMoveAdded) {
             const info = chartRef.current.getBoundingClientRect()
-            let currentX = xScale.invert(ev.clientX - info.left - margin)
+            let currentX = xScale.invert(clientX - info.left - margin)
             if (currentX > 0) {
                 setSelectedStep(currentX)
             }
@@ -94,7 +95,8 @@ function LineChart(props: LineChartProps) {
             <svg id={'chart'} ref={chartRef}
                  height={2 * margin + axisSize + chartHeight}
                  width={2 * margin + axisSize + chartWidth}
-                 onMouseMove={(ev: any) => updateSelectedStep(ev)}>
+                 onMouseMove={(ev: any) => updateSelectedStep(ev)}
+                 onTouchMove={(ev: any) => updateSelectedStep(ev)}>
                 <Gradients/>
                 <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                     {isChartFill && fills} {lines}
