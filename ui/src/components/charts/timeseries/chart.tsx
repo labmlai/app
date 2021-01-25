@@ -101,8 +101,8 @@ function TimeSeriesChart(props: TimeSeriesChartProps) {
 
 
     return <div className={'detail-card'}>
-        {selectedStep && <h6 className={'text-center selected-step'}>{formatDateTime(selectedStep)}</h6>}
         <div className={props.isMouseMoveAdded ? 'fixed-chart' : ''}>
+            {selectedStep && <h6 className={'text-center selected-step'}>{formatDateTime(selectedStep)}</h6>}
             <svg id={'time-series-chart'} ref={chartRef}
                  height={2 * margin + axisSize + chartHeight}
                  width={2 * margin + axisSize + chartWidth}

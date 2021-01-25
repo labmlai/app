@@ -88,10 +88,10 @@ function LineChart(props: LineChartProps) {
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     return <div className={'detail-card'}>
-        {selectedStep !== null &&
-        <h6 className={'text-center selected-step'}>{'Step : ' + formatStep(selectedStep)}</h6>
-        }
         <div className={props.isMouseMoveAdded ? 'fixed-chart' : ''}>
+            {selectedStep !== null &&
+            <h6 className={'text-center selected-step'}>{'Step : ' + formatStep(selectedStep)}</h6>
+            }
             <svg id={'chart'} ref={chartRef}
                  height={2 * margin + axisSize + chartHeight}
                  width={2 * margin + axisSize + chartWidth}
