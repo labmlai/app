@@ -46,4 +46,4 @@ create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
 
 clean_project(settings.FLOAT_PROJECT_TOKEN)
 
-add_token_owners()
+# add_token_owners()
