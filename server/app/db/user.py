@@ -95,3 +95,16 @@ def get_or_create_user(info: AuthOInfo) -> User:
         return user
 
     return user_key.load()
+
+
+def add_token_owners():
+    user_keys = User.get_all()
+    for user_key in user_keys:
+        u = user_key.load()
+        labml_token = u.default_project.labml_token
+
+        if TokenOwnerIndex.get(labml_token):
+            continue
+
+        TokenOwnerIndex.set(labml_token, user_key)
+        print(labml_token)

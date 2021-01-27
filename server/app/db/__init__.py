@@ -10,8 +10,8 @@ from labml_db.serializer.json import JsonSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
 from .. import settings
-from .project import Project, ProjectIndex, create_project
-from .user import User, UserIndex, TokenOwnerIndex
+from .project import Project, ProjectIndex, create_project, clean_project
+from .user import User, UserIndex, TokenOwnerIndex, add_token_owners
 from .status import Status, RunStatus
 from .session import Session, SessionIndex
 from .run import Run, RunIndex
@@ -44,4 +44,6 @@ else:
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
 
-project.clean_project(settings.FLOAT_PROJECT_TOKEN)
+clean_project(settings.FLOAT_PROJECT_TOKEN)
+
+add_token_owners()
