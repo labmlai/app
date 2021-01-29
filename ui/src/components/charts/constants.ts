@@ -9,8 +9,8 @@ export function getColor(index: number) {
 export const CHART_COLORS = [
     '#4E79A7',
     '#F28E2C',
-    '#E15759',
     '#76B7B2',
+    '#E15759',
     '#59A14F',
     '#EDC949',
     '#AF7AA1',
