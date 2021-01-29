@@ -82,7 +82,6 @@ class GPUAnalysis(Analysis):
 @Analysis.route('GET', 'gpu/<session_uuid>')
 def get_gpu_tracking(session_uuid: str) -> Any:
     track_data = []
-    summary_data = []
     status_code = 400
 
     ans = GPUAnalysis.get_or_create(session_uuid)
@@ -90,7 +89,7 @@ def get_gpu_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': track_data}))
     response.status_code = status_code
 
     return response
