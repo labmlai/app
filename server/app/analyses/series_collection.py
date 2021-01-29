@@ -45,6 +45,9 @@ class SeriesCollection:
             else:
                 data[name] = {ind: series['mean']}
 
+        if not data:
+            return []
+
         res = [v for k, v in data.items()]
         sorted_res = sorted(res, key=lambda k: k['l2'])
 
