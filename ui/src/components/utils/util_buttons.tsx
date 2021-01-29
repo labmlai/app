@@ -170,10 +170,15 @@ export function CancelButton(props: ButtonProps) {
 
 interface ToggleButtonProps extends ButtonProps {
     text: string
+    isToggled: boolean
 }
 
 export function ToggleButton(props: ToggleButtonProps) {
     const [defaultClass, setDefaultClass] = useState('')
+
+    useEffect(() => {
+        setDefaultClass(props.isToggled ? 'selected' : '')
+    }, [props.isToggled])
 
     function onToggleButtonClick() {
         if (props.onButtonClick) {
@@ -184,9 +189,10 @@ export function ToggleButton(props: ToggleButtonProps) {
         mixpanel.track('Toggle Button Clicked', {parent: props.parent})
     }
 
-    return <Nav.Link onClick={onToggleButtonClick} className={'tab toggle-button ' + defaultClass} disabled={props.isDisabled}>
-            <span>{props.text}</span>
-        </Nav.Link>
+    return <Nav.Link onClick={onToggleButtonClick} className={'tab toggle-button ' + defaultClass}
+                     disabled={props.isDisabled}>
+        <span>{props.text}</span>
+    </Nav.Link>
 
 
 }
