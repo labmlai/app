@@ -133,7 +133,7 @@ function BasicLineView(props: ViewCardProps) {
             {status && status.isRunning && <RefreshButton onButtonClick={onRefresh} parent={props.title}/>}
         </div>
         <props.headerCard uuid={UUID} width={actualWidth} lastUpdated={analysisCache.lastUpdated}/>
-        <ToggleButton parent={props.title} onButtonClick={onChartClick} DefaultText={'Linear'} onToggleText={'Log'}/>
+        <ToggleButton parent={props.title} onButtonClick={onChartClick} text={'Log'}/>
         <h2 className={'header text-center'}>{props.title}</h2>
         {track && track.length > 0 && preference.current ?
             <div>

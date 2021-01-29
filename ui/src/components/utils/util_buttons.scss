@@ -11,22 +11,6 @@
 }
 
 
-.btn-group {
-  cursor: pointer;
-  font-size: .7rem;
-  border-radius: 15px;
-  padding: 4px 6px 4px 6px;
-
-  span {
-    cursor: pointer;
-  }
-
-  .selected {
-    font-weight: bolder;
-  }
-
-  .v-line {
-    margin: 0 7.5px;
-    opacity: 0.75;
-  }
+.toggle-button {
+  font-size: .8rem;
 }

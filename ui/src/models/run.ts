@@ -40,12 +40,6 @@ export interface InsightModel {
     time: number
 }
 
-export interface SeriesSummaryModel {
-    l1: number
-    l2: number
-    mean: number
-}
-
 export interface SeriesDataModel {
     series: SeriesModel[]
     insights: InsightModel[]

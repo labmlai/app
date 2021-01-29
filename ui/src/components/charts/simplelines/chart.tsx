@@ -1,16 +1,17 @@
 import React from "react"
 
-import {SeriesSummaryModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import {getScale} from "../utils"
 import {SimpleLinePlot} from "./plot"
 import {RightAxis} from "../axis"
 import {getColor} from "../constants"
 import {LabLoader} from "../../utils/loader"
 import {SimpleLineFill} from "./plot"
+import Labels from "../labels"
 
 
 interface SimpleLinesProps {
-    seriesSummary: SeriesSummaryModel[]
+    series: SeriesModel[]
     width: number
 }
 
@@ -22,30 +23,35 @@ function SimpleLineChart(props: SimpleLinesProps) {
     const chartWidth = windowWidth - 2 * margin - axisSize
     const chartHeight = Math.round(chartWidth / 4)
 
-    let track = props.seriesSummary
+    let track = props.series
 
     if (track.length === 0) {
         return <div/>
     }
 
-    let l1: number[] = []
-    let l2: number[] = []
-    let mean: number[] = []
-    track.forEach(function (summary) {
-        l1.push(summary.l1)
-        l2.push(summary.l2)
-        mean.push(summary.mean)
-    })
-
     let plot: number[] = []
-    plot.push(...l1)
-    plot.push(...l2)
-    plot.push(...mean)
+    let labels: string[] = []
+    for (let s of track) {
+        plot.push(...s.value)
+        labels.push(s.name)
+    }
 
-    const xScale = getScale([0, l1.length - 1], chartWidth, false)
+    const xScale = getScale([0, track[0].value.length - 1], chartWidth, false)
     const yScale = getScale([Math.min(...plot), Math.max(...plot)], -chartHeight)
 
     const chartId = `chart_${Math.round(Math.random() * 1e9)}`
+
+    let lines = track.map((s, i) => {
+        return <SimpleLinePlot series={s.value} xScale={xScale} yScale={yScale} color={getColor(i)}
+                               key={s.name}/>
+
+    })
+
+    let fills = track.map((s, i) => {
+        return <SimpleLineFill series={s.value} xScale={xScale} yScale={yScale} color={getColor(i)}
+                               key={s.name}
+                               colorIdx={i}/>
+    })
 
     return <div>
         <svg id={'chart'}
@@ -53,15 +59,7 @@ function SimpleLineChart(props: SimpleLinesProps) {
              width={2 * margin + axisSize + chartWidth}>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 <g>
-                    <SimpleLineFill series={mean} xScale={xScale} yScale={yScale} color={getColor(1)} key={1}
-                                    colorIdx={1}/>
-                    <SimpleLineFill series={l1} xScale={xScale} yScale={yScale} color={getColor(2)} key={2}
-                                    colorIdx={2}/>
-                    <SimpleLineFill series={l2} xScale={xScale} yScale={yScale} color={getColor(3)} key={3}
-                                    colorIdx={3}/>
-                    <SimpleLinePlot series={mean} xScale={xScale} yScale={yScale} color={getColor(1)} key={4}/>
-                    <SimpleLinePlot series={l1} xScale={xScale} yScale={yScale} color={getColor(2)} key={5}/>
-                    <SimpleLinePlot series={l2} xScale={xScale} yScale={yScale} color={getColor(3)} key={6}/>
+                    {fills}{lines}
                 </g>
             </g>
             <g className={'right-axis'}
@@ -69,24 +67,17 @@ function SimpleLineChart(props: SimpleLinesProps) {
                 <RightAxis chartId={chartId} scale={yScale}/>
             </g>
         </svg>
-        <div className={'text-center labels text-secondary'}>
-            <div className='box' style={{backgroundColor: getColor(1)}}></div>
-            Mean
-            <div className='box' style={{backgroundColor: getColor(2)}}></div>
-            L1 - Norm
-            <div className='box' style={{backgroundColor: getColor(3)}}></div>
-            L2 - Norm
-        </div>
+        <Labels labels={labels}/>
     </div>
 }
 
-export function getSimpleLineChart(seriesSummary: SeriesSummaryModel[] | null, width: number) {
-    if (seriesSummary != null) {
-        if (seriesSummary.length === 0) {
+export function getSimpleLineChart(series: SeriesModel[] | null, width: number) {
+    if (series != null) {
+        if (series.length === 0) {
             return null
         }
 
-        return <SimpleLineChart seriesSummary={seriesSummary} width={width}/>
+        return <SimpleLineChart series={series} width={width}/>
     } else {
         return <LabLoader/>
     }

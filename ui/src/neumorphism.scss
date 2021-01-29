@@ -98,8 +98,14 @@ body.light {
     color: $light-btn;
   }
 
-  .btn-group {
-    box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+  .toggle-button {
+    &.toggle-button-action {
+      box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+
+      &.selected {
+        box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
+      }
+    }
   }
 
   .v-line {
@@ -331,11 +337,13 @@ body.dark {
     color: $dark-btn;
   }
 
-  .btn-group {
-    box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+  .toggle-button {
+    &.selected {
+      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+    }
   }
 
-   .v-line {
+  .v-line {
     border-left: 2px solid $dark-btn;
   }
 

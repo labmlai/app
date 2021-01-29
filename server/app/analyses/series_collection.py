@@ -46,10 +46,17 @@ class SeriesCollection:
                 data[name] = {ind: series['mean']}
 
         res = [v for k, v in data.items()]
-
         sorted_res = sorted(res, key=lambda k: k['l2'])
 
-        return sorted_res
+        mean = {'name': 'mean', 'value': []}
+        l1 = {'name': 'l1', 'value': []}
+        l2 = {'name': 'l2', 'value': []}
+        for v in sorted_res:
+            mean['value'].append(v['mean'])
+            l1['value'].append(v['l1'])
+            l2['value'].append(v['l2'])
+
+        return [mean, l1, l2]
 
     def track(self, data: Dict[str, SeriesModel]) -> None:
         for ind, series in data.items():
@@ -66,6 +73,3 @@ class SeriesCollection:
         s.update(series['step'], series['value'])
 
         self.tracking[ind] = s.to_data()
-
-
-
