@@ -52,6 +52,10 @@ class GPUAnalysis(Analysis):
         res = []
         for ind, track in self.gpu.tracking.items():
             name = ind.split('.')
+
+            if not 'utilization' in name:
+                continue
+
             series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name)
 

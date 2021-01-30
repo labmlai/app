@@ -33,11 +33,11 @@ function AnalysisSummary(props: SummaryCardProps) {
     return <BasicSparkTimeLines title={TITLE}
                                 url={URL}
                                 cache={cache}
+                                yExtend={[0, 100]}
                                 uuid={props.uuid}
                                 ref={props.refreshRef}
                                 chartHeightFraction={4}
-                                isSetPreferences={true}
-                                forceYStart={0}
+                                isSetPreferences={false}
                                 width={props.width}/>
 }
 
@@ -47,7 +47,7 @@ function AnalysisDetails() {
     return <BasicTimeSeriesView title={TITLE}
                                 cache={cache}
                                 location={location}
-                                forceYStart={0}
+                                yExtend={[0, 100]}
                                 headerCard={ComputerHeaderCard}/>
 }
 
