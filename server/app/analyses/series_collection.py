@@ -18,9 +18,9 @@ class SeriesCollection:
         res = []
         for ind, track in self.tracking.items():
             name = ind.split('.')
-            if name[0] != SeriesEnums.TIME and name[-1] != 'l2':
+            if name[-1] not in ['l2', 'var']:
                 continue
-            if name[-1] in ['mean', 'l2', 'l1']:
+            if name[-1] in ['mean', 'l2', 'l1', 'var']:
                 name = name[:-1]
             name = name[1:]
 
