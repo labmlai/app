@@ -49,8 +49,7 @@ function SimpleLineChart(props: SimpleLinesProps) {
 
     let fills = track.map((s, i) => {
         return <SimpleLineFill series={s.value} xScale={xScale} yScale={yScale} color={getColor(i)}
-                               key={s.name}
-                               colorIdx={i}/>
+                               key={s.name} colorIdx={i}/>
     })
 
     return <div>

@@ -33,6 +33,7 @@ class SeriesCollection:
 
     def get_track_summaries(self):
         data = {}
+        inds = set()
         for ind, track in self.tracking.items():
             name_split = ind.split('.')
             ind = name_split[-1]
@@ -45,21 +46,23 @@ class SeriesCollection:
             else:
                 data[name] = {ind: series['mean']}
 
+            inds.add(ind)
+
         if not data:
             return []
 
         res = [v for k, v in data.items()]
-        sorted_res = sorted(res, key=lambda k: k['l2'])
+        sorted_res = sorted(res, key=lambda k: k['l2' if 'l2' in inds else 'var'])
 
-        mean = {'name': 'mean', 'value': []}
-        l1 = {'name': 'l1', 'value': []}
-        l2 = {'name': 'l2', 'value': []}
-        for v in sorted_res:
-            mean['value'].append(v['mean'])
-            l1['value'].append(v['l1'])
-            l2['value'].append(v['l2'])
+        ret = {}
+        for d in sorted_res:
+            for k, v in d.items():
+                if k not in ret:
+                    ret[k] = {'name': k, 'value': []}
+                else:
+                    ret[k]['value'].append(v)
 
-        return [mean, l1, l2]
+        return [v for k, v in ret.items()]
 
     def track(self, data: Dict[str, SeriesModel]) -> None:
         for ind, series in data.items():
