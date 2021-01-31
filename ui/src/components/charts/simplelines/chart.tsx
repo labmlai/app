@@ -8,6 +8,7 @@ import {getColor} from "../constants"
 import {LabLoader} from "../../utils/loader"
 import {SimpleLineFill} from "./plot"
 import Labels from "../labels"
+import Gradients from "../gradients";
 
 
 interface SimpleLinesProps {
@@ -56,6 +57,7 @@ function SimpleLineChart(props: SimpleLinesProps) {
         <svg id={'chart'}
              height={2 * margin + chartHeight}
              width={2 * margin + axisSize + chartWidth}>
+            <Gradients/>
             <g transform={`translate(${margin}, ${margin + chartHeight})`}>
                 <g>
                     {fills}{lines}

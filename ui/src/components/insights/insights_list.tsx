@@ -5,6 +5,7 @@ import {faLightbulb} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
 import "./insights_list.scss"
+import {formatStep} from "../../utils/value";
 
 function Insight(props: InsightModel) {
     let className = 'insight-container'
