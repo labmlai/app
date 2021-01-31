@@ -118,11 +118,16 @@ export function toPointValues(track: SeriesModel[]) {
     return series
 }
 
-export function getSelectedIdx(series: any[], bisect: any, currentX?: any | null) {
+export function getSelectedIdx(series: any[], bisect: any, currentX?: any | null, stepKey: string = 'step') {
     let idx = series.length - 1
     if (currentX != null) {
         idx = bisect(series, currentX)
         if (idx < series.length) {
+            if (idx !== 0) {
+                idx = Math.abs(currentX - series[idx - 1][stepKey]) > Math.abs(currentX - series[idx][stepKey]) ?
+                    idx : idx - 1
+            }
+
             return idx
         } else {
             return series.length - 1
