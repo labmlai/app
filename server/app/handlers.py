@@ -7,6 +7,7 @@ from flask import request, make_response, jsonify
 
 from .logging import logger
 from . import settings
+from . import block_uuids
 from . import auth
 from . import utils
 from .db import run
@@ -204,6 +205,12 @@ def update_run() -> flask.Response:
     token = request.args.get('labml_token', '')
     version = request.args.get('labml_version', '')
     run_uuid = request.args.get('run_uuid', '')
+
+    if run_uuid in block_uuids.run_uuids:
+        error = {'error': 'block_run_uuid',
+                 'message': f'Block Run UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
 
     if len(run_uuid) < 10:
         error = {'error': 'invalid_run_uuid',
