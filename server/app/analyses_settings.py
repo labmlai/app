@@ -1,7 +1,7 @@
 from .analyses.experiments.parameters import ParametersAnalysis
 from .analyses.experiments.time_tracking import TimeTrackingAnalysis
 from .analyses.experiments.gradients import GradientsAnalysis
-from .analyses.experiments.metrics import MetricsAnalysis
+from .app_analyses.experiments.metrics import MetricsAnalysis
 from .analyses.experiments.outputs import OutputsAnalysis
 
 from .analyses.computers.cpu import CPUAnalysis
