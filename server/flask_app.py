@@ -4,7 +4,7 @@ import time
 import warnings
 from time import strftime
 
-from flask import Flask, request, make_response, redirect, g
+from flask import Flask, request,  g
 from flask_cors import CORS, cross_origin
 
 from app import handlers
@@ -31,7 +31,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__,  static_folder='../static/ui')
+    _app = Flask(__name__, static_folder='../static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -59,14 +59,13 @@ handlers.add_handlers(app)
 
 @app.route('/')
 def root():
-    print('serving static files')
     return app.send_static_file('index.html')
 
 
 @cross_origin()
 @app.route('/<path:path>')
-def not_found(path):
-    return make_response(redirect(settings.WEB_URL))
+def send_js(path):
+    return app.send_static_file('index.html')
 
 
 @app.before_request

@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "amd",
     "sourceMap": false,
-    "outDir": "static/ui/js"
+    "outDir": "static/js"
   },
   "include": [
     "ui/src",

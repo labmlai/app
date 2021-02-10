@@ -19,9 +19,8 @@ server-prod: ## compile and start server in prod
 compile: ## Compile JS
 	rm -rf static
 	mkdir static
-	mkdir static/ui
-	cp ui/src/index.html static/ui/index.html
-	cp -r ui/images static/ui/
+	cp ui/src/index.html static/index.html
+	cp -r ui/images static/
 	npm run build
 
 watch-ui: compile ## Watch and Compile JS

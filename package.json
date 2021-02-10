@@ -23,8 +23,8 @@
     "watch": "$npm_execpath run watch:ui & $npm_execpath run watch:sass",
     "build:ui": "tsc -p tsconfig.json",
     "watch:ui": "tsc -w -p tsconfig.json",
-    "build:sass": "sass ui/src/style.scss:static/ui/css/style.css",
-    "watch:sass": "sass --watch ui/src/style.scss:static/ui/css/style.css",
+    "build:sass": "sass ui/src/style.scss:static/css/style.css",
+    "watch:sass": "sass --watch ui/src/style.scss:static/css/style.css",
     "clean": "rm -rf static/"
   },
   "browserslist": {
