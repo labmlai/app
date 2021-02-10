@@ -1,26 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "downlevelIteration": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
+    "target": "es6",
+    "module": "amd",
+    "sourceMap": false,
+    "outDir": "static/ui/js"
   },
   "include": [
-    "src",
+    "ui/src",
     "lib/io/io.ts",
     "lib/io/ajax.ts",
     "lib/weya/weya.ts",

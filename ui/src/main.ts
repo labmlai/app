@@ -1,5 +1,5 @@
 import {ROUTER} from './app'
-import {RunHandler} from './run_view'
+import {RunHandler} from './views/run_view'
 
 new RunHandler()
 
