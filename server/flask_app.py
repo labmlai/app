@@ -31,7 +31,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__, static_folder='../static')
+    _app = Flask(__name__, static_folder='../static', static_url_path='/static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -62,7 +62,6 @@ def root():
     return app.send_static_file('index.html')
 
 
-@cross_origin()
 @app.route('/<path:path>')
 def send_js(path):
     return app.send_static_file('index.html')
