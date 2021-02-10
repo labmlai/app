@@ -31,7 +31,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__)
+    _app = Flask(__name__,  static_folder='../static/ui')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -55,6 +55,12 @@ cors = CORS(app, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 handlers.add_handlers(app)
+
+
+@app.route('/')
+def root():
+    print('serving static files')
+    return app.send_static_file('index.html')
 
 
 @cross_origin()
