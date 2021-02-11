@@ -4,7 +4,7 @@ import time
 import warnings
 from time import strftime
 
-from flask import Flask, request,  g
+from flask import Flask, request,  g, send_from_directory
 from flask_cors import CORS, cross_origin
 
 from app import handlers
@@ -64,7 +64,11 @@ def root():
 
 @app.route('/<path:path>')
 def send_js(path):
-    return app.send_static_file('index.html')
+    # TODO: Fix this properly
+    try:
+        return send_from_directory('../static', path)
+    except Exception as e:
+        return app.send_static_file('index.html')
 
 
 @app.before_request
