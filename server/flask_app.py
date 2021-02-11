@@ -4,7 +4,7 @@ import time
 import warnings
 from time import strftime
 
-from flask import Flask, request,  g, send_from_directory
+from flask import Flask, request, g, send_from_directory
 from flask_cors import CORS, cross_origin
 
 from app import handlers
@@ -91,6 +91,9 @@ def after_request(response):
         time_limit = 0.4
     else:
         time_limit = 1.5
+
+    if '/api' not in request.full_path:
+        return response
 
     if request_time > time_limit:
         logger.error(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')

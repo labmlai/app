@@ -1,29 +1,20 @@
+import {Run} from '../models/run'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
-
-
-function wrapEvent(eventName: string, func: Function) {
-    function wrapper() {
-        let e: Event = arguments[arguments.length - 1]
-        if (eventName[eventName.length - 1] !== '_') {
-            e.preventDefault()
-            e.stopPropagation()
-        }
-
-        func.apply(null, arguments)
-    }
-
-    return wrapper
-}
+import {RunCache} from "../cache/cache"
+import CACHE from "../cache/cache"
 
 class RunView implements ScreenView {
+    run: Run
+    runCache: RunCache
     elem: WeyaElement
     runView: HTMLDivElement
     uuid: string
 
     constructor(uuid: string) {
-        this.uuid = uuid
+        this.uuid = '027f53d45ad211ebb1b4acde48001122'
+        this.runCache = CACHE.getRun(this.uuid)
     }
 
     render() {
@@ -31,7 +22,13 @@ class RunView implements ScreenView {
             this.runView = <HTMLDivElement>$('div.run_single', 'Test')
         })
 
+        this.renderRun().then()
+
         return this.elem
+    }
+
+    private async renderRun() {
+        this.run = await this.runCache.get()
     }
 }
 

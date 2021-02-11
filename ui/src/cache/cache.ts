@@ -1,3 +1,7 @@
+import {Run} from "../models/run"
+import {Status} from "../models/status"
+import NETWORK from "../network"
+
 const RELOAD_TIMEOUT = 60 * 1000
 
 function isReloadTimeout(lastUpdated: number): boolean {
@@ -92,3 +96,80 @@ abstract class CacheObject<T> {
     }
 }
 
+export class RunCache extends CacheObject<Run> {
+    private readonly uuid: string
+    private statusCache: RunStatusCache
+
+    constructor(uuid: string, statusCache: RunStatusCache) {
+        super()
+        this.uuid = uuid
+        this.statusCache = statusCache
+    }
+
+    async load(): Promise<Run> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getRun(this.uuid)
+            return new Run(res)
+        })
+    }
+
+    async get(isRefresh = false): Promise<Run> {
+        let status = await this.statusCache.get()
+
+        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+            this.data = await this.load()
+            this.lastUpdated = (new Date()).getTime()
+            await this.statusCache.get(true)
+        }
+
+        return this.data
+    }
+
+    async setRun(run: Run): Promise<void> {
+        await NETWORK.setRun(this.uuid, run)
+    }
+}
+
+export class RunStatusCache extends CacheObject<Status> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<Status> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getRunStatus(this.uuid)
+            return new Status(res)
+        })
+    }
+}
+
+class Cache {
+    private readonly runs: { [uuid: string]: RunCache }
+    private readonly runStatuses: { [uuid: string]: RunStatusCache }
+
+    constructor() {
+        this.runs = {}
+        this.runStatuses = {}
+    }
+
+    getRun(uuid: string) {
+        if (this.runs[uuid] == null) {
+            this.runs[uuid] = new RunCache(uuid, this.getRunStatus(uuid))
+        }
+
+        return this.runs[uuid]
+    }
+
+    getRunStatus(uuid: string) {
+        if (this.runStatuses[uuid] == null) {
+            this.runStatuses[uuid] = new RunStatusCache(uuid)
+        }
+
+        return this.runStatuses[uuid]
+    }
+}
+
+export default new Cache()
