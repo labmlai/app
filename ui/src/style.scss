@@ -4,6 +4,45 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+/* Loader */
+
+.loader {
+  border: 6px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 6px solid #eb6134;
+  width: 40px;
+  height: 40px;
+  -webkit-animation: spin 1s linear infinite; /* Safari */
+  animation: spin 1s linear infinite;
+  margin-top: 50px;
+  display: inline-block;
+}
+
+.center{
+  text-align: center;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loader */
+
 .error-container {
   margin: 0;
   padding: 0;

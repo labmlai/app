@@ -47,6 +47,9 @@ class PageNotFoundView implements ScreenView {
         return this.elem
     }
 
+    destroy() {
+    }
+
     private events = {
         home: () => {
             ROUTER.navigate(`/`)
