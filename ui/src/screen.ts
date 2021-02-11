@@ -1,13 +1,26 @@
 import {WeyaElement} from '../../lib/weya/weya'
 
-interface ScreenView {
-    render(): WeyaElement
+abstract class ScreenView {
+    destroy() {
+
+    }
+    abstract render(): WeyaElement
 }
 
 class ScreenContainer {
+    view?: ScreenView
+
+    constructor() {
+        this.view = null
+    }
+
     setView(view: ScreenView) {
+        if(this.view) {
+            this.view.destroy()
+        }
+        this.view = view
         document.body.innerHTML = ''
-        document.body.append(view.render())
+        document.body.append(this.view.render())
     }
 }
 
