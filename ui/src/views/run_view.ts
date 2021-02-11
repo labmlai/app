@@ -3,6 +3,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
+import {AlertMessage} from "../components/alert"
 import {RunCache} from "../cache/cache"
 import CACHE from "../cache/cache"
 
@@ -19,8 +20,9 @@ class RunView implements ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.container', $ => {
-            this.runView = <HTMLDivElement>$('div.run_single', 'Test')
+        this.elem = <HTMLElement>$('div.run.page', $ => {
+            // this.runView = <HTMLDivElement>$('div.run_single', 'Test')
+            new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
             new Loader().render($)
         })
 
@@ -34,7 +36,9 @@ class RunView implements ScreenView {
     }
 
     private async renderRun() {
-        this.run = await this.runCache.get()
+        this.runCache.get().then(
+
+        )
     }
 }
 
