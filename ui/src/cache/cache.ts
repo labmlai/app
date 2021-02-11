@@ -74,7 +74,7 @@ abstract class CacheObject<T> {
         this.lastUpdated = 0
     }
 
-    abstract async load(...args: any[]): Promise<T>
+    abstract load(...args: any[]): Promise<T>
 
     async get(isRefresh = false, ...args: any[]): Promise<T> {
         if (this.data == null || isRefresh) {
