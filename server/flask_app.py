@@ -4,7 +4,7 @@ import time
 import warnings
 from time import strftime
 
-from flask import Flask, request, make_response, redirect, g
+from flask import Flask, request, g, send_from_directory
 from flask_cors import CORS, cross_origin
 
 from app import handlers
@@ -31,7 +31,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__)
+    _app = Flask(__name__, static_folder='../static', static_url_path='/static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -57,10 +57,18 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 handlers.add_handlers(app)
 
 
-@cross_origin()
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
+
 @app.route('/<path:path>')
-def not_found(path):
-    return make_response(redirect(settings.WEB_URL))
+def send_js(path):
+    # TODO: Fix this properly
+    try:
+        return send_from_directory('../static', path)
+    except Exception as e:
+        return app.send_static_file('index.html')
 
 
 @app.before_request
@@ -83,6 +91,9 @@ def after_request(response):
         time_limit = 0.4
     else:
         time_limit = 1.5
+
+    if '/api' not in request.full_path:
+        return response
 
     if request_time > time_limit:
         logger.error(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')

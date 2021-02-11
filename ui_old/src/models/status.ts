@@ -28,7 +28,6 @@ export class Status {
     run_status: RunStatus
 
     constructor(status: StatusModel) {
-        console.log(status)
         this.uuid = status.run_uuid
         this.last_updated_time = status.last_updated_time
         this.run_status = new RunStatus(status.run_status)
@@ -43,7 +42,7 @@ export class Status {
         }
     }
 
-    get isStatusInProgress() {
+    get isStatusInProgress(){
         return this.run_status.status === 'in progress'
     }
 

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "amd",
+    "sourceMap": false,
+    "outDir": "static/js"
+  },
+  "include": [
+    "ui/src",
+    "lib/io/io.ts",
+    "lib/io/ajax.ts",
+    "lib/weya/weya.ts",
+    "lib/weya/router.ts"
+  ]
+}

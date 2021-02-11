@@ -1,115 +1,50 @@
-import axios, {AxiosInstance} from 'axios'
-
-import {User, UserModel} from "./models/user"
-import CACHE from "./cache/cache"
-
-interface MetaProps {
-    is_run_added: boolean
-}
-
-function process_meta_data(meta: MetaProps) {
-    if (meta && meta.is_run_added) {
-        const runListCache = CACHE.getRunsList()
-        runListCache.invalidate_cache()
-    }
-}
+const REACT_APP_SERVER_URL = 'http://localhost:5000/api/v1'
 
 class Network {
-    axiosInstance: AxiosInstance
-    handleError: Function | null
+    baseURL: string
 
-    constructor() {
-        this.axiosInstance = axios.create({
-            baseURL: process.env.REACT_APP_SERVER_URL,
-            withCredentials: true
-        })
+    constructor(baseURL: string) {
+        this.baseURL = baseURL
+    }
 
-        this.handleError = null
+    private sendHttpRequest = (method: string, url: string, data: object = {}) => {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.open(method, this.baseURL + url)
+            xhr.responseType = 'json'
 
-        this.axiosInstance.interceptors.response.use((response: any) => {
-            let data = response.data
-
-            process_meta_data(data.meta)
-
-            return data.data
-        }, (error: any) => {
-            if (this.handleError != null) {
-                this.handleError(error)
+            if (data) {
+                xhr.setRequestHeader('Content-Type', 'application/json')
             }
 
-            return Promise.reject(error)
+            xhr.onload = () => {
+                if (xhr.status >= 400) {
+                    reject(xhr.response)
+                } else {
+                    resolve(xhr.response.data)
+                }
+            }
+
+            xhr.onerror = () => {
+                reject('Something went wrong!')
+            }
+
+            xhr.send(JSON.stringify(data))
         })
     }
 
     async getRun(run_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/run/${run_uuid}`)
+        return this.sendHttpRequest('GET', `/run/${run_uuid}`)
     }
 
     async setRun(run_uuid: string, data: object): Promise<any> {
-        return this.axiosInstance.post(`/run/${run_uuid}`, data)
-    }
-
-    async getComputer(computer_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/computer/${computer_uuid}`)
+        return this.sendHttpRequest('POST', `/run/${run_uuid}`, data)
     }
 
     async getRunStatus(run_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/run/status/${run_uuid}`)
+        return this.sendHttpRequest('GET', `/run/status/${run_uuid}`)
     }
-
-    async getComputerStatus(computer_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/computer/status/${computer_uuid}`)
-    }
-
-    async getAnalysis(url: string, run_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/${url}/${run_uuid}`, {})
-    }
-
-    async getPreferences(url: string, run_uuid: string): Promise<any> {
-        return this.axiosInstance.get(`/${url}/preferences/${run_uuid}`, {})
-    }
-
-    async updatePreferences(url: string, run_uuid: string, data: object): Promise<any> {
-        return this.axiosInstance.post(`/${url}/preferences/${run_uuid}`, data)
-    }
-
-    async getRuns(labml_token: string | null): Promise<any> {
-        return this.axiosInstance.get(`/runs/${labml_token}`, {})
-    }
-
-    async getComputers(): Promise<any> {
-        return this.axiosInstance.get(`/computers/${null}`, {})
-    }
-
-    async deleteRuns(runUUIDS: string[]): Promise<any> {
-        return this.axiosInstance.put(`/runs`, {'run_uuids': runUUIDS})
-    }
-
-    async deleteSessions(computerUUIDS: string[]): Promise<any> {
-        return this.axiosInstance.put(`/computers`, {'session_uuids': computerUUIDS})
-    }
-
-    async getUser(): Promise<any> {
-        return this.axiosInstance.get(`/user`, {})
-    }
-
-    async setUser(user: User): Promise<any> {
-        return this.axiosInstance.post(`/user`, {'user': user})
-    }
-
-    async signIn(data: UserModel): Promise<any> {
-        return this.axiosInstance.post(`/auth/sign_in`, data)
-    }
-
-    async signOut(): Promise<any> {
-        return this.axiosInstance.delete(`/auth/sign_out`)
-    }
-
-    async getIsUserLogged(): Promise<any> {
-        return this.axiosInstance.get(`/auth/is_logged`)
-    }
-
 }
 
-const NETWORK = new Network()
+const NETWORK = new Network(REACT_APP_SERVER_URL)
 export default NETWORK

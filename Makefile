@@ -16,8 +16,16 @@ server-prod: ## compile and start server in prod
     # export PATH=~/miniconda/bin:$PATH
 	cd server && pipenv install --ignore-pipfile && pipenv run gunicorn -c gunicorn.conf.py --bind 0.0.0.0:5000 flask_app:app --daemon
 
-watch-ui: ## start and watch ui
-	BROWSER=none npm start --prefix ./ui
+compile: ## Compile JS
+	rm -rf static
+	mkdir static
+	cp ui/src/index.html static/index.html
+	cp -r ui/images static/
+	npm run build
+
+watch-ui: compile ## Watch and Compile JS
+	npm run build
+	npm run watch
 
 build-ui: ## build production ui
 	npm install --prefix ./ui
