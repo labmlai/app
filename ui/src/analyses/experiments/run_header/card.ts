@@ -1,13 +1,13 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
-import {CardProps} from "../../types"
+import {CardOptions} from "../../types"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {getTimeDiff, formatTime} from "../../../utils/time"
 
-interface CardOptions extends CardProps {
+interface RunHeaderOptions extends CardOptions {
     lastUpdated?: number
 }
 
@@ -19,7 +19,7 @@ export class RunHeaderCard {
     runCache: RunCache
     statusCache: RunStatusCache
 
-    constructor(opt: CardOptions) {
+    constructor(opt: RunHeaderOptions) {
         this.uuid = opt.uuid
         this.lastUpdated = opt.lastUpdated
         this.runCache = CACHE.getRun(this.uuid)

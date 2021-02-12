@@ -8,6 +8,7 @@ import {Loader} from "../components/loader"
 import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
+import {StdOutCard} from "../analyses/experiments/stdout/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
 
 class RunView implements ScreenView {
@@ -58,6 +59,7 @@ class RunView implements ScreenView {
                 }
             })
             new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
+            new StdOutCard({uuid: this.uuid, width: 800}).render($)
         })
     }
 

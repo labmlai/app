@@ -1,4 +1,4 @@
-export interface CardProps {
+export interface CardOptions {
     uuid: string
     width: number
 }
