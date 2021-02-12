@@ -3,9 +3,10 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
+import {cancelButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
-import {RunCache} from "../cache/cache"
-import CACHE from "../cache/cache"
+import {RunHeaderCard} from "../analyses/experiments/run_header/card"
+import CACHE, {RunCache} from "../cache/cache"
 
 class RunView implements ScreenView {
     run: Run
@@ -22,8 +23,10 @@ class RunView implements ScreenView {
     render() {
         this.elem = <HTMLElement>$('div.run.page', $ => {
             // this.runView = <HTMLDivElement>$('div.run_single', 'Test')
-            new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
-            new Loader().render($)
+            // new cancelButton({onButtonClick: this.onRefresh}).render($)
+            // new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
+            // new Loader().render($)
+            new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
         })
 
         this.renderRun().then()
@@ -32,6 +35,10 @@ class RunView implements ScreenView {
     }
 
     destroy() {
+
+    }
+
+    onRefresh() {
 
     }
 

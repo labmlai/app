@@ -6,7 +6,7 @@ export class Loader {
     }
 
     render($: WeyaElementFunction) {
-        $('div.center', $ => {
+        $(`div.center`, $ => {
             $('div.loader', '')
         })
     }

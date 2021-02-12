@@ -12,7 +12,6 @@ abstract class Button {
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
         this.isDisabled = opt.isDisabled
-
     }
 
     render($: WeyaElementFunction) {
