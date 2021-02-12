@@ -4,7 +4,10 @@ import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {BackButton, SaveButton, CancelButton, EditButton} from "../../../components/buttons";
+import {BackButton, SaveButton, CancelButton, EditButton} from "../../../components/buttons"
+import EditableField from "../../../components/editable_field"
+import {formatTime, getTimeDiff} from "../../../utils/time"
+
 
 class RunHeaderView implements ScreenView {
     elem: WeyaElement
@@ -37,9 +40,11 @@ class RunHeaderView implements ScreenView {
 
     }
 
-    private async renderRunHeader() {
+    async renderRunHeader() {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
+
+        this.runHeaderView.innerHTML = ''
 
         $(this.runHeaderView, $ => {
             $('div.flex-container', $ => {
@@ -51,11 +56,65 @@ class RunHeaderView implements ScreenView {
                     new EditButton({onButtonClick: this.onToggleEdit}).render($)
                 }
             })
+            $('h2.header.text-center', 'Run Details')
+            $('div.input-list-container', $ => {
+                $('ul', $ => {
+                    if (this.run && this.status) {
+                        new EditableField({
+                            name: 'Run Name',
+                            value: this.run.name,
+                            isEditable: this.isEditMode
+                        }).render($)
+                        new EditableField({
+                            name: 'Comment',
+                            value: this.run.comment,
+                            isEditable: this.isEditMode
+                        }).render($)
+                        new EditableField({
+                            name: 'Note',
+                            value: this.run.note,
+                            placeholder: 'write your note here',
+                            numEditRows: 5,
+                            isEditable: this.isEditMode
+                        }).render($)
+                        new EditableField({
+                            name: 'UUID',
+                            value: this.run.run_uuid,
+                        }).render($)
+                        new EditableField({
+                            name: 'Start Time',
+                            value: formatTime(this.run.start_time),
+                        }).render($)
+                        new EditableField({
+                            name: 'Last Recorded',
+                            value: this.status.isRunning ? getTimeDiff(this.status.last_updated_time * 1000) :
+                                formatTime(this.status.last_updated_time),
+                        }).render($)
+                        new EditableField({
+                            name: 'Start Step',
+                            value: this.run.start_step
+                        }).render($)
+                        new EditableField({
+                            name: 'Python File',
+                            value: this.run.python_file
+                        }).render($)
+                        new EditableField({
+                            name: 'Commit Message',
+                            value: this.run.commit_message
+                        }).render($)
+                    }
+                })
+            })
         })
     }
 
-    onToggleEdit() {
+    onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
+        console.log(typeof this)
+
+
+
+        this.renderRunHeader().then()
     }
 
     updateRun() {
