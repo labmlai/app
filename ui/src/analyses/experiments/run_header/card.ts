@@ -1,4 +1,5 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {ROUTER} from '../../../app'
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {CardProps} from "../../types"
 import {Run} from "../../../models/run"
@@ -12,21 +13,24 @@ interface CardOptions extends CardProps {
 
 export class RunHeaderCard {
     run: Run
+    uuid: string
     status: Status
     lastUpdated: number
     runCache: RunCache
     statusCache: RunStatusCache
 
     constructor(opt: CardOptions) {
+        this.uuid = opt.uuid
         this.lastUpdated = opt.lastUpdated
-        this.runCache = CACHE.getRun(opt.uuid)
-        this.statusCache = CACHE.getRunStatus(opt.uuid)
+        this.runCache = CACHE.getRun(this.uuid)
+        this.statusCache = CACHE.getRunStatus(this.uuid)
         this.lastUpdated = opt.lastUpdated ? opt.lastUpdated : this.statusCache.lastUpdated
     }
 
+
     render($: WeyaElementFunction) {
         this.LoadData().then(() => {
-            $('div.labml-card.labml-card-action', $ => {
+            $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
                 $('div', $ => {
                     let lastRecorded = this.status.last_updated_time
                     $('div.last-updated.mb-2', `Last Recorded ${this.status.isStatusInProgress ?
@@ -47,5 +51,9 @@ export class RunHeaderCard {
     private async LoadData() {
         this.status = await this.statusCache.get()
         this.run = await this.runCache.get()
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/run_header/${this.uuid}`)
     }
 }

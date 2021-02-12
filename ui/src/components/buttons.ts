@@ -1,4 +1,5 @@
 import {WeyaElementFunction} from "../../../lib/weya/weya"
+import {ROUTER} from '../app'
 
 interface buttonOptions {
     onButtonClick?: () => void
@@ -8,6 +9,10 @@ interface buttonOptions {
 abstract class Button {
     onButtonClick: () => void
     isDisabled: boolean
+
+    onClick = () => {
+        this.onButtonClick()
+    }
 
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
@@ -24,9 +29,13 @@ export class BackButton extends Button {
         super(opt)
     }
 
+    onClick = () => {
+        ROUTER.back()
+    }
+
     render($: WeyaElementFunction) {
         $('nav.nav-link.tab.float-left',
-            {on: {click: this.onButtonClick}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-chevron-left', '')
                 $('span.ml-1', 'Run')
@@ -41,7 +50,7 @@ export class RefreshButton extends Button {
 
     render($: WeyaElementFunction) {
         $('nav.nav-link.tab.float-right',
-            {on: {click: this.onButtonClick}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-sync', '')
             })
@@ -55,7 +64,7 @@ export class SaveButton extends Button {
 
     render($: WeyaElementFunction) {
         $('nav.nav-link.tab.float-right',
-            {on: {click: this.onButtonClick}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-save', '')
             })
@@ -69,7 +78,7 @@ export class EditButton extends Button {
 
     render($: WeyaElementFunction) {
         $('nav.nav-link.tab.float-right',
-            {on: {click: this.onButtonClick}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-edit', '')
             })
@@ -83,7 +92,7 @@ export class DeleteButton extends Button {
 
     render($: WeyaElementFunction) {
         $('nav.nav-link.tab.float-right',
-            {on: {click: this.onButtonClick}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-trash', '')
             })
@@ -97,7 +106,7 @@ export class CancelButton extends Button {
 
     render($: WeyaElementFunction) {
         $('nav.nav-link.tab.float-right',
-            {on: {click: this.onButtonClick}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-times', '')
             })
