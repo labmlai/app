@@ -1,7 +1,7 @@
 import {WeyaElementFunction} from "../../../lib/weya/weya"
 
 interface buttonOptions {
-    onButtonClick: () => void
+    onButtonClick?: () => void
     isDisabled?: boolean
 }
 
@@ -90,7 +90,7 @@ export class DeleteButton extends Button {
     }
 }
 
-export class cancelButton extends Button {
+export class CancelButton extends Button {
     constructor(opt: buttonOptions) {
         super(opt)
     }

@@ -22,7 +22,7 @@ class RunView implements ScreenView {
     uuid: string
 
     constructor(uuid: string) {
-        this.uuid = '027f53d45ad211ebb1b4acde48001122'
+        this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
@@ -52,19 +52,17 @@ class RunView implements ScreenView {
                 new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
             }
             $('div.flex-container', $ => {
-                new BackButton({
-                    onButtonClick: () => {
-                    }
-                }).render($)
+                new BackButton({}).render($)
                 if (this.status && this.status.isStatusInProgress) {
-                    new RefreshButton({
-                        onButtonClick: () => {
-                        }
-                    }).render($)
+                    new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })
             new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
         })
+    }
+
+    onRefresh() {
+
     }
 }
 
