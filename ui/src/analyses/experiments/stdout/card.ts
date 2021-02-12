@@ -3,7 +3,7 @@ import {ROUTER} from '../../../app'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
-import Filter from "../../../utils/ansi_to_html"
+// import Filter from "../../../utils/ansi_to_html"
 
 
 export class StdOutCard {
@@ -17,7 +17,7 @@ export class StdOutCard {
         this.runCache = CACHE.getRun(this.uuid)
     }
 
-    f = new Filter({})
+    // f = new Filter({})
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
