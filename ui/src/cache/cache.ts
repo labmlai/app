@@ -1,6 +1,7 @@
 import {Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
+import {IsUserLogged} from "../models/user"
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -146,9 +147,24 @@ export class RunStatusCache extends CacheObject<Status> {
     }
 }
 
+export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
+    async load(): Promise<IsUserLogged> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getIsUserLogged()
+            return new IsUserLogged(res)
+        })
+    }
+
+    set userLogged(is_user_logged: boolean) {
+        this.data = new IsUserLogged({is_user_logged: is_user_logged})
+    }
+}
+
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly runStatuses: { [uuid: string]: RunStatusCache }
+
+    private isUserLogged: IsUserLoggedCache | null
 
     constructor() {
         this.runs = {}
@@ -169,6 +185,14 @@ class Cache {
         }
 
         return this.runStatuses[uuid]
+    }
+
+    getIsUserLogged() {
+        if (this.isUserLogged == null) {
+            this.isUserLogged = new IsUserLoggedCache()
+        }
+
+        return this.isUserLogged
     }
 }
 

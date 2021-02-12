@@ -16,6 +16,7 @@ abstract class Button {
 
     render($: WeyaElementFunction) {
     }
+
 }
 
 export class BackButton extends Button {
@@ -24,6 +25,12 @@ export class BackButton extends Button {
     }
 
     render($: WeyaElementFunction) {
+        $('nav.nav-link.tab.float-left',
+            {on: {click: this.onButtonClick}},
+            $ => {
+                $('span.fas.fa-chevron-left', '')
+                $('span.ml-1', 'Run')
+            })
     }
 }
 
@@ -33,7 +40,7 @@ export class RefreshButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab',
+        $('nav.nav-link.tab.float-right',
             {on: {click: this.onButtonClick}},
             $ => {
                 $('span.fas.fa-sync', '')
@@ -47,7 +54,7 @@ export class SaveButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab',
+        $('nav.nav-link.tab.float-right',
             {on: {click: this.onButtonClick}},
             $ => {
                 $('span.fas.fa-save', '')
@@ -61,7 +68,7 @@ export class EditButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab',
+        $('nav.nav-link.tab.float-right',
             {on: {click: this.onButtonClick}},
             $ => {
                 $('span.fas.fa-edit', '')
@@ -75,7 +82,7 @@ export class DeleteButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab',
+        $('nav.nav-link.tab.float-right',
             {on: {click: this.onButtonClick}},
             $ => {
                 $('span.fas.fa-trash', '')
@@ -89,7 +96,7 @@ export class cancelButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab',
+        $('nav.nav-link.tab.float-right',
             {on: {click: this.onButtonClick}},
             $ => {
                 $('span.fas.fa-times', '')

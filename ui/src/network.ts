@@ -44,6 +44,10 @@ class Network {
     async getRunStatus(run_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/status/${run_uuid}`)
     }
+
+    async getIsUserLogged(): Promise<any> {
+        return this.sendHttpRequest('GET', `/auth/is_logged`)
+    }
 }
 
 const NETWORK = new Network(REACT_APP_SERVER_URL)
