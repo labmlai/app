@@ -7,6 +7,7 @@ import {Status} from "../../../models/status"
 import {BackButton, SaveButton, CancelButton, EditButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
+import {Loader} from "../../../components/loader"
 
 
 class RunHeaderView implements ScreenView {
@@ -17,6 +18,7 @@ class RunHeaderView implements ScreenView {
     statusCache: RunStatusCache
     isEditMode: boolean
     runHeaderView: HTMLDivElement
+    loader: Loader
     uuid: string
 
     constructor(uuid: string) {
@@ -24,11 +26,13 @@ class RunHeaderView implements ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isEditMode = false
+        this.loader = new Loader()
     }
 
     render() {
         this.elem = <HTMLElement>$('div.page', $ => {
             this.runHeaderView = <HTMLDivElement>$('div', '')
+            this.loader.render($)
         })
 
         this.renderRunHeader().then()
@@ -43,6 +47,8 @@ class RunHeaderView implements ScreenView {
     async renderRunHeader() {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
+
+        this.loader.remove()
 
         this.runHeaderView.innerHTML = ''
 
@@ -111,7 +117,6 @@ class RunHeaderView implements ScreenView {
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
         console.log(typeof this)
-
 
 
         this.renderRunHeader().then()

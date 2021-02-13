@@ -1,14 +1,19 @@
-import {WeyaElementFunction} from '../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../lib/weya/weya'
 
 export class Loader {
-    constructor() {
+    elem: WeyaElement
 
+    constructor() {
     }
 
     render($: WeyaElementFunction) {
-        $(`div.center`, $ => {
+        this.elem = $(`div.center`, $ => {
             $('div.loader', '')
         })
+    }
+
+    remove() {
+        this.elem.innerHTML = ''
     }
 }
 
