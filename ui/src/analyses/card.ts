@@ -4,10 +4,9 @@ export default abstract class Card {
     protected constructor() {
     }
 
-    render($: WeyaElementFunction) {
-    }
+    abstract render($: WeyaElementFunction)
 
-    protected abstract LoadData()
+    protected abstract loadData()
 
     abstract refresh()
 }

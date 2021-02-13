@@ -36,7 +36,7 @@ export class StdErrorCard extends Card {
     }
 
     render($: WeyaElementFunction) {
-        this.LoadData().then(() => {
+        this.loadData().then(() => {
             $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
                 $('h3.header', 'Standard Error')
                 $('div.terminal-card.no-scroll', $ => {
@@ -47,7 +47,7 @@ export class StdErrorCard extends Card {
         })
     }
 
-    protected async LoadData() {
+    protected async loadData() {
         this.run = await this.runCache.get()
     }
 

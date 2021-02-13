@@ -40,12 +40,13 @@ class RunHeaderView implements ScreenView {
         this.handleResize()
         window.addEventListener('resize', this.handleResize)
 
-        this.elem = <HTMLElement>$('div.page',
+        this.elem = $('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
                 this.runHeaderView = <HTMLDivElement>$('div', '')
-                this.loader.render($)
             })
+
+        this.elem.appendChild(this.loader.render($))
 
         this.renderRunHeader().then()
 

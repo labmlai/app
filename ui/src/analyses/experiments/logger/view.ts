@@ -24,7 +24,7 @@ class LoggerView implements ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
     }
 
-    f = new Filter({})
+    filter = new Filter({})
 
     render() {
         this.elem = <HTMLElement>$('div.page', $ => {
@@ -57,7 +57,7 @@ class LoggerView implements ScreenView {
                 this.output = <HTMLDivElement>$('pre', '')
             })
         })
-        this.output.innerHTML = this.f.toHtml(this.run.logger)
+        this.output.innerHTML = this.filter.toHtml(this.run.logger)
     }
 
     onRefresh() {

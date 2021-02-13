@@ -2,8 +2,8 @@ import {WeyaElement} from '../../lib/weya/weya'
 
 abstract class ScreenView {
     destroy() {
-
     }
+    
     abstract render(): WeyaElement
 }
 

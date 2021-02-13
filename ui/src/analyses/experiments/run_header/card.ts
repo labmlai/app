@@ -32,7 +32,7 @@ export class RunHeaderCard extends Card {
 
 
     render($: WeyaElementFunction) {
-        this.LoadData().then(() => {
+        this.loadData().then(() => {
             $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
                 $('div', $ => {
                     let lastRecorded = this.status.last_updated_time
@@ -51,7 +51,7 @@ export class RunHeaderCard extends Card {
         })
     }
 
-    protected async LoadData() {
+    protected async loadData() {
         this.status = await this.statusCache.get()
         this.run = await this.runCache.get()
     }

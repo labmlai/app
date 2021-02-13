@@ -10,6 +10,8 @@ export class Loader {
         this.elem = $(`div.center`, $ => {
             $('div.loader', '')
         })
+
+        return this.elem
     }
 
     remove() {

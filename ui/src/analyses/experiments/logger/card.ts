@@ -20,7 +20,7 @@ export class LoggerCard extends Card {
         this.runCache = CACHE.getRun(this.uuid)
     }
 
-    f = new Filter({})
+    filter = new Filter({})
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
@@ -35,19 +35,19 @@ export class LoggerCard extends Card {
         return last10Lines.join("\n")
     }
 
-    render($: WeyaElementFunction) {
-        this.LoadData().then(() => {
-            $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-                $('h3.header', 'Standard Logger')
-                $('div.terminal-card.no-scroll', $ => {
-                    this.output = <HTMLDivElement>$('pre', '')
-                })
+    async render($: WeyaElementFunction) {
+        await this.loadData()
+
+        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3.header', 'Standard Logger')
+            $('div.terminal-card.no-scroll', $ => {
+                this.output = <HTMLDivElement>$('pre', '')
             })
-            this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.logger))
         })
+        this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
     }
 
-    protected async LoadData() {
+    protected async loadData() {
         this.run = await this.runCache.get()
     }
 
