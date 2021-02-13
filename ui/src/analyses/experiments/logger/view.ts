@@ -16,7 +16,7 @@ class LoggerView implements ScreenView {
     statusCache: RunStatusCache
     runCache: RunCache
     loggerView: HTMLDivElement
-    output: HTMLDivElement
+    output: HTMLPreElement
 
     constructor(uuid: string) {
         this.uuid = uuid
@@ -28,7 +28,7 @@ class LoggerView implements ScreenView {
 
     render() {
         this.elem = <HTMLElement>$('div.page', $ => {
-            this.loggerView = <HTMLDivElement>$('div', '')
+            this.loggerView = $('div', '')
         })
 
         this.renderStdOut().then()
@@ -54,7 +54,7 @@ class LoggerView implements ScreenView {
             new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
             $('h2.header.text-center', 'Logger')
             $('div.terminal-card', $ => {
-                this.output = <HTMLDivElement>$('pre', '')
+                this.output = $('pre', '')
             })
         })
         this.output.innerHTML = this.filter.toHtml(this.run.logger)
