@@ -282,3 +282,44 @@ input[type="email"], input[type="text"] {
 .no-scroll {
   max-width: 100%;
 }
+
+/*Runs List*/
+.list {
+  .list-item {
+    box-shadow: 0px 4px 5px 0px $light-shadow3, 0px 1px 20px 0px $light-shadow3;
+    font-size: 12px;
+    outline: none;
+    margin-bottom: 10px;
+    padding: 0.75rem 1.25rem;
+
+    h3, h4, h5, h6, p {
+      overflow-wrap: break-word;
+      padding: 0;
+      margin: 2px 0;
+    }
+
+    &:focus {
+      background-color: transparent;
+    }
+
+    h5 {
+      color: $light-header;
+      font-size: 1.25rem;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    h6 {
+      color: $light-text-secondary;
+    }
+
+    p {
+      color: $light-text-secondary;
+    }
+
+    .status {
+      text-transform: uppercase;
+      font-size: 8px;
+    }
+  }
+}

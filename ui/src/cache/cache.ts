@@ -2,6 +2,7 @@ import {Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import {IsUserLogged} from "../models/user"
+import {RunListItemModel, RunsList} from '../models/run_list';
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -97,6 +98,32 @@ abstract class CacheObject<T> {
     }
 }
 
+export class RunsListCache extends CacheObject<RunsList> {
+    async load(...args: any[]): Promise<RunsList> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getRuns(args[0])
+            return new RunsList(res)
+        })
+    }
+
+    async get(isRefresh = false, ...args: any[]): Promise<RunsList> {
+        if (args && args[0]) {
+            return await this.load(args[0])
+        }
+
+        if (this.data == null || isRefresh) {
+            this.data = await this.load(null)
+        }
+
+        return this.data
+    }
+
+    async deleteRuns(runs: RunListItemModel[], runUUIDS: string[]): Promise<void> {
+        this.data.runs = runs
+        await NETWORK.deleteRuns(runUUIDS)
+    }
+}
+
 export class RunCache extends CacheObject<Run> {
     private readonly uuid: string
     private statusCache: RunStatusCache
@@ -165,6 +192,7 @@ class Cache {
     private readonly runStatuses: { [uuid: string]: RunStatusCache }
 
     private isUserLogged: IsUserLoggedCache | null
+    private runsList: RunsListCache | null
 
     constructor() {
         this.runs = {}
@@ -177,6 +205,14 @@ class Cache {
         }
 
         return this.runs[uuid]
+    }
+
+    getRunsList() {
+        if (this.runsList == null) {
+            this.runsList = new RunsListCache()
+        }
+
+        return this.runsList
     }
 
     getRunStatus(uuid: string) {

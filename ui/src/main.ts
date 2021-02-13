@@ -6,9 +6,11 @@ import {RunHeaderHandler} from './analyses/experiments/run_header/view'
 import {StdOutHandler} from './analyses/experiments/stdout/view'
 import {StdErrorHandler} from './analyses/experiments/stderror/view'
 import {LoggerHandler} from './analyses/experiments/logger/view'
+import {RunsListHandler} from './views/runs_list_view';
 
 new RunHandler()
 new PageNotFoundHandler()
+new RunsListHandler()
 
 new RunHeaderHandler()
 new StdOutHandler()
