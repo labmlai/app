@@ -5,13 +5,14 @@ import {CardOptions} from "../../types"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
+import Card from "../../card"
 import {getTimeDiff, formatTime} from "../../../utils/time"
 
 interface RunHeaderOptions extends CardOptions {
     lastUpdated?: number
 }
 
-export class RunHeaderCard {
+export class RunHeaderCard extends Card {
     run: Run
     uuid: string
     status: Status
@@ -20,6 +21,8 @@ export class RunHeaderCard {
     statusCache: RunStatusCache
 
     constructor(opt: RunHeaderOptions) {
+        super()
+
         this.uuid = opt.uuid
         this.lastUpdated = opt.lastUpdated
         this.runCache = CACHE.getRun(this.uuid)
@@ -48,9 +51,12 @@ export class RunHeaderCard {
         })
     }
 
-    private async LoadData() {
+    protected async LoadData() {
         this.status = await this.statusCache.get()
         this.run = await this.runCache.get()
+    }
+
+    refresh() {
     }
 
     onClick = () => {

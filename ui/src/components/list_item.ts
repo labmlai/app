@@ -1,7 +1,7 @@
-import {WeyaElementFunction} from '../../../lib/weya/weya';
-import {RunListItemModel} from '../models/run_list';
-import {StatusView} from './status';
-import {formatTime} from '../utils/time';
+import {WeyaElementFunction} from '../../../lib/weya/weya'
+import {RunListItemModel} from '../models/run_list'
+import {StatusView} from './status'
+import {formatTime} from '../utils/time'
 
 export interface ListItemOptions {
   item: RunListItemModel

@@ -24,7 +24,7 @@ class RunView implements ScreenView {
     runView: HTMLDivElement
     uuid: string
     loader: Loader
-    autoRefresh : Timeout
+    autoRefresh: Timeout
     actualWidth: number
 
     constructor(uuid: string) {

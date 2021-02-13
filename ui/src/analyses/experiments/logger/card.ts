@@ -3,16 +3,19 @@ import {ROUTER} from '../../../app'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
+import Card from "../../card"
 import Filter from "../../../utils/ansi_to_html"
 
 
-export class LoggerCard {
+export class LoggerCard extends Card {
     run: Run
     uuid: string
     runCache: RunCache
     output: HTMLDivElement
 
     constructor(opt: CardOptions) {
+        super()
+
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
     }
@@ -44,8 +47,11 @@ export class LoggerCard {
         })
     }
 
-    private async LoadData() {
+    protected async LoadData() {
         this.run = await this.runCache.get()
+    }
+
+    refresh() {
     }
 
     onClick = () => {
