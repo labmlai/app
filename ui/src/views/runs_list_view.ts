@@ -7,7 +7,7 @@ import CACHE, {IsUserLoggedCache, RunsListCache} from "../cache/cache"
 import {RunsListModel} from '../models/run_list';
 import {ListItemView} from '../components/list_item';
 
-class RunsListView implements ScreenView {
+class RunsListView extends ScreenView {
     runListCache: RunsListCache
     currentRunsList: RunsListModel
     isUserLogged: IsUserLogged
@@ -17,6 +17,8 @@ class RunsListView implements ScreenView {
     loader: Loader
 
     constructor() {
+        super()
+
         this.runListCache = CACHE.getRunsList()
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
@@ -32,10 +34,6 @@ class RunsListView implements ScreenView {
         this.renderList().then()
 
         return this.elem
-    }
-
-    destroy() {
-
     }
 
     private async renderList() {
