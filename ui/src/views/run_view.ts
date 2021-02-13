@@ -21,17 +21,21 @@ class RunView implements ScreenView {
     elem: WeyaElement
     runView: HTMLDivElement
     uuid: string
+    loader: Loader
 
     constructor(uuid: string) {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
+
+        this.loader = new Loader()
     }
 
     render() {
         this.elem = <HTMLElement>$('div.run.page', $ => {
             this.runView = <HTMLDivElement>$('div', '')
+            this.loader.render($)
         })
 
         this.renderRun().then()
@@ -47,6 +51,8 @@ class RunView implements ScreenView {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
         this.isUserLogged = await this.isUserLoggedCache.get()
+
+        this.loader.remove()
 
         $(this.runView, $ => {
             if (this.isUserLogged && this.isUserLogged.is_user_logged && this.run && this.run.is_claimed) {
