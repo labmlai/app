@@ -7,9 +7,11 @@ import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
+import {getWindowDimensions} from "../utils/window_dimentions"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {StdOutCard} from "../analyses/experiments/stdout/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
+import Timeout = NodeJS.Timeout;
 
 class RunView implements ScreenView {
     run: Run
@@ -22,6 +24,8 @@ class RunView implements ScreenView {
     runView: HTMLDivElement
     uuid: string
     loader: Loader
+    autoRefresh : Timeout
+    actualWidth: number
 
     constructor(uuid: string) {
         this.uuid = uuid
@@ -32,11 +36,23 @@ class RunView implements ScreenView {
         this.loader = new Loader()
     }
 
+    handleResize = () => {
+        let windowWidth = getWindowDimensions().width
+        this.actualWidth = Math.min(800, windowWidth)
+    }
+
     render() {
-        this.elem = <HTMLElement>$('div.run.page', $ => {
-            this.runView = <HTMLDivElement>$('div', '')
-            this.loader.render($)
-        })
+        this.handleResize()
+        window.addEventListener('resize', this.handleResize)
+
+        this.autoRefresh = setInterval(this.renderRun.bind(this), 2 * 60 * 1000)
+
+        this.elem = <HTMLElement>$('div.run.page',
+            {style: {width: `${this.actualWidth}px`}},
+            $ => {
+                this.runView = <HTMLDivElement>$('div', '')
+                this.loader.render($)
+            })
 
         this.renderRun().then()
 
@@ -44,7 +60,9 @@ class RunView implements ScreenView {
     }
 
     destroy() {
+        window.removeEventListener('resize', this.handleResize)
 
+        clearInterval(this.autoRefresh)
     }
 
     private async renderRun() {
@@ -53,6 +71,8 @@ class RunView implements ScreenView {
         this.isUserLogged = await this.isUserLoggedCache.get()
 
         this.loader.remove()
+
+        this.runView.innerHTML = ''
 
         $(this.runView, $ => {
             if (this.isUserLogged && this.isUserLogged.is_user_logged && this.run && this.run.is_claimed) {
@@ -64,12 +84,12 @@ class RunView implements ScreenView {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })
-            new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
-            new StdOutCard({uuid: this.uuid, width: 800}).render($)
+            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
+            new StdOutCard({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 
-    onRefresh() {
+    onRefresh = () => {
 
     }
 }

@@ -8,6 +8,7 @@ import {BackButton, SaveButton, CancelButton, EditButton} from "../../../compone
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
+import {getWindowDimensions} from "../../../utils/window_dimentions"
 
 
 class RunHeaderView implements ScreenView {
@@ -20,6 +21,12 @@ class RunHeaderView implements ScreenView {
     runHeaderView: HTMLDivElement
     loader: Loader
     uuid: string
+    actualWidth: number
+
+    handleResize = () => {
+        let windowWidth = getWindowDimensions().width
+        this.actualWidth = Math.min(800, windowWidth)
+    }
 
     constructor(uuid: string) {
         this.uuid = uuid
@@ -30,10 +37,15 @@ class RunHeaderView implements ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.page', $ => {
-            this.runHeaderView = <HTMLDivElement>$('div', '')
-            this.loader.render($)
-        })
+        this.handleResize()
+        window.addEventListener('resize', this.handleResize)
+
+        this.elem = <HTMLElement>$('div.page',
+            {style: {width: `${this.actualWidth}px`}},
+            $ => {
+                this.runHeaderView = <HTMLDivElement>$('div', '')
+                this.loader.render($)
+            })
 
         this.renderRunHeader().then()
 
@@ -41,7 +53,7 @@ class RunHeaderView implements ScreenView {
     }
 
     destroy() {
-
+        window.removeEventListener('resize', this.handleResize)
     }
 
     async renderRunHeader() {
