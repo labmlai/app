@@ -11,7 +11,7 @@ import {Loader} from "../../../components/loader"
 import {getWindowDimensions} from "../../../utils/window_dimentions"
 
 
-class RunHeaderView implements ScreenView {
+class RunHeaderView extends ScreenView {
     elem: WeyaElement
     run: Run
     runCache: RunCache
@@ -23,12 +23,8 @@ class RunHeaderView implements ScreenView {
     uuid: string
     actualWidth: number
 
-    handleResize = () => {
-        let windowWidth = getWindowDimensions().width
-        this.actualWidth = Math.min(800, windowWidth)
-    }
-
     constructor(uuid: string) {
+        super()
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
@@ -36,10 +32,11 @@ class RunHeaderView implements ScreenView {
         this.loader = new Loader()
     }
 
-    render() {
-        this.handleResize()
-        window.addEventListener('resize', this.handleResize)
+    onResize(width: number) {
+        this.actualWidth = Math.min(800, width)
+    }
 
+    render() {
         this.elem = $('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
@@ -51,10 +48,6 @@ class RunHeaderView implements ScreenView {
         this.renderRunHeader().then()
 
         return this.elem
-    }
-
-    destroy() {
-        window.removeEventListener('resize', this.handleResize)
     }
 
     async renderRunHeader() {
