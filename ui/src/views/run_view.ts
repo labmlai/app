@@ -13,7 +13,7 @@ import {StdOutCard} from "../analyses/experiments/stdout/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout;
 
-class RunView implements ScreenView {
+class RunView extends ScreenView {
     run: Run
     runCache: RunCache
     status: Status
@@ -28,6 +28,7 @@ class RunView implements ScreenView {
     actualWidth: number
 
     constructor(uuid: string) {
+        super()
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
@@ -36,15 +37,13 @@ class RunView implements ScreenView {
         this.loader = new Loader()
     }
 
-    handleResize = () => {
-        let windowWidth = getWindowDimensions().width
-        this.actualWidth = Math.min(800, windowWidth)
+    onResize(width: number) {
+        super.onResize(width)
+
+        this.actualWidth = Math.min(800, width)
     }
 
     render() {
-        this.handleResize()
-        window.addEventListener('resize', this.handleResize)
-
         this.autoRefresh = setInterval(this.renderRun.bind(this), 2 * 60 * 1000)
 
         this.elem = <HTMLElement>$('div.run.page',
@@ -60,8 +59,6 @@ class RunView implements ScreenView {
     }
 
     destroy() {
-        window.removeEventListener('resize', this.handleResize)
-
         clearInterval(this.autoRefresh)
     }
 
@@ -90,7 +87,6 @@ class RunView implements ScreenView {
     }
 
     onRefresh = () => {
-
     }
 }
 

@@ -16,10 +16,11 @@ function wrapEvent(eventName: string, func: Function) {
     return wrapper
 }
 
-class PageNotFoundView implements ScreenView {
+class PageNotFoundView extends ScreenView {
     elem: WeyaElement
 
     constructor() {
+        super()
         let events = []
         for (let k in this.events) {
             events.push(k)
