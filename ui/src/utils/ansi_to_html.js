@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 
-const entities = require('entities');
+const entities = require['entities'];
 const defaults = {
     fg: '#FFF',
     bg: '#000',

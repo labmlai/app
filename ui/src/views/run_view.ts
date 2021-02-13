@@ -58,8 +58,8 @@ class RunView implements ScreenView {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })
-            new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
             new StdOutCard({uuid: this.uuid, width: 800}).render($)
+            new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
         })
     }
 

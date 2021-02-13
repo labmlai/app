@@ -6,7 +6,7 @@ import {CardOptions} from "../../types"
 import Filter from "../../../utils/ansi_to_html"
 
 
-export class StdOutCard {
+export class LoggerCard {
     run: Run
     uuid: string
     runCache: RunCache
@@ -35,12 +35,12 @@ export class StdOutCard {
     render($: WeyaElementFunction) {
         this.LoadData().then(() => {
             $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-                $('h3.header', 'Standard Output')
+                $('h3.header', 'Standard Logger')
                 $('div.terminal-card.no-scroll', $ => {
                     this.output = <HTMLDivElement>$('pre', '')
                 })
             })
-            this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.stdout))
+            this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.logger))
         })
     }
 
@@ -49,7 +49,7 @@ export class StdOutCard {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/stdout/${this.uuid}`)
+        ROUTER.navigate(`/logger/${this.uuid}`)
     }
 
 }
