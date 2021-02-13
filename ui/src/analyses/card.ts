@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from "../../../lib/weya/weya";
+import {WeyaElementFunction} from "../../../lib/weya/weya"
 
 export default abstract class Card {
     protected constructor() {
@@ -7,7 +7,7 @@ export default abstract class Card {
     render($: WeyaElementFunction) {
     }
 
-    protected abstract async LoadData()
+    protected abstract LoadData()
 
     abstract refresh()
 }
