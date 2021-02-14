@@ -21,8 +21,9 @@ export class Labels {
                 this.labels.map((label, i) => {
                     const colorBias = this.colorBias ? this.colorBias : 0
                     $('span', $ => {
-                        $('div.box', {style: {backgroundColor: getColor(i + colorBias)}}, label)
+                        $('div.box', {style: {background: getColor(i + colorBias)}})
                     })
+                    $('span', label)
                 })
             })
     }

@@ -6,6 +6,7 @@ import d3 from "../../../d3"
 import {SimpleLineFill, SimpleLinePlot} from "./plot"
 import {RightAxis} from "../axis"
 import {getColor} from "../constants"
+import {Labels} from "../labels"
 
 export class SimpleLinesChart {
     series: SeriesModel[]
@@ -84,6 +85,7 @@ export class SimpleLinesChart {
                                 new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
                             })
                     })
+                new Labels({labels: this.labels}).render($)
             })
         }
     }
