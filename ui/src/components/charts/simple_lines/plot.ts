@@ -72,10 +72,10 @@ export class SimpleLineFill {
         $('g', $ => {
             $('path.line-fill',
                 {
-                    fill: this.dFill,
+                    fill: this.color,
                     stroke: 'none',
-                    style: {fill: `url(#gradient-${this.colorIdx}`},
-                    d: this.smoothedLine(this.series) as string
+                    // style: {fill: `url(#gradient-${this.colorIdx}`},
+                    d: this.dFill
                 })
         })
     }

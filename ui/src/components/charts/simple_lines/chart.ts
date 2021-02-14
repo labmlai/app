@@ -4,6 +4,7 @@ import {SeriesModel} from "../../../models/run"
 import {getScale} from "../utils"
 import d3 from "../../../d3"
 import {SimpleLineFill, SimpleLinePlot} from "./plot"
+import {RightAxis} from "../axis"
 import {getColor} from "../constants"
 
 export class SimpleLinesChart {
@@ -45,7 +46,7 @@ export class SimpleLinesChart {
             $('div', $ => {
                 $('svg',
                     {
-                        id: this.chartId,
+                        id: 'chart',
                         height: 2 * this.margin + this.chartHeight,
                         width: 2 * this.margin + this.axisSize + this.chartWidth
                     },
@@ -74,13 +75,13 @@ export class SimpleLinesChart {
                                         }).render($)
                                     })
                                 })
-                                $('g.right-axis',
-                                    {
-                                        transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
-                                    },
-                                    $ => {
-
-                                    })
+                            })
+                        $('g.right-axis',
+                            {
+                                transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
+                            },
+                            $ => {
+                                new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
                             })
                     })
             })

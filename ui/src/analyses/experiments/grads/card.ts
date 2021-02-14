@@ -42,7 +42,7 @@ export class Gradients extends Card {
 
         $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Gradients')
-            new SimpleLinesChart({series: this.AnalysisData.series, width: this.width}).render($)
+            new SimpleLinesChart({series: this.AnalysisData.summary, width: this.width}).render($)
         })
     }
 
