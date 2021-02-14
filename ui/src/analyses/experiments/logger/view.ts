@@ -16,7 +16,7 @@ class LoggerView extends ScreenView {
     statusCache: RunStatusCache
     runCache: RunCache
     loggerView: WeyaElement
-    output: WeyaElement
+    output: HTMLPreElement
 
     constructor(uuid: string) {
         super()
@@ -56,7 +56,7 @@ class LoggerView extends ScreenView {
             new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
             $('h2.header.text-center', 'Logger')
             $('div.terminal-card', $ => {
-                this.output = $('pre', '')
+                 this.output = <HTMLPreElement>$('pre', '')
             })
         })
         this.output.innerHTML = this.filter.toHtml(this.run.logger)

@@ -2,7 +2,9 @@ import {Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import {IsUserLogged} from "../models/user"
-import {RunListItemModel, RunsList} from '../models/run_list';
+import {RunListItemModel, RunsList} from '../models/run_list'
+import {AnalysisDataModel} from "../models/run"
+import {AnalysisPreference} from "../models/preference"
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -184,6 +186,58 @@ export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
 
     set userLogged(is_user_logged: boolean) {
         this.data = new IsUserLogged({is_user_logged: is_user_logged})
+    }
+}
+
+export class SeriesCache extends CacheObject<AnalysisDataModel> {
+    private readonly uuid: string
+    private readonly url: string
+    private statusCache: RunStatusCache
+
+    constructor(uuid: string, url: string, statusCache: RunStatusCache) {
+        super()
+        this.uuid = uuid
+        this.statusCache = statusCache
+        this.url = url
+    }
+
+    async load(): Promise<AnalysisDataModel> {
+        return this.broadcastPromise.create(async () => {
+            return await NETWORK.getAnalysis(this.url, this.uuid)
+        })
+    }
+
+    async get(isRefresh = false): Promise<AnalysisDataModel> {
+        let status = await this.statusCache.get()
+
+        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+            this.data = await this.load()
+            this.lastUpdated = (new Date()).getTime()
+            await this.statusCache.get(true)
+        }
+
+        return this.data
+    }
+}
+
+export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
+    private readonly uuid: string
+    private readonly url: string
+
+    constructor(uuid: string, url: string) {
+        super()
+        this.uuid = uuid
+        this.url = url
+    }
+
+    async load(): Promise<AnalysisPreference> {
+        return this.broadcastPromise.create(async () => {
+            return await NETWORK.getPreferences(this.url, this.uuid)
+        })
+    }
+
+    async setPreference(preference: AnalysisPreference): Promise<void> {
+        await NETWORK.updatePreferences(this.url, this.uuid, preference)
     }
 }
 

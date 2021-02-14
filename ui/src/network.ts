@@ -46,7 +46,7 @@ class Network {
     }
 
     async getRuns(labml_token: string | null): Promise<any> {
-        return this.sendHttpRequest('GET',`/runs/${labml_token}`)
+        return this.sendHttpRequest('GET', `/runs/${labml_token}`)
     }
 
     async deleteRuns(runUUIDS: string[]): Promise<any> {
@@ -55,6 +55,18 @@ class Network {
 
     async getIsUserLogged(): Promise<any> {
         return this.sendHttpRequest('GET', `/auth/is_logged`)
+    }
+
+    async getAnalysis(url: string, run_uuid: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/${url}/${run_uuid}`, {})
+    }
+
+    async getPreferences(url: string, run_uuid: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/${url}/preferences/${run_uuid}`, {})
+    }
+
+    async updatePreferences(url: string, run_uuid: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/${url}/preferences/${run_uuid}`, data)
     }
 }
 

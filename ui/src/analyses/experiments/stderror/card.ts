@@ -11,7 +11,7 @@ export class StdErrorCard extends Card {
     run: Run
     uuid: string
     runCache: RunCache
-    output: HTMLDivElement
+    output: HTMLPreElement
 
     constructor(opt: CardOptions) {
         super()
@@ -41,7 +41,7 @@ export class StdErrorCard extends Card {
         $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Standard Error')
             $('div.terminal-card.no-scroll', $ => {
-                this.output = <HTMLDivElement>$('pre', '')
+                this.output = <HTMLPreElement>$('pre', '')
             })
         })
         this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.stderr))

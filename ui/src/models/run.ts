@@ -49,7 +49,7 @@ export interface SeriesModel {
     series: PointValue[]
 }
 
-export interface SeriesDataModel {
+export interface AnalysisDataModel {
     series: SeriesModel[]
     insights: InsightModel[]
     summary: any[]

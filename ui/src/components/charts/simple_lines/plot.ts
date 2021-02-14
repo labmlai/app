@@ -1,13 +1,13 @@
 import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {PlotOptions} from '../types'
+import {PlotOptions, FillOptions} from '../types'
 
 export class SimpleLinePlot {
     series: number[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
-    d: string
+    smoothedLine
 
     constructor(opt: PlotOptions) {
         this.series = opt.series
@@ -15,24 +15,68 @@ export class SimpleLinePlot {
         this.yScale = opt.yScale
         this.color = opt.color
 
-        this.d = this.smoothedLine(this.series) as string
+        this.smoothedLine = d3.line()
+            .curve(d3.curveMonotoneX)
+            .x((d, i) => {
+                return this.xScale(i)
+            })
+            .y((d) => {
+                return this.yScale(d)
+            })
     }
 
-    smoothedLine = d3.line()
-        .curve(d3.curveMonotoneX)
-        .x((d, i) => {
-            return this.xScale(i)
-        })
-        .y((d) => {
-            return this.yScale(d)
-        })
 
     render($: WeyaElementFunction) {
-
+        $('g', $ => {
+            $('path.smoothed-line.dropshadow',
+                {
+                    fill: 'none',
+                    stroke: this.color,
+                    d: this.smoothedLine(this.series) as string
+                })
+        })
     }
 }
 
 
 export class SimpleLineFill {
+    series: number[]
+    xScale: d3.ScaleLinear<number, number>
+    yScale: d3.ScaleLinear<number, number>
+    color: string
+    colorIdx: number
+    smoothedLine
+    dFill: string
 
+    constructor(opt: FillOptions) {
+        this.series = opt.series
+        this.xScale = opt.xScale
+        this.yScale = opt.yScale
+        this.color = opt.color
+        this.colorIdx = opt.colorIdx
+
+        this.smoothedLine = d3.line()
+            .curve(d3.curveMonotoneX)
+            .x((d, i) => {
+                return this.xScale(i)
+            })
+            .y((d) => {
+                return this.yScale(d)
+            })
+
+        let d = this.smoothedLine(this.series) as string
+        this.dFill = `M${this.xScale(0)},0L` + d.substr(1) + `L${this.xScale(this.series.length - 1)},0`
+    }
+
+    render($: WeyaElementFunction) {
+        $('g', $ => {
+            $('path.line-fill',
+                {
+                    fill: this.dFill,
+                    stroke: 'none',
+                    style: {fill: `url(#gradient-${this.colorIdx}`},
+                    d: this.smoothedLine(this.series) as string
+                })
+        })
+    }
 }

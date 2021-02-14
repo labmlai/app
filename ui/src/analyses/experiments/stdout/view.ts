@@ -16,7 +16,7 @@ class StdOutView extends ScreenView {
     statusCache: RunStatusCache
     runCache: RunCache
     stdOutView: HTMLDivElement
-    output: HTMLDivElement
+    output: HTMLPreElement
 
     constructor(uuid: string) {
         super()
@@ -56,7 +56,7 @@ class StdOutView extends ScreenView {
             new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
             $('h2.header.text-center', 'Standard Output')
             $('div.terminal-card', $ => {
-                this.output = <HTMLDivElement>$('pre', '')
+                this.output = <HTMLPreElement>$('pre', '')
             })
         })
         this.output.innerHTML = this.f.toHtml(this.run.stdout)

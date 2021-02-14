@@ -50,7 +50,6 @@ export class RunHeaderCard extends Card {
                 })
             })
         })
-
     }
 
     refresh() {
