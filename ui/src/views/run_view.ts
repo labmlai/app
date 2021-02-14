@@ -9,7 +9,9 @@ import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {StdOutCard} from "../analyses/experiments/stdout/card"
+import {Parameters} from "../analyses/experiments/params/card"
 import {Gradients} from "../analyses/experiments/grads/card"
+import {Activations} from "../analyses/experiments/activations/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout
 
@@ -82,8 +84,10 @@ class RunView extends ScreenView {
                 }
             })
             new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
-            new StdOutCard({uuid: this.uuid, width: this.actualWidth}).render($)
             new Gradients({uuid: this.uuid, width: this.actualWidth}).render($)
+            new Parameters({uuid: this.uuid, width: this.actualWidth}).render($)
+            new StdOutCard({uuid: this.uuid, width: this.actualWidth}).render($)
+            new Activations({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 
