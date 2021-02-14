@@ -8,17 +8,19 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 
-class LoggerView implements ScreenView {
+class LoggerView extends ScreenView {
     elem: WeyaElement
     uuid: string
     run: Run
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
-    loggerView: HTMLDivElement
-    output: HTMLPreElement
+    loggerView: WeyaElement
+    output: WeyaElement
 
     constructor(uuid: string) {
+        super()
+
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)

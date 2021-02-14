@@ -6,7 +6,5 @@ export default abstract class Card {
 
     abstract render($: WeyaElementFunction)
 
-    protected abstract loadData()
-
     abstract refresh()
 }

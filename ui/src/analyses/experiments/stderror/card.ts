@@ -35,20 +35,17 @@ export class StdErrorCard extends Card {
         return last10Lines.join("\n")
     }
 
-    render($: WeyaElementFunction) {
-        this.loadData().then(() => {
-            $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-                $('h3.header', 'Standard Error')
-                $('div.terminal-card.no-scroll', $ => {
-                    this.output = <HTMLDivElement>$('pre', '')
-                })
-            })
-            this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.stderr))
-        })
-    }
-
-    protected async loadData() {
+    async render($: WeyaElementFunction) {
         this.run = await this.runCache.get()
+
+        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3.header', 'Standard Error')
+            $('div.terminal-card.no-scroll', $ => {
+                this.output = <HTMLDivElement>$('pre', '')
+            })
+        })
+        this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.stderr))
+
     }
 
     refresh() {

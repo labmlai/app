@@ -8,7 +8,7 @@ import {getColor} from "../constants"
 import {LabLoader} from "../../utils/loader"
 import {SimpleLineFill} from "./plot"
 import Labels from "../labels"
-import Gradients from "../gradients";
+import Gradients from "../gradients"
 
 
 interface SimpleLinesProps {

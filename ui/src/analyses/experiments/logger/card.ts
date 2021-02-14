@@ -36,7 +36,7 @@ export class LoggerCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        await this.loadData()
+        this.run = await this.runCache.get()
 
         $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Standard Logger')
@@ -45,10 +45,6 @@ export class LoggerCard extends Card {
             })
         })
         this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
-    }
-
-    protected async loadData() {
-        this.run = await this.runCache.get()
     }
 
     refresh() {

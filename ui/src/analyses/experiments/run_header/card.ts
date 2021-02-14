@@ -31,29 +31,26 @@ export class RunHeaderCard extends Card {
     }
 
 
-    render($: WeyaElementFunction) {
-        this.loadData().then(() => {
-            $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-                $('div', $ => {
-                    let lastRecorded = this.status.last_updated_time
-                    $('div.last-updated.mb-2', `Last Recorded ${this.status.isStatusInProgress ?
-                        getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}`)
-                    $('div.run-info', $ => {
-                        new StatusView({status: this.status.run_status}).render($)
-                        $('h3', `${this.run.name}`)
-                        $('h5', `${this.run.comment}`)
-                        if (this.status.isStatusInProgress) {
-                            $('div.last-updated.text-info', `${getTimeDiff(this.lastUpdated)}`)
-                        }
-                    })
+    async render($: WeyaElementFunction) {
+        this.status = await this.statusCache.get()
+        this.run = await this.runCache.get()
+
+        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('div', $ => {
+                let lastRecorded = this.status.last_updated_time
+                $('div.last-updated.mb-2', `Last Recorded ${this.status.isStatusInProgress ?
+                    getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}`)
+                $('div.run-info', $ => {
+                    new StatusView({status: this.status.run_status}).render($)
+                    $('h3', `${this.run.name}`)
+                    $('h5', `${this.run.comment}`)
+                    if (this.status.isStatusInProgress) {
+                        $('div.last-updated.text-info', `${getTimeDiff(this.lastUpdated)}`)
+                    }
                 })
             })
         })
-    }
 
-    protected async loadData() {
-        this.status = await this.statusCache.get()
-        this.run = await this.runCache.get()
     }
 
     refresh() {

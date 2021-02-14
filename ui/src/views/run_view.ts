@@ -7,11 +7,10 @@ import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
-import {getWindowDimensions} from "../utils/window_dimentions"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {StdOutCard} from "../analyses/experiments/stdout/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
-import Timeout = NodeJS.Timeout;
+import Timeout = NodeJS.Timeout
 
 class RunView extends ScreenView {
     run: Run

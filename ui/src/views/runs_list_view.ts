@@ -4,8 +4,8 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {IsUserLoggedCache, RunsListCache} from "../cache/cache"
-import {RunsListModel} from '../models/run_list';
-import {ListItemView} from '../components/list_item';
+import {RunsListModel} from '../models/run_list'
+import {ListItemView} from '../components/list_item'
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache

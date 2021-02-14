@@ -1,5 +1,5 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
-import {RunStatusModel} from "../../../ui_old/src/models/status"
+import {RunStatusModel} from "../models/status"
 
 export interface StatusOptions {
     status: RunStatusModel

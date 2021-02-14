@@ -8,7 +8,6 @@ import {BackButton, SaveButton, CancelButton, EditButton} from "../../../compone
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
-import {getWindowDimensions} from "../../../utils/window_dimentions"
 
 
 class RunHeaderView extends ScreenView {
