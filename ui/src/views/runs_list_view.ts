@@ -40,7 +40,7 @@ class RunsListView extends ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div', $ => {
+        this.elem = $('div', $ => {
             this.buttonContainer = <HTMLDivElement>$('div.button-container', $ => {
                 this.deleteButton = new DeleteButton({
                     onButtonClick: this.onDelete
@@ -137,11 +137,12 @@ class RunsListView extends ScreenView {
 
         if(this.runsDeleteSet.has(uuid)){
             this.runsDeleteSet.delete(uuid)
-            elem.elem.classList.remove('.selected')
+            elem.elem.classList.remove('selected')
+            return
         }
 
         this.runsDeleteSet.add(uuid)
-        elem.elem.classList.add('.selected')
+        elem.elem.classList.add('selected')
 
     }
 
