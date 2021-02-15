@@ -120,9 +120,17 @@ export class RunsListCache extends CacheObject<RunsList> {
         return this.data
     }
 
-    async deleteRuns(runs: RunListItemModel[], runUUIDS: string[]): Promise<void> {
+    async deleteRuns(runUUIDS: Set<string>): Promise<void> {
+        let runs: RunListItemModel[] = []
+        let currentRuns = <RunListItemModel[]>this.data.runs
+        for(let run of currentRuns) {
+            if(!runUUIDS.has(run.run_uuid)) {
+                runs.push(run)
+            }
+        }
+
         this.data.runs = runs
-        await NETWORK.deleteRuns(runUUIDS)
+        await NETWORK.deleteRuns(Array.from(runUUIDS))
     }
 }
 

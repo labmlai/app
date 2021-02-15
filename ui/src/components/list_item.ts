@@ -4,29 +4,31 @@ import {StatusView} from './status'
 import {formatTime} from '../utils/time'
 
 export interface ListItemOptions {
-  item: RunListItemModel
-  onClick: (uuid: string) => void
+    item: RunListItemModel
+    onClick: (elem: ListItemView) => void
 }
 
 export class ListItemView {
-  item: RunListItemModel
-  onClick: () => void
+    item: RunListItemModel
+    elem: HTMLDivElement
+    onClick: () => void
 
-  constructor(opt: ListItemOptions) {
-    this.item = opt.item
-    this.onClick = () => {
-      opt.onClick(this.item.run_uuid)
+    constructor(opt: ListItemOptions) {
+        this.item = opt.item
+        this.onClick = () => {
+            opt.onClick(this)
+        }
     }
-  }
 
-  render($: WeyaElementFunction) {
-    $('div.list-item',
-        {on: {click: this.onClick}},
+
+    render($: WeyaElementFunction) {
+        this.elem = <HTMLDivElement>$('div.list-item',
+            {on: {click: this.onClick}},
             $ => {
-      new StatusView({status: this.item.run_status}).render($)
-      $('p', `Started on ${formatTime(this.item.start_time)}`)
-      $('h5', this.item.name)
-      $('h6', this.item.comment)
-    })
-  }
+                new StatusView({status: this.item.run_status}).render($)
+                $('p', `Started on ${formatTime(this.item.start_time)}`)
+                $('h5', this.item.name)
+                $('h6', this.item.comment)
+            })
+    }
 }
