@@ -1,19 +1,22 @@
 import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PlotOptions, FillOptions} from '../types'
+import {PointValue} from "../../../models/run"
 
-interface SimpleLinePlotOptions extends PlotOptions{
-    series: number[]
+
+export interface LinePlotOptions extends PlotOptions {
+    series: PointValue[]
 }
 
-export class SimpleLinePlot {
-    series: number[]
+export class LinePlot {
+    series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
     smoothedLine
+    unsmoothedLine
 
-    constructor(opt: SimpleLinePlotOptions) {
+    constructor(opt: LinePlotOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale
@@ -22,10 +25,19 @@ export class SimpleLinePlot {
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
             .x((d, i) => {
-                return this.xScale(i)
+                return this.xScale(d.step)
             })
             .y((d) => {
-                return this.yScale(d)
+                return this.yScale(d.smoothed)
+            })
+
+        this.unsmoothedLine = d3.line()
+            .curve(d3.curveMonotoneX)
+            .x((d, i) => {
+                return this.xScale(d.step)
+            })
+            .y((d) => {
+                return this.yScale(d.value)
             })
     }
 
@@ -38,16 +50,23 @@ export class SimpleLinePlot {
                     stroke: this.color,
                     d: this.smoothedLine(this.series) as string
                 })
+            $('path.unsmoothed-line',
+                {
+                    fill: 'none',
+                    stroke: this.color,
+                    d: this.unsmoothedLine(this.series) as string
+                })
         })
     }
 }
 
-interface SimpleLineFillOptions extends FillOptions{
-    series: number[]
+interface LineFillOptions extends FillOptions {
+    series: PointValue[]
 }
 
-export class SimpleLineFill {
-    series: number[]
+
+export class LineFill {
+    series: PointValue[]
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
@@ -55,7 +74,7 @@ export class SimpleLineFill {
     smoothedLine
     dFill: string
 
-    constructor(opt: SimpleLineFillOptions) {
+    constructor(opt: LineFillOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale
@@ -65,14 +84,15 @@ export class SimpleLineFill {
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
             .x((d, i) => {
-                return this.xScale(i)
+                return this.xScale(d.step)
             })
             .y((d) => {
-                return this.yScale(d)
+                return this.yScale(d.smoothed)
             })
 
         let d = this.smoothedLine(this.series) as string
-        this.dFill = `M${this.xScale(0)},0L` + d.substr(1) + `L${this.xScale(this.series.length - 1)},0`
+        this.dFill = `M${this.xScale(this.series[0].step)},0L` + d.substr(1) +
+            `L${this.xScale(this.series[this.series.length - 1].step)},0`
     }
 
     render($: WeyaElementFunction) {

@@ -31,3 +31,26 @@ export class RightAxis {
         layer.append('g').call(this.axis)
     }
 }
+
+export class BottomAxis {
+    chartId: string
+    scale: d3.ScaleLinear<number, number>
+    specifier?: string
+    numTicks?: number
+    id: string
+    axis
+
+    constructor(opt: AxisOptions) {
+        this.specifier = opt.specifier !== undefined ? opt.specifier : ".2s"
+        this.id = `${opt.chartId}_axis_bottom`
+        this.axis = d3.axisBottom(this.scale as d3.AxisScale<d3.AxisDomain>).ticks(5, this.specifier)
+    }
+
+    render($: WeyaElementFunction) {
+        $('g', {id: this.id})
+
+        let layer = d3.select(`#${this.id}`)
+        layer.selectAll('g').remove()
+        layer.append('g').call(this.axis)
+    }
+}

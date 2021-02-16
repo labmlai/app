@@ -14,7 +14,6 @@ export class SimpleLinesChart {
     chartHeight: number
     margin: number
     axisSize: number
-    plot: number[] = []
     labels: string[] = []
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
@@ -28,14 +27,14 @@ export class SimpleLinesChart {
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(this.chartWidth / 4)
 
+        let plot: number[] = []
         for (let s of this.series) {
-            this.plot.push(...s.value)
+            plot.push(...s.value)
             this.labels.push(s.name)
         }
 
         this.xScale = getScale([0, this.series[0].value.length - 1], this.chartWidth, false)
-        this.yScale = getScale([Math.min(...this.plot), Math.max(...this.plot)], -this.chartHeight)
-
+        this.yScale = getScale([Math.min(...plot), Math.max(...plot)], -this.chartHeight)
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
