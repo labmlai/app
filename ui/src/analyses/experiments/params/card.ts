@@ -23,7 +23,8 @@ class ParameterPreferenceCache extends SeriesPreferenceCache {
 export class Parameters extends Card {
     uuid: string
     width: number
-    AnalysisData: AnalysisDataModel
+    analysisData: AnalysisDataModel
+    cache: AnalysisCache<ParameterAnalysisCache, ParameterPreferenceCache>
     analysisCache: SeriesCache
 
     constructor(opt: CardOptions) {
@@ -31,18 +32,19 @@ export class Parameters extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.analysisCache = new AnalysisCache(ParameterAnalysisCache, ParameterPreferenceCache).getAnalysis(this.uuid)
+        this.cache = new AnalysisCache(ParameterAnalysisCache, ParameterPreferenceCache)
+        this.analysisCache = this.cache.getAnalysis(this.uuid)
     }
 
     refresh() {
     }
 
     async render($: WeyaElementFunction) {
-        this.AnalysisData = await this.analysisCache.get()
+        this.analysisData = await this.analysisCache.get()
 
         $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Parameters')
-            new SimpleLinesChart({series: this.AnalysisData.summary, width: this.width}).render($)
+            new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
         })
     }
 

@@ -41,7 +41,6 @@ export class LinePlot {
             })
     }
 
-
     render($: WeyaElementFunction) {
         $('g', $ => {
             $('path.smoothed-line.dropshadow',

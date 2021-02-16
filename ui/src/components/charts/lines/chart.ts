@@ -2,8 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {getScale,toPointValues} from "../utils"
-import {getExtent, getLogScale} from "../../../../../ui_old/src/components/charts/utils"
+import {getScale, toPointValues, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
@@ -37,7 +36,12 @@ export class LineChart {
         let windowWidth = opt.width
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
-        this.chartHeight = Math.round(this.chartWidth / 4)
+        this.chartHeight = Math.round(this.chartWidth / 2)
+
+
+        if (this.plotIdx.length === 0) {
+            this.plotIdx = defaultSeriesToPlot(this.series)
+        }
 
         for (let i = 0; i < this.plotIdx.length; i++) {
             if (this.plotIdx[i] >= 0) {
@@ -59,6 +63,7 @@ export class LineChart {
     changeScale() {
         let plotSeries = this.plot.map(s => s.series)
 
+
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
         } else {
@@ -73,7 +78,7 @@ export class LineChart {
             $('div', '')
         } else {
             $('div.detail-card', $ => {
-                $('div.fixed-chart', $ => {
+                $('div', $ => {
                         $('svg',
                             {
                                 id: 'chart',
@@ -86,24 +91,22 @@ export class LineChart {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     },
                                     $ => {
-                                        $('g', $ => {
-                                            this.series.map((s, i) => {
-                                                new LineFill({
-                                                    series: s.series,
-                                                    xScale: this.xScale,
-                                                    yScale: this.yScale,
-                                                    color: getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: i
-                                                }).render($)
-                                            })
-                                            this.series.map((s, i) => {
-                                                new LinePlot({
-                                                    series: s.series,
-                                                    xScale: this.xScale,
-                                                    yScale: this.yScale,
-                                                    color: getColor(this.filteredPlotIdx[i])
-                                                }).render($)
-                                            })
+                                        this.plot.map((s, i) => {
+                                            new LineFill({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: getColor(this.filteredPlotIdx[i]),
+                                                colorIdx: i
+                                            }).render($)
+                                        })
+                                        this.plot.map((s, i) => {
+                                            new LinePlot({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: getColor(this.filteredPlotIdx[i])
+                                            }).render($)
                                         })
                                     })
                                 $('g.bottom-axis',

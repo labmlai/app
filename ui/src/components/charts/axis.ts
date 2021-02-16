@@ -9,7 +9,6 @@ interface AxisOptions {
 }
 
 export class RightAxis {
-    chartId: string
     scale: d3.ScaleLinear<number, number>
     specifier?: string
     numTicks?: number
@@ -33,10 +32,8 @@ export class RightAxis {
 }
 
 export class BottomAxis {
-    chartId: string
     scale: d3.ScaleLinear<number, number>
     specifier?: string
-    numTicks?: number
     id: string
     axis
 

@@ -23,7 +23,8 @@ class GradientPreferenceCache extends SeriesPreferenceCache {
 export class Gradients extends Card {
     uuid: string
     width: number
-    AnalysisData: AnalysisDataModel
+    analysisData: AnalysisDataModel
+    cache: AnalysisCache<GradientAnalysisCache, GradientPreferenceCache>
     analysisCache: SeriesCache
 
     constructor(opt: CardOptions) {
@@ -31,18 +32,19 @@ export class Gradients extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.analysisCache = new AnalysisCache(GradientAnalysisCache, GradientPreferenceCache).getAnalysis(this.uuid)
+        this.cache = new AnalysisCache(GradientAnalysisCache, GradientPreferenceCache)
+        this.analysisCache = this.cache.getAnalysis(this.uuid)
     }
 
     refresh() {
     }
 
     async render($: WeyaElementFunction) {
-        this.AnalysisData = await this.analysisCache.get()
+        this.analysisData = await this.analysisCache.get()
 
         $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Gradients')
-            new SimpleLinesChart({series: this.AnalysisData.summary, width: this.width}).render($)
+            new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
         })
     }
 

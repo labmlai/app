@@ -30,7 +30,7 @@ export class AnalysisCache<TA extends SeriesCache, TAP extends SeriesPreferenceC
         return this.preferencesCaches[uuid]
     }
 
-    getStatus(uuid: string) {
+    private getStatus(uuid: string) {
         return CACHE.getRunStatus(uuid)
     }
 }
