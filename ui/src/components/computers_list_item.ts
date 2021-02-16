@@ -1,19 +1,19 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
-import {RunListItemModel} from '../models/run_list'
 import {StatusView} from './status'
 import {formatTime} from '../utils/time'
+import {ComputerListItemModel} from '../models/computer_list';
 
-export interface ListItemOptions {
-    item: RunListItemModel
-    onClick: (elem: ListItemView) => void
+export interface ComputerListItemOptions {
+    item: ComputerListItemModel
+    onClick: (elem: ComputersListItemView) => void
 }
 
-export class ListItemView {
-    item: RunListItemModel
+export class ComputersListItemView {
+    item: ComputerListItemModel
     elem: HTMLDivElement
     onClick: () => void
 
-    constructor(opt: ListItemOptions) {
+    constructor(opt: ComputerListItemOptions) {
         this.item = opt.item
         this.onClick = () => {
             opt.onClick(this)

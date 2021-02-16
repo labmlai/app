@@ -3,19 +3,19 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import CACHE, {IsUserLoggedCache, RunsListCache} from "../cache/cache"
-import {RunListItemModel} from '../models/run_list'
-import {RunsListItemView} from '../components/runs_list_item'
+import CACHE, {ComputersListCache, IsUserLoggedCache} from "../cache/cache"
 import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
+import {ComputerListItemModel} from '../models/computer_list';
+import {ComputersListItemView} from '../components/computers_list_item';
 
-class RunsListView extends ScreenView {
-    runListCache: RunsListCache
-    currentRunsList: RunListItemModel[]
+class ComputersListView extends ScreenView {
+    computerListCache: ComputersListCache
+    currentComputersList: ComputerListItemModel[]
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     elem: WeyaElement
-    runsListContainer: HTMLDivElement
+    computersListContainer: HTMLDivElement
     btnContainer: HTMLDivElement
     loader: Loader
     searchQuery: string
@@ -25,18 +25,18 @@ class RunsListView extends ScreenView {
     refreshButton: RefreshButton
     cancelButton: CancelButton
     isEditMode: boolean
-    runsDeleteSet: Set<string>
+    computersDeleteSet: Set<string>
 
     constructor() {
         super()
 
-        this.runListCache = CACHE.getRunsList()
+        this.computerListCache = CACHE.getComputersList()
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
         this.loader = new Loader()
         this.searchQuery = ''
         this.isEditMode = false
-        this.runsDeleteSet = new Set<string>()
+        this.computersDeleteSet = new Set<string>()
     }
 
     render() {
@@ -57,7 +57,7 @@ class RunsListView extends ScreenView {
             })
             $('div.runs-list', $ => {
                 new SearchView({onSearch: this.onSearch}).render($)
-                this.runsListContainer = <HTMLDivElement>$('div.list', '')
+                this.computersListContainer = <HTMLDivElement>$('div.list', '')
             })
             this.loader.render($)
         })
@@ -70,7 +70,7 @@ class RunsListView extends ScreenView {
     renderButtons() {
         this.buttonContainer.innerHTML = ''
         $(this.buttonContainer, $ => {
-            if (this.currentRunsList.length) {
+            if (this.currentComputersList.length) {
                 if (this.isEditMode) {
                     this.cancelButton.render($)
                     this.deleteButton.render($)
@@ -83,33 +83,33 @@ class RunsListView extends ScreenView {
     }
 
     private async renderList() {
-        this.currentRunsList = (await this.runListCache.get()).runs
+        this.currentComputersList = (await this.computerListCache.get()).computers
         this.isUserLogged = await this.isUserLoggedCache.get()
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
+        this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))
 
         this.loader.remove()
         this.renderButtons()
 
 
-        this.runsListContainer.innerHTML = ''
-        $(this.runsListContainer, $ => {
-            for (let i = 0; i < this.currentRunsList.length; i++) {
-                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+        this.computersListContainer.innerHTML = ''
+        $(this.computersListContainer, $ => {
+            for (let i = 0; i < this.currentComputersList.length; i++) {
+                new ComputersListItemView({item: this.currentComputersList[i], onClick: this.onItemClicked}).render($)
             }
         })
     }
 
-    runsFilter = (run: RunListItemModel, query: RegExp) => {
-        let name = run.name.toLowerCase()
-        let comment = run.comment.toLowerCase()
+    computersFilter = (computer: ComputerListItemModel, query: RegExp) => {
+        let name = computer.name.toLowerCase()
+        let comment = computer.comment.toLowerCase()
 
         return (name.search(query) !== -1 || comment.search(query) !== -1)
     }
 
     onRefresh = async () => {
-        this.currentRunsList = (await this.runListCache.get(true)).runs
+        this.currentComputersList = (await this.computerListCache.get(true)).computers
         await this.renderList()
     }
 
@@ -119,7 +119,7 @@ class RunsListView extends ScreenView {
     }
 
     onDelete = async () => {
-        await this.runListCache.deleteRuns(this.runsDeleteSet)
+        await this.computerListCache.deleteSessions(this.computersDeleteSet)
         await this.renderList()
     }
 
@@ -128,20 +128,20 @@ class RunsListView extends ScreenView {
         this.renderButtons()
     }
 
-    onItemClicked = (elem: RunsListItemView) => {
-        let uuid = elem.item.run_uuid
-        if(!this.isEditMode) {
-            ROUTER.navigate(`/run/${uuid}`)
+    onItemClicked = (elem: ComputersListItemView) => {
+        let uuid = elem.item.computer_uuid
+        if (!this.isEditMode) {
+            ROUTER.navigate(`/session/${uuid}`)
             return
         }
 
-        if(this.runsDeleteSet.has(uuid)){
-            this.runsDeleteSet.delete(uuid)
+        if (this.computersDeleteSet.has(uuid)) {
+            this.computersDeleteSet.delete(uuid)
             elem.elem.classList.remove('selected')
             return
         }
 
-        this.runsDeleteSet.add(uuid)
+        this.computersDeleteSet.add(uuid)
         elem.elem.classList.add('selected')
 
     }
@@ -153,12 +153,12 @@ class RunsListView extends ScreenView {
 
 }
 
-export class RunsListHandler {
+export class ComputersListHandler {
     constructor() {
-        ROUTER.route('runs', [this.handleRunsList])
+        ROUTER.route('computers', [this.handleComputersList])
     }
 
-    handleRunsList = () => {
-        SCREEN.setView(new RunsListView())
+    handleComputersList = () => {
+        SCREEN.setView(new ComputersListView())
     }
 }
