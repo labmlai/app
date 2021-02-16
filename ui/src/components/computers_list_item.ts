@@ -25,7 +25,7 @@ export class ComputersListItemView {
         this.elem = <HTMLDivElement>$('div.list-item',
             {on: {click: this.onClick}},
             $ => {
-                new StatusView({status: this.item.run_status}).render($)
+                new StatusView({status: this.item.run_status, type: 'computer'}).render($)
                 $('p', `Started on ${formatTime(this.item.start_time)}`)
                 $('h5', this.item.name)
                 $('h6', this.item.comment)
