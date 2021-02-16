@@ -5,6 +5,7 @@ import {IsUserLogged} from "../models/user"
 import {RunListItemModel, RunsList} from '../models/run_list'
 import {AnalysisDataModel} from "../models/run"
 import {AnalysisPreference} from "../models/preference"
+import {ComputerListItemModel, ComputersList} from '../models/computer_list';
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -134,6 +135,28 @@ export class RunsListCache extends CacheObject<RunsList> {
     }
 }
 
+export class ComputersListCache extends CacheObject<ComputersList> {
+    async load(): Promise<ComputersList> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputers()
+            return new ComputersList(res)
+        })
+    }
+
+    async deleteSessions(sessionUUIDS: Set<string>): Promise<void> {
+        let computers: ComputerListItemModel[] = []
+        let currentComputers = <ComputerListItemModel[]>this.data.computers
+        for(let computer of currentComputers) {
+            if(!sessionUUIDS.has(computer.computer_uuid)) {
+                computers.push(computer)
+            }
+        }
+
+        this.data.computers = computers
+        await NETWORK.deleteSessions(Array.from(sessionUUIDS))
+    }
+}
+
 export class RunCache extends CacheObject<Run> {
     private readonly uuid: string
     private statusCache: RunStatusCache
@@ -255,6 +278,7 @@ class Cache {
 
     private isUserLogged: IsUserLoggedCache | null
     private runsList: RunsListCache | null
+    private computersList: ComputersListCache | null
 
     constructor() {
         this.runs = {}
@@ -275,6 +299,14 @@ class Cache {
         }
 
         return this.runsList
+    }
+
+    getComputersList() {
+        if (this.computersList == null) {
+            this.computersList = new ComputersListCache()
+        }
+
+        return this.computersList
     }
 
     getRunStatus(uuid: string) {

@@ -3,17 +3,24 @@ import {RunStatusModel} from "../models/status"
 
 export interface StatusOptions {
     status: RunStatusModel
+    type?: string
 }
 
 export class StatusView {
     status: RunStatusModel
+    type: string
 
     constructor(opt: StatusOptions) {
         this.status = opt.status
+        this.type = opt.type || 'run'
     }
 
     render($: WeyaElementFunction) {
         if (this.status.status === 'in progress') {
+            if (this.type === 'computer') {
+                $('div.status.text-info.text-uppercase', 'computer is monitoring')
+                return
+            }
             $('div.status.text-info.text-uppercase', 'experiment is running')
         } else if (this.status.status === 'no response') {
             $('div.status.text-warning.text-uppercase', 'no response')

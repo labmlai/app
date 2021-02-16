@@ -7,10 +7,12 @@ import {StdOutHandler} from './analyses/experiments/stdout/view'
 import {StdErrorHandler} from './analyses/experiments/stderror/view'
 import {LoggerHandler} from './analyses/experiments/logger/view'
 import {RunsListHandler} from './views/runs_list_view';
+import {ComputersListHandler} from './views/computers_list_view';
 
 new RunHandler()
 new PageNotFoundHandler()
 new RunsListHandler()
+new ComputersListHandler()
 
 new RunHeaderHandler()
 new StdOutHandler()

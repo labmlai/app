@@ -49,8 +49,16 @@ class Network {
         return this.sendHttpRequest('GET', `/runs/${labml_token}`)
     }
 
+    async getComputers(): Promise<any> {
+        return this.sendHttpRequest('GET',`/computers/${null}`)
+    }
+
     async deleteRuns(runUUIDS: string[]): Promise<any> {
         return this.sendHttpRequest('PUT', `/runs`, {'run_uuids': runUUIDS})
+    }
+
+    async deleteSessions(computerUUIDS: string[]): Promise<any> {
+        return this.sendHttpRequest('PUT',`/computers`, {'session_uuids': computerUUIDS})
     }
 
     async getIsUserLogged(): Promise<any> {
