@@ -133,3 +133,6 @@ export function getSelectedIdx(series: any[], bisect: any, currentX?: any | null
     return idx
 }
 
+export function getChartType(index: number): 'log' | 'linear' {
+    return index === 0 ? 'linear' : 'log'
+}

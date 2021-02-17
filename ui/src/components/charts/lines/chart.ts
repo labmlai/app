@@ -109,19 +109,19 @@ export class LineChart {
                                             }).render($)
                                         })
                                     })
-                                $('g.bottom-axis',
-                                    {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
-                                    },
-                                    $ => {
-                                        new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
-                                    })
                                 $('g.right-axis',
                                     {
                                         transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
                                     },
                                     $ => {
                                         new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
+                                    })
+                                $('g.bottom-axis',
+                                    {
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                    },
+                                    $ => {
+                                        new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
                                     })
                             })
                     }

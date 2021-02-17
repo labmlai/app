@@ -7,6 +7,7 @@ import {CardOptions} from "../../types"
 import {AnalysisCache} from "../../helpers"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
 import {RunStatusCache} from "../../../cache/cache"
+import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 
 class MetricsAnalysisCache extends SeriesCache {
@@ -26,9 +27,10 @@ export class Metrics extends Card {
     width: number
     analysisData: AnalysisDataModel
     preferenceData: AnalysisPreferenceModel
-    analysisCache: SeriesCache
     cache: AnalysisCache<MetricsAnalysisCache, MetricsPreferenceCache>
+    analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
+    plotIdx: number[] =[]
 
 
     constructor(opt: CardOptions) {
@@ -48,13 +50,19 @@ export class Metrics extends Card {
         this.analysisData = await this.analysisCache.get()
         this.preferenceData = await this.preferenceCache.get()
 
+        let analysisPreferences = this.preferenceData.series_preferences
+        if (analysisPreferences && analysisPreferences.length > 0) {
+            this.plotIdx = [...analysisPreferences]
+        }
+
         $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Metrics')
             new LineChart({
                 series: this.analysisData.series,
                 width: this.width,
-                plotIdx: [],
-                chartType: 'linear'
+                plotIdx: this.plotIdx,
+                chartType: this.preferenceData && this.preferenceData.chart_type ?
+                    getChartType(this.preferenceData.chart_type) : 'linear'
             }).render($)
         })
     }
