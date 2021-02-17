@@ -32,6 +32,31 @@ export class User {
     }
 }
 
+export interface Auth0UserModel {
+    sub: string
+    email: string
+    name: string
+    picture: string
+    email_verified: boolean
+}
+
+export class Auth0User {
+    sub: string
+    email: string
+    name: string
+    picture: string
+    email_verified: boolean
+
+
+    constructor(user: Auth0UserModel) {
+        this.sub = user.sub
+        this.email = user.email
+        this.name = user.name
+        this.picture = user.picture
+        this.email_verified = user.email_verified
+    }
+}
+
 export interface IsUserLoggedModel {
     is_user_logged: boolean
 }

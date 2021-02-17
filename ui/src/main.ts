@@ -8,6 +8,9 @@ import {StdErrorHandler} from './analyses/experiments/stderror/view'
 import {LoggerHandler} from './analyses/experiments/logger/view'
 import {RunsListHandler} from './views/runs_list_view';
 import {ComputersListHandler} from './views/computers_list_view';
+import {LoginHandler} from './views/login_view';
+
+new LoginHandler()
 
 new RunHandler()
 new PageNotFoundHandler()
