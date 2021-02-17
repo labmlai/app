@@ -11,13 +11,13 @@ import {AnalysisPreferenceModel} from "../../../models/preferences"
 import metricsCache from "./cache"
 import Timeout = NodeJS.Timeout
 import {LineChart} from "../../../components/charts/lines/chart"
+import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType} from "../../../components/charts/utils"
 
 
 class MetricsView extends ScreenView {
     elem: WeyaElement
     uuid: string
-    run: Run
     status: Status
     plotIdx: number[] = []
     currentChart: number
@@ -41,6 +41,18 @@ class MetricsView extends ScreenView {
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
 
         this.loader = new Loader()
+    }
+
+    toggleChart = (idx: number) => {
+        if (this.plotIdx[idx] >= 0) {
+            this.plotIdx[idx] = -1
+        } else {
+            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
+        }
+
+        if (this.plotIdx.length > 1) {
+            this.plotIdx = new Array<number>(...this.plotIdx)
+        }
     }
 
     onResize(width: number) {
@@ -96,12 +108,18 @@ class MetricsView extends ScreenView {
                 text: 'Log',
                 isToggled: this.currentChart > 0
             }).render($)
-            $('div', $ => {
+            $('div.detail-card', $ => {
                 new LineChart({
                     series: this.analysisData.series,
                     width: this.actualWidth,
                     plotIdx: this.plotIdx,
                     chartType: getChartType(this.currentChart)
+                }).render($)
+                new SparkLines({
+                    series: this.analysisData.series,
+                    plotIdx: this.plotIdx,
+                    width: this.actualWidth,
+                    onSelect: this.toggleChart
                 }).render($)
             })
         })

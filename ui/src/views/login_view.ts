@@ -4,7 +4,7 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {IsUserLoggedCache} from "../cache/cache"
-import NETWORK from '../network';
+import NETWORK from '../network'
 
 class LoginView extends ScreenView {
     isUserLogged: IsUserLogged

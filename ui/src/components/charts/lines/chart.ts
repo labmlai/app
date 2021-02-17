@@ -77,7 +77,7 @@ export class LineChart {
         if (this.series.length === 0) {
             $('div', '')
         } else {
-            $('div.detail-card', $ => {
+            $('div', $ => {
                 $('div', $ => {
                         $('svg',
                             {
@@ -116,13 +116,13 @@ export class LineChart {
                                     $ => {
                                         new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
                                     })
-                                $('g.bottom-axis',
-                                    {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
-                                    },
-                                    $ => {
-                                        new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
-                                    })
+                                // $('g.bottom-axis',
+                                //     {
+                                //         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                //     },
+                                //     $ => {
+                                //         new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
+                                //     })
                             })
                     }
                 )

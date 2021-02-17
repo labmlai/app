@@ -1,6 +1,6 @@
-import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env';
-import {Auth0User} from './models/user';
-import {UserModel} from '../../ui_old/src/models/user';
+import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
+import {Auth0User} from './models/user'
+import {UserModel} from '../../ui_old/src/models/user'
 
 const REACT_APP_SERVER_URL = 'http://localhost:5000/api/v1'
 
