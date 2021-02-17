@@ -21,8 +21,8 @@ export class SearchView {
 
     render($: WeyaElementFunction) {
         $('div', '.search-container', $ => {
-            $('span.fas.fa-search', '')
-            this.textbox = <HTMLInputElement>$('input', {
+            $('span','.fas.fa-search', '')
+            this.textbox = $('input', {
                     type: 'search',
                     placeholder: 'Search',
                     'aria-label': 'Search',
