@@ -12,7 +12,6 @@ import metricsCache from "./cache"
 import Timeout = NodeJS.Timeout
 import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType} from "../../../components/charts/utils"
-import {a} from "../../../../../../../opt/anaconda3/lib/python3.7/site-packages/bokeh/server/static/js/types/core/dom";
 
 
 class MetricsView extends ScreenView {
@@ -58,25 +57,28 @@ class MetricsView extends ScreenView {
                 this.loader.render($)
             })
 
-        this.renderMetrics().then()
+        this.loaData().then(() => {
+            if (this.status && this.status.isRunning) {
+                this.autoRefresh = setInterval(this.renderMetrics.bind(this), 2 * 60 * 1000)
+            }
+
+            this.loadPreferences()
+
+            this.renderMetrics()
+        })
 
         return this.elem
     }
 
-
-    async renderMetrics() {
+    async loaData() {
         this.analysisData = await this.analysisCache.get()
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
 
         this.loader.remove()
+    }
 
-        this.loadPreferences()
-
-        if (this.status && this.status.isRunning) {
-            this.autoRefresh = setInterval(this.renderMetrics.bind(this), 2 * 60 * 1000)
-        }
-
+    renderMetrics() {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {
@@ -132,6 +134,8 @@ class MetricsView extends ScreenView {
         } else {
             this.currentChart = this.currentChart + 1
         }
+
+        this.renderMetrics()
     }
 
     updatePreferences = () => {
