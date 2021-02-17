@@ -3,28 +3,14 @@ import {ROUTER} from '../../../app'
 import {AnalysisDataModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
-import {AnalysisCache} from "../../helpers"
-import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {RunStatusCache} from "../../../cache/cache"
+import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
-
-class ParameterAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: RunStatusCache) {
-        super(uuid, 'parameters', statusCache)
-    }
-}
-
-class ParameterPreferenceCache extends SeriesPreferenceCache {
-    constructor(uuid: string) {
-        super(uuid, 'parameters')
-    }
-}
+import parametersCache from "./cache"
 
 export class Parameters extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
-    cache: AnalysisCache<ParameterAnalysisCache, ParameterPreferenceCache>
     analysisCache: SeriesCache
 
     constructor(opt: CardOptions) {
@@ -32,8 +18,7 @@ export class Parameters extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.cache = new AnalysisCache(ParameterAnalysisCache, ParameterPreferenceCache)
-        this.analysisCache = this.cache.getAnalysis(this.uuid)
+        this.analysisCache = parametersCache.getAnalysis(this.uuid)
     }
 
     refresh() {

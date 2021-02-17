@@ -4,33 +4,20 @@ import {AnalysisDataModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import Card from "../../card"
 import {CardOptions} from "../../types"
-import {AnalysisCache} from "../../helpers"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {RunStatusCache} from "../../../cache/cache"
 import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
+import metricsCache from "./cache"
 
-class MetricsAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: RunStatusCache) {
-        super(uuid, 'metrics', statusCache)
-    }
-}
-
-class MetricsPreferenceCache extends SeriesPreferenceCache {
-    constructor(uuid: string) {
-        super(uuid, 'metrics')
-    }
-}
 
 export class Metrics extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
     preferenceData: AnalysisPreferenceModel
-    cache: AnalysisCache<MetricsAnalysisCache, MetricsPreferenceCache>
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
-    plotIdx: number[] =[]
+    plotIdx: number[] = []
 
 
     constructor(opt: CardOptions) {
@@ -38,9 +25,8 @@ export class Metrics extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.cache = new AnalysisCache(MetricsAnalysisCache, MetricsPreferenceCache)
-        this.analysisCache = this.cache.getAnalysis(this.uuid)
-        this.preferenceCache = this.cache.getPreferences(this.uuid)
+        this.analysisCache = metricsCache.getAnalysis(this.uuid)
+        this.preferenceCache = metricsCache.getPreferences(this.uuid)
     }
 
     refresh() {
@@ -68,6 +54,6 @@ export class Metrics extends Card {
     }
 
     onClick = () => {
-        // ROUTER.navigate(`/gradients/${this.uuid}`)
+        ROUTER.navigate(`/metrics/${this.uuid}`)
     }
 }

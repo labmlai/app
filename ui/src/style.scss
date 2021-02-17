@@ -89,6 +89,12 @@ input[type="email"], input[type="text"] {
   }
 }
 
+/* Buttons*/
+.toggle-button {
+  font-size: .8rem;
+}
+
+
 /* Loader */
 
 .loader {
@@ -510,6 +516,6 @@ svg#chart {
   z-index: 1000;
 }
 
-.selected-step{
+.selected-step {
   font-size: .7rem;
 }

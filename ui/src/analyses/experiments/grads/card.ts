@@ -3,28 +3,14 @@ import {ROUTER} from '../../../app'
 import {AnalysisDataModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
-import {AnalysisCache} from "../../helpers"
-import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {RunStatusCache} from "../../../cache/cache"
+import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
-
-class GradientAnalysisCache extends SeriesCache {
-    constructor(uuid: string, statusCache: RunStatusCache) {
-        super(uuid, 'gradients', statusCache)
-    }
-}
-
-class GradientPreferenceCache extends SeriesPreferenceCache {
-    constructor(uuid: string) {
-        super(uuid, 'gradients')
-    }
-}
+import gradientsCache from "./cache"
 
 export class Gradients extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
-    cache: AnalysisCache<GradientAnalysisCache, GradientPreferenceCache>
     analysisCache: SeriesCache
 
     constructor(opt: CardOptions) {
@@ -32,8 +18,7 @@ export class Gradients extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.cache = new AnalysisCache(GradientAnalysisCache, GradientPreferenceCache)
-        this.analysisCache = this.cache.getAnalysis(this.uuid)
+        this.analysisCache = gradientsCache.getAnalysis(this.uuid)
     }
 
     refresh() {
