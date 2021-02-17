@@ -83,8 +83,12 @@ class RunsListView extends ScreenView {
     }
 
     private async renderList() {
-        this.currentRunsList = (await this.runListCache.get()).runs
         this.isUserLogged = await this.isUserLoggedCache.get()
+        if (!this.isUserLogged.is_user_logged) {
+            ROUTER.navigate(`/login#return_url=/runs`)
+            return
+        }
+        this.currentRunsList = (await this.runListCache.get()).runs
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
         this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
@@ -130,12 +134,12 @@ class RunsListView extends ScreenView {
 
     onItemClicked = (elem: RunsListItemView) => {
         let uuid = elem.item.run_uuid
-        if(!this.isEditMode) {
+        if (!this.isEditMode) {
             ROUTER.navigate(`/run/${uuid}`)
             return
         }
 
-        if(this.runsDeleteSet.has(uuid)){
+        if (this.runsDeleteSet.has(uuid)) {
             this.runsDeleteSet.delete(uuid)
             elem.elem.classList.remove('selected')
             return

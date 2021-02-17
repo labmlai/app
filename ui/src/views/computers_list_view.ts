@@ -83,8 +83,12 @@ class ComputersListView extends ScreenView {
     }
 
     private async renderList() {
-        this.currentComputersList = (await this.computerListCache.get()).computers
         this.isUserLogged = await this.isUserLoggedCache.get()
+        if (!this.isUserLogged.is_user_logged) {
+            ROUTER.navigate(`/login#return_url=/computers`)
+            return
+        }
+        this.currentComputersList = (await this.computerListCache.get()).computers
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
         this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))
