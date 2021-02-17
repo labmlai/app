@@ -41,7 +41,7 @@ class ComputersListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
-            this.buttonContainer = <HTMLDivElement>$('div.button-container', $ => {
+            this.buttonContainer = $('div', '.button-container', $ => {
                 this.deleteButton = new DeleteButton({
                     onButtonClick: this.onDelete
                 })
@@ -55,9 +55,9 @@ class ComputersListView extends ScreenView {
                     onButtonClick: this.onCancel
                 })
             })
-            $('div.runs-list', $ => {
+            $('div', '.runs-list', $ => {
                 new SearchView({onSearch: this.onSearch}).render($)
-                this.computersListContainer = <HTMLDivElement>$('div.list', '')
+                this.computersListContainer = $('div', '.list', '')
             })
             this.loader.render($)
         })
