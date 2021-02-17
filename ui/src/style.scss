@@ -420,75 +420,75 @@ svg#chart {
 //  }
 //}
 
-//div.sparkline-list-item {
-//  border: none;
-//}
-//
-//button.sparkline-list-item {
-//  outline: none;
-//
-//  &:focus {
-//    background-color: transparent;
-//  }
-//}
-//
-//.sparkline-list-item {
-//  padding: .25rem 5px;
-//  text-align: center;
-//
-//  .sparkline-content {
-//    display: inline-block;
-//    text-align: left;
-//
-//    span {
-//      vertical-align: middle;
-//      font-weight: bold;
-//      font-size: 12px;
-//      display: inline-block;
-//
-//      &.value-primary {
-//        font-weight: bold;
-//        fill: #34495e;
-//      }
-//
-//      &.value-secondary {
-//        font-weight: normal;
-//        fill: #7f8c8d;
-//      }
-//    }
-//
-//    svg.sparkline {
-//      path.smoothed-line {
-//        stroke-width: 1.5;
-//      }
-//
-//      path.unsmoothed-line {
-//        stroke-width: 0;
-//      }
-//
-//      path.line-fill {
-//        opacity: 0.3;
-//        fill: url(#gradient-grey);
-//
-//      }
-//    }
-//
-//    span.value {
-//      text-align: right;
-//      height: 36px;
-//
-//      &.primary-only {
-//        span {
-//          line-height: 3;
-//        }
-//      }
-//
-//      span {
-//        display: block;
-//      }
-//    }
-//  }
-//}
+div.sparkline-list-item {
+  border: none;
+}
+
+button.sparkline-list-item {
+  outline: none;
+
+  &:focus {
+    background-color: transparent;
+  }
+}
+
+.sparkline-list-item {
+  padding: .25rem 5px;
+  text-align: center;
+
+  .sparkline-content {
+    display: inline-block;
+    text-align: left;
+
+    span {
+      vertical-align: middle;
+      font-weight: bold;
+      font-size: 12px;
+      display: inline-block;
+
+      &.value-primary {
+        font-weight: bold;
+        fill: #34495e;
+      }
+
+      &.value-secondary {
+        font-weight: normal;
+        fill: #7f8c8d;
+      }
+    }
+
+    svg.sparkline {
+      path.smoothed-line {
+        stroke-width: 1.5;
+      }
+
+      path.unsmoothed-line {
+        stroke-width: 0;
+      }
+
+      path.line-fill {
+        opacity: 0.3;
+        fill: url(#gradient-grey);
+
+      }
+    }
+
+    span.value {
+      text-align: right;
+      height: 36px;
+
+      &.primary-only {
+        span {
+          line-height: 3;
+        }
+      }
+
+      span {
+        display: block;
+      }
+    }
+  }
+}
 
 .pointer-cursor {
   cursor: pointer;

@@ -16,10 +16,9 @@ class RunsListView extends ScreenView {
     isUserLoggedCache: IsUserLoggedCache
     elem: WeyaElement
     runsListContainer: HTMLDivElement
-    btnContainer: HTMLDivElement
     loader: Loader
     searchQuery: string
-    buttonContainer: HTMLDivElement
+    buttonContainer: WeyaElement
     deleteButton: DeleteButton
     editButton: EditButton
     refreshButton: RefreshButton
