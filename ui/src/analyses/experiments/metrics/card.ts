@@ -54,6 +54,6 @@ export class Metrics extends Card {
     }
 
     onClick = () => {
-        // ROUTER.navigate(`/gradients/${this.uuid}`)
+        ROUTER.navigate(`/metrics/${this.uuid}`)
     }
 }

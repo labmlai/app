@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from "../../../lib/weya/weya"
+import {WeyaElementFunction, WeyaElement} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
 
 interface buttonOptions {
@@ -109,6 +109,40 @@ export class CancelButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-times', '')
+            })
+    }
+}
+
+interface ToggleButtonOptions extends buttonOptions {
+    text: string
+    isToggled: boolean
+}
+
+export class ToggleButton extends Button {
+    text: string
+    isToggled: boolean
+    defaultClass: string
+    toggleButton: WeyaElement
+
+    constructor(opt: ToggleButtonOptions) {
+        super(opt)
+
+        this.text = opt.text
+        this.isToggled = opt.isToggled
+        this.defaultClass = this.isToggled ? 'selected' : 'empty'
+    }
+
+    onClick = () => {
+        this.onButtonClick()
+
+        this.defaultClass = this.defaultClass === 'selected' ? '' : 'selected'
+    }
+
+    render($: WeyaElementFunction) {
+        this.toggleButton = $(`nav.nav-link.float-left.tab.toggle-button.${this.defaultClass}`,
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', this.text)
             })
     }
 }
