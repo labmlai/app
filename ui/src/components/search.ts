@@ -13,7 +13,7 @@ export class SearchView {
     constructor(opt: SearchOptions) {
         this.onSearch = () => {
             clearTimeout(this.inputTimeout)
-            this.inputTimeout = setTimeout(()=>{
+            this.inputTimeout = setTimeout(() => {
                 opt.onSearch(this.textbox.value)
             }, 250);
         }
@@ -21,15 +21,14 @@ export class SearchView {
 
     render($: WeyaElementFunction) {
         $('div', '.search-container', $ => {
-            $('span','.fas.fa-search', '')
-            this.textbox = $('input', {
+            $('span', '.fas.fa-search', '')
+            this.textbox = $('input', '.search-input', {
                     type: 'search',
                     placeholder: 'Search',
                     'aria-label': 'Search',
                     on: {
                         input: this.onSearch
-                    },
-                'class':'search-input'
+                    }
                 }
             )
         })

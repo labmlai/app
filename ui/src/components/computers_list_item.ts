@@ -22,7 +22,7 @@ export class ComputersListItemView {
 
 
     render($: WeyaElementFunction) {
-        this.elem = <HTMLDivElement>$('div.list-item',
+        this.elem = $('div', '.list-item',
             {on: {click: this.onClick}},
             $ => {
                 new StatusView({status: this.item.run_status, type: 'computer'}).render($)
