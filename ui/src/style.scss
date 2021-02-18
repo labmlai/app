@@ -18,6 +18,11 @@ body {
   text-align: center;
 }
 
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+}
+
 .last-updated {
   font-size: 10px;
   padding-left: 10px;
