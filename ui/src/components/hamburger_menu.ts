@@ -4,6 +4,7 @@ import {Loader} from './loader';
 import CACHE, {UserCache} from "../cache/cache"
 import {User} from '../models/user';
 import {ROUTER} from '../app';
+import NETWORK from '../network';
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 
@@ -99,8 +100,13 @@ export class HamburgerMenuView {
         }
     }
 
-    onLogOut = () => {
-
+    onLogOut = async () => {
+        let res = await NETWORK.signOut()
+        if(res.is_successful) {
+            NETWORK.redirectLogout()
+        } else {
+            //TODO: Sentry
+        }
     }
 
     onNavigate = (loc: string) => {

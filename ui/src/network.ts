@@ -132,6 +132,10 @@ class Network {
         window.location.href = `${AUTH0_DOMAIN}/authorize?response_type=token&client_id=${AUTH0_CLIENT_ID}&redirect_uri=${APP_BASE_URL}/login&scope=openid%20profile%20email`
     }
 
+    redirectLogout() {
+        window.location.href = `${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${APP_BASE_URL}`
+    }
+
     async getIsUserLogged(): Promise<any> {
         return this.sendHttpRequest('GET', `/auth/is_logged`)
     }
