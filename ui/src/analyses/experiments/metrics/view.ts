@@ -1,5 +1,5 @@
 import {ScreenView} from "../../../screen"
-import {AnalysisDataModel, Run} from "../../../models/run"
+import {AnalysisDataModel} from "../../../models/run"
 import CACHE, {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"

@@ -1,5 +1,5 @@
 import d3 from "../d3"
-import {WeyaElementFunction} from "../../../lib/weya/weya";
+import {WeyaElementFunction} from "../../../lib/weya/weya"
 
 const FORMAT = d3.format(".3s")
 
@@ -49,29 +49,35 @@ export function scaleValue(value: number, minValue: number, maxValue: number) {
     return (value - minValue) / (maxValue - minValue)
 }
 
-function FormattedValue($: WeyaElementFunction, value: any) {
-    if (typeof value === 'boolean') {
-        return $('span.boolean', this.toString())
-    } else if (typeof value === 'number') {
-        if (value - Math.floor(value) < 1e-9) {
-            return $('span.int', formatInt(value))
-        } else {
-            return $('span.float', formatInt(value))
-        }
-    } else if (typeof value === 'string') {
-        $('span.string', value)
-    } else if (value instanceof Array) {
-        let elements = [$('span.subtle', '[')]
+export class FormattedValue {
+    value: any
 
-        for (let i = 0; i < value.length; ++i) {
-            if (i > 0) {
-                elements.push($('span.subtle', ', '))
+    constructor(opt: { value: any }) {
+        this.value = opt.value
+    }
+
+    render($: WeyaElementFunction) {
+        if (typeof this.value === 'boolean') {
+            $('span.boolean', this.toString())
+        } else if (typeof this.value === 'number') {
+            if (this.value - Math.floor(this.value) < 1e-9) {
+                $('span.int', formatInt(this.value))
+            } else {
+                $('span.float', formatInt(this.value))
             }
+        } else if (typeof this.value === 'string') {
+            $('span.string', this.value)
+        } else if (this.value instanceof Array) {
+            $('span.subtle', '[')
+            for (let i = 0; i < this.value.length; ++i) {
+                if (i > 0) {
+                    $('span.subtle', ', ')
+                }
+            }
+            $('span.subtle', ']')
+        } else {
+            $('span.unknown', this.value)
         }
-        elements.push($('span.subtle', ']'))
-        return elements
-    } else {
-       return $('span.unknown',value)
     }
 }
 
