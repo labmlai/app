@@ -4,7 +4,7 @@ import NETWORK from "../network"
 import {IsUserLogged, User} from "../models/user"
 import {RunListItemModel, RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
-import {ComputerListItemModel, ComputersList} from '../models/computer_list';
+import {ComputerListItemModel, ComputersList} from '../models/computer_list'
 
 const RELOAD_TIMEOUT = 60 * 1000
 

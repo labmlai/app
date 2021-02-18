@@ -56,15 +56,16 @@ export class SparkLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                new SparkLine({name : s.name,
-                    series:s.series,
-                    selected:this.plotIdx[i],
-                    stepExtent : this.stepExtent,
-                    width : this.rowWidth,
-                    onClick : onClick,
-                    minLastValue : this.minLastValue,
-                    maxLastValue : this.maxLastValue,
-                    color : getColor(this.colorIndices[i]),
+                new SparkLine({
+                    name: s.name,
+                    series: s.series,
+                    selected: this.plotIdx[i],
+                    stepExtent: this.stepExtent,
+                    width: this.rowWidth,
+                    onClick: onClick,
+                    minLastValue: this.minLastValue,
+                    maxLastValue: this.maxLastValue,
+                    color: getColor(this.colorIndices[i]),
                 }).render($)
             })
         })

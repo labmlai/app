@@ -51,8 +51,8 @@ export class SparkLine {
             this.className = 'selected'
         }
 
-        if (this.onClick != null){
-             this.className += '.list-group-item-action'
+        if (this.onClick != null) {
+            this.className += '.list-group-item-action'
         }
     }
 
@@ -76,29 +76,29 @@ export class SparkLine {
     }
 
     render($: WeyaElementFunction) {
-            $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
-                $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                    $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                    $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
-                        $('g', {transform: `translate(${0}, 25)`}, $ => {
-                            new LineFill({
-                                series: this.series,
-                                xScale: this.xScale,
-                                yScale: this.yScale,
-                                color: '#7f8c8d',
-                                colorIdx: 9
-                            }).render($)
-                            new LinePlot({
-                                series: this.series,
-                                xScale: this.xScale,
-                                yScale: this.yScale,
-                                color: '#7f8c8d'
-                            }).render($)
-                        })
+        $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
+            $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
+                $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
+                $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
+                    $('g', {transform: `translate(${0}, 25)`}, $ => {
+                        new LineFill({
+                            series: this.series,
+                            xScale: this.xScale,
+                            yScale: this.yScale,
+                            color: '#7f8c8d',
+                            colorIdx: 9
+                        }).render($)
+                        new LinePlot({
+                            series: this.series,
+                            xScale: this.xScale,
+                            yScale: this.yScale,
+                            color: '#7f8c8d'
+                        }).render($)
                     })
-                    this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})
                 })
+                this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})
             })
+        })
 
         this.renderValue()
     }

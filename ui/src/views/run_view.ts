@@ -7,7 +7,6 @@ import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
-import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout
@@ -71,7 +70,7 @@ class RunView extends ScreenView {
         this.runView.innerHTML = ''
 
         $(this.runView, $ => {
-            if (this.isUserLogged && this.isUserLogged.is_user_logged && this.run && this.run.is_claimed) {
+            if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
                 new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
             }
             $('div.flex-container', $ => {
