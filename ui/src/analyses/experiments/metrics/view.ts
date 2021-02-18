@@ -27,6 +27,7 @@ class MetricsView extends ScreenView {
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     loader: Loader
+    isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
     metricsView: HTMLDivElement
@@ -35,15 +36,18 @@ class MetricsView extends ScreenView {
         super()
 
         this.uuid = uuid
-        this.currentChart = 1
+        this.currentChart = 0
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = metricsCache.getAnalysis(this.uuid)
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
 
+        this.isUpdateDisable = false
         this.loader = new Loader()
     }
 
     toggleChart = (idx: number) => {
+        this.isUpdateDisable = false
+
         if (this.plotIdx[idx] >= 0) {
             this.plotIdx[idx] = -1
         } else {
@@ -53,6 +57,8 @@ class MetricsView extends ScreenView {
         if (this.plotIdx.length > 1) {
             this.plotIdx = new Array<number>(...this.plotIdx)
         }
+
+        this.renderMetrics()
     }
 
     onResize(width: number) {
@@ -96,7 +102,7 @@ class MetricsView extends ScreenView {
         $(this.metricsView, $ => {
             $('div.flex-container', $ => {
                 new BackButton({}).render($)
-                new SaveButton({onButtonClick: this.updatePreferences}).render($)
+                new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
                 if (this.status && this.status.isRunning) {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
@@ -147,6 +153,8 @@ class MetricsView extends ScreenView {
     }
 
     onChangeScale = () => {
+        this.isUpdateDisable = false
+
         if (this.currentChart === 1) {
             this.currentChart = 0
         } else {
@@ -160,6 +168,8 @@ class MetricsView extends ScreenView {
         this.preferenceData.series_preferences = this.plotIdx
         this.preferenceData.chart_type = this.currentChart
         this.preferenceCache.setPreference(this.preferenceData).then()
+
+        this.isUpdateDisable = true
     }
 
     onRefresh = () => {

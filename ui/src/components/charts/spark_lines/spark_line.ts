@@ -31,7 +31,7 @@ export class SparkLine {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     valueElem: HTMLSpanElement
-    className: string
+    className: string = 'empty'
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -48,7 +48,7 @@ export class SparkLine {
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
 
         if (this.onClick != null && this.selected >= 0) {
-            this.className = ' selected'
+            this.className = 'selected'
         }
     }
 
@@ -72,8 +72,7 @@ export class SparkLine {
     }
 
     render($: WeyaElementFunction) {
-        $('div.list-item', $ => {
-            $('div.sparkline-list-item', {on: {click: this.onClick}}, $ => {
+            $(`div.sparkline-list-item.list-group-item.list-group-item-action.${this.className}`, {on: {click: this.onClick}}, $ => {
                 $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                     $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
                     $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
@@ -96,7 +95,6 @@ export class SparkLine {
                     this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})
                 })
             })
-        })
 
         this.renderValue()
     }

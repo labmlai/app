@@ -50,7 +50,7 @@ export class SparkLines {
     }
 
     render($: WeyaElementFunction) {
-        $('div.sparkline-list', $ => {
+        $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
                 let onClick
                 if (this.onSelect != null) {

@@ -1,5 +1,5 @@
 import d3 from "../../../d3"
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {getScale, toPointValues, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
@@ -26,6 +26,7 @@ export class LineChart {
     labels: string[] = []
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
+    chartElem: WeyaElement
 
     constructor(opt: LineChartOptions) {
         this.series = toPointValues(opt.series)
@@ -75,9 +76,9 @@ export class LineChart {
         this.changeScale()
 
         if (this.series.length === 0) {
-            $('div', '')
+            this.chartElem = $('div', '')
         } else {
-            $('div', $ => {
+            this.chartElem = $('div', $ => {
                 $('div', $ => {
                         $('svg',
                             {
@@ -91,15 +92,17 @@ export class LineChart {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     },
                                     $ => {
-                                        this.plot.map((s, i) => {
-                                            new LineFill({
-                                                series: s.series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: getColor(this.filteredPlotIdx[i]),
-                                                colorIdx: i
-                                            }).render($)
-                                        })
+                                        if (this.plot.length < 3) {
+                                            this.plot.map((s, i) => {
+                                                new LineFill({
+                                                    series: s.series,
+                                                    xScale: this.xScale,
+                                                    yScale: this.yScale,
+                                                    color: getColor(this.filteredPlotIdx[i]),
+                                                    colorIdx: i
+                                                }).render($)
+                                            })
+                                        }
                                         this.plot.map((s, i) => {
                                             new LinePlot({
                                                 series: s.series,

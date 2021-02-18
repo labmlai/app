@@ -89,7 +89,7 @@ div.sparkline-list-item {
   border: none;
 }
 
-button.sparkline-list-item {
+div.sparkline-list-item {
   outline: none;
 
   &:focus {
@@ -199,6 +199,6 @@ button.sparkline-list-item {
   z-index: 1000;
 }
 
-.selected-step{
+.selected-step {
   font-size: .7rem;
 }
