@@ -7,6 +7,7 @@ import {Status} from "../../../models/status"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
+import {Loader} from "../../../components/loader"
 
 class StdOutView extends ScreenView {
     elem: WeyaElement
@@ -15,6 +16,7 @@ class StdOutView extends ScreenView {
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
+    loader: Loader
     stdOutView: HTMLDivElement
     output: HTMLPreElement
 
@@ -24,6 +26,7 @@ class StdOutView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.loader = new Loader()
     }
 
     filter = new Filter({})
@@ -32,6 +35,8 @@ class StdOutView extends ScreenView {
         this.elem = <HTMLElement>$('div.page', $ => {
             this.stdOutView = <HTMLDivElement>$('div', '')
         })
+
+        this.elem.appendChild(this.loader.render($))
 
         this.renderStdOut().then()
 
@@ -45,6 +50,10 @@ class StdOutView extends ScreenView {
     async renderStdOut() {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
+
+        this.loader.remove()
+
+        this.stdOutView.innerHTML = ''
 
         $(this.stdOutView, $ => {
             $('div.flex-container', $ => {
@@ -62,7 +71,7 @@ class StdOutView extends ScreenView {
         this.output.innerHTML = this.filter.toHtml(this.run.stdout)
     }
 
-    onRefresh() {
+    onRefresh = () => {
 
     }
 }
