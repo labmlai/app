@@ -46,6 +46,7 @@ class LoginView extends ScreenView {
             let res = await NETWORK.signIn(this.token)
             if (res.is_successful) {
                 this.isUserLoggedCache.userLogged = true
+                SCREEN.updateTheme().then()
                 ROUTER.navigate(this.returnUrl)
             }
         }
@@ -55,10 +56,8 @@ class LoginView extends ScreenView {
             return
         }
 
-
         this.loader.remove()
     }
-
 }
 
 export class LoginHandler {

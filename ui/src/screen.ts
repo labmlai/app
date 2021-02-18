@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElement} from '../../lib/weya/weya'
 import {getWindowDimensions} from "./utils/window_dimentions";
-import CACHE, {IsUserLoggedCache} from './cache/cache';
+import CACHE, {IsUserLoggedCache, UserCache} from './cache/cache';
 import {Loader} from './components/loader';
 import {ROUTER} from './app';
 
@@ -20,12 +20,19 @@ abstract class ScreenView {
 
 class ScreenContainer {
     view?: ScreenView
-    isUserLoggedCache: IsUserLoggedCache
-    loader: Loader
+    private isUserLoggedCache: IsUserLoggedCache
+    private isUserLogged: boolean
+    private userCache: UserCache
+    private loader: Loader
 
     constructor() {
         this.view = null
         this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.userCache = CACHE.getUser()
+        this.isUserLoggedCache.get().then(val => {
+            this.isUserLogged = val.is_user_logged
+            this.updateTheme().then()
+        })
         this.loader = new Loader()
         window.addEventListener('resize', this.onResize)
     }
@@ -37,6 +44,14 @@ class ScreenContainer {
         }
     }
 
+    async updateTheme() {
+        let theme = 'light'
+        if (this.isUserLogged) {
+            theme = (await this.userCache.get()).theme
+        }
+        document.body.className = theme || 'light'
+    }
+
     setView(view: ScreenView) {
         if (this.view) {
             this.view.destroy()
@@ -45,6 +60,7 @@ class ScreenContainer {
         document.body.innerHTML = ''
         this.loader.render($)
         this.isUserLoggedCache.get().then(value => {
+            this.isUserLogged = value.is_user_logged
             if (this.view.requiresAuth && !value.is_user_logged) {
                 ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
                 return
