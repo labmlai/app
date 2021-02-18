@@ -49,7 +49,7 @@ class LoggerView extends ScreenView {
         $(this.loggerView, $ => {
             $('div.flex-container', $ => {
                 new BackButton({}).render($)
-                if (this.status && this.status.isStatusInProgress) {
+                if (this.status && this.status.isRunning) {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })

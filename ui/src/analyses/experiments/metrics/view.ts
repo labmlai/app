@@ -115,12 +115,14 @@ class MetricsView extends ScreenView {
                 isToggled: this.currentChart > 0
             }).render($)
             $('div.detail-card', $ => {
-                new LineChart({
-                    series: this.analysisData.series,
-                    width: this.actualWidth,
-                    plotIdx: this.plotIdx,
-                    chartType: getChartType(this.currentChart)
-                }).render($)
+                $('div.fixed-chart', $ => {
+                    new LineChart({
+                        series: this.analysisData.series,
+                        width: this.actualWidth,
+                        plotIdx: this.plotIdx,
+                        chartType: getChartType(this.currentChart)
+                    }).render($)
+                })
                 new SparkLines({
                     series: this.analysisData.series,
                     plotIdx: this.plotIdx,

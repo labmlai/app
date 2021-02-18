@@ -20,7 +20,7 @@ export class StdErrorCard extends Card {
         this.runCache = CACHE.getRun(this.uuid)
     }
 
-    f = new Filter({})
+    filter = new Filter({})
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
@@ -44,7 +44,7 @@ export class StdErrorCard extends Card {
                 this.output = <HTMLPreElement>$('pre', '')
             })
         })
-        this.output.innerHTML = this.f.toHtml(this.getLastTenLines(this.run.stderr))
+        this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stderr))
 
     }
 

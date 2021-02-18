@@ -8,7 +8,7 @@ import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import activationsCache from "./cache"
 
 
-export class Activations extends Card {
+export class ActivationsCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel

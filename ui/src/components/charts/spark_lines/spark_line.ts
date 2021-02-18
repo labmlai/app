@@ -48,7 +48,7 @@ export class SparkLine {
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
 
         if (this.onClick != null && this.selected >= 0) {
-            this.className = 'selected'
+            this.className = 'list-group-item-action.selected'
         }
     }
 
@@ -72,7 +72,7 @@ export class SparkLine {
     }
 
     render($: WeyaElementFunction) {
-            $(`div.sparkline-list-item.list-group-item.list-group-item-action.${this.className}`, {on: {click: this.onClick}}, $ => {
+            $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
                 $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                     $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
                     $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {

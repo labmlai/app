@@ -7,7 +7,7 @@ import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import gradientsCache from "./cache"
 
-export class Gradients extends Card {
+export class GradientsCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel

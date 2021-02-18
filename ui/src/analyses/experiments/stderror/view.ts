@@ -26,7 +26,7 @@ class StdErrorView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
     }
 
-    f = new Filter({})
+    filter = new Filter({})
 
     render() {
         this.elem = <HTMLElement>$('div.page', $ => {
@@ -49,7 +49,7 @@ class StdErrorView extends ScreenView {
         $(this.stdErrorView, $ => {
             $('div.flex-container', $ => {
                 new BackButton({}).render($)
-                if (this.status && this.status.isStatusInProgress) {
+                if (this.status && this.status.isRunning) {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })
@@ -59,7 +59,7 @@ class StdErrorView extends ScreenView {
                 this.output = <HTMLPreElement>$('pre', '')
             })
         })
-        this.output.innerHTML = this.f.toHtml(this.run.stderr)
+        this.output.innerHTML = this.filter.toHtml(this.run.stderr)
     }
 
     onRefresh() {

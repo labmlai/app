@@ -8,9 +8,10 @@ import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
 import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
+import {SparkLines} from "../../../components/charts/spark_lines/chart"
 
 
-export class Metrics extends Card {
+export class MetricsCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
@@ -49,6 +50,11 @@ export class Metrics extends Card {
                 plotIdx: this.plotIdx,
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
                     getChartType(this.preferenceData.chart_type) : 'linear'
+            }).render($)
+            new SparkLines({
+                series: this.analysisData.series,
+                plotIdx: this.plotIdx,
+                width: this.width
             }).render($)
         })
     }
