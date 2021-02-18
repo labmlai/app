@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction, Weya, WeyaElement} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import {AnalysisDataModel} from "../../../models/run"
 import Card from "../../card"
@@ -13,6 +13,7 @@ export class ActivationsCard extends Card {
     width: number
     analysisData: AnalysisDataModel
     analysisCache: SeriesCache
+    elem: WeyaElement
 
     constructor(opt: CardOptions) {
         super()
@@ -26,9 +27,11 @@ export class ActivationsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+
         this.analysisData = await this.analysisCache.get()
 
-        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        Weya(this.elem, $ => {
             $('h3.header', 'Activations')
             new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
         })

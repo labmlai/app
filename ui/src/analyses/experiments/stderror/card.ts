@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction, Weya, WeyaElement,} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
@@ -12,6 +12,7 @@ export class StdErrorCard extends Card {
     uuid: string
     runCache: RunCache
     output: HTMLPreElement
+    elem: WeyaElement
 
     constructor(opt: CardOptions) {
         super()
@@ -36,16 +37,17 @@ export class StdErrorCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+
         this.run = await this.runCache.get()
 
-        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        Weya(this.elem, $ => {
             $('h3.header', 'Standard Error')
             $('div.terminal-card.no-scroll', $ => {
                 this.output = <HTMLPreElement>$('pre', '')
             })
         })
         this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stderr))
-
     }
 
     refresh() {

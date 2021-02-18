@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction, Weya, WeyaElement,} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import {AnalysisDataModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
@@ -19,6 +19,7 @@ export class MetricsCard extends Card {
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     plotIdx: number[] = []
+    elem: WeyaElement
 
 
     constructor(opt: CardOptions) {
@@ -34,6 +35,8 @@ export class MetricsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+
         this.analysisData = await this.analysisCache.get()
         this.preferenceData = await this.preferenceCache.get()
 
@@ -42,7 +45,7 @@ export class MetricsCard extends Card {
             this.plotIdx = [...analysisPreferences]
         }
 
-        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        Weya(this.elem, $ => {
             $('h3.header', 'Metrics')
             new LineChart({
                 series: this.analysisData.series,
