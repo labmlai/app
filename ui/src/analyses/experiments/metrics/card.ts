@@ -10,7 +10,7 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 
 
-export class Metrics extends Card {
+export class MetricsCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel

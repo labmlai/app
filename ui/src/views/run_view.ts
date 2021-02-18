@@ -8,11 +8,7 @@ import {Loader} from "../components/loader"
 import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {StdOutCard} from "../analyses/experiments/stdout/card"
-import {Parameters} from "../analyses/experiments/params/card"
-import {Metrics} from "../analyses/experiments/metrics/card"
-import {Gradients} from "../analyses/experiments/grads/card"
-import {Activations} from "../analyses/experiments/activations/card"
+import {experimentAnalyses} from "../analyses/analyses"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout
 
@@ -85,11 +81,9 @@ class RunView extends ScreenView {
                 }
             })
             new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
-            new Metrics({uuid: this.uuid, width: this.actualWidth}).render($)
-            new Gradients({uuid: this.uuid, width: this.actualWidth}).render($)
-            new Parameters({uuid: this.uuid, width: this.actualWidth}).render($)
-            new Activations({uuid: this.uuid, width: this.actualWidth}).render($)
-            new StdOutCard({uuid: this.uuid, width: this.actualWidth}).render($)
+            experimentAnalyses.map((analysis, i) => {
+                new analysis.card({uuid: this.uuid, width: this.actualWidth}).render($)
+            })
         })
     }
 
