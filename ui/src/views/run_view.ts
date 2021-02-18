@@ -80,7 +80,7 @@ class RunView extends ScreenView {
             }
             $('div.flex-container', $ => {
                 new BackButton({}).render($)
-                if (this.status && this.status.isStatusInProgress) {
+                if (this.status && this.status.isRunning) {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })
@@ -88,8 +88,8 @@ class RunView extends ScreenView {
             new Metrics({uuid: this.uuid, width: this.actualWidth}).render($)
             new Gradients({uuid: this.uuid, width: this.actualWidth}).render($)
             new Parameters({uuid: this.uuid, width: this.actualWidth}).render($)
-            new StdOutCard({uuid: this.uuid, width: this.actualWidth}).render($)
             new Activations({uuid: this.uuid, width: this.actualWidth}).render($)
+            new StdOutCard({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 
