@@ -179,7 +179,7 @@ export class ToggleButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        this.toggleButton = $(`nav`,
+        this.toggleButton = $(`div.d-flex`,
             {on: {click: this.onClick}}
         )
 

@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PlotOptions, FillOptions} from '../types'
 
-interface SimpleLinePlotOptions extends PlotOptions{
+interface SimpleLinePlotOptions extends PlotOptions {
     series: number[]
 }
 
@@ -42,7 +42,7 @@ export class SimpleLinePlot {
     }
 }
 
-interface SimpleLineFillOptions extends FillOptions{
+interface SimpleLineFillOptions extends FillOptions {
     series: number[]
 }
 

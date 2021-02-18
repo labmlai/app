@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction, Weya} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
@@ -19,6 +19,7 @@ export class RunHeaderCard extends Card {
     lastUpdated: number
     runCache: RunCache
     statusCache: RunStatusCache
+    elem: WeyaElement
 
     constructor(opt: RunHeaderOptions) {
         super()
@@ -32,10 +33,12 @@ export class RunHeaderCard extends Card {
 
 
     async render($: WeyaElementFunction) {
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+
         this.status = await this.statusCache.get()
         this.run = await this.runCache.get()
 
-        $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        Weya(this.elem, $ => {
             $('div', $ => {
                 let lastRecorded = this.status.last_updated_time
                 $('div.last-updated.mb-2', `Last Recorded ${this.status.isRunning ?

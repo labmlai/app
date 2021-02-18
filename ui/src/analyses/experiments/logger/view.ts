@@ -7,6 +7,7 @@ import {Status} from "../../../models/status"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
+import {Loader} from "../../../components/loader"
 
 class LoggerView extends ScreenView {
     elem: WeyaElement
@@ -15,6 +16,7 @@ class LoggerView extends ScreenView {
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
+    loader: Loader
     loggerView: WeyaElement
     output: HTMLPreElement
 
@@ -24,6 +26,7 @@ class LoggerView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.loader = new Loader()
     }
 
     get requiresAuth(): boolean {
@@ -36,6 +39,8 @@ class LoggerView extends ScreenView {
         this.elem = <HTMLElement>$('div.page', $ => {
             this.loggerView = $('div', '')
         })
+
+        this.elem.appendChild(this.loader.render($))
 
         this.renderStdOut().then()
 
@@ -50,6 +55,10 @@ class LoggerView extends ScreenView {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
 
+        this.loader.remove()
+
+        this.loggerView.innerHTML = ''
+
         $(this.loggerView, $ => {
             $('div.flex-container', $ => {
                 new BackButton({}).render($)
@@ -60,13 +69,13 @@ class LoggerView extends ScreenView {
             new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
             $('h2.header.text-center', 'Logger')
             $('div.terminal-card', $ => {
-                 this.output = <HTMLPreElement>$('pre', '')
+                this.output = <HTMLPreElement>$('pre', '')
             })
         })
         this.output.innerHTML = this.filter.toHtml(this.run.logger)
     }
 
-    onRefresh() {
+    onRefresh = () => {
 
     }
 }

@@ -7,6 +7,7 @@ import {Status} from "../../../models/status"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
+import {Loader} from "../../../components/loader"
 
 class StdErrorView extends ScreenView {
     elem: WeyaElement
@@ -15,6 +16,7 @@ class StdErrorView extends ScreenView {
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
+    loader: Loader
     stdErrorView: HTMLDivElement
     output: HTMLPreElement
 
@@ -24,6 +26,7 @@ class StdErrorView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.loader = new Loader()
     }
 
     get requiresAuth(): boolean {
@@ -37,6 +40,8 @@ class StdErrorView extends ScreenView {
             this.stdErrorView = <HTMLDivElement>$('div', '')
         })
 
+        this.elem.appendChild(this.loader.render($))
+
         this.renderStdOut().then()
 
         return this.elem
@@ -49,6 +54,10 @@ class StdErrorView extends ScreenView {
     async renderStdOut() {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
+
+        this.loader.remove()
+
+        this.stdErrorView.innerHTML = ''
 
         $(this.stdErrorView, $ => {
             $('div.flex-container', $ => {
@@ -66,7 +75,7 @@ class StdErrorView extends ScreenView {
         this.output.innerHTML = this.filter.toHtml(this.run.stderr)
     }
 
-    onRefresh() {
+    onRefresh = () => {
 
     }
 }
