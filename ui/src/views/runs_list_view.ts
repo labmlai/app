@@ -8,6 +8,7 @@ import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
+import {HamburgerMenuView} from '../components/hamburger_menu';
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -40,6 +41,7 @@ class RunsListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
+            new HamburgerMenuView({}).render($)
             this.buttonContainer = $('div.button-container', $ => {
                 this.deleteButton = new DeleteButton({
                     onButtonClick: this.onDelete

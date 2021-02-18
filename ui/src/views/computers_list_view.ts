@@ -8,6 +8,7 @@ import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
 import {ComputerListItemModel} from '../models/computer_list';
 import {ComputersListItemView} from '../components/computers_list_item';
+import {HamburgerMenuView} from '../components/hamburger_menu';
 
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
@@ -41,6 +42,7 @@ class ComputersListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
+            new HamburgerMenuView({}).render($)
             this.buttonContainer = $('div', '.button-container', $ => {
                 this.deleteButton = new DeleteButton({
                     onButtonClick: this.onDelete
