@@ -1,9 +1,8 @@
-import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import CACHE, {IsUserLoggedCache, RunsListCache} from "../cache/cache"
+import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search';
@@ -13,8 +12,6 @@ import {HamburgerMenuView} from '../components/hamburger_menu';
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
     currentRunsList: RunListItemModel[]
-    isUserLogged: IsUserLogged
-    isUserLoggedCache: IsUserLoggedCache
     elem: WeyaElement
     runsListContainer: HTMLDivElement
     loader: Loader
@@ -31,7 +28,6 @@ class RunsListView extends ScreenView {
         super()
 
         this.runListCache = CACHE.getRunsList()
-        this.isUserLoggedCache = CACHE.getIsUserLogged()
 
         this.loader = new Loader()
         this.searchQuery = ''
@@ -84,11 +80,6 @@ class RunsListView extends ScreenView {
     }
 
     private async renderList() {
-        this.isUserLogged = await this.isUserLoggedCache.get()
-        if (!this.isUserLogged.is_user_logged) {
-            ROUTER.navigate(`/login#return_url=/runs`)
-            return
-        }
         this.currentRunsList = (await this.runListCache.get()).runs
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')

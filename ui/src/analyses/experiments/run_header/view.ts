@@ -31,6 +31,10 @@ class RunHeaderView extends ScreenView {
         this.loader = new Loader()
     }
 
+    get requiresAuth(): boolean {
+        return false
+    }
+
     onResize(width: number) {
         this.actualWidth = Math.min(800, width)
     }

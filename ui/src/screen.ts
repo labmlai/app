@@ -1,5 +1,8 @@
-import {WeyaElement} from '../../lib/weya/weya'
+import {Weya as $, WeyaElement} from '../../lib/weya/weya'
 import {getWindowDimensions} from "./utils/window_dimentions";
+import CACHE, {IsUserLoggedCache} from './cache/cache';
+import {Loader} from './components/loader';
+import {ROUTER} from './app';
 
 abstract class ScreenView {
     abstract render(): WeyaElement
@@ -9,31 +12,47 @@ abstract class ScreenView {
 
     destroy() {
     }
+
+    get requiresAuth() {
+        return true
+    }
 }
 
 class ScreenContainer {
     view?: ScreenView
+    isUserLoggedCache: IsUserLoggedCache
+    loader: Loader
 
     constructor() {
         this.view = null
+        this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.loader = new Loader()
         window.addEventListener('resize', this.onResize)
     }
 
     onResize = () => {
         let windowWidth = getWindowDimensions().width
-        if(this.view) {
+        if (this.view) {
             this.view.onResize(windowWidth)
         }
     }
 
     setView(view: ScreenView) {
-        if(this.view) {
+        if (this.view) {
             this.view.destroy()
         }
         this.view = view
         document.body.innerHTML = ''
-        this.onResize()
-        document.body.append(this.view.render())
+        this.loader.render($)
+        this.isUserLoggedCache.get().then(value => {
+            if (this.view.requiresAuth && !value.is_user_logged) {
+                ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+                return
+            }
+            document.body.innerHTML = ''
+            this.onResize()
+            document.body.append(this.view.render())
+        })
     }
 }
 

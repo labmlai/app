@@ -1,9 +1,8 @@
-import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import CACHE, {ComputersListCache, IsUserLoggedCache} from "../cache/cache"
+import CACHE, {ComputersListCache} from "../cache/cache"
 import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
 import {ComputerListItemModel} from '../models/computer_list';
@@ -13,8 +12,6 @@ import {HamburgerMenuView} from '../components/hamburger_menu';
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
     currentComputersList: ComputerListItemModel[]
-    isUserLogged: IsUserLogged
-    isUserLoggedCache: IsUserLoggedCache
     elem: WeyaElement
     computersListContainer: HTMLDivElement
     btnContainer: HTMLDivElement
@@ -32,7 +29,6 @@ class ComputersListView extends ScreenView {
         super()
 
         this.computerListCache = CACHE.getComputersList()
-        this.isUserLoggedCache = CACHE.getIsUserLogged()
 
         this.loader = new Loader()
         this.searchQuery = ''
@@ -85,11 +81,6 @@ class ComputersListView extends ScreenView {
     }
 
     private async renderList() {
-        this.isUserLogged = await this.isUserLoggedCache.get()
-        if (!this.isUserLogged.is_user_logged) {
-            ROUTER.navigate(`/login#return_url=/computers`)
-            return
-        }
         this.currentComputersList = (await this.computerListCache.get()).computers
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')

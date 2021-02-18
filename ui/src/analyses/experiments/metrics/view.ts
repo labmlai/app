@@ -45,6 +45,10 @@ class MetricsView extends ScreenView {
         this.loader = new Loader()
     }
 
+    get requiresAuth(): boolean {
+        return false
+    }
+
     toggleChart = (idx: number) => {
         this.isUpdateDisable = false
 

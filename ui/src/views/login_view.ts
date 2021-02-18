@@ -25,6 +25,9 @@ class LoginView extends ScreenView {
         this.returnUrl = returnUrl
     }
 
+    get requiresAuth(): boolean {
+        return false;
+    }
 
     render() {
         this.elem = $('div', $ => {

@@ -26,6 +26,10 @@ class StdErrorView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
     }
 
+    get requiresAuth(): boolean {
+        return false
+    }
+
     filter = new Filter({})
 
     render() {

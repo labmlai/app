@@ -36,6 +36,10 @@ class RunView extends ScreenView {
         this.loader = new Loader()
     }
 
+    get requiresAuth(): boolean {
+        return false;
+    }
+
     onResize(width: number) {
         super.onResize(width)
 
