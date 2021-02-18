@@ -6,12 +6,14 @@ import {CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import gradientsCache from "./cache"
+import {Loader} from "../../../components/loader"
 
 export class GradientsCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
     analysisCache: SeriesCache
+    loader: Loader
     elem: WeyaElement
 
     constructor(opt: CardOptions) {
@@ -20,6 +22,7 @@ export class GradientsCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.analysisCache = gradientsCache.getAnalysis(this.uuid)
+        this.loader = new Loader()
     }
 
     refresh() {
@@ -28,12 +31,18 @@ export class GradientsCard extends Card {
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
 
+        this.elem.appendChild(this.loader.render($))
         this.analysisData = await this.analysisCache.get()
+        this.loader.remove()
 
-        Weya(this.elem, $ => {
-            $('h3.header', 'Gradients')
-            new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
-        })
+        if (this.analysisData.summary.length > 0) {
+            Weya(this.elem, $ => {
+                $('h3.header', 'Gradients')
+                new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
+            })
+        } else {
+            this.elem.remove()
+        }
     }
 
     onClick = () => {

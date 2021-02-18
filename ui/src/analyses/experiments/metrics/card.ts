@@ -9,6 +9,7 @@ import {getChartType} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
+import {Loader} from "../../../components/loader"
 
 
 export class MetricsCard extends Card {
@@ -19,6 +20,7 @@ export class MetricsCard extends Card {
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     plotIdx: number[] = []
+    loader: Loader
     elem: WeyaElement
 
 
@@ -29,6 +31,7 @@ export class MetricsCard extends Card {
         this.width = opt.width
         this.analysisCache = metricsCache.getAnalysis(this.uuid)
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
+        this.loader = new Loader()
     }
 
     refresh() {
@@ -37,29 +40,35 @@ export class MetricsCard extends Card {
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
 
+        this.elem.appendChild(this.loader.render($))
         this.analysisData = await this.analysisCache.get()
         this.preferenceData = await this.preferenceCache.get()
+        this.loader.remove()
 
         let analysisPreferences = this.preferenceData.series_preferences
-        if (analysisPreferences && analysisPreferences.length > 0) {
+        if (analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
         }
 
-        Weya(this.elem, $ => {
-            $('h3.header', 'Metrics')
-            new LineChart({
-                series: this.analysisData.series,
-                width: this.width,
-                plotIdx: this.plotIdx,
-                chartType: this.preferenceData && this.preferenceData.chart_type ?
-                    getChartType(this.preferenceData.chart_type) : 'linear'
-            }).render($)
-            new SparkLines({
-                series: this.analysisData.series,
-                plotIdx: this.plotIdx,
-                width: this.width
-            }).render($)
-        })
+        if (this.analysisData.series.length > 0) {
+            Weya(this.elem, $ => {
+                $('h3.header', 'Metrics')
+                new LineChart({
+                    series: this.analysisData.series,
+                    width: this.width,
+                    plotIdx: this.plotIdx,
+                    chartType: this.preferenceData && this.preferenceData.chart_type ?
+                        getChartType(this.preferenceData.chart_type) : 'linear'
+                }).render($)
+                new SparkLines({
+                    series: this.analysisData.series,
+                    plotIdx: this.plotIdx,
+                    width: this.width
+                }).render($)
+            })
+        } else {
+            this.elem.remove()
+        }
     }
 
     onClick = () => {

@@ -7,8 +7,10 @@ import moduleAnalysis from "./experiments/activations/init"
 import stdOutAnalysis from "./experiments/stdout/init"
 import stderrAnalysis from "./experiments/stderror/init"
 import loggerAnalysis from "./experiments/logger/init"
+import runHeaderAnalysis from "./experiments/run_header/init"
 
 let experimentAnalyses: Analysis[] = [
+    runHeaderAnalysis,
     metricAnalysis,
     gradientAnalysis,
     parameterAnalysis,

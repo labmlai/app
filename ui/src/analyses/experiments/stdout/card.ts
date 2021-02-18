@@ -5,6 +5,7 @@ import CACHE, {RunCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
 import Card from "../../card"
 import Filter from "../../../utils/ansi_to_html"
+import {Loader} from "../../../components/loader"
 
 
 export class StdOutCard extends Card {
@@ -12,6 +13,7 @@ export class StdOutCard extends Card {
     uuid: string
     runCache: RunCache
     output: HTMLPreElement
+    loader: Loader
     elem: WeyaElement
 
     constructor(opt: CardOptions) {
@@ -19,6 +21,7 @@ export class StdOutCard extends Card {
 
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
+        this.loader = new Loader()
     }
 
     filter = new Filter({})
@@ -41,7 +44,9 @@ export class StdOutCard extends Card {
             $('h3.header', 'Standard Output')
         })
 
+        this.elem.appendChild(this.loader.render($))
         this.run = await this.runCache.get()
+        this.loader.remove()
 
         if (this.run.stdout) {
             Weya(this.elem, $ => {
@@ -51,7 +56,7 @@ export class StdOutCard extends Card {
             })
             this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stdout))
         } else {
-            this.elem.classList.add('no-display')
+            this.elem.remove()
         }
     }
 

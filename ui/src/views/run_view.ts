@@ -80,7 +80,6 @@ class RunView extends ScreenView {
                     new RefreshButton({onButtonClick: this.onRefresh}).render($)
                 }
             })
-            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
             experimentAnalyses.map((analysis, i) => {
                 new analysis.card({uuid: this.uuid, width: this.actualWidth}).render($)
             })
