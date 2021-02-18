@@ -1,9 +1,8 @@
-import {Run} from "../models/run"
+import {AnalysisDataModel, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
-import {IsUserLogged} from "../models/user"
+import {IsUserLogged, User} from "../models/user"
 import {RunListItemModel, RunsList} from '../models/run_list'
-import {AnalysisDataModel} from "../models/run"
 import {AnalysisPreference} from "../models/preferences"
 import {ComputerListItemModel, ComputersList} from '../models/computer_list';
 
@@ -124,8 +123,8 @@ export class RunsListCache extends CacheObject<RunsList> {
     async deleteRuns(runUUIDS: Set<string>): Promise<void> {
         let runs: RunListItemModel[] = []
         let currentRuns = <RunListItemModel[]>this.data.runs
-        for(let run of currentRuns) {
-            if(!runUUIDS.has(run.run_uuid)) {
+        for (let run of currentRuns) {
+            if (!runUUIDS.has(run.run_uuid)) {
                 runs.push(run)
             }
         }
@@ -146,8 +145,8 @@ export class ComputersListCache extends CacheObject<ComputersList> {
     async deleteSessions(sessionUUIDS: Set<string>): Promise<void> {
         let computers: ComputerListItemModel[] = []
         let currentComputers = <ComputerListItemModel[]>this.data.computers
-        for(let computer of currentComputers) {
-            if(!sessionUUIDS.has(computer.computer_uuid)) {
+        for (let computer of currentComputers) {
+            if (!sessionUUIDS.has(computer.computer_uuid)) {
                 computers.push(computer)
             }
         }
@@ -204,6 +203,19 @@ export class RunStatusCache extends CacheObject<Status> {
             let res = await NETWORK.getRunStatus(this.uuid)
             return new Status(res)
         })
+    }
+}
+
+export class UserCache extends CacheObject<User> {
+    async load(): Promise<User> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getUser()
+            return new User(res)
+        })
+    }
+
+    async setUser(user: User) {
+        await NETWORK.setUser(user)
     }
 }
 
@@ -276,6 +288,7 @@ class Cache {
     private readonly runs: { [uuid: string]: RunCache }
     private readonly runStatuses: { [uuid: string]: RunStatusCache }
 
+    private user: UserCache | null
     private isUserLogged: IsUserLoggedCache | null
     private runsList: RunsListCache | null
     private computersList: ComputersListCache | null
@@ -315,6 +328,14 @@ class Cache {
         }
 
         return this.runStatuses[uuid]
+    }
+
+    getUser() {
+        if (this.user == null) {
+            this.user = new UserCache()
+        }
+
+        return this.user
     }
 
     getIsUserLogged() {

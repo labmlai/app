@@ -1,4 +1,4 @@
-import {WeyaElementFunction, WeyaElement, Weya as $} from "../../../lib/weya/weya"
+import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
 
 interface buttonOptions {
@@ -109,6 +109,45 @@ export class CancelButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-times', '')
+            })
+    }
+}
+
+export class MenuButton extends Button {
+    constructor(opt: buttonOptions) {
+        super(opt)
+    }
+
+    render($: WeyaElementFunction) {
+        $('nav.burger.nav-link.tab.float-left',
+            {on: {click: this.onClick}},
+            $ => {
+                $('span.fas.fa-bars', '')
+            })
+    }
+}
+
+interface NavButtonOptions extends buttonOptions {
+    text: string
+    icon: string
+}
+
+export class NavButton extends Button {
+    text: string
+    icon: string
+
+    constructor(opt: NavButtonOptions) {
+        super(opt)
+        this.icon = opt.icon
+        this.text = opt.text
+    }
+
+    render($: WeyaElementFunction) {
+        $('nav.nav-link.tab',
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', this.icon, '')
+                $('span', '', this.text)
             })
     }
 }

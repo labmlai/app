@@ -1,5 +1,5 @@
 import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
-import {Auth0User, UserModel} from './models/user'
+import {Auth0User, User, UserModel} from './models/user'
 
 const REACT_APP_SERVER_URL = 'http://localhost:5000/api/v1'
 
@@ -94,6 +94,14 @@ class Network {
 
     async deleteSessions(computerUUIDS: string[]): Promise<any> {
         return this.sendHttpRequest('PUT', `/computers`, {'session_uuids': computerUUIDS})
+    }
+
+    async getUser(): Promise<any> {
+        return this.sendHttpRequest('GET', `/user`, {})
+    }
+
+    async setUser(user: User): Promise<any> {
+        return this.sendHttpRequest('POST', `/user`, {'user': user})
     }
 
     async signIn(token: string): Promise<any> {
