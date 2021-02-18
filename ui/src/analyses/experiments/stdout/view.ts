@@ -26,7 +26,7 @@ class StdOutView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
     }
 
-    f = new Filter({})
+    filter = new Filter({})
 
     render() {
         this.elem = <HTMLElement>$('div.page', $ => {
@@ -59,7 +59,7 @@ class StdOutView extends ScreenView {
                 this.output = <HTMLPreElement>$('pre', '')
             })
         })
-        this.output.innerHTML = this.f.toHtml(this.run.stdout)
+        this.output.innerHTML = this.filter.toHtml(this.run.stdout)
     }
 
     onRefresh() {
