@@ -8,6 +8,8 @@ import {BackButton, SaveButton, CancelButton, EditButton} from "../../../compone
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
+import {BadgeView} from "../../../components/badge"
+import {StatusView} from "../../../components/status"
 
 
 class RunHeaderView extends ScreenView {
@@ -81,6 +83,16 @@ class RunHeaderView extends ScreenView {
                             value: this.run.comment,
                             isEditable: this.isEditMode
                         }).render($)
+                        $(`li`, $ => {
+                            $('span.item-key', 'Tags')
+                            $('span.item-value', $ => {
+                                $('div', $ => {
+                                    this.run.tags.map((tag, idx) => (
+                                        new BadgeView({text: tag}).render($)
+                                    ))
+                                })
+                            })
+                        })
                         new EditableField({
                             name: 'Note',
                             value: this.run.note,
@@ -88,6 +100,12 @@ class RunHeaderView extends ScreenView {
                             numEditRows: 5,
                             isEditable: this.isEditMode
                         }).render($)
+                        $(`li`, $ => {
+                            $('span.item-key', 'Run Status')
+                            $('span.item-value', $ => {
+                                new StatusView({status: this.status.run_status}).render($)
+                            })
+                        })
                         new EditableField({
                             name: 'UUID',
                             value: this.run.run_uuid,
@@ -109,6 +127,26 @@ class RunHeaderView extends ScreenView {
                             name: 'Python File',
                             value: this.run.python_file
                         }).render($)
+                        $(`li`, $ => {
+                            $('span.item-key', 'Remote Repo')
+                            $('span.item-value', $ => {
+                                $('a', this.run.repo_remotes, {
+                                    href: this.run.repo_remotes,
+                                    target: "_blank",
+                                    rel: "noopener noreferrer"
+                                })
+                            })
+                        })
+                        $(`li`, $ => {
+                            $('span.item-key', 'Commit')
+                            $('span.item-value', $ => {
+                                $('a', this.run.commit, {
+                                    href: this.run.commit,
+                                    target: "_blank",
+                                    rel: "noopener noreferrer"
+                                })
+                            })
+                        })
                         new EditableField({
                             name: 'Commit Message',
                             value: this.run.commit_message
@@ -121,13 +159,11 @@ class RunHeaderView extends ScreenView {
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
-        console.log(typeof this)
-
 
         this.renderRunHeader().then()
     }
 
-    updateRun() {
+    updateRun = () => {
 
     }
 }
