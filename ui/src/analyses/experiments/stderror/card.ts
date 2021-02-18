@@ -37,17 +37,22 @@ export class StdErrorCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3.header', 'Standard Error')
+        })
 
         this.run = await this.runCache.get()
 
-        Weya(this.elem, $ => {
-            $('h3.header', 'Standard Error')
-            $('div.terminal-card.no-scroll', $ => {
-                this.output = <HTMLPreElement>$('pre', '')
+        if (this.run.stderr) {
+            Weya(this.elem, $ => {
+                $('div.terminal-card.no-scroll', $ => {
+                    this.output = <HTMLPreElement>$('pre', '')
+                })
             })
-        })
-        this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stderr))
+            this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stderr))
+        } else {
+            this.elem.classList.add('no-display')
+        }
     }
 
     refresh() {

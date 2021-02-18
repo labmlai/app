@@ -48,7 +48,11 @@ export class SparkLine {
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
 
         if (this.onClick != null && this.selected >= 0) {
-            this.className = 'list-group-item-action.selected'
+            this.className = 'selected'
+        }
+
+        if (this.onClick != null){
+             this.className += '.list-group-item-action'
         }
     }
 

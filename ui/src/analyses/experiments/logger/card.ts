@@ -37,17 +37,22 @@ export class LoggerCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3.header', 'Standard Logger')
+        })
 
         this.run = await this.runCache.get()
 
-        Weya(this.elem, $ => {
-            $('h3.header', 'Standard Logger')
-            $('div.terminal-card.no-scroll', $ => {
-                this.output = <HTMLPreElement>$('pre', '')
+        if (this.run.logger) {
+            Weya(this.elem, $ => {
+                $('div.terminal-card.no-scroll', $ => {
+                    this.output = <HTMLPreElement>$('pre', '')
+                })
             })
-        })
-        this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
+            this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
+        } else {
+            this.elem.classList.add('no-display')
+        }
     }
 
     refresh() {
