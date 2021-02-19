@@ -12,9 +12,10 @@ export class LoggerCard extends Card {
     run: Run
     uuid: string
     runCache: RunCache
-    output: HTMLPreElement
-    loader: Loader
+    outputContainer: WeyaElement
     elem: WeyaElement
+    loader: Loader
+    filter: Filter
 
     constructor(opt: CardOptions) {
         super()
@@ -22,9 +23,8 @@ export class LoggerCard extends Card {
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.loader = new Loader()
+        this.filter = new Filter({})
     }
-
-    filter = new Filter({})
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
@@ -51,20 +51,33 @@ export class LoggerCard extends Card {
         if (this.run.logger) {
             Weya(this.elem, $ => {
                 $('div.terminal-card.no-scroll', $ => {
-                    this.output = <HTMLPreElement>$('pre', '')
+                    this.outputContainer = $('div', '')
                 })
             })
-            this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
+            this.renderOutput()
         } else {
-            this.elem.remove()
+            this.elem.classList.add('hide')
         }
     }
 
-    refresh() {
+    renderOutput() {
+        this.outputContainer.innerHTML = ''
+        Weya(this.outputContainer, $ => {
+            let output = $('div', '')
+            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stdout))
+        })
+    }
+
+    async refresh() {
+        this.run = await this.runCache.get(true)
+
+        if (this.run.logger) {
+            this.renderOutput()
+            this.elem.classList.remove('hide')
+        }
     }
 
     onClick = () => {
         ROUTER.navigate(`/logger/${this.uuid}`)
     }
-
 }
