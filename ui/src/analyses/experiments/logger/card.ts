@@ -48,12 +48,13 @@ export class LoggerCard extends Card {
         this.run = await this.runCache.get()
         this.loader.remove()
 
-        if (this.run.logger) {
-            Weya(this.elem, $ => {
-                $('div.terminal-card.no-scroll', $ => {
-                    this.outputContainer = $('div', '')
-                })
+        Weya(this.elem, $ => {
+            $('div.terminal-card.no-scroll', $ => {
+                this.outputContainer = $('div', '')
             })
+        })
+
+        if (this.run.logger) {
             this.renderOutput()
         } else {
             this.elem.classList.add('hide')

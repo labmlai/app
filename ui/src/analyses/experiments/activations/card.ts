@@ -27,9 +27,6 @@ export class ActivationsCard extends Card {
         this.loader = new Loader()
     }
 
-    refresh() {
-    }
-
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Activations')
@@ -39,11 +36,11 @@ export class ActivationsCard extends Card {
         this.analysisData = await this.analysisCache.get()
         this.loader.remove()
 
-        if (this.analysisData.summary.length > 0) {
-            Weya(this.elem, $ => {
-                this.lineChartContainer = $('div', '')
-            })
+        Weya(this.elem, $ => {
+            this.lineChartContainer = $('div', '')
+        })
 
+        if (this.analysisData.summary.length > 0) {
             this.renderLineChart()
         } else {
             this.elem.classList.add('hide')
@@ -55,6 +52,15 @@ export class ActivationsCard extends Card {
         Weya(this.lineChartContainer, $ => {
             new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
         })
+    }
+
+    async refresh() {
+        this.analysisData = await this.analysisCache.get(true)
+
+        if (this.analysisData.summary.length > 0) {
+            this.renderLineChart()
+            this.elem.classList.remove('hide')
+        }
     }
 
     onClick = () => {

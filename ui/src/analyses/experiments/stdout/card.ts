@@ -48,12 +48,13 @@ export class StdOutCard extends Card {
         this.run = await this.runCache.get()
         this.loader.remove()
 
-        if (this.run.stdout) {
-            Weya(this.elem, $ => {
-                $('div.terminal-card.no-scroll', $ => {
-                    this.outputContainer = $('pre', '')
-                })
+        Weya(this.elem, $ => {
+            $('div.terminal-card.no-scroll', $ => {
+                this.outputContainer = $('pre', '')
             })
+        })
+
+        if (this.run.stdout) {
             this.renderOutput()
         } else {
             this.elem.classList.add('hide')

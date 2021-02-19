@@ -36,9 +36,6 @@ export class MetricsCard extends Card {
         this.loader = new Loader()
     }
 
-    refresh() {
-    }
-
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Metrics')
@@ -54,12 +51,13 @@ export class MetricsCard extends Card {
             this.plotIdx = [...analysisPreferences]
         }
 
-        if (this.analysisData.series.length > 0) {
-            Weya(this.elem, $ => {
-                this.lineChartContainer = $('div', '')
-                this.sparkLinesContainer = $('div', '')
-            })
 
+        Weya(this.elem, $ => {
+            this.lineChartContainer = $('div', '')
+            this.sparkLinesContainer = $('div', '')
+        })
+
+        if (this.analysisData.series.length > 0) {
             this.renderLineChart()
             this.renderSparkLines()
         } else {
@@ -89,6 +87,16 @@ export class MetricsCard extends Card {
                 width: this.width
             }).render($)
         })
+    }
+
+    async refresh() {
+        this.analysisData = await this.analysisCache.get(true)
+
+        if (this.analysisData.series.length > 0) {
+            this.renderLineChart()
+            this.renderSparkLines()
+            this.elem.classList.remove('hide')
+        }
     }
 
     onClick = () => {
