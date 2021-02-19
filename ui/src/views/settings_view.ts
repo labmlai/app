@@ -35,7 +35,7 @@ class SettingsView extends ScreenView {
 
     render() {
         this.elem = $('div', '.page', $ => {
-            new HamburgerMenuView({}).render($)
+            new HamburgerMenuView({title: 'Settings'}).render($)
             this.settingsContainer = $('div', '.auto-margin', {style: {width: `${this.actualWidth}px`}})
             this.loader.render($)
         })

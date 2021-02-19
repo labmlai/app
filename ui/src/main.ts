@@ -4,10 +4,10 @@ import {PageNotFoundHandler} from './views/page_not_found_view'
 import {RunsListHandler} from './views/runs_list_view'
 import {ComputersListHandler} from './views/computers_list_view'
 import {LoginHandler} from './views/login_view'
-import {SettingsHandler} from './views/settings'
+import {SettingsHandler} from './views/settings_view'
 
-import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {experimentAnalyses} from "./analyses/analyses"
+import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 
 new LoginHandler()
 
