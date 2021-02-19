@@ -24,9 +24,17 @@ abstract class Button {
 
 }
 
+interface BackButtonOptions extends buttonOptions {
+    text: string
+}
+
 export class BackButton extends Button {
-    constructor(opt: buttonOptions) {
+    text: string
+
+    constructor(opt: BackButtonOptions) {
         super(opt)
+
+        this.text = opt.text
     }
 
     onClick = () => {
@@ -38,7 +46,7 @@ export class BackButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-chevron-left', '')
-                $('span.ml-1', 'Run')
+                $('span.ms-1', this.text)
             })
     }
 }

@@ -5,12 +5,12 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import {RefreshButton, BackButton} from "../components/buttons"
+import {BackButton, RefreshButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import Card from "../analyses/card"
-import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
+import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout
 
 
@@ -114,7 +114,7 @@ class RunView extends ScreenView {
                 new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
             }
             $('div.flex-container', $ => {
-                new BackButton({}).render($)
+                new BackButton({text: 'Runs'}).render($)
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
                     this.refreshButton.render($)
