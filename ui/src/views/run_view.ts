@@ -13,6 +13,7 @@ import Card from "../analyses/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout
 
+
 class RunView extends ScreenView {
     uuid: string
     run: Run

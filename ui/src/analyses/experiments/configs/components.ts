@@ -37,7 +37,7 @@ class ComputedValue {
             }
         }
         $('span.computed', $ => {
-            $('span.computed', truncated, {title: this.computed})
+            $('span', truncated, {title: this.computed})
         })
     }
 }
@@ -99,7 +99,7 @@ class ConfigItemView {
         this.width = opt.width
         this.isHyperParamOnly = opt.isHyperParamOnly
 
-        this.classes = ['info_list config']
+        this.classes = ['info_list', 'config']
 
         let prefix = ''
         let parentKey = ''
@@ -140,7 +140,7 @@ class ConfigItemView {
                         return
                     }
 
-                    new ComputedValue({computed: this.conf.computed})
+                    new ComputedValue({computed: this.conf.computed}).render($)
 
                     if (this.conf.isCustom) {
                         if (this.isParentDefault) {
@@ -149,7 +149,7 @@ class ConfigItemView {
                             this.classes.push('custom')
                         }
                     } else {
-                        new Option({value: this.conf.value})
+                        new Option({value: this.conf.value}).render($)
 
                         if (this.isParentDefault || this.conf.isOnlyOption) {
                             this.classes.push('only_option')
@@ -159,7 +159,7 @@ class ConfigItemView {
                     }
 
                     if (!this.isHyperParamOnly && this.conf.otherOptions) {
-                        new OtherOptions({options: [...this.conf.otherOptions]})
+                        new OtherOptions({options: [...this.conf.otherOptions]}).render($)
                     }
 
                     if (this.conf.isHyperparam) {
@@ -173,7 +173,9 @@ class ConfigItemView {
             })
         })
 
-        this.elem.classList.add(this.classes.join('.'))
+        for (let cls of this.classes) {
+            this.elem.classList.add(cls)
+        }
     }
 }
 
@@ -183,7 +185,7 @@ interface ConfigsOptions {
     width: number
 }
 
-export class ConfigsView {
+export class Configs {
     configs: Config[]
     isHyperParamOnly: boolean
     width: number
@@ -211,6 +213,11 @@ export class ConfigsView {
 
     render($: WeyaElementFunction) {
         $('div.configs.block.collapsed', {style: {width: `${this.width}px`}}, $ => {
+            if (this.count === 0 && this.isHyperParamOnly) {
+                $('div.info', 'Default configurations')
+                return
+            }
+
             this.configs.map((c) =>
                 new ConfigItemView({
                     config: c,
@@ -219,9 +226,6 @@ export class ConfigsView {
                     isHyperParamOnly: this.isHyperParamOnly
                 }).render($)
             )
-            if (this.count === 0 && this.isHyperParamOnly) {
-                  $('div.info', 'Default configurations')
-            }
         })
     }
 }

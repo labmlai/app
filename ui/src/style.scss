@@ -689,3 +689,234 @@ button.sparkline-list-item {
     font-weight: bold;
   }
 }
+
+/* configs */
+$hoverColor: #f5f6fa;
+
+$subtleColor: #718093;
+$iconColor: #fbc531; // #487eb0;
+
+$tableEven: #ddd;
+$tableSelected: #151b18;
+$tableHighlight: #b2bec3;
+$tableConfig: #fbc531;
+$tableValue: #4cd137;
+
+$keyFontSize: 0.8rem;
+
+@mixin mono {
+  font-family: monospace;
+  font-size: 1rem;
+}
+
+.info_list {
+  > span {
+    display: inline-block;
+    overflow: hidden;
+  }
+
+  > span.key {
+    margin-right: 5px;
+    width: 120px;
+    opacity: 0.7;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align: top;
+
+
+    & + span {
+      &:before {
+        content: ':';
+        opacity: 0.3 !important;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  &.mono {
+    span.value {
+      @include mono();
+    }
+  }
+
+  &.highlight {
+    font-weight: bold;
+  }
+}
+
+.configs {
+  font-size: $keyFontSize;
+
+  .ignored {
+    display: none;
+  }
+
+  .not-hyperparam {
+    //display: none;
+  }
+
+  .info_list {
+    &.only_option {
+      > span.key {
+        opacity: 0.4;
+      }
+
+      > span {
+        opacity: 0.4;
+      }
+    }
+
+    &.common {
+      > span.key {
+        opacity: 0.4;
+      }
+
+      > span {
+        opacity: 0.4;
+      }
+    }
+
+    &.ignored {
+      > span.key {
+        opacity: 0.4;
+      }
+
+      > span {
+        opacity: 0.4;
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  .config {
+    .combined {
+      width: 330px;
+
+      > span {
+        display: inline-block
+      }
+    }
+
+    .computed {
+      margin-right: 5px;
+      @include mono();
+    }
+
+    .option {
+      margin-right: 5px;
+      @include mono();
+      color: #c0392b;
+    }
+
+    .options {
+      @include mono();
+
+      > span {
+        font-style: italic;
+        color: #2980b9;
+        margin-right: 5px;
+      }
+    }
+
+    &.only_option {
+      > .option {
+        opacity: 0.8;
+      }
+    }
+
+    &.specified, &.hyperparam {
+      font-weight: bold;
+
+      > span.key {
+        opacity: 1.0;
+      }
+
+      > span {
+        opacity: 1.0;
+      }
+    }
+  }
+}
+
+.block {
+  .info_list {
+    padding: 0 10px;
+    line-height: 0;
+
+    > span {
+      line-height: 2;
+    }
+  }
+}
+
+.configs {
+  .info_list {
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.key_icon {
+  margin-right: 8px;
+  opacity: 0.3;
+}
+
+.key_split {
+  display: inline-block;
+  width: 16px;
+}
+
+.boolean {
+  color: #f39c12;
+}
+
+.int {
+  color: #27ae60;
+}
+
+.float {
+  color: #27ae60;
+}
+
+.string {
+  color: #e84118;
+}
+
+.unknown {
+  color: #f5f6fa;
+}
+
+.subtle {
+  color: #ccc;
+  font-size: 0.6rem;
+}
+
+.size_unit {
+  color: $hoverColor;
+}
+
+.size {
+  opacity: 0.9;
+}
+
+.generation {
+  font-size: .7em;
+  color: #6ab04c;
+  margin-right: 2px;
+}
+
+@mixin row-colors($rowColor) {
+  background: $rowColor;
+
+  div.cell {
+    &.config {
+      background: mix($rowColor, $tableConfig, 95%);
+    }
+
+    &.value {
+      background: mix($rowColor, $tableValue, 95%);
+    }
+  }
+}
+

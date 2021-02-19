@@ -76,7 +76,7 @@ class ParametersView extends ScreenView {
 
             this.loadPreferences()
 
-            this.renderMetrics()
+            this.renderParameters()
         })
 
         return this.elem
@@ -108,7 +108,7 @@ class ParametersView extends ScreenView {
         this.runHeaderCard.refresh().then()
     }
 
-    renderMetrics() {
+    renderParameters() {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {

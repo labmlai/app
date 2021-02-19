@@ -76,7 +76,7 @@ class GradientsView extends ScreenView {
 
             this.loadPreferences()
 
-            this.renderMetrics()
+            this.renderGradients()
         })
 
         return this.elem
@@ -108,7 +108,7 @@ class GradientsView extends ScreenView {
         this.runHeaderCard.refresh().then()
     }
 
-    renderMetrics() {
+    renderGradients() {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {
@@ -220,7 +220,6 @@ class GradientsView extends ScreenView {
 
 export class GradientsHandler {
     constructor() {
-        console.log('ll')
         ROUTER.route('gradients/:uuid', [this.handleGradients])
     }
 

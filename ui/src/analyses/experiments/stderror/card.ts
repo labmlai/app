@@ -14,6 +14,7 @@ export class StdErrorCard extends Card {
     runCache: RunCache
     outputContainer: WeyaElement
     elem: WeyaElement
+    filter: Filter
     loader: Loader
 
     constructor(opt: CardOptions) {
@@ -22,9 +23,8 @@ export class StdErrorCard extends Card {
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.loader = new Loader()
+        this.filter = new Filter({})
     }
-
-    filter = new Filter({})
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")

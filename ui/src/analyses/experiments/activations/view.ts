@@ -76,7 +76,7 @@ class ActivationsView extends ScreenView {
 
             this.loadPreferences()
 
-            this.renderMetrics()
+            this.renderActivations()
         })
 
         return this.elem
@@ -108,7 +108,7 @@ class ActivationsView extends ScreenView {
         this.runHeaderCard.refresh().then()
     }
 
-    renderMetrics() {
+    renderActivations() {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {

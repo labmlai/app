@@ -62,7 +62,7 @@ class StdErrorView extends ScreenView {
                 this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
             }
 
-            this.renderStdOut().then()
+            this.renderStdOut()
         })
 
         return this.elem
@@ -91,7 +91,7 @@ class StdErrorView extends ScreenView {
         this.renderOutput()
     }
 
-    async renderStdOut() {
+    renderStdOut() {
         this.loggerView.innerHTML = ''
 
         $(this.loggerView, $ => {
