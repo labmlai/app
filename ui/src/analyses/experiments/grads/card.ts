@@ -27,6 +27,10 @@ export class GradientsCard extends Card {
         this.loader = new Loader()
     }
 
+    getLastUpdated(): number {
+        return this.analysisCache.lastUpdated
+    }
+
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Gradients')

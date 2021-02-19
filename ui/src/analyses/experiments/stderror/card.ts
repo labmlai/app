@@ -39,10 +39,13 @@ export class StdErrorCard extends Card {
         return last10Lines.join("\n")
     }
 
+    getLastUpdated(): number {
+        return this.runCache.lastUpdated
+    }
+
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Standard Error')
-
         })
 
         this.elem.appendChild(this.loader.render($))

@@ -28,7 +28,7 @@ class MetricsView extends ScreenView {
     preferenceCache: SeriesPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
-    runHeaderContainer: WeyaElement
+    runHeaderCard: RunHeaderCard
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
@@ -105,7 +105,7 @@ class MetricsView extends ScreenView {
 
         this.renderLineChart()
         this.renderSparkLines()
-        this.renderRunHeader()
+        this.runHeaderCard.refresh().then()
     }
 
     renderMetrics() {
@@ -120,7 +120,11 @@ class MetricsView extends ScreenView {
                     this.refreshButton.render($)
                 }
             })
-            this.runHeaderContainer = $('div')
+            this.runHeaderCard = new RunHeaderCard({
+                uuid: this.uuid,
+                width: this.actualWidth
+            })
+            this.runHeaderCard.render($).then()
             $('h2.header.text-center', 'Metrics')
             new ToggleButton({
                 onButtonClick: this.onChangeScale,
@@ -135,7 +139,6 @@ class MetricsView extends ScreenView {
 
         this.renderLineChart()
         this.renderSparkLines()
-        this.renderRunHeader()
     }
 
     renderLineChart() {
@@ -159,13 +162,6 @@ class MetricsView extends ScreenView {
                 width: this.actualWidth,
                 onSelect: this.toggleChart
             }).render($)
-        })
-    }
-
-    renderRunHeader() {
-        this.runHeaderContainer.innerHTML = ''
-        $(this.runHeaderContainer, $ => {
-            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 
