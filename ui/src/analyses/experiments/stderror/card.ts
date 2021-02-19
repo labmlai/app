@@ -49,12 +49,13 @@ export class StdErrorCard extends Card {
         this.run = await this.runCache.get()
         this.loader.remove()
 
-        if (this.run.stderr) {
-            Weya(this.elem, $ => {
-                $('div.terminal-card.no-scroll', $ => {
-                    this.outputContainer = $('pre', '')
-                })
+        Weya(this.elem, $ => {
+            $('div.terminal-card.no-scroll', $ => {
+                this.outputContainer = $('pre', '')
             })
+        })
+
+        if (this.run.stderr) {
             this.renderOutput()
         } else {
             this.elem.classList.add('hide')
@@ -65,7 +66,7 @@ export class StdErrorCard extends Card {
         this.outputContainer.innerHTML = ''
         Weya(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stdout))
+            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stderr))
         })
     }
 
