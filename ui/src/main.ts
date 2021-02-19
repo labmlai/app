@@ -6,7 +6,7 @@ import {ComputersListHandler} from './views/computers_list_view'
 import {LoginHandler} from './views/login_view'
 
 import {experimentAnalyses} from "./analyses/analyses"
-import {SettingsHandler} from './views/settings';
+import {SettingsHandler} from './views/settings_view';
 
 new LoginHandler()
 

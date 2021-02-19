@@ -9,7 +9,7 @@ import NETWORK from '../network';
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 
 export interface HamburgerMenuOptions {
-
+    title: string
 }
 
 export class HamburgerMenuView {
@@ -20,9 +20,12 @@ export class HamburgerMenuView {
     userCache: UserCache
     user: User
     isMenuVisible: boolean
+    title: string
 
     constructor(opt: HamburgerMenuOptions) {
         this.userCache = CACHE.getUser()
+
+        this.title = opt.title
 
         this.loader = new Loader()
         this.isMenuVisible = false
@@ -36,11 +39,14 @@ export class HamburgerMenuView {
                     this.loader.render($)
                 })
                 new MenuButton({onButtonClick: this.onMenuToggle}).render($)
-                this.renderProfile().then()
+                $('div', '.title', $ => {
+                    $('h5', this.title)
+                })
             })
             this.overlayElement = $('div', '.overlay', {on: {click: this.onMenuToggle}})
         })
 
+        this.renderProfile().then()
 
         return this.elem
     }
@@ -102,7 +108,7 @@ export class HamburgerMenuView {
 
     onLogOut = async () => {
         let res = await NETWORK.signOut()
-        if(res.is_successful) {
+        if (res.is_successful) {
             NETWORK.redirectLogout()
         } else {
             //TODO: Sentry

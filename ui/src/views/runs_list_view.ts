@@ -37,7 +37,7 @@ class RunsListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
-            new HamburgerMenuView({}).render($)
+            new HamburgerMenuView({title: 'Runs'}).render($)
             this.buttonContainer = $('div.button-container', $ => {
                 this.deleteButton = new DeleteButton({
                     onButtonClick: this.onDelete

@@ -38,7 +38,7 @@ class ComputersListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
-            new HamburgerMenuView({}).render($)
+            new HamburgerMenuView({title: 'Computers'}).render($)
             this.buttonContainer = $('div', '.button-container', $ => {
                 this.deleteButton = new DeleteButton({
                     onButtonClick: this.onDelete
