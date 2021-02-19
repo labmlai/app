@@ -121,6 +121,10 @@ body {
   background-color: #2196F3;
 }
 
+.auto-margin {
+  margin: auto;
+}
+
 /* Buttons*/
 .toggle-button {
   font-size: .8rem;
@@ -639,4 +643,25 @@ button.sparkline-list-item {
 
 .selected-step {
   font-size: .7rem;
+}
+
+/*Settings*/
+.radio-button {
+  input {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+
+    border: 2px solid #999;
+    transition: 0.2s all linear;
+    margin-right: 5px;
+
+    position: relative;
+    top: 4px;
+  }
+
+  label {
+    font-size: 15px;
+    font-weight: bold;
+  }
 }

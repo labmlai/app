@@ -6,6 +6,7 @@ import {ComputersListHandler} from './views/computers_list_view'
 import {LoginHandler} from './views/login_view'
 
 import {experimentAnalyses} from "./analyses/analyses"
+import {SettingsHandler} from './views/settings';
 
 new LoginHandler()
 
@@ -13,6 +14,7 @@ new RunHandler()
 new PageNotFoundHandler()
 new RunsListHandler()
 new ComputersListHandler()
+new SettingsHandler()
 
 experimentAnalyses.map((analysis, i) => {
     new analysis.viewHandler()
