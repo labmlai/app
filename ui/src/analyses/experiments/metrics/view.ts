@@ -49,22 +49,6 @@ class MetricsView extends ScreenView {
         return false
     }
 
-    toggleChart = (idx: number) => {
-        this.isUpdateDisable = false
-
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
-        } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
-        }
-
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
-        }
-
-        this.renderMetrics()
-    }
-
     onResize(width: number) {
         super.onResize(width)
 
@@ -79,9 +63,9 @@ class MetricsView extends ScreenView {
                 this.loader.render($)
             })
 
-        this.loaData().then(() => {
+        this.loadData().then(() => {
             if (this.status && this.status.isRunning) {
-                this.autoRefresh = setInterval(this.renderMetrics.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
             }
 
             this.loadPreferences()
@@ -92,12 +76,21 @@ class MetricsView extends ScreenView {
         return this.elem
     }
 
-    async loaData() {
+    async loadData() {
         this.analysisData = await this.analysisCache.get()
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
 
         this.loader.remove()
+    }
+
+    destroy() {
+        if (this.autoRefresh !== undefined) {
+            clearInterval(this.autoRefresh)
+        }
+    }
+
+    onRefresh() {
     }
 
     renderMetrics() {
@@ -137,10 +130,20 @@ class MetricsView extends ScreenView {
         })
     }
 
-    destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
+    toggleChart = (idx: number) => {
+        this.isUpdateDisable = false
+
+        if (this.plotIdx[idx] >= 0) {
+            this.plotIdx[idx] = -1
+        } else {
+            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
         }
+
+        if (this.plotIdx.length > 1) {
+            this.plotIdx = new Array<number>(...this.plotIdx)
+        }
+
+        this.renderMetrics()
     }
 
     loadPreferences() {
@@ -176,10 +179,6 @@ class MetricsView extends ScreenView {
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
-    }
-
-    onRefresh = () => {
-
     }
 }
 

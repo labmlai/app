@@ -8,6 +8,8 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
+import Timeout = NodeJS.Timeout
+
 
 class StdErrorView extends ScreenView {
     elem: WeyaElement
@@ -16,9 +18,14 @@ class StdErrorView extends ScreenView {
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
-    loader: Loader
-    stdErrorView: HTMLDivElement
+    actualWidth: number
+    loggerView: WeyaElement
     output: HTMLPreElement
+    autoRefresh: Timeout
+    loader: Loader
+    refreshButton: RefreshButton
+    runHeaderCard: RunHeaderCard
+    filter: Filter
 
     constructor(uuid: string) {
         super()
@@ -27,56 +34,83 @@ class StdErrorView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.loader = new Loader()
+        this.filter = new Filter({})
     }
 
     get requiresAuth(): boolean {
         return false
     }
 
-    filter = new Filter({})
+    onResize(width: number) {
+        super.onResize(width)
+
+        this.actualWidth = Math.min(800, width)
+    }
 
     render() {
-        this.elem = <HTMLElement>$('div.page', $ => {
-            this.stdErrorView = <HTMLDivElement>$('div', '')
-        })
+        this.elem = <HTMLElement>$('div.page',
+            {style: {width: `${this.actualWidth}px`}}, $ => {
+                this.loggerView = $('div', '')
+            })
 
         this.elem.appendChild(this.loader.render($))
+
+        this.loadData().then(() => {
+            if (this.status.isRunning) {
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+            }
+
+            this.renderStdOut().then()
+        })
 
         this.renderStdOut().then()
 
         return this.elem
     }
 
-
-    destroy() {
-    }
-
-    async renderStdOut() {
+    async loadData() {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
 
         this.loader.remove()
+    }
 
-        this.stdErrorView.innerHTML = ''
+    destroy() {
+        if (this.autoRefresh !== undefined) {
+            clearInterval(this.autoRefresh)
+        }
+    }
 
-        $(this.stdErrorView, $ => {
+    async onRefresh() {
+        this.status = await this.statusCache.get()
+        if (!this.status.isRunning) {
+            this.refreshButton.remove()
+            clearInterval(this.autoRefresh)
+        }
+
+        this.runHeaderCard.render($).then()
+        this.output.innerHTML = this.filter.toHtml(this.run.stderr)
+    }
+
+    async renderStdOut() {
+        this.loggerView.innerHTML = ''
+
+        $(this.loggerView, $ => {
             $('div.flex-container', $ => {
                 new BackButton({}).render($)
                 if (this.status && this.status.isRunning) {
-                    new RefreshButton({onButtonClick: this.onRefresh}).render($)
+                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton.render($)
                 }
             })
-            new RunHeaderCard({uuid: this.uuid, width: 800}).render($)
+            this.runHeaderCard = new RunHeaderCard({uuid: this.uuid, width: this.actualWidth})
+            this.runHeaderCard.render($)
             $('h2.header.text-center', 'Standard Error')
             $('div.terminal-card', $ => {
                 this.output = <HTMLPreElement>$('pre', '')
             })
         })
         this.output.innerHTML = this.filter.toHtml(this.run.stderr)
-    }
-
-    onRefresh = () => {
-
     }
 }
 

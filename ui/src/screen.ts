@@ -13,6 +13,9 @@ abstract class ScreenView {
     destroy() {
     }
 
+    onRefresh() {
+    }
+
     get requiresAuth() {
         return true
     }
