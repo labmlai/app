@@ -21,6 +21,7 @@ export class RunHeaderCard {
     elem: WeyaElement
     lastRecordedContainer: WeyaElement
     lastUpdatedContainer: WeyaElement
+    statusViewContainer: WeyaElement
     statusCache: RunStatusCache
 
     constructor(opt: RunHeaderOptions) {
@@ -41,7 +42,7 @@ export class RunHeaderCard {
             $('div', $ => {
                 this.lastRecordedContainer = $('div')
                 $('div.run-info', $ => {
-                    new StatusView({status: this.status.run_status}).render($)
+                    this.statusViewContainer = $('div')
                     $('h3', `${this.run.name}`)
                     $('h5', `${this.run.comment}`)
                     this.lastUpdatedContainer = $('div')
@@ -49,6 +50,7 @@ export class RunHeaderCard {
             })
         })
 
+        this.renderStatusView()
         this.renderLastRecorded()
         this.renderLastUpdated()
     }
@@ -72,11 +74,19 @@ export class RunHeaderCard {
         })
     }
 
+    renderStatusView() {
+        this.statusViewContainer.innerHTML = ''
+        Weya(this.statusViewContainer, $ => {
+            new StatusView({status: this.status.run_status}).render($)
+        })
+    }
+
     async refresh(lastUpdated?: number) {
         this.status = await this.statusCache.get()
 
         this.lastUpdated = lastUpdated ? lastUpdated : this.statusCache.lastUpdated
 
+        this.renderStatusView()
         this.renderLastRecorded()
         this.renderLastUpdated()
     }

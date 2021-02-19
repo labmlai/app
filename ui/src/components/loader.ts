@@ -15,7 +15,7 @@ export class Loader {
     }
 
     remove() {
-        this.elem.innerHTML = ''
+        this.elem.remove()
     }
 }
 

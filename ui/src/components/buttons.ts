@@ -59,7 +59,7 @@ export class RefreshButton extends Button {
     }
 
     remove() {
-        this.elem.innerHTML = ''
+        this.elem.remove()
     }
 }
 
