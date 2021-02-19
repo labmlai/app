@@ -1,4 +1,4 @@
-import {WeyaElementFunction, Weya, WeyaElement, Weya as $,} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction, Weya, WeyaElement} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
@@ -12,9 +12,9 @@ export class StdErrorCard extends Card {
     run: Run
     uuid: string
     runCache: RunCache
-    output: HTMLPreElement
-    loader: Loader
+    outputContainer: WeyaElement
     elem: WeyaElement
+    loader: Loader
 
     constructor(opt: CardOptions) {
         super()
@@ -52,20 +52,33 @@ export class StdErrorCard extends Card {
         if (this.run.stderr) {
             Weya(this.elem, $ => {
                 $('div.terminal-card.no-scroll', $ => {
-                    this.output = <HTMLPreElement>$('pre', '')
+                    this.outputContainer = $('pre', '')
                 })
             })
-            this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stderr))
+            this.renderOutput()
         } else {
-            this.elem.remove()
+            this.elem.classList.add('hide')
         }
     }
 
-    refresh() {
+    renderOutput() {
+        this.outputContainer.innerHTML = ''
+        Weya(this.outputContainer, $ => {
+            let output = $('div', '')
+            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stdout))
+        })
+    }
+
+    async refresh() {
+        this.run = await this.runCache.get(true)
+
+        if (this.run.stderr) {
+            this.renderOutput()
+            this.elem.classList.remove('hide')
+        }
     }
 
     onClick = () => {
         ROUTER.navigate(`/stderr/${this.uuid}`)
     }
-
 }

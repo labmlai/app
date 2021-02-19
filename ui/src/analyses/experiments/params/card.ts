@@ -8,13 +8,15 @@ import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import parametersCache from "./cache"
 import {Loader} from "../../../components/loader"
 
+
 export class ParametersCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
     analysisCache: SeriesCache
-    loader: Loader
     elem: WeyaElement
+    lineChartContainer: WeyaElement
+    loader: Loader
 
     constructor(opt: CardOptions) {
         super()
@@ -29,7 +31,9 @@ export class ParametersCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3.header', 'Parameters')
+        })
 
         this.elem.appendChild(this.loader.render($))
         this.analysisData = await this.analysisCache.get()
@@ -37,15 +41,23 @@ export class ParametersCard extends Card {
 
         if (this.analysisData.summary.length > 0) {
             Weya(this.elem, $ => {
-                $('h3.header', 'Parameters')
-                new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
+                this.lineChartContainer = $('div', '')
             })
+
+            this.renderLineChart()
         } else {
-            this.elem.remove()
+            this.elem.classList.add('hide')
         }
     }
 
+    renderLineChart() {
+        this.lineChartContainer.innerHTML = ''
+        Weya(this.lineChartContainer, $ => {
+            new SimpleLinesChart({series: this.analysisData.summary, width: this.width}).render($)
+        })
+    }
+
     onClick = () => {
-        // ROUTER.navigate(`/parameters/${this.uuid}`)
+        ROUTER.navigate(`/parameters/${this.uuid}`)
     }
 }

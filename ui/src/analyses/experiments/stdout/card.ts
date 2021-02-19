@@ -12,9 +12,10 @@ export class StdOutCard extends Card {
     run: Run
     uuid: string
     runCache: RunCache
-    output: HTMLPreElement
-    loader: Loader
+    outputContainer: WeyaElement
     elem: WeyaElement
+    loader: Loader
+    filter: Filter
 
     constructor(opt: CardOptions) {
         super()
@@ -22,9 +23,8 @@ export class StdOutCard extends Card {
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.loader = new Loader()
+        this.filter = new Filter({})
     }
-
-    filter = new Filter({})
 
     getLastTenLines(inputStr: string) {
         let split = inputStr.split("\n")
@@ -51,16 +51,30 @@ export class StdOutCard extends Card {
         if (this.run.stdout) {
             Weya(this.elem, $ => {
                 $('div.terminal-card.no-scroll', $ => {
-                    this.output = <HTMLPreElement>$('pre', '')
+                    this.outputContainer = $('pre', '')
                 })
             })
-            this.output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stdout))
+            this.renderOutput()
         } else {
-            this.elem.remove()
+            this.elem.classList.add('hide')
         }
     }
 
-    refresh() {
+    renderOutput() {
+        this.outputContainer.innerHTML = ''
+        Weya(this.outputContainer, $ => {
+            let output = $('div', '')
+            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stdout))
+        })
+    }
+
+    async refresh() {
+        this.run = await this.runCache.get(true)
+
+        if (this.run.stdout) {
+            this.renderOutput()
+            this.elem.classList.remove('hide')
+        }
     }
 
     onClick = () => {

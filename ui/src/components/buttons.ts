@@ -44,16 +44,22 @@ export class BackButton extends Button {
 }
 
 export class RefreshButton extends Button {
+    elem: WeyaElement
+
     constructor(opt: buttonOptions) {
         super(opt)
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab.float-right',
+        this.elem = $('nav.nav-link.tab.float-right',
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-sync', '')
             })
+    }
+
+    remove() {
+        this.elem.innerHTML = ''
     }
 }
 

@@ -27,6 +27,10 @@ class MetricsView extends ScreenView {
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     loader: Loader
+    refreshButton: RefreshButton
+    runHeaderContainer: WeyaElement
+    lineChartContainer: WeyaElement
+    sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
@@ -49,22 +53,6 @@ class MetricsView extends ScreenView {
         return false
     }
 
-    toggleChart = (idx: number) => {
-        this.isUpdateDisable = false
-
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
-        } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
-        }
-
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
-        }
-
-        this.renderMetrics()
-    }
-
     onResize(width: number) {
         super.onResize(width)
 
@@ -79,9 +67,11 @@ class MetricsView extends ScreenView {
                 this.loader.render($)
             })
 
-        this.loaData().then(() => {
+        this.loadData().then(() => {
+            this.loader.remove()
+
             if (this.status && this.status.isRunning) {
-                this.autoRefresh = setInterval(this.renderMetrics.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
             }
 
             this.loadPreferences()
@@ -92,12 +82,30 @@ class MetricsView extends ScreenView {
         return this.elem
     }
 
-    async loaData() {
+    async loadData() {
         this.analysisData = await this.analysisCache.get()
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
+    }
 
-        this.loader.remove()
+    destroy() {
+        if (this.autoRefresh !== undefined) {
+            clearInterval(this.autoRefresh)
+        }
+    }
+
+    async onRefresh() {
+        this.analysisData = await this.analysisCache.get(true)
+        this.status = await this.statusCache.get()
+
+        if (!this.status.isRunning) {
+            this.refreshButton.remove()
+            clearInterval(this.autoRefresh)
+        }
+
+        this.renderLineChart()
+        this.renderSparkLines()
+        this.renderRunHeader()
     }
 
     renderMetrics() {
@@ -108,10 +116,11 @@ class MetricsView extends ScreenView {
                 new BackButton({}).render($)
                 new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
                 if (this.status && this.status.isRunning) {
-                    new RefreshButton({onButtonClick: this.onRefresh}).render($)
+                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton.render($)
                 }
             })
-            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
+            this.runHeaderContainer = $('div')
             $('h2.header.text-center', 'Metrics')
             new ToggleButton({
                 onButtonClick: this.onChangeScale,
@@ -119,28 +128,62 @@ class MetricsView extends ScreenView {
                 isToggled: this.currentChart > 0
             }).render($)
             $('div.detail-card', $ => {
-                $('div.fixed-chart', $ => {
-                    new LineChart({
-                        series: this.analysisData.series,
-                        width: this.actualWidth,
-                        plotIdx: this.plotIdx,
-                        chartType: getChartType(this.currentChart)
-                    }).render($)
-                })
-                new SparkLines({
-                    series: this.analysisData.series,
-                    plotIdx: this.plotIdx,
-                    width: this.actualWidth,
-                    onSelect: this.toggleChart
-                }).render($)
+                this.lineChartContainer = $('div.fixed-chart')
+                this.sparkLinesContainer = $('div')
             })
+        })
+
+        this.renderLineChart()
+        this.renderSparkLines()
+        this.renderRunHeader()
+    }
+
+    renderLineChart() {
+        this.lineChartContainer.innerHTML = ''
+        $(this.lineChartContainer, $ => {
+            new LineChart({
+                series: this.analysisData.series,
+                width: this.actualWidth,
+                plotIdx: this.plotIdx,
+                chartType: getChartType(this.currentChart)
+            }).render($)
         })
     }
 
-    destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
+    renderSparkLines() {
+        this.sparkLinesContainer.innerHTML = ''
+        $(this.sparkLinesContainer, $ => {
+            new SparkLines({
+                series: this.analysisData.series,
+                plotIdx: this.plotIdx,
+                width: this.actualWidth,
+                onSelect: this.toggleChart
+            }).render($)
+        })
+    }
+
+    renderRunHeader() {
+        this.runHeaderContainer.innerHTML = ''
+        $(this.runHeaderContainer, $ => {
+            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
+        })
+    }
+
+    toggleChart = (idx: number) => {
+        this.isUpdateDisable = false
+
+        if (this.plotIdx[idx] >= 0) {
+            this.plotIdx[idx] = -1
+        } else {
+            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
         }
+
+        if (this.plotIdx.length > 1) {
+            this.plotIdx = new Array<number>(...this.plotIdx)
+        }
+
+        this.renderLineChart()
+        this.renderSparkLines()
     }
 
     loadPreferences() {
@@ -167,7 +210,7 @@ class MetricsView extends ScreenView {
             this.currentChart = this.currentChart + 1
         }
 
-        this.renderMetrics()
+        this.renderLineChart()
     }
 
     updatePreferences = () => {
@@ -176,10 +219,6 @@ class MetricsView extends ScreenView {
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
-    }
-
-    onRefresh = () => {
-
     }
 }
 
