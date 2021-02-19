@@ -22,13 +22,15 @@ export class ComputersListItemView {
 
 
     render($: WeyaElementFunction) {
-        this.elem = $('div', '.list-item',
+        this.elem = $('div', '.list-item.list-group-item.list-group-item-action',
             {on: {click: this.onClick}},
             $ => {
-                new StatusView({status: this.item.run_status, type: 'computer'}).render($)
-                $('p', `Started on ${formatTime(this.item.start_time)}`)
-                $('h5', this.item.name)
-                $('h6', this.item.comment)
+                $('div', $ => {
+                    new StatusView({status: this.item.run_status, type: 'computer'}).render($)
+                    $('p', `Started ${formatTime(this.item.start_time)}`)
+                    $('h5', this.item.name)
+                    $('h6', this.item.comment)
+                })
             })
     }
 }

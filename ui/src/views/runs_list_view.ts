@@ -49,7 +49,7 @@ class RunsListView extends ScreenView {
 
             $('div', '.runs-list', $ => {
                 new SearchView({onSearch: this.onSearch}).render($)
-                this.runsListContainer = $('div', '.list', '')
+                this.runsListContainer = $('div', '.list.runs-list.list-group', '')
             })
             this.loader.render($)
         })
