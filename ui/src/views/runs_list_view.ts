@@ -49,7 +49,7 @@ class RunsListView extends ScreenView {
 
             $('div', '.runs-list', $ => {
                 new SearchView({onSearch: this.onSearch}).render($)
-                this.runsListContainer = $('div', '.list', '')
+                this.runsListContainer = $('div', '.list.runs-list.list-group', '')
             })
             this.loader.render($)
         })
@@ -64,11 +64,11 @@ class RunsListView extends ScreenView {
         $(this.buttonContainer, $ => {
             if (this.currentRunsList.length) {
                 if (this.isEditMode) {
-                    this.cancelButton.render($)
                     this.deleteButton.render($)
+                    this.cancelButton.render($)
                 } else {
-                    this.refreshButton.render($)
                     this.editButton.render($)
+                    this.refreshButton.render($)
                 }
             }
         })

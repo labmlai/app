@@ -46,7 +46,7 @@ export class HamburgerMenuView {
                 $('div', '.title', $ => {
                     $('h5', this.title)
                 })
-                this.buttonContainer = $('div')
+                this.buttonContainer = $('div', '.buttons', '')
             })
             this.overlayElement = $('div', '.overlay', {on: {click: this.onMenuToggle}})
         })

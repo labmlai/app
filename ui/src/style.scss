@@ -6,7 +6,7 @@ body {
 
 /* App.css */
 
-.hide{
+.hide {
   display: none;
 }
 
@@ -256,6 +256,11 @@ span.fas {
   }
 }
 
+.buttons {
+  float: right;
+  display: flex;
+}
+
 /* alert message */
 .alert {
   padding: 15px;
@@ -416,11 +421,14 @@ span.fas {
 /*Runs List*/
 .list {
   .list-item {
-    box-shadow: 0px 4px 5px 0px $light-shadow3, 0px 1px 20px 0px $light-shadow3;
     font-size: 12px;
+
+    .badge {
+      font-size: 9px;
+      text-transform: uppercase;
+    }
+
     outline: none;
-    margin-bottom: 10px;
-    padding: 0.75rem 1.25rem;
 
     h3, h4, h5, h6, p {
       overflow-wrap: break-word;
@@ -428,32 +436,48 @@ span.fas {
       margin: 2px 0;
     }
 
-    &:focus {
-      background-color: transparent;
-    }
-
-    h5 {
-      color: $light-header;
-      font-size: 1.25rem;
-      line-height: 1.2;
-      font-weight: 500;
-    }
-
-    h6 {
-      color: $light-text-secondary;
-    }
-
-    p {
-      color: $light-text-secondary;
-    }
-
     .status {
       text-transform: uppercase;
       font-size: 8px;
     }
+
+    input[type=checkbox] {
+      transform: scale(1.2);
+      margin-top: 18px;
+      border-radius: 50%;
+      border: 1px solid #ddd;
+    }
+  }
+
+  :hover {
   }
 }
 
+.runs-list {
+  .search-container {
+    .search-content {
+      display: flex;
+      border-radius: 10px;
+
+      span.icon {
+        align-items: center;
+        padding: .375rem .75rem;
+      }
+
+      input {
+        flex: 1 1 auto;
+        padding: .375rem .75rem;
+        border: none;
+        outline: none;
+        background: none;
+
+        &:focus {
+          box-shadow: none;
+        }
+      }
+    }
+  }
+}
 
 /* Charts */
 
