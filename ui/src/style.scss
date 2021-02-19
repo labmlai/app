@@ -6,8 +6,12 @@ body {
 
 /* App.css */
 
-.no-display{
+.hide{
   display: none;
+}
+
+.show {
+  display: block;
 }
 
 .float-right {

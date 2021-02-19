@@ -28,9 +28,9 @@ class MetricsView extends ScreenView {
     preferenceCache: SeriesPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
-    runHeaderCard: RunHeaderCard
-    lineChart: LineChart
-    sparkLines: SparkLines
+    runHeaderContainer: WeyaElement
+    lineChartContainer: WeyaElement
+    sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
@@ -95,7 +95,7 @@ class MetricsView extends ScreenView {
     }
 
     async onRefresh() {
-        this.analysisData = await this.analysisCache.get()
+        this.analysisData = await this.analysisCache.get(true)
         this.status = await this.statusCache.get()
 
         if (!this.status.isRunning) {
@@ -103,9 +103,9 @@ class MetricsView extends ScreenView {
             clearInterval(this.autoRefresh)
         }
 
-        this.runHeaderCard.render($).then()
-        this.lineChart.render($)
-        this.sparkLines.render($)
+        this.renderLineChart()
+        this.renderSparkLines()
+        this.renderRunHeader()
     }
 
     renderMetrics() {
@@ -120,8 +120,7 @@ class MetricsView extends ScreenView {
                     this.refreshButton.render($)
                 }
             })
-            this.runHeaderCard = new RunHeaderCard({uuid: this.uuid, width: this.actualWidth})
-            this.runHeaderCard.render($).then()
+            this.runHeaderContainer = $('div')
             $('h2.header.text-center', 'Metrics')
             new ToggleButton({
                 onButtonClick: this.onChangeScale,
@@ -129,23 +128,44 @@ class MetricsView extends ScreenView {
                 isToggled: this.currentChart > 0
             }).render($)
             $('div.detail-card', $ => {
-                $('div.fixed-chart', $ => {
-                    this.lineChart = new LineChart({
-                        series: this.analysisData.series,
-                        width: this.actualWidth,
-                        plotIdx: this.plotIdx,
-                        chartType: getChartType(this.currentChart)
-                    })
-                    this.lineChart.render($)
-                })
-                this.sparkLines = new SparkLines({
-                    series: this.analysisData.series,
-                    plotIdx: this.plotIdx,
-                    width: this.actualWidth,
-                    onSelect: this.toggleChart
-                })
-                this.sparkLines.render($)
+                this.lineChartContainer = $('div.fixed-chart')
+                this.sparkLinesContainer = $('div')
             })
+        })
+
+        this.renderLineChart()
+        this.renderSparkLines()
+        this.renderRunHeader()
+    }
+
+    renderLineChart() {
+        this.lineChartContainer.innerHTML = ''
+        $(this.lineChartContainer, $ => {
+            new LineChart({
+                series: this.analysisData.series,
+                width: this.actualWidth,
+                plotIdx: this.plotIdx,
+                chartType: getChartType(this.currentChart)
+            }).render($)
+        })
+    }
+
+    renderSparkLines() {
+        this.sparkLinesContainer.innerHTML = ''
+        $(this.sparkLinesContainer, $ => {
+            new SparkLines({
+                series: this.analysisData.series,
+                plotIdx: this.plotIdx,
+                width: this.actualWidth,
+                onSelect: this.toggleChart
+            }).render($)
+        })
+    }
+
+    renderRunHeader() {
+        this.runHeaderContainer.innerHTML = ''
+        $(this.runHeaderContainer, $ => {
+            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 
@@ -162,8 +182,8 @@ class MetricsView extends ScreenView {
             this.plotIdx = new Array<number>(...this.plotIdx)
         }
 
-        this.lineChart.render($)
-        this.sparkLines.render($)
+        this.renderLineChart()
+        this.renderSparkLines()
     }
 
     loadPreferences() {
@@ -190,7 +210,7 @@ class MetricsView extends ScreenView {
             this.currentChart = this.currentChart + 1
         }
 
-        this.lineChart.render($)
+        this.renderLineChart()
     }
 
     updatePreferences = () => {

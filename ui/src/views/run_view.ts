@@ -88,7 +88,7 @@ class RunView extends ScreenView {
         }
 
         for (let card of this.cards) {
-            card.render($)
+            card.refresh()
         }
     }
 
