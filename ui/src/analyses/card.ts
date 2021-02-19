@@ -7,4 +7,6 @@ export default abstract class Card {
     abstract render($: WeyaElementFunction)
 
     abstract refresh()
+
+    abstract getLastUpdated() : number
 }

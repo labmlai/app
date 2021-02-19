@@ -21,11 +21,10 @@ class LoggerView extends ScreenView {
     actualWidth: number
     loggerView: WeyaElement
     outputContainer: WeyaElement
-    runHeaderContainer: WeyaElement
+    runHeaderCard: RunHeaderCard
     autoRefresh: Timeout
     loader: Loader
     refreshButton: RefreshButton
-    runHeaderCard: RunHeaderCard
     filter: Filter
 
     constructor(uuid: string) {
@@ -88,8 +87,8 @@ class LoggerView extends ScreenView {
             clearInterval(this.autoRefresh)
         }
 
-        this.runHeaderCard.render($).then()
         this.renderOutput()
+        this.runHeaderCard.refresh().then()
     }
 
     async renderStdOut() {
@@ -103,7 +102,11 @@ class LoggerView extends ScreenView {
                     this.refreshButton.render($)
                 }
             })
-            this.runHeaderContainer = $('div')
+            this.runHeaderCard = new RunHeaderCard({
+                uuid: this.uuid,
+                width: this.actualWidth
+            })
+            this.runHeaderCard.render($).then()
             $('h2.header.text-center', 'Logger')
             $('div.terminal-card', $ => {
                 this.outputContainer = $('div', '')
@@ -111,7 +114,6 @@ class LoggerView extends ScreenView {
         })
 
         this.renderOutput()
-        this.renderRunHeader()
     }
 
     renderOutput() {
@@ -119,13 +121,6 @@ class LoggerView extends ScreenView {
         $(this.outputContainer, $ => {
             let output = $('pre', '')
             output.innerHTML = this.filter.toHtml(this.run.logger)
-        })
-    }
-
-    renderRunHeader() {
-        this.runHeaderContainer.innerHTML = ''
-        $(this.runHeaderContainer, $ => {
-            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 }

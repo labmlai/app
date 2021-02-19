@@ -7,6 +7,7 @@ import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import {RefreshButton, BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
+import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import Card from "../analyses/card"
 import CACHE, {RunCache, IsUserLoggedCache, RunStatusCache} from "../cache/cache"
@@ -22,11 +23,13 @@ class RunView extends ScreenView {
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
     elem: WeyaElement
+    runHeaderCard: RunHeaderCard
     runView: HTMLDivElement
     autoRefresh: Timeout
     loader: Loader
     refreshButton: RefreshButton
     cards: Card[] = []
+    lastUpdated: number
 
     constructor(uuid: string) {
         super()
@@ -81,6 +84,8 @@ class RunView extends ScreenView {
     }
 
     async onRefresh() {
+        let oldest = (new Date()).getTime()
+
         this.status = await this.statusCache.get()
         if (!this.status.isRunning) {
             this.refreshButton.remove()
@@ -89,7 +94,15 @@ class RunView extends ScreenView {
 
         for (let card of this.cards) {
             card.refresh()
+
+            let lastUpdated = card.getLastUpdated()
+            if (lastUpdated < oldest) {
+                oldest = lastUpdated
+            }
         }
+
+        this.lastUpdated = oldest
+        this.runHeaderCard.refresh(this.lastUpdated).then()
     }
 
     private async renderRun() {
@@ -106,6 +119,12 @@ class RunView extends ScreenView {
                     this.refreshButton.render($)
                 }
             })
+            this.runHeaderCard = new RunHeaderCard({
+                uuid: this.uuid,
+                width: this.actualWidth,
+                lastUpdated: this.lastUpdated
+            })
+            this.runHeaderCard.render($)
             experimentAnalyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)

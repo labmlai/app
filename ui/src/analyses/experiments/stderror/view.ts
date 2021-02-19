@@ -21,7 +21,6 @@ class StdErrorView extends ScreenView {
     actualWidth: number
     loggerView: WeyaElement
     outputContainer: WeyaElement
-    runHeaderContainer: WeyaElement
     autoRefresh: Timeout
     loader: Loader
     refreshButton: RefreshButton
@@ -103,7 +102,11 @@ class StdErrorView extends ScreenView {
                     this.refreshButton.render($)
                 }
             })
-            this.runHeaderContainer = $('div')
+            this.runHeaderCard = new RunHeaderCard({
+                uuid: this.uuid,
+                width: this.actualWidth
+            })
+            this.runHeaderCard.render($).then()
             $('h2.header.text-center', 'Standard Error')
             $('div.terminal-card', $ => {
                 this.outputContainer = $('div', '')
@@ -111,7 +114,6 @@ class StdErrorView extends ScreenView {
         })
 
         this.renderOutput()
-        this.renderRunHeader()
     }
 
     renderOutput() {
@@ -119,13 +121,6 @@ class StdErrorView extends ScreenView {
         $(this.outputContainer, $ => {
             let output = $('pre', '')
             output.innerHTML = this.filter.toHtml(this.run.stderr)
-        })
-    }
-
-    renderRunHeader() {
-        this.runHeaderContainer.innerHTML = ''
-        $(this.runHeaderContainer, $ => {
-            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
         })
     }
 }
