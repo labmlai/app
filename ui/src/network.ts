@@ -76,8 +76,16 @@ class Network {
         return this.sendHttpRequest('POST', `/run/${run_uuid}`, data)
     }
 
+    async getComputer(computer_uuid: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/computer/${computer_uuid}`)
+    }
+
     async getRunStatus(run_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/status/${run_uuid}`)
+    }
+
+    async getComputerStatus(computer_uuid: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/computer/status/${computer_uuid}`)
     }
 
     async getRuns(labml_token: string | null): Promise<any> {
