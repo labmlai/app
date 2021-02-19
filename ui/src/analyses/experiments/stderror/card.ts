@@ -66,7 +66,7 @@ export class StdErrorCard extends Card {
         this.outputContainer.innerHTML = ''
         Weya(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stdout))
+            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stderr))
         })
     }
 
