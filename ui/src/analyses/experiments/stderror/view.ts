@@ -56,6 +56,8 @@ class StdErrorView extends ScreenView {
         this.elem.appendChild(this.loader.render($))
 
         this.loadData().then(() => {
+            this.loader.remove()
+
             if (this.status.isRunning) {
                 this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
             }
@@ -71,8 +73,6 @@ class StdErrorView extends ScreenView {
     async loadData() {
         this.run = await this.runCache.get()
         this.status = await this.statusCache.get()
-
-        this.loader.remove()
     }
 
     destroy() {
@@ -82,7 +82,8 @@ class StdErrorView extends ScreenView {
     }
 
     async onRefresh() {
-        this.status = await this.statusCache.get()
+        await this.loadData()
+
         if (!this.status.isRunning) {
             this.refreshButton.remove()
             clearInterval(this.autoRefresh)
@@ -104,7 +105,7 @@ class StdErrorView extends ScreenView {
                 }
             })
             this.runHeaderCard = new RunHeaderCard({uuid: this.uuid, width: this.actualWidth})
-            this.runHeaderCard.render($)
+            this.runHeaderCard.render($).then()
             $('h2.header.text-center', 'Standard Error')
             $('div.terminal-card', $ => {
                 this.output = <HTMLPreElement>$('pre', '')
