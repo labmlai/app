@@ -31,6 +31,11 @@ class ComputersListView extends ScreenView {
         this.computerListCache = CACHE.getComputersList()
 
         this.loader = new Loader()
+        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete})
+        this.editButton = new EditButton({onButtonClick: this.onEdit})
+        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh})
+        this.cancelButton = new CancelButton({onButtonClick: this.onCancel})
+
         this.searchQuery = ''
         this.isEditMode = false
         this.computersDeleteSet = new Set<string>()
@@ -38,21 +43,11 @@ class ComputersListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
-            new HamburgerMenuView({title: 'Computers'}).render($)
-            this.buttonContainer = $('div', '.button-container', $ => {
-                this.deleteButton = new DeleteButton({
-                    onButtonClick: this.onDelete
-                })
-                this.editButton = new EditButton({
-                    onButtonClick: this.onEdit
-                })
-                this.refreshButton = new RefreshButton({
-                    onButtonClick: this.onRefresh
-                })
-                this.cancelButton = new CancelButton({
-                    onButtonClick: this.onCancel
-                })
-            })
+            new HamburgerMenuView({
+                title: 'Computers',
+                setButtonContainer: container => this.buttonContainer = container
+            }).render($)
+
             $('div', '.runs-list', $ => {
                 new SearchView({onSearch: this.onSearch}).render($)
                 this.computersListContainer = $('div', '.list', '')
