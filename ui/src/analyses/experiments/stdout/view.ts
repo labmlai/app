@@ -20,7 +20,8 @@ class StdOutView extends ScreenView {
     runCache: RunCache
     actualWidth: number
     loggerView: WeyaElement
-    output: HTMLPreElement
+    outputContainer: WeyaElement
+    runHeaderContainer: WeyaElement
     autoRefresh: Timeout
     loader: Loader
     refreshButton: RefreshButton
@@ -65,8 +66,6 @@ class StdOutView extends ScreenView {
             this.renderStdOut().then()
         })
 
-        this.renderStdOut().then()
-
         return this.elem
     }
 
@@ -90,7 +89,7 @@ class StdOutView extends ScreenView {
         }
 
         this.runHeaderCard.render($).then()
-        this.output.innerHTML = this.filter.toHtml(this.run.stdout)
+        this.renderOutput()
     }
 
     async renderStdOut() {
@@ -104,14 +103,30 @@ class StdOutView extends ScreenView {
                     this.refreshButton.render($)
                 }
             })
-            this.runHeaderCard = new RunHeaderCard({uuid: this.uuid, width: this.actualWidth})
-            this.runHeaderCard.render($).then()
+            this.runHeaderContainer = $('div')
             $('h2.header.text-center', 'Standard Out')
             $('div.terminal-card', $ => {
-                this.output = <HTMLPreElement>$('pre', '')
+                this.outputContainer = $('div', '')
             })
         })
-        this.output.innerHTML = this.filter.toHtml(this.run.stdout)
+
+        this.renderOutput()
+        this.renderRunHeader()
+    }
+
+    renderOutput() {
+        this.outputContainer.innerHTML = ''
+        $(this.outputContainer, $ => {
+            let output = $('pre', '')
+            output.innerHTML = this.filter.toHtml(this.run.stdout)
+        })
+    }
+
+    renderRunHeader() {
+        this.runHeaderContainer.innerHTML = ''
+        $(this.runHeaderContainer, $ => {
+            new RunHeaderCard({uuid: this.uuid, width: this.actualWidth}).render($)
+        })
     }
 }
 
