@@ -256,6 +256,11 @@ span.fas {
   }
 }
 
+.buttons {
+  float: right;
+  display: flex;
+}
+
 /* alert message */
 .alert {
   padding: 15px;

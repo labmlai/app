@@ -65,11 +65,11 @@ class ComputersListView extends ScreenView {
         $(this.buttonContainer, $ => {
             if (this.currentComputersList.length) {
                 if (this.isEditMode) {
-                    this.cancelButton.render($)
                     this.deleteButton.render($)
+                    this.cancelButton.render($)
                 } else {
-                    this.refreshButton.render($)
                     this.editButton.render($)
+                    this.refreshButton.render($)
                 }
             }
         })
