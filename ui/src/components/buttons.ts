@@ -68,7 +68,7 @@ export class BackButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-chevron-left', '')
-                $('span.ms-1', 'Run')
+                $('span.ms-1', this.text)
             })
     }
 }
