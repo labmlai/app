@@ -106,7 +106,7 @@ class ConfigsView extends ScreenView {
                 width: this.actualWidth
             })
             this.runHeaderCard.render($).then()
-            $('h2.header.text-center', 'Standard Out')
+            $('h2.header.text-center', 'Configurations')
             this.configsContainer = $('div.labml-card')
         })
 

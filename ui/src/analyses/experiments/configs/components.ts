@@ -37,7 +37,7 @@ class ComputedValue {
             }
         }
         $('span.computed', $ => {
-            $('span', truncated, {title: this.computed})
+                $('span.empty', truncated, {title: this.computed})
         })
     }
 }
@@ -121,54 +121,54 @@ class ConfigItemView {
     }
 
     render($: WeyaElementFunction) {
+        if (this.conf.order < 0) {
+            this.classes.push('ignored')
+            if (this.isHyperParamOnly) {
+                return
+            }
+        }
+
+        if (this.conf.isMeta) {
+            return
+        }
+
+        if (!this.conf.isExplicitlySpecified && !this.conf.isHyperparam) {
+            if (this.isHyperParamOnly) {
+                return
+            }
+        }
+
         this.elem = $('div', $ => {
             $('span.key', this.key)
             $('span.combined', {style: {width: `${this.width - KEY_WIDTH - 2 * PADDING}px`}}, $ => {
-                if (this.conf.order < 0) {
-                    this.classes.push('ignored')
-                    if (this.isHyperParamOnly) {
-                        return
+                new ComputedValue({computed: this.conf.computed}).render($)
+
+                if (this.conf.isCustom) {
+                    if (this.isParentDefault) {
+                        this.classes.push('only_option')
+                    } else {
+                        this.classes.push('custom')
                     }
                 } else {
-                    if (!this.conf.isExplicitlySpecified && !this.conf.isHyperparam) {
-                        if (this.isHyperParamOnly) {
-                            return
-                        }
-                    }
+                    new Option({value: this.conf.value}).render($)
 
-                    if (this.conf.isMeta) {
-                        return
-                    }
-
-                    new ComputedValue({computed: this.conf.computed}).render($)
-
-                    if (this.conf.isCustom) {
-                        if (this.isParentDefault) {
-                            this.classes.push('only_option')
-                        } else {
-                            this.classes.push('custom')
-                        }
+                    if (this.isParentDefault || this.conf.isOnlyOption) {
+                        this.classes.push('only_option')
                     } else {
-                        new Option({value: this.conf.value}).render($)
-
-                        if (this.isParentDefault || this.conf.isOnlyOption) {
-                            this.classes.push('only_option')
-                        } else {
-                            this.classes.push('picked')
-                        }
+                        this.classes.push('picked')
                     }
+                }
 
-                    if (!this.isHyperParamOnly && this.conf.otherOptions) {
-                        new OtherOptions({options: [...this.conf.otherOptions]}).render($)
-                    }
+                if (!this.isHyperParamOnly && this.conf.otherOptions) {
+                    new OtherOptions({options: [...this.conf.otherOptions]}).render($)
+                }
 
-                    if (this.conf.isHyperparam) {
-                        this.classes.push('hyperparam')
-                    } else if (this.conf.isExplicitlySpecified) {
-                        this.classes.push('specified')
-                    } else {
-                        this.classes.push('not-hyperparam')
-                    }
+                if (this.conf.isHyperparam) {
+                    this.classes.push('hyperparam')
+                } else if (this.conf.isExplicitlySpecified) {
+                    this.classes.push('specified')
+                } else {
+                    this.classes.push('not-hyperparam')
                 }
             })
         })

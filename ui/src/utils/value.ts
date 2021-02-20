@@ -58,7 +58,7 @@ export class FormattedValue {
 
     render($: WeyaElementFunction) {
         if (typeof this.value === 'boolean') {
-            $('span.boolean', this.toString())
+            $('span.boolean', this.value.toString())
         } else if (typeof this.value === 'number') {
             if (this.value - Math.floor(this.value) < 1e-9) {
                 $('span.int', formatInt(this.value))
@@ -73,6 +73,7 @@ export class FormattedValue {
                 if (i > 0) {
                     $('span.subtle', ', ')
                 }
+                new FormattedValue({value: this.value[i]}).render($)
             }
             $('span.subtle', ']')
         } else {
