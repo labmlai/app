@@ -1,7 +1,8 @@
 import d3 from "../../../d3"
-import {WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction, WeyaElement, Weya as $} from '../../../../../lib/weya/weya'
 import {PlotOptions, FillOptions} from '../types'
 import {PointValue} from "../../../models/run"
+import {getSelectedIdx} from "../utils"
 
 
 export interface LinePlotOptions extends PlotOptions {
@@ -13,14 +14,20 @@ export class LinePlot {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
-    smoothedLine
-    unsmoothedLine
+    circleContainer: WeyaElement
+    smoothedLine: d3.Line<PointValue>
+    unsmoothedLine: d3.Line<PointValue>
+    bisect: d3.Bisector<number, number>
 
     constructor(opt: LinePlotOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale
         this.color = opt.color
+
+        this.bisect = d3.bisector(function (d: PointValue) {
+            return d.step
+        }).left
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
@@ -55,7 +62,25 @@ export class LinePlot {
                     stroke: this.color,
                     d: this.unsmoothedLine(this.series) as string
                 })
+            this.circleContainer = $('g')
         })
+    }
+
+    renderCursorCircle(cursorStep: number | null) {
+        if (cursorStep != null) {
+            let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
+
+            this.circleContainer.innerHTML = ''
+            $(this.circleContainer, $ => {
+                $('circle',
+                    {
+                        r: 5,
+                        cx: this.xScale(this.series[idx].step),
+                        cy: this.yScale(this.series[idx].smoothed),
+                        fill: this.color
+                    })
+            })
+        }
     }
 }
 

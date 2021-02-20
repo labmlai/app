@@ -40,7 +40,7 @@ export class BottomAxis {
     constructor(opt: AxisOptions) {
         this.specifier = opt.specifier !== undefined ? opt.specifier : ".2s"
         this.id = `${opt.chartId}_axis_bottom`
-        this.axis = d3.axisBottom(this.scale as d3.AxisScale<d3.AxisDomain>).ticks(5, this.specifier)
+        this.axis = d3.axisBottom(opt.scale as d3.AxisScale<d3.AxisDomain>).ticks(5, this.specifier)
     }
 
     render($: WeyaElementFunction) {

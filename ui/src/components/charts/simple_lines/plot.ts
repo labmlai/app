@@ -11,7 +11,7 @@ export class SimpleLinePlot {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
-    smoothedLine
+    smoothedLine : d3.Line<number>
 
     constructor(opt: SimpleLinePlotOptions) {
         this.series = opt.series

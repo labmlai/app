@@ -6,6 +6,8 @@ import {getScale, toPointValues, getLogScale, getExtent, defaultSeriesToPlot} fr
 import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
+import {CHART_COLORS} from "../constants"
+
 
 interface LineChartOptions extends ChartOptions {
     plotIdx: number[]
@@ -26,7 +28,8 @@ export class LineChart {
     labels: string[] = []
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
-    chartElem: WeyaElement
+    svgElem: WeyaElement
+    linePlots: LinePlot[] = []
 
     constructor(opt: LineChartOptions) {
         this.series = toPointValues(opt.series)
@@ -38,7 +41,6 @@ export class LineChart {
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
         this.chartHeight = Math.round(this.chartWidth / 2)
-
 
         if (this.plotIdx.length === 0) {
             this.plotIdx = defaultSeriesToPlot(this.series)
@@ -64,7 +66,6 @@ export class LineChart {
     changeScale() {
         let plotSeries = this.plot.map(s => s.series)
 
-
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
         } else {
@@ -72,26 +73,42 @@ export class LineChart {
         }
     }
 
+    updateCursorStep(ev: any) {
+        let cursorStep: number = null
+        let clientX = ev.clientX
+
+        if (clientX) {
+            const clientLeft = this.svgElem.clientLeft
+            let currentX = this.xScale.invert(clientX - clientLeft - this.margin)
+            if (currentX > 0) {
+                cursorStep = currentX
+            }
+        }
+
+        for (let linePlot of this.linePlots) {
+            linePlot.renderCursorCircle(cursorStep)
+        }
+    }
+
     render($: WeyaElementFunction) {
         this.changeScale()
 
         if (this.series.length === 0) {
-            this.chartElem = $('div', '')
+            $('div', '')
         } else {
-            this.chartElem = $('div', $ => {
+            $('div', $ => {
                 $('div', $ => {
-                        $('svg',
+                        this.svgElem = $('svg',
                             {
                                 id: 'chart',
-                                height: 2 * this.margin + this.chartHeight,
-                                width: 2 * this.margin + this.axisSize + this.chartWidth
-                            },
-                            $ => {
+                                height: 2 * this.margin + this.axisSize + this.chartHeight,
+                                width: 2 * this.margin + this.axisSize + this.chartWidth,
+                                on: {mousemove: this.updateCursorStep.bind(this)}
+                            }, $ => {
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
-                                    },
-                                    $ => {
+                                    }, $ => {
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
                                                 new LineFill({
@@ -99,33 +116,34 @@ export class LineChart {
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
                                                     color: getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: i
+                                                    colorIdx: this.filteredPlotIdx[i] % CHART_COLORS.length
                                                 }).render($)
                                             })
                                         }
                                         this.plot.map((s, i) => {
-                                            new LinePlot({
+                                            let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
                                                 color: getColor(this.filteredPlotIdx[i])
-                                            }).render($)
+                                            })
+                                            this.linePlots.push(linePlot)
+                                            linePlot.render($)
                                         })
+                                    })
+                                $('g.bottom-axis',
+                                    {
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                    },
+                                    $ => {
+                                        new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
                                     })
                                 $('g.right-axis',
                                     {
                                         transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
-                                    },
-                                    $ => {
+                                    }, $ => {
                                         new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
                                     })
-                                // $('g.bottom-axis',
-                                //     {
-                                //         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
-                                //     },
-                                //     $ => {
-                                //         new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
-                                //     })
                             })
                     }
                 )
