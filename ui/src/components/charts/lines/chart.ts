@@ -78,8 +78,8 @@ export class LineChart {
         let clientX = ev.clientX
 
         if (clientX) {
-            const clientLeft = this.svgElem.clientLeft
-            let currentX = this.xScale.invert(clientX - clientLeft - this.margin)
+            const info = this.svgElem.getBoundingClientRect()
+            let currentX = this.xScale.invert(clientX - info.left - this.margin)
             if (currentX > 0) {
                 cursorStep = currentX
             }
