@@ -1,5 +1,8 @@
 import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
+import {experimentAnalyses} from '../analyses/analyses'
+import runHeaderAnalysis from '../analyses/experiments/run_header/init'
+
 
 interface buttonOptions {
     onButtonClick?: () => void
@@ -25,12 +28,34 @@ abstract class Button {
 }
 
 export class BackButton extends Button {
+    currentPath: string
+    navigatePath: string
+    text: string = 'Home'
+
     constructor(opt: buttonOptions) {
         super(opt)
+
+        this.currentPath = window.location.pathname
+
+        if (this.currentPath.includes('run')) {
+            this.text = 'Runs'
+            this.navigatePath = 'runs'
+        } else if (this.currentPath.includes(runHeaderAnalysis.route)) {
+            this.text = 'Run'
+            this.navigatePath = this.currentPath.replace(runHeaderAnalysis.route, 'run')
+        } else {
+            for (let analysis of experimentAnalyses) {
+                if (this.currentPath.includes(analysis.route)) {
+                    this.text = 'Run'
+                    this.navigatePath = this.currentPath.replace(analysis.route, 'run')
+                    break
+                }
+            }
+        }
     }
 
     onClick = () => {
-        ROUTER.back()
+        ROUTER.navigate(this.navigatePath)
     }
 
     render($: WeyaElementFunction) {
@@ -38,7 +63,7 @@ export class BackButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-chevron-left', '')
-                $('span.ml-1', 'Run')
+                $('span.ml-1', this.text)
             })
     }
 }

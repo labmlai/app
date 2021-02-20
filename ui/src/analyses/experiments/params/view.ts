@@ -221,7 +221,7 @@ class ParametersView extends ScreenView {
 
 export class ParametersHandler {
     constructor() {
-        ROUTER.route('parameters/:uuid', [this.handleParameters])
+        ROUTER.route('params/:uuid', [this.handleParameters])
     }
 
     handleParameters = (uuid: string) => {

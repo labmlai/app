@@ -220,7 +220,7 @@ class GradientsView extends ScreenView {
 
 export class GradientsHandler {
     constructor() {
-        ROUTER.route('gradients/:uuid', [this.handleGradients])
+        ROUTER.route('grads/:uuid', [this.handleGradients])
     }
 
     handleGradients = (uuid: string) => {

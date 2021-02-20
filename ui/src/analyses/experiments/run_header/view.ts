@@ -172,7 +172,7 @@ class RunHeaderView extends ScreenView {
 
 export class RunHeaderHandler {
     constructor() {
-        ROUTER.route('run_header/:uuid', [this.handleRunHeader])
+        ROUTER.route('header/:uuid', [this.handleRunHeader])
     }
 
     handleRunHeader = (uuid: string) => {

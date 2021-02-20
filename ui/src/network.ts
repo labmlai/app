@@ -1,3 +1,4 @@
+import {ROUTER} from './app'
 import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
 import {Auth0User, User, UserModel} from './models/user'
 
@@ -22,7 +23,13 @@ class Network {
 
             xhr.onload = () => {
                 if (xhr.status >= 400) {
-                    reject(xhr.response)
+                    if (xhr.status === 403) {
+                        // should not call here
+                    } else if (xhr.status === 400) {
+                        ROUTER.navigate(`/404`)
+                    } else {
+                        reject(xhr.response)
+                    }
                 } else {
                     resolve(xhr.response.data)
                 }

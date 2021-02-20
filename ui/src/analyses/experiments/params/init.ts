@@ -6,6 +6,7 @@ import {Analysis} from "../../types"
 let parametersAnalysis: Analysis = {
     card: ParametersCard,
     viewHandler: ParametersHandler,
+    route: 'params'
 }
 
 export default parametersAnalysis

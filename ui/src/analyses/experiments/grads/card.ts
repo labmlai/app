@@ -68,6 +68,6 @@ export class GradientsCard extends Card {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/gradients/${this.uuid}`)
+        ROUTER.navigate(`/grads/${this.uuid}`)
     }
 }

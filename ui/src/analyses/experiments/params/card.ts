@@ -68,6 +68,6 @@ export class ParametersCard extends Card {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/parameters/${this.uuid}`)
+        ROUTER.navigate(`/params/${this.uuid}`)
     }
 }

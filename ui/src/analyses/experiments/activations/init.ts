@@ -6,6 +6,7 @@ import {Analysis} from "../../types"
 let activationsAnalysis: Analysis = {
     card: ActivationsCard,
     viewHandler: ActivationsHandler,
+    route: 'outputs'
 }
 
 export default activationsAnalysis

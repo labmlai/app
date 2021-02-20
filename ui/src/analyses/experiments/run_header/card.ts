@@ -92,6 +92,6 @@ export class RunHeaderCard {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/run_header/${this.uuid}`)
+        ROUTER.navigate(`/header/${this.uuid}`)
     }
 }

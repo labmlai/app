@@ -6,6 +6,7 @@ import {Analysis} from "../../types"
 let stdOutAnalysis: Analysis = {
     card: StdOutCard,
     viewHandler: StdOutHandler,
+    route: 'stdout'
 }
 
 export default stdOutAnalysis

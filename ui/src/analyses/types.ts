@@ -6,4 +6,5 @@ export interface CardOptions {
 export interface Analysis {
     card: any
     viewHandler: any
+    route: string
 }
