@@ -1,4 +1,3 @@
-import {Run} from '../models/run'
 import {Status} from "../models/status"
 import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
@@ -6,25 +5,24 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import {BackButton, RefreshButton} from "../components/buttons"
-import {AlertMessage} from "../components/alert"
-import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {experimentAnalyses} from "../analyses/analyses"
 import Card from "../analyses/card"
-import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
-import Timeout = NodeJS.Timeout
+import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
+import {Computer} from '../models/computer';
+import {ComputerHeaderCard} from '../analyses/computers/computer_header/card';
+import Timeout = NodeJS.Timeout;
 
 
-class RunView extends ScreenView {
+class ComputerView extends ScreenView {
     uuid: string
-    run: Run
-    runCache: RunCache
+    computer: Computer
+    computerCache: ComputerCache
     status: Status
-    statusCache: RunStatusCache
+    statusCache: ComputerStatusCache
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
     elem: WeyaElement
-    runHeaderCard: RunHeaderCard
+    computerHeaderCard: ComputerHeaderCard
     runView: HTMLDivElement
     autoRefresh: Timeout
     loader: Loader
@@ -35,8 +33,8 @@ class RunView extends ScreenView {
     constructor(uuid: string) {
         super()
         this.uuid = uuid
-        this.runCache = CACHE.getRun(this.uuid)
-        this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.computerCache = CACHE.getComputer(this.uuid)
+        this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
         this.loader = new Loader()
@@ -53,9 +51,9 @@ class RunView extends ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.run.page',
+        this.elem = <HTMLElement>$('div', '.run.page',
             {style: {width: `${this.actualWidth}px`}}, $ => {
-                this.runView = <HTMLDivElement>$('div', '')
+                this.runView = $('div', '')
                 this.loader.render($)
             })
 
@@ -71,7 +69,7 @@ class RunView extends ScreenView {
     }
 
     async loadData() {
-        this.run = await this.runCache.get()
+        this.computer = await this.computerCache.get()
         this.status = await this.statusCache.get()
         this.isUserLogged = await this.isUserLoggedCache.get()
 
@@ -103,44 +101,36 @@ class RunView extends ScreenView {
         }
 
         this.lastUpdated = oldest
-        this.runHeaderCard.refresh(this.lastUpdated).then()
+        this.computerHeaderCard.refresh(this.lastUpdated).then()
     }
 
     private async renderRun() {
         this.runView.innerHTML = ''
 
         $(this.runView, $ => {
-            if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
-                new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
-            }
-            $('div.flex-container', $ => {
-                new BackButton({text: 'Runs'}).render($)
+            $('div', '.flex-container', $ => {
+                new BackButton({text: 'Computers'}).render($)
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
                     this.refreshButton.render($)
                 }
             })
-            this.runHeaderCard = new RunHeaderCard({
+            this.computerHeaderCard = new ComputerHeaderCard({
                 uuid: this.uuid,
                 width: this.actualWidth,
                 lastUpdated: this.lastUpdated
             })
-            this.runHeaderCard.render($)
-            experimentAnalyses.map((analysis, i) => {
-                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
-                this.cards.push(card)
-                card.render($)
-            })
+            this.computerHeaderCard.render($)
         })
     }
 }
 
-export class RunHandler {
+export class ComputerHandler {
     constructor() {
-        ROUTER.route('run/:uuid', [this.handleRun])
+        ROUTER.route('session/:uuid', [this.handleSession])
     }
 
-    handleRun = (uuid: string) => {
-        SCREEN.setView(new RunView(uuid))
+    handleSession = (uuid: string) => {
+        SCREEN.setView(new ComputerView(uuid))
     }
 }

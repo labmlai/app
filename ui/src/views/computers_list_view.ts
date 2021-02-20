@@ -121,7 +121,7 @@ class ComputersListView extends ScreenView {
     }
 
     onItemClicked = (elem: ComputersListItemView) => {
-        let uuid = elem.item.computer_uuid
+        let uuid = elem.item.session_uuid
         if (!this.isEditMode) {
             ROUTER.navigate(`/session/${uuid}`)
             return

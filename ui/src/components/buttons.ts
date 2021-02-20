@@ -27,14 +27,19 @@ abstract class Button {
 
 }
 
+interface BackButtonOptions extends buttonOptions {
+    text: string
+}
+
 export class BackButton extends Button {
     currentPath: string
     navigatePath: string
     text: string = 'Home'
 
-    constructor(opt: buttonOptions) {
+    constructor(opt: BackButtonOptions) {
         super(opt)
 
+        this.text = opt.text
         this.currentPath = window.location.pathname
 
         if (this.currentPath.includes('run')) {
@@ -63,7 +68,7 @@ export class BackButton extends Button {
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-chevron-left', '')
-                $('span.ml-1', this.text)
+                $('span.ms-1', 'Run')
             })
     }
 }

@@ -46,3 +46,5 @@ labml
 
 # labml
 /logs/
+/static
+ui/src/env.ts

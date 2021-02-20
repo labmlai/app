@@ -4,7 +4,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {BackButton, SaveButton, CancelButton, EditButton} from "../../../components/buttons"
+import {BackButton, CancelButton, EditButton, SaveButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
@@ -65,7 +65,7 @@ class RunHeaderView extends ScreenView {
 
         $(this.runHeaderView, $ => {
             $('div.flex-container', $ => {
-                new BackButton({}).render($)
+                new BackButton({text: 'Run'}).render($)
                 if (this.isEditMode) {
                     new CancelButton({onButtonClick: this.onToggleEdit}).render($)
                     new SaveButton({onButtonClick: this.updateRun}).render($)

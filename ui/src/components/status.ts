@@ -3,12 +3,12 @@ import {RunStatusModel} from "../models/status"
 
 export interface StatusOptions {
     status: RunStatusModel
-    type?: string
+    type?: 'run' | 'computer'
 }
 
 export class StatusView {
     status: RunStatusModel
-    type: string
+    type: 'run' | 'computer'
 
     constructor(opt: StatusOptions) {
         this.status = opt.status

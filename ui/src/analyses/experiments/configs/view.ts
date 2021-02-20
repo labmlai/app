@@ -95,7 +95,7 @@ class ConfigsView extends ScreenView {
 
         $(this.configsView, $ => {
             $('div.flex-container', $ => {
-                new BackButton({}).render($)
+                new BackButton({text: 'Run'}).render($)
                 if (this.status && this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
                     this.refreshButton.render($)
@@ -113,7 +113,7 @@ class ConfigsView extends ScreenView {
         this.renderConfigsView()
     }
 
-    renderConfigsView(){
+    renderConfigsView() {
         this.configsContainer.innerHTML = ''
         $(this.configsContainer, $ => {
             new Configs({configs: this.run.configs, width: this.actualWidth, isHyperParamOnly: false}).render($)

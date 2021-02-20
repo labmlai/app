@@ -5,6 +5,8 @@ import {IsUserLogged, User} from "../models/user"
 import {RunListItemModel, RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
 import {ComputerListItemModel, ComputersList} from '../models/computer_list'
+import {Computer} from '../models/computer';
+
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -190,6 +192,22 @@ export class RunCache extends CacheObject<Run> {
     }
 }
 
+export class ComputerCache extends CacheObject<Computer> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<Computer> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputer(this.uuid)
+            return new Computer(res)
+        })
+    }
+}
+
 export class RunStatusCache extends CacheObject<Status> {
     private readonly uuid: string
 
@@ -201,6 +219,22 @@ export class RunStatusCache extends CacheObject<Status> {
     async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getRunStatus(this.uuid)
+            return new Status(res)
+        })
+    }
+}
+
+export class ComputerStatusCache extends CacheObject<Status> {
+    private readonly uuid: string
+
+    constructor(uuid: string) {
+        super()
+        this.uuid = uuid
+    }
+
+    async load(): Promise<Status> {
+        return this.broadcastPromise.create(async () => {
+            let res = await NETWORK.getComputerStatus(this.uuid)
             return new Status(res)
         })
     }
@@ -286,7 +320,9 @@ export class SeriesPreferenceCache extends CacheObject<AnalysisPreference> {
 
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
+    private readonly computers: { [uuid: string]: ComputerCache }
     private readonly runStatuses: { [uuid: string]: RunStatusCache }
+    private readonly computerStatuses: { [uuid: string]: ComputerStatusCache }
 
     private user: UserCache | null
     private isUserLogged: IsUserLoggedCache | null
@@ -295,7 +331,13 @@ class Cache {
 
     constructor() {
         this.runs = {}
+        this.computers = {}
         this.runStatuses = {}
+        this.computerStatuses = {}
+        this.user = null
+        this.runsList = null
+        this.computersList = null
+        this.isUserLogged = null
     }
 
     getRun(uuid: string) {
@@ -304,6 +346,14 @@ class Cache {
         }
 
         return this.runs[uuid]
+    }
+
+    getComputer(uuid: string) {
+        if (this.computers[uuid] == null) {
+            this.computers[uuid] = new ComputerCache(uuid)
+        }
+
+        return this.computers[uuid]
     }
 
     getRunsList() {
@@ -328,6 +378,14 @@ class Cache {
         }
 
         return this.runStatuses[uuid]
+    }
+
+    getComputerStatus(uuid: string) {
+        if (this.computerStatuses[uuid] == null) {
+            this.computerStatuses[uuid] = new ComputerStatusCache(uuid)
+        }
+
+        return this.computerStatuses[uuid]
     }
 
     getUser() {

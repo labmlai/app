@@ -8,10 +8,12 @@ import {SettingsHandler} from './views/settings_view'
 
 import {experimentAnalyses} from "./analyses/analyses"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
+import {ComputerHandler} from './views/computer_view';
 
 new LoginHandler()
 
 new RunHandler()
+new ComputerHandler()
 new PageNotFoundHandler()
 new RunsListHandler()
 new ComputersListHandler()
