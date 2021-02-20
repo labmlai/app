@@ -481,6 +481,10 @@ span.fas {
 
 /* Charts */
 
+.selected-step {
+  font-size: .7rem;
+}
+
 svg#chart {
   g.bottom-axis, g.right-axis {
     color: #7f8c8d;

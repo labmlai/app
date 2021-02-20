@@ -1,5 +1,5 @@
 import d3 from "../../../d3"
-import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {getScale, toPointValues, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
@@ -7,6 +7,7 @@ import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
 import {CHART_COLORS} from "../constants"
+import {formatStep} from "../../../utils/value"
 
 
 interface LineChartOptions extends ChartOptions {
@@ -29,6 +30,7 @@ export class LineChart {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     svgElem: WeyaElement
+    stepContainer: WeyaElement
     linePlots: LinePlot[] = []
 
     constructor(opt: LineChartOptions) {
@@ -88,6 +90,14 @@ export class LineChart {
         for (let linePlot of this.linePlots) {
             linePlot.renderCursorCircle(cursorStep)
         }
+        this.renderStep(cursorStep)
+    }
+
+    renderStep(cursorStep: number) {
+        this.stepContainer.innerHTML = ''
+        $(this.stepContainer, $ => {
+            $('h6.text-center.selected-step', `Step : ${formatStep(cursorStep)}`)
+        })
     }
 
     render($: WeyaElementFunction) {
@@ -98,6 +108,7 @@ export class LineChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
+                        this.stepContainer = $('div')
                         this.svgElem = $('svg',
                             {
                                 id: 'chart',

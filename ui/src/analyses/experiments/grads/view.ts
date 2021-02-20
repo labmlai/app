@@ -125,12 +125,12 @@ class GradientsView extends ScreenView {
                 width: this.actualWidth
             })
             this.runHeaderCard.render($).then()
-            $('h2.header.text-center', 'Gradients')
             new ToggleButton({
                 onButtonClick: this.onChangeScale,
                 text: 'Log',
                 isToggled: this.currentChart > 0
             }).render($)
+            $('h2.header.text-center', 'Gradients')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')
