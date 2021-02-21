@@ -1,11 +1,11 @@
 import {WeyaElementFunction, Weya, WeyaElement,} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
-import {AnalysisDataModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import Card from "../../card"
 import {CardOptions} from "../../types"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
@@ -15,7 +15,7 @@ import {Loader} from "../../../components/loader"
 export class MetricsCard extends Card {
     uuid: string
     width: number
-    analysisData: AnalysisDataModel
+    series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
     elem: WeyaElement
@@ -46,7 +46,7 @@ export class MetricsCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.analysisData = await this.analysisCache.get()
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.preferenceData = await this.preferenceCache.get()
         this.loader.remove()
 
@@ -61,7 +61,7 @@ export class MetricsCard extends Card {
             this.sparkLinesContainer = $('div', '')
         })
 
-        if (this.analysisData.series.length > 0) {
+        if (this.series.length > 0) {
             this.renderLineChart()
             this.renderSparkLines()
         } else {
@@ -73,7 +73,7 @@ export class MetricsCard extends Card {
         this.lineChartContainer.innerHTML = ''
         Weya(this.lineChartContainer, $ => {
             new LineChart({
-                series: this.analysisData.series,
+                series: this.series,
                 width: this.width,
                 plotIdx: this.plotIdx,
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
@@ -86,7 +86,7 @@ export class MetricsCard extends Card {
         this.sparkLinesContainer.innerHTML = ''
         Weya(this.sparkLinesContainer, $ => {
             new SparkLines({
-                series: this.analysisData.series,
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width
             }).render($)
@@ -94,9 +94,9 @@ export class MetricsCard extends Card {
     }
 
     async refresh() {
-        this.analysisData = await this.analysisCache.get(true)
+         this.series = toPointValues((await this.analysisCache.get()).series)
 
-        if (this.analysisData.series.length > 0) {
+        if (this.series.length > 0) {
             this.renderLineChart()
             this.renderSparkLines()
             this.elem.classList.remove('hide')

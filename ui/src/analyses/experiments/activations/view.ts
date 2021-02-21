@@ -2,14 +2,14 @@ import {ROUTER, SCREEN} from "../../../app"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import CACHE, {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {AnalysisDataModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Loader} from "../../../components/loader"
 import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import activationsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import Timeout = NodeJS.Timeout
@@ -22,18 +22,19 @@ class ActivationsView extends ScreenView {
     plotIdx: number[] = []
     currentChart: number
     statusCache: RunStatusCache
-    analysisData: AnalysisDataModel
+    series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     loader: Loader
-    refreshButton: RefreshButton
-    runHeaderCard: RunHeaderCard
-    lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
+    refreshButton: RefreshButton
+    runHeaderCard: RunHeaderCard
+    sparkLines: SparkLines
+    lineChartContainer: WeyaElement
+    sparkLinesContainer: WeyaElement
     metricsView: HTMLDivElement
 
     constructor(uuid: string) {
@@ -83,7 +84,7 @@ class ActivationsView extends ScreenView {
     }
 
     async loadData() {
-        this.analysisData = await this.analysisCache.get()
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
     }
@@ -95,7 +96,7 @@ class ActivationsView extends ScreenView {
     }
 
     async onRefresh() {
-        this.analysisData = await this.analysisCache.get(true)
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.status = await this.statusCache.get()
 
         if (!this.status.isRunning) {
@@ -103,8 +104,8 @@ class ActivationsView extends ScreenView {
             clearInterval(this.autoRefresh)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
         this.runHeaderCard.refresh().then()
     }
 
@@ -137,18 +138,19 @@ class ActivationsView extends ScreenView {
             })
         })
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new LineChart({
-                series: this.analysisData.series,
+                series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: getChartType(this.currentChart)
+                chartType: getChartType(this.currentChart),
+                onCursorMove: [this.sparkLines.changeCursorValues]
             }).render($)
         })
     }
@@ -156,12 +158,13 @@ class ActivationsView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            new SparkLines({
-                series: this.analysisData.series,
+            this.sparkLines = new SparkLines({
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart
-            }).render($)
+            })
+            this.sparkLines.render($)
         })
     }
 
@@ -178,8 +181,8 @@ class ActivationsView extends ScreenView {
             this.plotIdx = new Array<number>(...this.plotIdx)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     loadPreferences() {
@@ -188,9 +191,9 @@ class ActivationsView extends ScreenView {
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
-        } else if (this.analysisData.series) {
+        } else if (this.series) {
             let res: number[] = []
-            for (let i = 0; i < this.analysisData.series.length; i++) {
+            for (let i = 0; i < this.series.length; i++) {
                 res.push(i)
             }
             this.plotIdx = res

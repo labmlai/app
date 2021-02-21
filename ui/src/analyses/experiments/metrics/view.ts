@@ -1,5 +1,5 @@
 import {ScreenView} from "../../../screen"
-import {AnalysisDataModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import CACHE, {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -12,7 +12,7 @@ import metricsCache from "./cache"
 import Timeout = NodeJS.Timeout
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 
 
 class MetricsView extends ScreenView {
@@ -22,13 +22,14 @@ class MetricsView extends ScreenView {
     plotIdx: number[] = []
     currentChart: number
     statusCache: RunStatusCache
-    analysisData: AnalysisDataModel
+    series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
     runHeaderCard: RunHeaderCard
+    sparkLines: SparkLines
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
@@ -83,7 +84,7 @@ class MetricsView extends ScreenView {
     }
 
     async loadData() {
-        this.analysisData = await this.analysisCache.get()
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
     }
@@ -95,7 +96,7 @@ class MetricsView extends ScreenView {
     }
 
     async onRefresh() {
-        this.analysisData = await this.analysisCache.get(true)
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.status = await this.statusCache.get()
 
         if (!this.status.isRunning) {
@@ -103,8 +104,8 @@ class MetricsView extends ScreenView {
             clearInterval(this.autoRefresh)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
         this.runHeaderCard.refresh().then()
     }
 
@@ -137,18 +138,19 @@ class MetricsView extends ScreenView {
             })
         })
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new LineChart({
-                series: this.analysisData.series,
+                series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: getChartType(this.currentChart)
+                chartType: getChartType(this.currentChart),
+                onCursorMove: [this.sparkLines.changeCursorValues]
             }).render($)
         })
     }
@@ -156,12 +158,13 @@ class MetricsView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            new SparkLines({
-                series: this.analysisData.series,
+            this.sparkLines =new SparkLines({
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart
-            }).render($)
+            })
+            this.sparkLines.render($)
         })
     }
 
@@ -178,8 +181,8 @@ class MetricsView extends ScreenView {
             this.plotIdx = new Array<number>(...this.plotIdx)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     loadPreferences() {
@@ -188,9 +191,9 @@ class MetricsView extends ScreenView {
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
-        } else if (this.analysisData.series) {
+        } else if (this.series) {
             let res: number[] = []
-            for (let i = 0; i < this.analysisData.series.length; i++) {
+            for (let i = 0; i < this.series.length; i++) {
                 res.push(i)
             }
             this.plotIdx = res
