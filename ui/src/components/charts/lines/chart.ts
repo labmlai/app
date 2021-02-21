@@ -6,7 +6,6 @@ import {getScale, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
-import ChartGradients from "../chart_gradients"
 import {CHART_COLORS} from "../constants"
 import {formatStep} from "../../../utils/value"
 
@@ -16,6 +15,7 @@ interface LineChartOptions extends ChartOptions {
     onSelect?: (i: number) => void
     chartType: string
     onCursorMove?: ((cursorStep?: number | null) => void)[]
+    isCursorMoveOpt?: boolean
 }
 
 export class LineChart {
@@ -35,12 +35,14 @@ export class LineChart {
     stepContainer: WeyaElement
     linePlots: LinePlot[] = []
     onCursorMove?: ((cursorStep?: number | null) => void)[]
+    isCursorMoveOpt?: boolean
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
         this.chartType = opt.chartType
         this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
+        this.isCursorMoveOpt = opt.isCursorMoveOpt
 
         this.axisSize = 30
         let windowWidth = opt.width
@@ -80,24 +82,26 @@ export class LineChart {
     }
 
     updateCursorStep(ev: any) {
-        let cursorStep: number = null
-        let clientX = ev.clientX
+        if (this.isCursorMoveOpt) {
+            let cursorStep: number = null
+            let clientX = ev.clientX
 
-        if (clientX) {
-            const info = this.svgElem.getBoundingClientRect()
-            let currentX = this.xScale.invert(clientX - info.left - this.margin)
-            if (currentX > 0) {
-                cursorStep = currentX
+            if (clientX) {
+                const info = this.svgElem.getBoundingClientRect()
+                let currentX = this.xScale.invert(clientX - info.left - this.margin)
+                if (currentX > 0) {
+                    cursorStep = currentX
+                }
             }
-        }
 
-        this.renderStep(cursorStep)
-        for (let linePlot of this.linePlots) {
-            linePlot.renderCursorCircle(cursorStep)
-        }
+            this.renderStep(cursorStep)
+            for (let linePlot of this.linePlots) {
+                linePlot.renderCursorCircle(cursorStep)
+            }
 
-        for (let func of this.onCursorMove) {
-            func(cursorStep)
+            for (let func of this.onCursorMove) {
+                func(cursorStep)
+            }
         }
     }
 

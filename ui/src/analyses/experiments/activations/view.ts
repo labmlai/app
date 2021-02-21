@@ -150,7 +150,8 @@ class ActivationsView extends ScreenView {
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
                 chartType: getChartType(this.currentChart),
-                onCursorMove: [this.sparkLines.changeCursorValues]
+                onCursorMove: [this.sparkLines.changeCursorValues],
+                isCursorMoveOpt : true
             }).render($)
         })
     }
