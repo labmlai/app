@@ -69,7 +69,7 @@ export class LoggerCard extends Card {
         this.outputContainer.innerHTML = ''
         Weya(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.logger))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
         })
     }
 
