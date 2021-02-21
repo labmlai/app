@@ -6,6 +6,7 @@ import {getScale, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
+import ChartGradients from "../chart_gradients"
 import {CHART_COLORS} from "../constants"
 import {formatStep} from "../../../utils/value"
 

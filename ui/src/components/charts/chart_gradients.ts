@@ -1,9 +1,8 @@
 import {CHART_COLORS} from "./constants"
 import {WeyaElementFunction} from "../../../../lib/weya/weya"
 
-export class ChartGradients {
+export default class ChartGradients {
     constructor() {
-
     }
 
     render($: WeyaElementFunction) {
