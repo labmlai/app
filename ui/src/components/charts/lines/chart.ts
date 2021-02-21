@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {getScale, toPointValues, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
+import {getScale, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
@@ -14,6 +14,7 @@ interface LineChartOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
     chartType: string
+    onCursorMove?: ((cursorStep?: number | null) => void)[]
 }
 
 export class LineChart {
@@ -32,11 +33,13 @@ export class LineChart {
     svgElem: WeyaElement
     stepContainer: WeyaElement
     linePlots: LinePlot[] = []
+    onCursorMove?: ((cursorStep?: number | null) => void)[]
 
     constructor(opt: LineChartOptions) {
-        this.series = toPointValues(opt.series)
+        this.series = opt.series
         this.chartType = opt.chartType
         this.plotIdx = opt.plotIdx
+        this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
 
         this.axisSize = 30
         let windowWidth = opt.width
@@ -87,10 +90,14 @@ export class LineChart {
             }
         }
 
+        this.renderStep(cursorStep)
         for (let linePlot of this.linePlots) {
             linePlot.renderCursorCircle(cursorStep)
         }
-        this.renderStep(cursorStep)
+
+        for (let func of this.onCursorMove) {
+            func(cursorStep)
+        }
     }
 
     renderStep(cursorStep: number) {
