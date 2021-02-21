@@ -6,6 +6,7 @@ import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {getTimeDiff, formatTime} from "../../../utils/time"
+import {Loader} from "../../../components/loader"
 
 
 interface RunHeaderOptions extends CardOptions {
@@ -22,6 +23,7 @@ export class RunHeaderCard {
     lastRecordedContainer: WeyaElement
     lastUpdatedContainer: WeyaElement
     statusViewContainer: WeyaElement
+    loader: Loader
     statusCache: RunStatusCache
 
     constructor(opt: RunHeaderOptions) {
@@ -30,13 +32,17 @@ export class RunHeaderCard {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.lastUpdated = opt.lastUpdated ? opt.lastUpdated : this.statusCache.lastUpdated
+
+        this.loader = new Loader()
     }
 
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
 
+        this.elem.appendChild(this.loader.render($))
         this.status = await this.statusCache.get()
         this.run = await this.runCache.get()
+        this.loader.remove()
 
         Weya(this.elem, $ => {
             $('div', $ => {

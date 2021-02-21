@@ -1,5 +1,5 @@
 import {ROUTER} from './app'
-import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
+import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, API_BASE_URL} from './env'
 import {Auth0User, User, UserModel} from './models/user'
 
 class Network {
@@ -166,5 +166,5 @@ class Network {
     }
 }
 
-const NETWORK = new Network(APP_BASE_URL)
+const NETWORK = new Network(API_BASE_URL)
 export default NETWORK
