@@ -94,7 +94,7 @@ class ConfigsView extends ScreenView {
         this.configsView.innerHTML = ''
 
         $(this.configsView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 if (this.status && this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})

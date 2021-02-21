@@ -113,7 +113,7 @@ class GradientsView extends ScreenView {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
                 if (this.status && this.status.isRunning) {

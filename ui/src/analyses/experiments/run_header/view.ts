@@ -67,7 +67,7 @@ class RunHeaderView extends ScreenView {
         this.runHeaderView.innerHTML = ''
 
         $(this.runHeaderView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 if (this.isEditMode) {
                     new CancelButton({onButtonClick: this.onToggleEdit}).render($)
