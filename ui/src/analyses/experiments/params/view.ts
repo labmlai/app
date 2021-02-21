@@ -93,6 +93,7 @@ class ParametersView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
+        this.runHeaderCard.clearCounter()
     }
 
     async onRefresh() {

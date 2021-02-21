@@ -7,6 +7,7 @@ import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {getTimeDiff, formatTime} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
+import Timeout = NodeJS.Timeout
 
 
 interface RunHeaderOptions extends CardOptions {
@@ -23,6 +24,7 @@ export class RunHeaderCard {
     lastRecordedContainer: WeyaElement
     lastUpdatedContainer: WeyaElement
     statusViewContainer: WeyaElement
+    autoRefresh: Timeout
     loader: Loader
     statusCache: RunStatusCache
 
@@ -44,6 +46,10 @@ export class RunHeaderCard {
         this.run = await this.runCache.get()
         this.loader.remove()
 
+        if (this.status.isRunning) {
+            this.autoRefresh = setInterval(this.setCounter.bind(this), 1000)
+        }
+
         Weya(this.elem, $ => {
             $('div', $ => {
                 this.lastRecordedContainer = $('div')
@@ -58,7 +64,6 @@ export class RunHeaderCard {
 
         this.renderStatusView()
         this.renderLastRecorded()
-        this.renderLastUpdated()
     }
 
     renderLastRecorded() {
@@ -87,6 +92,17 @@ export class RunHeaderCard {
         })
     }
 
+    clearCounter() {
+        if (this.autoRefresh !== undefined) {
+            clearInterval(this.autoRefresh)
+        }
+    }
+
+    setCounter() {
+        this.renderLastRecorded()
+        this.renderLastUpdated()
+    }
+
     async refresh(lastUpdated?: number) {
         this.status = await this.statusCache.get()
 
@@ -95,6 +111,10 @@ export class RunHeaderCard {
         this.renderStatusView()
         this.renderLastRecorded()
         this.renderLastUpdated()
+
+        if(!this.status.isRunning){
+            this.clearCounter()
+        }
     }
 
     onClick = () => {
