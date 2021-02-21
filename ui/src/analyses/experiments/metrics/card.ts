@@ -94,7 +94,7 @@ export class MetricsCard extends Card {
     }
 
     async refresh() {
-         this.series = toPointValues((await this.analysisCache.get()).series)
+         this.series = toPointValues((await this.analysisCache.get(true)).series)
 
         if (this.series.length > 0) {
             this.renderLineChart()

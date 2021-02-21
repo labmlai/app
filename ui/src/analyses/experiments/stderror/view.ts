@@ -80,7 +80,8 @@ class StdErrorView extends ScreenView {
     }
 
     async onRefresh() {
-        await this.loadData()
+        this.run = await this.runCache.get(true)
+        this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()

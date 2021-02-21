@@ -96,8 +96,8 @@ class GradientsView extends ScreenView {
     }
 
     async onRefresh() {
-        this.series = toPointValues((await this.analysisCache.get()).series)
-        this.status = await this.statusCache.get()
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()
