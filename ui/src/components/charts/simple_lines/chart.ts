@@ -7,6 +7,8 @@ import {SimpleLineFill, SimpleLinePlot} from "./plot"
 import {RightAxis} from "../axis"
 import {getColor} from "../constants"
 import {Labels} from "../labels"
+import ChartGradients from "../chart_gradients"
+
 
 export class SimpleLinesChart {
     series: SeriesModel[]
@@ -51,6 +53,7 @@ export class SimpleLinesChart {
                         width: 2 * this.margin + this.axisSize + this.chartWidth
                     },
                     $ => {
+                        new ChartGradients().render($)
                         $('g',
                             {
                                 transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
