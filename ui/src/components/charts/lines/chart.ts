@@ -9,6 +9,7 @@ import {RightAxis, BottomAxis} from "../axis"
 import {CHART_COLORS} from "../constants"
 import {formatStep} from "../../../utils/value"
 import isMobile from "../../../utils/mobile"
+import ChartGradients from "../chart_gradients"
 
 
 interface LineChartOptions extends ChartOptions {
@@ -131,6 +132,7 @@ export class LineChart {
                                     touchmove: this.updateCursorStep.bind(this)
                                 }
                             }, $ => {
+                                new ChartGradients().render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`

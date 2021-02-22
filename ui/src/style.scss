@@ -510,9 +510,9 @@ svg#chart {
   path.smoothed-line {
     stroke-width: 3;
 
-    //&.dropshadow {
-    //  filter: url(#dropshadow);
-    //}
+    &.dropshadow {
+      filter: url(#dropshadow);
+    }
   }
 
   path.unsmoothed-line {
