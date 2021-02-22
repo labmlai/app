@@ -129,7 +129,8 @@ export class LineChart {
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                                 on: {
                                     mousemove: this.updateCursorStep.bind(this),
-                                    touchmove: this.updateCursorStep.bind(this)
+                                    touchmove: this.updateCursorStep.bind(this),
+                                    touchstart: this.updateCursorStep.bind(this)
                                 }
                             }, $ => {
                                 new ChartGradients().render($)
