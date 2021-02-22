@@ -8,6 +8,7 @@ import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
 import {CHART_COLORS} from "../constants"
 import {formatStep} from "../../../utils/value"
+import isMobile from "../../../utils/mobile"
 
 
 interface LineChartOptions extends ChartOptions {
@@ -84,7 +85,7 @@ export class LineChart {
     updateCursorStep(ev: any) {
         if (this.isCursorMoveOpt) {
             let cursorStep: number = null
-            let clientX = ev.clientX
+            let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
 
             if (clientX) {
                 const info = this.svgElem.getBoundingClientRect()
@@ -98,7 +99,6 @@ export class LineChart {
             for (let linePlot of this.linePlots) {
                 linePlot.renderCursorCircle(cursorStep)
             }
-
             for (let func of this.onCursorMove) {
                 func(cursorStep)
             }
@@ -126,7 +126,10 @@ export class LineChart {
                                 id: 'chart',
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
-                                on: {mousemove: this.updateCursorStep.bind(this)}
+                                on: {
+                                    mousemove: this.updateCursorStep.bind(this),
+                                    touchmove: this.updateCursorStep.bind(this)
+                                }
                             }, $ => {
                                 $('g',
                                     {
