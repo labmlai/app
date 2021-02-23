@@ -10,20 +10,20 @@ export interface ComputerListItemOptions {
 
 export class ComputersListItemView {
     item: ComputerListItemModel
-    elem: HTMLDivElement
-    onClick: () => void
+    elem: HTMLAnchorElement
+    onClick: (evt: Event) => void
 
     constructor(opt: ComputerListItemOptions) {
         this.item = opt.item
-        this.onClick = () => {
+        this.onClick = (e: Event) => {
+            e.preventDefault()
             opt.onClick(this)
         }
     }
 
-
     render($: WeyaElementFunction) {
-        this.elem = $('div', '.list-item.list-group-item.list-group-item-action',
-            {on: {click: this.onClick}},
+        this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
+            {href: `/session/${this.item.session_uuid}`, on: {click: this.onClick}},
             $ => {
                 $('div', $ => {
                     new StatusView({status: this.item.run_status, type: 'computer'}).render($)

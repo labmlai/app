@@ -14,7 +14,8 @@ abstract class Button {
     isDisabled: boolean
     elem?: WeyaElement
 
-    onClick = () => {
+    onClick = (e: Event) => {
+        e.preventDefault()
         if (!this.isDisabled) {
             this.onButtonClick()
         }
@@ -189,25 +190,44 @@ export class MenuButton extends Button {
 interface NavButtonOptions extends buttonOptions {
     text: string
     icon: string
+    link?: string
+    target?: string
 }
 
 export class NavButton extends Button {
     text: string
     icon: string
+    link?: string
+    target?: string
 
     constructor(opt: NavButtonOptions) {
         super(opt)
         this.icon = opt.icon
         this.text = opt.text
+        this.link = opt.link
+        this.target = opt.target
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('nav.nav-link.tab',
-            {on: {click: this.onClick}},
+        this.elem = $('a', '.nav-link.tab',
+            {href: this.link, target: this.target, on: {click: this.onClick}},
             $ => {
                 $('span', this.icon, '')
                 $('span', '', this.text)
             })
+    }
+
+    onClick = (e: Event) => {
+        e.preventDefault()
+        if (this.link) {
+            if (this.target === '_blank') {
+                window.open(this.link)
+                return
+            }
+            ROUTER.navigate(this.link)
+            return
+        }
+        this.onButtonClick()
     }
 }
 

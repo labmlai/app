@@ -15,7 +15,7 @@ export interface HamburgerMenuOptions {
 
 export class HamburgerMenuView {
     elem: HTMLDivElement
-    navLinksContainer: HTMLDivElement
+    navLinksContainer: HTMLElement
     overlayElement: HTMLDivElement
     buttonContainer: HTMLDivElement
     loader: Loader
@@ -39,7 +39,7 @@ export class HamburgerMenuView {
     render($: WeyaElementFunction) {
         this.elem = $('div', $ => {
             $('div', '.nav-container', $ => {
-                this.navLinksContainer = $('div', '.nav-links', $ => {
+                this.navLinksContainer = $('nav', '.nav-links', $ => {
                     this.loader.render($)
                 })
                 new MenuButton({onButtonClick: this.onMenuToggle}).render($)
@@ -76,29 +76,31 @@ export class HamburgerMenuView {
             new NavButton({
                 icon: '.fas.fa-running',
                 text: 'Runs',
-                onButtonClick: () => this.onNavigate('/runs')
+                link: '/runs'
             }).render($)
             new NavButton({
                 icon: '.fas.fa-desktop',
                 text: 'Computers',
-                onButtonClick: () => this.onNavigate('/computers')
+                link: '/computers'
             }).render($)
             new NavButton({
                 icon: '.fas.fa-book',
                 text: 'Documentation',
-                onButtonClick: () => this.onNewTab('https://docs.labml.ai')
+                link: 'https://docs.labml.ai',
+                target: '_blank'
             }).render($)
             new NavButton({
                 icon: '.fas.fa-sliders-h',
                 text: 'Settings',
-                onButtonClick: () => this.onNavigate('/settings')
+                link: '/settings'
             }).render($)
             $('span', '.mt-5', '')
             new NavButton({icon: '.fas.fa-power-off', text: 'Log out', onButtonClick: this.onLogOut}).render($)
             new NavButton({
                 icon: '.fas.fa-comments',
                 text: 'Join our Slack',
-                onButtonClick: () => this.onNewTab('https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/')
+                link: 'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/',
+                target: '_blank'
             }).render($)
         })
     }
@@ -122,13 +124,4 @@ export class HamburgerMenuView {
             //TODO: Sentry
         }
     }
-
-    onNavigate = (loc: string) => {
-        ROUTER.navigate(loc)
-    }
-
-    onNewTab = (loc: string) => {
-        window.open(loc)
-    }
-
 }
