@@ -40,15 +40,6 @@ export interface InsightModel {
     time: number
 }
 
-export interface SeriesModel {
-    name: string
-    step: number[]
-    value: number[]
-    smoothed: number[]
-    mean: number
-    series: PointValue[]
-}
-
 export interface AnalysisDataModel {
     series: SeriesModel[]
     insights: InsightModel[]

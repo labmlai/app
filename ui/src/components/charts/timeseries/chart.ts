@@ -11,7 +11,7 @@ import isMobile from '../../../utils/mobile';
 import ChartGradients from '../chart_gradients';
 
 
-interface TimeSeriesOptions extends ChartOptions {
+export interface TimeSeriesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
     chartType: string

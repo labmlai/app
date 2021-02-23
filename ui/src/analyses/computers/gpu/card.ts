@@ -6,11 +6,11 @@ import {CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
-import cpuCache from './cache';
+import gpuCache from './cache';
 import {SimpleTimeLinesChart} from '../../../components/charts/simple_time_lines/chart';
 
 
-export class CPUCard extends Card {
+export class GPUCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
@@ -25,7 +25,7 @@ export class CPUCard extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.analysisCache = cpuCache.getAnalysis(this.uuid)
+        this.analysisCache = gpuCache.getAnalysis(this.uuid)
         this.loader = new Loader()
     }
 
@@ -35,7 +35,7 @@ export class CPUCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'CPU')
+            $('h3.header', 'GPU')
         })
 
         this.elem.appendChild(this.loader.render($))
@@ -59,9 +59,6 @@ export class CPUCard extends Card {
             new SimpleTimeLinesChart({
                 series: this.series,
                 width: this.width,
-                yExtend: [0, 100],
-                // plotIdx: [],
-                // chartType: 'linear'
             }).render($)
         })
     }
@@ -76,6 +73,6 @@ export class CPUCard extends Card {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/cpu/${this.uuid}`)
+        ROUTER.navigate(`/gpu/${this.uuid}`)
     }
 }
