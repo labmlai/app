@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
-import {experimentAnalyses} from '../analyses/analyses'
+import {computerAnalyses, experimentAnalyses} from '../analyses/analyses'
 import runHeaderAnalysis from '../analyses/experiments/run_header/init'
 
 
@@ -45,6 +45,9 @@ export class BackButton extends Button {
         if (this.currentPath.includes('run')) {
             this.text = 'Runs'
             this.navigatePath = 'runs'
+        } else if (this.currentPath.includes('session')) {
+            this.text = 'Computers'
+            this.navigatePath = 'computers'
         } else if (this.currentPath.includes(runHeaderAnalysis.route)) {
             this.text = 'Run'
             this.navigatePath = this.currentPath.replace(runHeaderAnalysis.route, 'run')
@@ -53,6 +56,13 @@ export class BackButton extends Button {
                 if (this.currentPath.includes(analysis.route)) {
                     this.text = 'Run'
                     this.navigatePath = this.currentPath.replace(analysis.route, 'run')
+                    break
+                }
+            }
+            for (let analysis of computerAnalyses) {
+                if (this.currentPath.includes(analysis.route)) {
+                    this.text = 'Computer'
+                    this.navigatePath = this.currentPath.replace(analysis.route, 'session')
                     break
                 }
             }
