@@ -13,6 +13,6 @@ class GradientPreferenceCache extends SeriesPreferenceCache {
     }
 }
 
-let gradientsCache = new AnalysisCache(GradientAnalysisCache, GradientPreferenceCache)
+let gradientsCache = new AnalysisCache('run', GradientAnalysisCache, GradientPreferenceCache)
 
 export default gradientsCache

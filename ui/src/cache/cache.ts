@@ -269,9 +269,9 @@ export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
 export class SeriesCache extends CacheObject<AnalysisDataModel> {
     private readonly uuid: string
     private readonly url: string
-    private statusCache: RunStatusCache
+    private statusCache: RunStatusCache | ComputerStatusCache
 
-    constructor(uuid: string, url: string, statusCache: RunStatusCache) {
+    constructor(uuid: string, url: string, statusCache: RunStatusCache | ComputerStatusCache) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache

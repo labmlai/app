@@ -13,6 +13,6 @@ class ParameterPreferenceCache extends SeriesPreferenceCache {
     }
 }
 
-let parametersCache = new AnalysisCache(ParameterAnalysisCache, ParameterPreferenceCache)
+let parametersCache = new AnalysisCache('run', ParameterAnalysisCache, ParameterPreferenceCache)
 
 export default parametersCache

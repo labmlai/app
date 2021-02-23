@@ -13,6 +13,6 @@ class MetricsPreferenceCache extends SeriesPreferenceCache {
     }
 }
 
-let metricsCache = new AnalysisCache(MetricsAnalysisCache, MetricsPreferenceCache)
+let metricsCache = new AnalysisCache('run', MetricsAnalysisCache, MetricsPreferenceCache)
 
 export default metricsCache

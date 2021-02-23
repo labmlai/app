@@ -2,15 +2,15 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
-import {getExtent, getScale} from "../utils"
-import {LineFill, LinePlot} from "../lines/plot"
+import {getExtent, getScale, getTimeScale} from "../utils"
 import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
+import {TimeSeriesFill, TimeSeriesPlot} from '../timeseries/plot';
 
-interface SparkLineOptions {
+interface SparkTimeLineOptions {
     name: string
     series: PointValue[]
     width: number
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
     selected: number
     minLastValue: number
     maxLastValue: number
@@ -18,7 +18,7 @@ interface SparkLineOptions {
     color: string
 }
 
-export class SparkLine {
+export class SparkTimeLine {
     series: PointValue[]
     name: string
     minLastValue: number
@@ -28,12 +28,12 @@ export class SparkLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
-    xScale: d3.ScaleLinear<number, number>
+    xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
     valueElem: HTMLSpanElement
     className: string = 'empty'
 
-    constructor(opt: SparkLineOptions) {
+    constructor(opt: SparkTimeLineOptions) {
         this.series = opt.series
         this.name = opt.name
         this.selected = opt.selected
@@ -45,7 +45,7 @@ export class SparkLine {
         this.maxLastValue = opt.maxLastValue
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
-        this.xScale = getScale(opt.stepExtent, this.chartWidth)
+        this.xScale = getTimeScale(opt.stepExtent, this.chartWidth)
 
         if (this.onClick != null && this.selected >= 0) {
             this.className = 'selected'
@@ -81,14 +81,14 @@ export class SparkLine {
                 $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
                 $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
                     $('g', {transform: `translate(${0}, 25)`}, $ => {
-                        new LineFill({
+                        new TimeSeriesFill({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
                             color: '#7f8c8d',
                             colorIdx: 9
                         }).render($)
-                        new LinePlot({
+                        new TimeSeriesPlot({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,

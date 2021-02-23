@@ -2,17 +2,17 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
-import {getSelectedIdx} from "../utils"
+import {getSelectedIdx, toDate} from "../utils"
 
 
-export interface LinePlotOptions extends PlotOptions {
-    xScale: d3.ScaleLinear<number, number>
+export interface TimeSeriesOptions extends PlotOptions {
+    xScale: d3.ScaleTime<number, number>
     series: PointValue[]
 }
 
-export class LinePlot {
+export class TimeSeriesPlot {
     series: PointValue[]
-    xScale: d3.ScaleLinear<number, number>
+    xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
     circleContainer: WeyaElement
@@ -20,20 +20,20 @@ export class LinePlot {
     unsmoothedLine: d3.Line<PointValue>
     bisect: d3.Bisector<number, number>
 
-    constructor(opt: LinePlotOptions) {
+    constructor(opt: TimeSeriesOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale
         this.color = opt.color
 
         this.bisect = d3.bisector(function (d: PointValue) {
-            return d.step
+            return toDate(d.step)
         }).left
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
             .x((d, i) => {
-                return this.xScale(d.step)
+                return this.xScale(toDate(d.step))
             })
             .y((d) => {
                 return this.yScale(d.smoothed)
@@ -42,7 +42,7 @@ export class LinePlot {
         this.unsmoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
             .x((d, i) => {
-                return this.xScale(d.step)
+                return this.xScale(toDate(d.step))
             })
             .y((d) => {
                 return this.yScale(d.value)
@@ -67,7 +67,7 @@ export class LinePlot {
         })
     }
 
-    renderCursorCircle(cursorStep: number | null) {
+    renderCursorCircle(cursorStep: Date | null) {
         if (cursorStep != null) {
             let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
 
@@ -76,7 +76,7 @@ export class LinePlot {
                 $('circle',
                     {
                         r: 5,
-                        cx: this.xScale(this.series[idx].step),
+                        cx: this.xScale(toDate(this.series[idx].step)),
                         cy: this.yScale(this.series[idx].smoothed),
                         fill: this.color
                     })
@@ -85,22 +85,22 @@ export class LinePlot {
     }
 }
 
-interface LineFillOptions extends FillOptions {
-    xScale: d3.ScaleLinear<number, number>
+interface TimeSeriesFillOptions extends FillOptions {
+    xScale: d3.ScaleTime<number, number>
     series: PointValue[]
 }
 
 
-export class LineFill {
+export class TimeSeriesFill {
     series: PointValue[]
-    xScale: d3.ScaleLinear<number, number>
+    xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
     colorIdx: number
     smoothedLine
     dFill: string
 
-    constructor(opt: LineFillOptions) {
+    constructor(opt: TimeSeriesFillOptions) {
         this.series = opt.series
         this.xScale = opt.xScale
         this.yScale = opt.yScale
@@ -110,15 +110,15 @@ export class LineFill {
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
             .x((d, i) => {
-                return this.xScale(d.step)
+                return this.xScale(toDate(d.step))
             })
             .y((d) => {
                 return this.yScale(d.smoothed)
             })
 
         let d = this.smoothedLine(this.series) as string
-        this.dFill = `M${this.xScale(this.series[0].step)},0L` + d.substr(1) +
-            `L${this.xScale(this.series[this.series.length - 1].step)},0`
+        this.dFill = `M${this.xScale(toDate(this.series[0].step))},0L` + d.substr(1) +
+            `L${this.xScale(toDate(this.series[this.series.length - 1].step))},0`
     }
 
     render($: WeyaElementFunction) {

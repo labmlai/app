@@ -8,6 +8,7 @@ import stdOutAnalysis from "./experiments/stdout/init"
 import stderrAnalysis from "./experiments/stderror/init"
 import loggerAnalysis from "./experiments/logger/init"
 import configsAnalysis from "./experiments/configs/init"
+import cpuAnalysis from './computers/cpu/init';
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -20,6 +21,11 @@ let experimentAnalyses: Analysis[] = [
     loggerAnalysis
 ]
 
+let computerAnalyses: Analysis[] = [
+    cpuAnalysis,
+]
+
 export {
     experimentAnalyses,
+    computerAnalyses
 }

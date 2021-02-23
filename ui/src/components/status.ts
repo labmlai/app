@@ -1,14 +1,15 @@
 import {WeyaElementFunction} from '../../../lib/weya/weya'
 import {RunStatusModel} from "../models/status"
+import {ContentType} from '../types';
 
 export interface StatusOptions {
     status: RunStatusModel
-    type?: 'run' | 'computer'
+    type?: ContentType
 }
 
 export class StatusView {
     status: RunStatusModel
-    type: 'run' | 'computer'
+    type: ContentType
 
     constructor(opt: StatusOptions) {
         this.status = opt.status

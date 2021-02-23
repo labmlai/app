@@ -1,8 +1,9 @@
 import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {PlotOptions, FillOptions} from '../types'
+import {FillOptions, PlotOptions} from '../types'
 
 interface SimpleLinePlotOptions extends PlotOptions {
+    xScale: d3.ScaleLinear<number, number>
     series: number[]
 }
 
@@ -11,7 +12,7 @@ export class SimpleLinePlot {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
-    smoothedLine : d3.Line<number>
+    smoothedLine: d3.Line<number>
 
     constructor(opt: SimpleLinePlotOptions) {
         this.series = opt.series
@@ -43,6 +44,7 @@ export class SimpleLinePlot {
 }
 
 interface SimpleLineFillOptions extends FillOptions {
+    xScale: d3.ScaleLinear<number, number>
     series: number[]
 }
 

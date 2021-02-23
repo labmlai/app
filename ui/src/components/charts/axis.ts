@@ -51,3 +51,30 @@ export class BottomAxis {
         layer.append('g').call(this.axis)
     }
 }
+
+interface TimeAxisOptions {
+    chartId: string
+    scale: d3.ScaleTime<number, number>
+    numTicks?: number
+}
+
+export class BottomTimeAxis {
+    scale: d3.ScaleTime<number, number>
+    numTicks?: number
+    id: string
+    axis
+
+    constructor(opt: TimeAxisOptions) {
+        this.numTicks = opt.numTicks | 5
+        this.id = `${opt.chartId}_axis_bottom`
+        this.axis = d3.axisBottom(opt.scale as d3.AxisScale<d3.AxisDomain>).ticks(this.numTicks, d3.timeFormat("%b-%d:%H:%M"))
+    }
+
+    render($: WeyaElementFunction) {
+        $('g', {id: this.id})
+
+        let layer = d3.select(`#${this.id}`)
+        layer.selectAll('g').remove()
+        layer.append('g').call(this.axis)
+    }
+}

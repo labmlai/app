@@ -13,6 +13,6 @@ class ActivationsPreferenceCache extends SeriesPreferenceCache {
     }
 }
 
-let activationsCache = new AnalysisCache(ActivationsAnalysisCache, ActivationsPreferenceCache)
+let activationsCache = new AnalysisCache('run', ActivationsAnalysisCache, ActivationsPreferenceCache)
 
 export default activationsCache

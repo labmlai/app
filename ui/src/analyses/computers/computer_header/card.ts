@@ -51,7 +51,7 @@ export class ComputerHeaderCard {
                     this.hiddenContainer = $('div', '.hide', $ => {
                         $('div', '.run-uuid', $ => {
                             $('span', '.heading', '📌 Session UUID:', {role: 'img', 'aria-label': 'running'})
-                            $('span', this.computer.session_uuid)
+                            $('span', '', this.computer.session_uuid)
                         })
                         $('div', '.start-time', `Started ${formatTime(this.computer.start_time)}`)
                     })

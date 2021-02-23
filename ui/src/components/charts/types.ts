@@ -7,7 +7,6 @@ export interface ChartOptions {
 }
 
 export interface PlotOptions {
-    xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
 }

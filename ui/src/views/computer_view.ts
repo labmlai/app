@@ -9,6 +9,7 @@ import Card from "../analyses/card"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer';
 import {ComputerHeaderCard} from '../analyses/computers/computer_header/card';
+import {computerAnalyses} from '../analyses/analyses';
 import Timeout = NodeJS.Timeout;
 
 
@@ -121,6 +122,11 @@ class ComputerView extends ScreenView {
                 lastUpdated: this.lastUpdated
             })
             this.computerHeaderCard.render($)
+            computerAnalyses.map((analysis, i) => {
+                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
+                this.cards.push(card)
+                card.render($)
+            })
         })
     }
 }
