@@ -77,10 +77,12 @@ class LoggerView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
+        this.runHeaderCard.clearCounter()
     }
 
     async onRefresh() {
-        await this.loadData()
+        this.run = await this.runCache.get(true)
+        this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()
@@ -95,7 +97,7 @@ class LoggerView extends ScreenView {
         this.loggerView.innerHTML = ''
 
         $(this.loggerView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 if (this.status && this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})

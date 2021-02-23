@@ -127,7 +127,7 @@ export class LineFill {
                 {
                     fill: this.color,
                     stroke: 'none',
-                    // style: {fill: `url(#gradient-${this.colorIdx}`},
+                    style: {fill: `url(#gradient-${this.colorIdx}`},
                     d: this.dFill
                 })
         })

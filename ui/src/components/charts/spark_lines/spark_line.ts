@@ -2,7 +2,7 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
-import {getExtent, getScale} from "../utils"
+import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
 import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
 
@@ -28,10 +28,12 @@ export class SparkLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
-    xScale: d3.ScaleLinear<number, number>
-    yScale: d3.ScaleLinear<number, number>
     valueElem: HTMLSpanElement
     className: string = 'empty'
+    xScale: d3.ScaleLinear<number, number>
+    yScale: d3.ScaleLinear<number, number>
+    bisect: d3.Bisector<number, number>
+    linePlot: LinePlot
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -47,6 +49,10 @@ export class SparkLine {
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
 
+        this.bisect = d3.bisector(function (d: PointValue) {
+            return d.step
+        }).left
+
         if (this.onClick != null && this.selected >= 0) {
             this.className = 'selected'
         }
@@ -56,11 +62,20 @@ export class SparkLine {
         }
     }
 
-    renderValue() {
-        const last = this.series[this.series.length - 1]
+    changeCursorValue(cursorStep?: number | null) {
+        if (this.selected >= 0) {
+            this.linePlot.renderCursorCircle(cursorStep)
+            this.renderValue(cursorStep)
+        }
+    }
+
+    renderValue(cursorStep?: number | null) {
+        const last = this.series[this.selected >= 0 ? getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
         let lastValue = scaleValue(last.value, this.minLastValue, this.maxLastValue)
         let valueColor = pickHex(lastValue)
+
+        this.valueElem.innerHTML = ''
 
         if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
             $(this.valueElem, $ => {
@@ -88,12 +103,13 @@ export class SparkLine {
                             color: '#7f8c8d',
                             colorIdx: 9
                         }).render($)
-                        new LinePlot({
+                        this.linePlot = new LinePlot({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
                             color: '#7f8c8d'
-                        }).render($)
+                        })
+                        this.linePlot.render($)
                     })
                 })
                 this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})

@@ -15,6 +15,7 @@ export default class EditableField {
     placeholder: string
     isEditable: boolean
     numEditRows: number
+    inputElem: HTMLInputElement | HTMLTextAreaElement
 
     constructor(opt: EditableFieldOptions) {
         this.name = opt.name
@@ -24,6 +25,10 @@ export default class EditableField {
         this.numEditRows = opt.numEditRows
     }
 
+    getInput() {
+        return this.inputElem.value
+    }
+
     render($: WeyaElementFunction) {
         $(`li`, $ => {
             $('span.item-key', this.name)
@@ -31,16 +36,16 @@ export default class EditableField {
                 $('div.input-container.mt-2', $ => {
                     $('div.input-content', $ => {
                         if (this.numEditRows) {
-                            $('textarea', {
+                            this.inputElem = <HTMLTextAreaElement>$('textarea', {
                                     rows: this.numEditRows,
                                     placeholder: this.placeholder,
-                                    defaultValue: this.value
+                                    value: this.value
                                 }
                             )
                         } else {
-                            $('input', {
+                            this.inputElem = <HTMLInputElement>$('input', {
                                     placeholder: this.placeholder,
-                                    defaultValue: this.value
+                                    value: this.value
                                 }
                             )
                         }

@@ -1,14 +1,14 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import CACHE, {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {AnalysisDataModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Loader} from "../../../components/loader"
 import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import gradientsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import Timeout = NodeJS.Timeout
 import {ScreenView} from "../../../screen"
@@ -22,13 +22,14 @@ class GradientsView extends ScreenView {
     plotIdx: number[] = []
     currentChart: number
     statusCache: RunStatusCache
-    analysisData: AnalysisDataModel
+    series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
     runHeaderCard: RunHeaderCard
+    sparkLines: SparkLines
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
@@ -83,7 +84,7 @@ class GradientsView extends ScreenView {
     }
 
     async loadData() {
-        this.analysisData = await this.analysisCache.get()
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
     }
@@ -92,19 +93,20 @@ class GradientsView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
+        this.runHeaderCard.clearCounter()
     }
 
     async onRefresh() {
-        this.analysisData = await this.analysisCache.get(true)
-        this.status = await this.statusCache.get()
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()
             clearInterval(this.autoRefresh)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
         this.runHeaderCard.refresh().then()
     }
 
@@ -112,7 +114,7 @@ class GradientsView extends ScreenView {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
                 if (this.status && this.status.isRunning) {
@@ -137,18 +139,20 @@ class GradientsView extends ScreenView {
             })
         })
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new LineChart({
-                series: this.analysisData.series,
+                series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: getChartType(this.currentChart)
+                chartType: getChartType(this.currentChart),
+                onCursorMove: [this.sparkLines.changeCursorValues],
+                isCursorMoveOpt : true
             }).render($)
         })
     }
@@ -156,12 +160,13 @@ class GradientsView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            new SparkLines({
-                series: this.analysisData.series,
+            this.sparkLines = new SparkLines({
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart
-            }).render($)
+            })
+            this.sparkLines.render($)
         })
     }
 
@@ -178,8 +183,8 @@ class GradientsView extends ScreenView {
             this.plotIdx = new Array<number>(...this.plotIdx)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     loadPreferences() {
@@ -188,9 +193,9 @@ class GradientsView extends ScreenView {
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
-        } else if (this.analysisData.series) {
+        } else if (this.series) {
             let res: number[] = []
-            for (let i = 0; i < this.analysisData.series.length; i++) {
+            for (let i = 0; i < this.series.length; i++) {
                 res.push(i)
             }
             this.plotIdx = res

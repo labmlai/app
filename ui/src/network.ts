@@ -1,8 +1,6 @@
 import {ROUTER} from './app'
-import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
+import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, API_BASE_URL} from './env'
 import {Auth0User, User, UserModel} from './models/user'
-
-const REACT_APP_SERVER_URL = 'http://localhost:5000/api/v1'
 
 class Network {
     baseURL: string
@@ -168,5 +166,5 @@ class Network {
     }
 }
 
-const NETWORK = new Network(REACT_APP_SERVER_URL)
+const NETWORK = new Network(API_BASE_URL)
 export default NETWORK

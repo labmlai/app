@@ -6,6 +6,8 @@ import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {getTimeDiff, formatTime} from "../../../utils/time"
+import {Loader} from "../../../components/loader"
+import Timeout = NodeJS.Timeout
 
 
 interface RunHeaderOptions extends CardOptions {
@@ -22,6 +24,8 @@ export class RunHeaderCard {
     lastRecordedContainer: WeyaElement
     lastUpdatedContainer: WeyaElement
     statusViewContainer: WeyaElement
+    autoRefresh: Timeout
+    loader: Loader
     statusCache: RunStatusCache
 
     constructor(opt: RunHeaderOptions) {
@@ -30,13 +34,21 @@ export class RunHeaderCard {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.lastUpdated = opt.lastUpdated ? opt.lastUpdated : this.statusCache.lastUpdated
+
+        this.loader = new Loader()
     }
 
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
 
+        this.elem.appendChild(this.loader.render($))
         this.status = await this.statusCache.get()
         this.run = await this.runCache.get()
+        this.loader.remove()
+
+        if (this.status.isRunning) {
+            this.autoRefresh = setInterval(this.setCounter.bind(this), 1000)
+        }
 
         Weya(this.elem, $ => {
             $('div', $ => {
@@ -52,7 +64,6 @@ export class RunHeaderCard {
 
         this.renderStatusView()
         this.renderLastRecorded()
-        this.renderLastUpdated()
     }
 
     renderLastRecorded() {
@@ -81,6 +92,17 @@ export class RunHeaderCard {
         })
     }
 
+    clearCounter() {
+        if (this.autoRefresh !== undefined) {
+            clearInterval(this.autoRefresh)
+        }
+    }
+
+    setCounter() {
+        this.renderLastRecorded()
+        this.renderLastUpdated()
+    }
+
     async refresh(lastUpdated?: number) {
         this.status = await this.statusCache.get()
 
@@ -89,6 +111,10 @@ export class RunHeaderCard {
         this.renderStatusView()
         this.renderLastRecorded()
         this.renderLastUpdated()
+
+        if(!this.status.isRunning){
+            this.clearCounter()
+        }
     }
 
     onClick = () => {

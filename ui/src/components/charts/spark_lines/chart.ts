@@ -20,6 +20,7 @@ export class SparkLines {
     stepExtent: [number, number]
     colorIndices: number[] = []
     onSelect?: (i: number) => void
+    sparkLines: SparkLine[] = []
 
     constructor(opt: SparkLinesOptions) {
         this.series = opt.series
@@ -49,6 +50,12 @@ export class SparkLines {
         }
     }
 
+    changeCursorValues = (cursorStep?: number | null) => {
+        for (let sparkLine of this.sparkLines) {
+            sparkLine.changeCursorValue(cursorStep)
+        }
+    }
+
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
@@ -56,7 +63,7 @@ export class SparkLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                new SparkLine({
+                let sparkLine = new SparkLine({
                     name: s.name,
                     series: s.series,
                     selected: this.plotIdx[i],
@@ -66,7 +73,9 @@ export class SparkLines {
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
                     color: getColor(this.colorIndices[i]),
-                }).render($)
+                })
+                this.sparkLines.push(sparkLine)
+                sparkLine.render($)
             })
         })
     }

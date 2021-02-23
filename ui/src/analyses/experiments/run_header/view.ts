@@ -23,6 +23,9 @@ class RunHeaderView extends ScreenView {
     loader: Loader
     uuid: string
     actualWidth: number
+    nameField: EditableField
+    commentField: EditableField
+    noteField: EditableField
 
     constructor(uuid: string) {
         super()
@@ -64,7 +67,7 @@ class RunHeaderView extends ScreenView {
         this.runHeaderView.innerHTML = ''
 
         $(this.runHeaderView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 if (this.isEditMode) {
                     new CancelButton({onButtonClick: this.onToggleEdit}).render($)
@@ -76,16 +79,18 @@ class RunHeaderView extends ScreenView {
             $('h2.header.text-center', 'Run Details')
             $('div.input-list-container', $ => {
                 $('ul', $ => {
-                    new EditableField({
+                    this.nameField = new EditableField({
                         name: 'Run Name',
                         value: this.run.name,
                         isEditable: this.isEditMode
-                    }).render($)
-                    new EditableField({
+                    })
+                    this.nameField.render($)
+                    this.commentField = new EditableField({
                         name: 'Comment',
                         value: this.run.comment,
                         isEditable: this.isEditMode
-                    }).render($)
+                    })
+                    this.commentField.render($)
                     $(`li`, $ => {
                         $('span.item-key', 'Tags')
                         $('span.item-value', $ => {
@@ -96,13 +101,14 @@ class RunHeaderView extends ScreenView {
                             })
                         })
                     })
-                    new EditableField({
+                    this.noteField = new EditableField({
                         name: 'Note',
                         value: this.run.note,
                         placeholder: 'write your note here',
                         numEditRows: 5,
                         isEditable: this.isEditMode
-                    }).render($)
+                    })
+                    this.noteField.render($)
                     $(`li`, $ => {
                         $('span.item-key', 'Run Status')
                         $('span.item-value', $ => {
@@ -166,7 +172,20 @@ class RunHeaderView extends ScreenView {
     }
 
     updateRun = () => {
+        if (this.nameField.getInput()) {
+            this.run.name = this.nameField.getInput()
+        }
 
+        if (this.commentField.getInput()) {
+            this.run.comment = this.commentField.getInput()
+        }
+
+        if (this.noteField.getInput()) {
+            this.run.note = this.noteField.getInput()
+        }
+
+        this.runCache.setRun(this.run).then()
+        this.onToggleEdit()
     }
 }
 

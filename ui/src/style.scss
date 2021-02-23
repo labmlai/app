@@ -139,8 +139,8 @@ body {
   border-top: 6px solid #eb6134;
   width: 40px;
   height: 40px;
-  -webkit-animation: spin 1s linear infinite; /* Safari */
-  animation: spin 1s linear infinite;
+  -webkit-animation: spin 0.5s linear infinite; /* Safari */
+  animation: spin 0.5s linear infinite;
   margin-top: 50px;
   display: inline-block;
 }
@@ -510,9 +510,9 @@ svg#chart {
   path.smoothed-line {
     stroke-width: 3;
 
-    //&.dropshadow {
-    //  filter: url(#dropshadow);
-    //}
+    &.dropshadow {
+      filter: url(#dropshadow);
+    }
   }
 
   path.unsmoothed-line {
@@ -621,8 +621,7 @@ button.sparkline-list-item {
 
       path.line-fill {
         opacity: 0.3;
-        fill: url(#gradient-grey);
-
+        //fill: url(#gradient-grey);
       }
     }
 

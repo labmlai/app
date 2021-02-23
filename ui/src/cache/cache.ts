@@ -181,7 +181,10 @@ export class RunCache extends CacheObject<Run> {
         if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
-            await this.statusCache.get(true)
+
+            if ((status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+                await this.statusCache.get(true)
+            }
         }
 
         return this.data
@@ -290,7 +293,10 @@ export class SeriesCache extends CacheObject<AnalysisDataModel> {
         if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
-            await this.statusCache.get(true)
+
+            if ((status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+                await this.statusCache.get(true)
+            }
         }
 
         return this.data

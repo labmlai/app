@@ -2,18 +2,22 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {getScale, toPointValues, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
+import {getScale, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {getColor} from "../constants"
 import {RightAxis, BottomAxis} from "../axis"
 import {CHART_COLORS} from "../constants"
 import {formatStep} from "../../../utils/value"
+import isMobile from "../../../utils/mobile"
+import ChartGradients from "../chart_gradients"
 
 
 interface LineChartOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
     chartType: string
+    onCursorMove?: ((cursorStep?: number | null) => void)[]
+    isCursorMoveOpt?: boolean
 }
 
 export class LineChart {
@@ -32,11 +36,15 @@ export class LineChart {
     svgElem: WeyaElement
     stepContainer: WeyaElement
     linePlots: LinePlot[] = []
+    onCursorMove?: ((cursorStep?: number | null) => void)[]
+    isCursorMoveOpt?: boolean
 
     constructor(opt: LineChartOptions) {
-        this.series = toPointValues(opt.series)
+        this.series = opt.series
         this.chartType = opt.chartType
         this.plotIdx = opt.plotIdx
+        this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
+        this.isCursorMoveOpt = opt.isCursorMoveOpt
 
         this.axisSize = 30
         let windowWidth = opt.width
@@ -76,21 +84,26 @@ export class LineChart {
     }
 
     updateCursorStep(ev: any) {
-        let cursorStep: number = null
-        let clientX = ev.clientX
+        if (this.isCursorMoveOpt) {
+            let cursorStep: number = null
+            let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
 
-        if (clientX) {
-            const info = this.svgElem.getBoundingClientRect()
-            let currentX = this.xScale.invert(clientX - info.left - this.margin)
-            if (currentX > 0) {
-                cursorStep = currentX
+            if (clientX) {
+                const info = this.svgElem.getBoundingClientRect()
+                let currentX = this.xScale.invert(clientX - info.left - this.margin)
+                if (currentX > 0) {
+                    cursorStep = currentX
+                }
+            }
+
+            this.renderStep(cursorStep)
+            for (let linePlot of this.linePlots) {
+                linePlot.renderCursorCircle(cursorStep)
+            }
+            for (let func of this.onCursorMove) {
+                func(cursorStep)
             }
         }
-
-        for (let linePlot of this.linePlots) {
-            linePlot.renderCursorCircle(cursorStep)
-        }
-        this.renderStep(cursorStep)
     }
 
     renderStep(cursorStep: number) {
@@ -114,8 +127,13 @@ export class LineChart {
                                 id: 'chart',
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
-                                on: {mousemove: this.updateCursorStep.bind(this)}
+                                on: {
+                                    mousemove: this.updateCursorStep.bind(this),
+                                    touchmove: this.updateCursorStep.bind(this),
+                                    touchstart: this.updateCursorStep.bind(this)
+                                }
                             }, $ => {
+                                new ChartGradients().render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`

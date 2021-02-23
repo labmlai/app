@@ -1,8 +1,8 @@
 import {Weya as $, WeyaElement} from '../../lib/weya/weya'
-import {getWindowDimensions} from "./utils/window_dimentions";
-import CACHE, {IsUserLoggedCache, UserCache} from './cache/cache';
-import {Loader} from './components/loader';
-import {ROUTER} from './app';
+import {getWindowDimensions} from "./utils/window_dimentions"
+import CACHE, {IsUserLoggedCache, UserCache} from './cache/cache'
+import {Loader} from './components/loader'
+import {ROUTER} from './app'
 
 abstract class ScreenView {
     abstract render(): WeyaElement

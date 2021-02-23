@@ -82,6 +82,7 @@ class RunView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
+        this.runHeaderCard.clearCounter()
     }
 
     async onRefresh() {
@@ -113,7 +114,7 @@ class RunView extends ScreenView {
             if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
                 new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
             }
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Runs'}).render($)
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})

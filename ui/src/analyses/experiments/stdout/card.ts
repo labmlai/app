@@ -69,7 +69,7 @@ export class StdOutCard extends Card {
         this.outputContainer.innerHTML = ''
         Weya(this.outputContainer, $ => {
             let output = $('div', '')
-            output.innerHTML = this.getLastTenLines(this.filter.toHtml(this.run.stdout))
+            output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.stdout))
         })
     }
 
