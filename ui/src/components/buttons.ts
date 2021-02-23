@@ -12,14 +12,28 @@ interface buttonOptions {
 abstract class Button {
     onButtonClick: () => void
     isDisabled: boolean
+    elem?: WeyaElement
 
     onClick = () => {
-        this.onButtonClick()
+        if (!this.isDisabled) {
+            this.onButtonClick()
+        }
     }
 
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
-        this.isDisabled = opt.isDisabled
+        this.isDisabled = opt.isDisabled ? opt.isDisabled : false
+    }
+
+    set disabled(isDisabled: boolean) {
+        this.isDisabled = isDisabled
+        if (this.elem) {
+            if (this.isDisabled) {
+                this.elem.classList.add('disabled')
+                return
+            }
+            this.elem.classList.remove('disabled')
+        }
     }
 
     render($: WeyaElementFunction) {
@@ -74,7 +88,7 @@ export class BackButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab.float-left',
+        this.elem = $('nav', `.nav-link.tab.float-left${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-chevron-left', '')
@@ -84,14 +98,13 @@ export class BackButton extends Button {
 }
 
 export class RefreshButton extends Button {
-    elem: WeyaElement
 
     constructor(opt: buttonOptions) {
         super(opt)
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('nav.nav-link.tab.float-right',
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-sync', '')
@@ -109,7 +122,7 @@ export class SaveButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab.float-right',
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-save', '')
@@ -123,7 +136,7 @@ export class EditButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab.float-right',
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-edit', '')
@@ -137,7 +150,7 @@ export class DeleteButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab.float-right',
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-trash', '')
@@ -151,7 +164,7 @@ export class CancelButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab.float-right',
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-times', '')
@@ -165,7 +178,7 @@ export class MenuButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.burger.nav-link.tab.float-left',
+        this.elem = $('nav', `.burger.nav-link.tab.float-left${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
                 $('span.fas.fa-bars', '')
@@ -189,7 +202,7 @@ export class NavButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        $('nav.nav-link.tab',
+        this.elem = $('nav.nav-link.tab',
             {on: {click: this.onClick}},
             $ => {
                 $('span', this.icon, '')
@@ -207,7 +220,6 @@ export class ToggleButton extends Button {
     text: string
     isToggled: boolean
     defaultClass: string
-    toggleButton: WeyaElement
 
     constructor(opt: ToggleButtonOptions) {
         super(opt)
@@ -225,7 +237,7 @@ export class ToggleButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        this.toggleButton = $(`div.d-flex`,
+        this.elem = $(`div.d-flex`,
             {on: {click: this.onClick}}
         )
 
@@ -233,9 +245,9 @@ export class ToggleButton extends Button {
     }
 
     renderToggleButton() {
-        this.toggleButton.innerHTML = ''
+        this.elem.innerHTML = ''
 
-        $(this.toggleButton, $ => {
+        $(this.elem, $ => {
             $(`nav.nav-link.float-left.tab.toggle-button.${this.defaultClass}`,
                 $ => {
                     $('span', this.text)

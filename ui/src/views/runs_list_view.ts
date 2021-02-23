@@ -106,6 +106,7 @@ class RunsListView extends ScreenView {
 
     onEdit = () => {
         this.isEditMode = true
+        this.deleteButton.disabled = this.runsDeleteSet.size === 0
         this.renderButtons()
     }
 
@@ -129,12 +130,11 @@ class RunsListView extends ScreenView {
         if (this.runsDeleteSet.has(uuid)) {
             this.runsDeleteSet.delete(uuid)
             elem.elem.classList.remove('selected')
-            return
+        } else {
+            this.runsDeleteSet.add(uuid)
+            elem.elem.classList.add('selected')
         }
-
-        this.runsDeleteSet.add(uuid)
-        elem.elem.classList.add('selected')
-
+        this.deleteButton.disabled = this.runsDeleteSet.size === 0
     }
 
     onSearch = (query: string) => {

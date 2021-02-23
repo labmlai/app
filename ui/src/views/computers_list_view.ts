@@ -107,6 +107,7 @@ class ComputersListView extends ScreenView {
 
     onEdit = () => {
         this.isEditMode = true
+        this.deleteButton.disabled = this.computersDeleteSet.size === 0
         this.renderButtons()
     }
 
@@ -130,12 +131,11 @@ class ComputersListView extends ScreenView {
         if (this.computersDeleteSet.has(uuid)) {
             this.computersDeleteSet.delete(uuid)
             elem.elem.classList.remove('selected')
-            return
+        } else {
+            this.computersDeleteSet.add(uuid)
+            elem.elem.classList.add('selected')
         }
-
-        this.computersDeleteSet.add(uuid)
-        elem.elem.classList.add('selected')
-
+        this.deleteButton.disabled = this.computersDeleteSet.size === 0
     }
 
     onSearch = (query: string) => {

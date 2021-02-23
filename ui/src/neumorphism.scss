@@ -94,6 +94,11 @@ body.light {
   .nav-link {
     box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
     color: $light-btn;
+
+    &.disabled {
+      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
+      color: $light-list-item-bg;
+    }
   }
 
   .toggle-button {
@@ -329,6 +334,11 @@ body.dark {
   .nav-link {
     box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
     color: $dark-btn;
+
+    &.disabled {
+      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+      color: $dark-list-item-bg;
+    }
   }
 
   .toggle-button {
