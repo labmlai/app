@@ -1,5 +1,5 @@
 import {ScreenView} from "../../../screen"
-import {AnalysisDataModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import CACHE, {ComputerStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -8,7 +8,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton, SaveButton} from "../../../components/buttons"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import cpuCache from "./cache"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card';
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart';
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart';
@@ -22,13 +22,14 @@ class CPUView extends ScreenView {
     plotIdx: number[] = []
     currentChart: number
     statusCache: ComputerStatusCache
-    analysisData: AnalysisDataModel
+    series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
     preferenceCache: SeriesPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
     computerHeaderCard: ComputerHeaderCard
+    sparkTimeLines: SparkTimeLines
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
     isUpdateDisable: boolean
@@ -83,7 +84,7 @@ class CPUView extends ScreenView {
     }
 
     async loadData() {
-        this.analysisData = await this.analysisCache.get()
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.status = await this.statusCache.get()
         this.preferenceData = await this.preferenceCache.get()
     }
@@ -92,19 +93,20 @@ class CPUView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
+        this.computerHeaderCard.clearCounter()
     }
 
     async onRefresh() {
-        this.analysisData = await this.analysisCache.get(true)
-        this.status = await this.statusCache.get()
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()
             clearInterval(this.autoRefresh)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
         this.computerHeaderCard.refresh().then()
     }
 
@@ -112,7 +114,7 @@ class CPUView extends ScreenView {
         this.metricsView.innerHTML = ''
 
         $(this.metricsView, $ => {
-            $('div.flex-container', $ => {
+            $('div.nav-container', $ => {
                 new BackButton({text: 'Session'}).render($)
                 new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
                 if (this.status && this.status.isRunning) {
@@ -132,18 +134,20 @@ class CPUView extends ScreenView {
             })
         })
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new TimeSeriesChart({
-                series: this.analysisData.series,
+                series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: getChartType(this.currentChart)
+                chartType: getChartType(this.currentChart),
+                onCursorMove: [this.sparkTimeLines.changeCursorValues],
+                isCursorMoveOpt: true
             }).render($)
         })
     }
@@ -151,12 +155,13 @@ class CPUView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            new SparkTimeLines({
-                series: this.analysisData.series,
+            this.sparkTimeLines = new SparkTimeLines({
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart
-            }).render($)
+            })
+            this.sparkTimeLines.render($)
         })
     }
 
@@ -173,8 +178,8 @@ class CPUView extends ScreenView {
             this.plotIdx = new Array<number>(...this.plotIdx)
         }
 
-        this.renderLineChart()
         this.renderSparkLines()
+        this.renderLineChart()
     }
 
     loadPreferences() {
@@ -183,9 +188,9 @@ class CPUView extends ScreenView {
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
-        } else if (this.analysisData.series) {
+        } else if (this.series) {
             let res: number[] = []
-            for (let i = 0; i < this.analysisData.series.length; i++) {
+            for (let i = 0; i < this.series.length; i++) {
                 res.push(i)
             }
             this.plotIdx = res

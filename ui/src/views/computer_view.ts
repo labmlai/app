@@ -81,6 +81,7 @@ class ComputerView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
+        this.computerHeaderCard.clearCounter()
     }
 
     async onRefresh() {
@@ -109,7 +110,7 @@ class ComputerView extends ScreenView {
         this.runView.innerHTML = ''
 
         $(this.runView, $ => {
-            $('div', '.flex-container', $ => {
+            $('div', '.nav-container', $ => {
                 new BackButton({text: 'Computers'}).render($)
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})

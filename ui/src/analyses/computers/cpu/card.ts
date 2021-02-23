@@ -1,11 +1,11 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
-import {AnalysisDataModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import Card from "../../card"
 import {CardOptions} from "../../types"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {getChartType} from "../../../components/charts/utils"
+import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
 import cpuCache from './cache';
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart';
@@ -15,7 +15,7 @@ import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 export class CPUCard extends Card {
     uuid: string
     width: number
-    analysisData: AnalysisDataModel
+    series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
     elem: WeyaElement
@@ -46,7 +46,7 @@ export class CPUCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.analysisData = await this.analysisCache.get()
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.preferenceData = await this.preferenceCache.get()
         this.loader.remove()
 
@@ -61,7 +61,7 @@ export class CPUCard extends Card {
             this.sparkLinesContainer = $('div', '')
         })
 
-        if (this.analysisData.series.length > 0) {
+        if (this.series.length > 0) {
             this.renderLineChart()
             this.renderSparkLines()
         } else {
@@ -73,7 +73,7 @@ export class CPUCard extends Card {
         this.lineChartContainer.innerHTML = ''
         Weya(this.lineChartContainer, $ => {
             new TimeSeriesChart({
-                series: this.analysisData.series,
+                series: this.series,
                 width: this.width,
                 plotIdx: this.plotIdx,
 
@@ -87,7 +87,7 @@ export class CPUCard extends Card {
         this.sparkLinesContainer.innerHTML = ''
         Weya(this.sparkLinesContainer, $ => {
             new SparkTimeLines({
-                series: this.analysisData.series,
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width
             }).render($)
@@ -95,9 +95,9 @@ export class CPUCard extends Card {
     }
 
     async refresh() {
-        this.analysisData = await this.analysisCache.get(true)
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
 
-        if (this.analysisData.series.length > 0) {
+        if (this.series.length > 0) {
             this.renderLineChart()
             this.renderSparkLines()
             this.elem.classList.remove('hide')

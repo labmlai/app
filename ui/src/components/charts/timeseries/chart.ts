@@ -2,11 +2,13 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate, toPointValues} from "../utils"
+import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
 import {CHART_COLORS, getColor} from "../constants"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot';
 import {formatDateTime} from '../../../utils/time';
+import isMobile from '../../../utils/mobile';
+import ChartGradients from '../chart_gradients';
 
 
 interface TimeSeriesOptions extends ChartOptions {
@@ -18,6 +20,8 @@ interface TimeSeriesOptions extends ChartOptions {
     stepExtend?: [number, number]
     forceYStart?: number
     numTicks?: number
+    onCursorMove?: ((cursorStep?: Date | null) => void)[]
+    isCursorMoveOpt?: boolean
 }
 
 export class TimeSeriesChart {
@@ -39,14 +43,18 @@ export class TimeSeriesChart {
     stepContainer: WeyaElement
     timeSeriesPlots: TimeSeriesPlot[] = []
     numTicks?: number
+    onCursorMove?: ((cursorStep?: Date | null) => void)[]
+    isCursorMoveOpt?: boolean
 
     constructor(opt: TimeSeriesOptions) {
-        this.series = toPointValues(opt.series)
+        this.series = opt.series
         this.chartType = opt.chartType
         this.plotIdx = opt.plotIdx
         this.yExtend = opt.yExtend
         this.forceYStart = opt.forceYStart
         this.numTicks = opt.numTicks
+        this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
+        this.isCursorMoveOpt = opt.isCursorMoveOpt
 
         this.axisSize = 30
         let windowWidth = opt.width
@@ -94,20 +102,25 @@ export class TimeSeriesChart {
     }
 
     updateCursorStep(ev: any) {
-        let cursorStep: Date = null
-        let clientX = ev.clientX
+        if (this.isCursorMoveOpt) {
+            let cursorStep: Date = null
+            let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
 
-        if (clientX) {
-            const info = this.svgElem.getBoundingClientRect()
-            let currentX = this.xScale.invert(clientX - info.left - this.margin)
+            if (clientX) {
+                const info = this.svgElem.getBoundingClientRect()
+                let currentX = this.xScale.invert(clientX - info.left - this.margin)
 
-            cursorStep = currentX
+                cursorStep = currentX
+            }
+
+            this.renderStep(cursorStep)
+            for (let timeSeriesPlot of this.timeSeriesPlots) {
+                timeSeriesPlot.renderCursorCircle(cursorStep)
+            }
+            for (let func of this.onCursorMove) {
+                func(cursorStep)
+            }
         }
-
-        for (let timeSeriesPlot of this.timeSeriesPlots) {
-            timeSeriesPlot.renderCursorCircle(cursorStep)
-        }
-        this.renderStep(cursorStep)
     }
 
     renderStep(cursorStep: Date) {
@@ -131,8 +144,13 @@ export class TimeSeriesChart {
                                 id: 'time-series-chart',
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
-                                on: {mousemove: this.updateCursorStep.bind(this)}
+                                on: {
+                                    mousemove: this.updateCursorStep.bind(this),
+                                    touchmove: this.updateCursorStep.bind(this),
+                                    touchstart: this.updateCursorStep.bind(this)
+                                }
                             }, $ => {
+                                new ChartGradients().render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`

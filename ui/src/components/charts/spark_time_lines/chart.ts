@@ -20,6 +20,7 @@ export class SparkTimeLines {
     stepExtent: [number, number]
     colorIndices: number[] = []
     onSelect?: (i: number) => void
+    sparkTimeLines: SparkTimeLine[] = []
 
     constructor(opt: SparkTimeLinesOptions) {
         this.series = opt.series
@@ -49,6 +50,12 @@ export class SparkTimeLines {
         }
     }
 
+    changeCursorValues = (cursorStep?: Date | null) => {
+        for (let sparkLine of this.sparkTimeLines) {
+            sparkLine.changeCursorValue(cursorStep)
+        }
+    }
+
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
@@ -56,7 +63,7 @@ export class SparkTimeLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                new SparkTimeLine({
+                let sparkTimeLine = new SparkTimeLine({
                     name: s.name,
                     series: s.series,
                     selected: this.plotIdx[i],
@@ -66,7 +73,9 @@ export class SparkTimeLines {
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
                     color: getColor(this.colorIndices[i]),
-                }).render($)
+                })
+                this.sparkTimeLines.push(sparkTimeLine)
+                sparkTimeLine.render($)
             })
         })
     }
