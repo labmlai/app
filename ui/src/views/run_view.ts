@@ -107,12 +107,19 @@ class RunView extends ScreenView {
         this.runHeaderCard.refresh(this.lastUpdated).then()
     }
 
+    onMessageClick() {
+        ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+    }
+
     private async renderRun() {
         this.runView.innerHTML = ''
 
         $(this.runView, $ => {
             if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
-                new AlertMessage('This run will be deleted in 12 hours. Click here to add it to your experiments.').render($)
+            new AlertMessage({
+                message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
+                onClickMessage: this.onMessageClick.bind(this)
+            }).render($)
             }
             $('div.nav-container', $ => {
                 new BackButton({text: 'Runs'}).render($)
