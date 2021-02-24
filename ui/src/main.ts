@@ -12,7 +12,7 @@ import {SettingsHandler} from './views/settings_view'
 import {computerAnalyses, experimentAnalyses} from "./analyses/analyses"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {ComputerHandler} from './views/computer_view'
-import {REACT_APP_SENTRY_DSN} from './env'
+import {SENTRY_DSN} from './env'
 
 new LoginHandler()
 
@@ -44,12 +44,12 @@ if (
     })
 }
 
-// if (REACT_APP_SENTRY_DSN) {
-//     Sentry.init({
-//         dsn: process.env.REACT_APP_SENTRY_DSN,
-//         integrations: [
-//             new Integrations.BrowserTracing(),
-//         ],
-//         tracesSampleRate: 1.0,
-//     })
-// }
+if (SENTRY_DSN) {
+    Sentry.init({
+        dsn: SENTRY_DSN,
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
+        tracesSampleRate: 1.0,
+    })
+}
