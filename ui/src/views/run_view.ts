@@ -39,7 +39,7 @@ class RunView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
-        this.loader = new Loader()
+        this.loader = new Loader(true)
     }
 
     get requiresAuth(): boolean {
