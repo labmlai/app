@@ -8,6 +8,8 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "@sentry/browser": "^6.2.0",
+    "@sentry/tracing": "^6.2.0",
     "@types/d3": "^5.7.2",
     "d3": "^5.16.0"
   },

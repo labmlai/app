@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "amd",
+    "moduleResolution": "node",
     "sourceMap": false,
     "outDir": "static/js",
     "allowJs": true
