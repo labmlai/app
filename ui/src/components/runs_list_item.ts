@@ -27,7 +27,7 @@ export class RunsListItemView {
             $ => {
                 $('div', $ => {
                     new StatusView({status: this.item.run_status}).render($)
-                    $('p', `Started ${formatTime(this.item.start_time)}`)
+                    $('p', `Started on ${formatTime(this.item.start_time)}`)
                     $('h5', this.item.name)
                     $('h6', this.item.comment)
                 })

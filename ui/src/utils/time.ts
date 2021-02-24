@@ -3,7 +3,7 @@ export function formatTime(time: number): string {
     let timeStr = date.toTimeString().substr(0, 8)
     let dateStr = date.toDateString()
 
-    return `on ${dateStr} at ${timeStr}`
+    return `${dateStr} at ${timeStr}`
 }
 
 

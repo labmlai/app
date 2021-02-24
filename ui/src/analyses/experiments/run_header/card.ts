@@ -72,7 +72,7 @@ export class RunHeaderCard {
         this.lastRecordedContainer.innerHTML = ''
         Weya(this.lastRecordedContainer, $ => {
             $('div.last-updated.mb-2', `Last Recorded ${this.status.isRunning ?
-                getTimeDiff(lastRecorded * 1000) : formatTime(lastRecorded)}`)
+                getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
         })
     }
 
