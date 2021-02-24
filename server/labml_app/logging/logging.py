@@ -2,7 +2,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from logging import StreamHandler
 
-_LOG_PATH = 'app.log'
+_LOG_PATH = 'labml_app.log'
 _MAX_BYTES = 100000
 
 

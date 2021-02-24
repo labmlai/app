@@ -5,10 +5,10 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from app.logging import logger
-from app.enums import SeriesEnums
-from app.utils import format_rv
-from app.utils import mix_panel
+from labml_app.logging import logger
+from labml_app.enums import SeriesEnums
+from labml_app.utils import format_rv
+from labml_app.utils import mix_panel
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection

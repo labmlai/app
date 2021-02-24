@@ -1,4 +1,6 @@
 import logging
+from pathlib import Path
+
 import git
 import time
 import warnings
@@ -7,10 +9,10 @@ from time import strftime
 from flask import Flask, request, g, send_from_directory
 from flask_cors import CORS, cross_origin
 
-from app import handlers
-from app import settings
-from app.logging import logger
-from app.utils import mix_panel
+from labml_app import handlers
+from labml_app import settings
+from labml_app.logging import logger
+from labml_app.utils import mix_panel
 
 if settings.SENTRY_DSN:
     try:
@@ -26,12 +28,27 @@ if settings.SENTRY_DSN:
         warnings.warn("Sentry SDK not installed")
 
 
+def get_static_path():
+    package_path = Path(__file__).parent
+
+    static_path = package_path.parent / 'static'
+    if not static_path.exists():
+        static_path = package_path / 'static'
+    if not static_path.exists():
+        raise RuntimeError(f'Static folder not found. Package path: {str(package_path)}')
+
+    return static_path
+
+
+STATIC_PATH = get_static_path()
+
+
 def create_app():
     # disable flask logger
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__, static_folder='../static', static_url_path='/static')
+    _app = Flask(__name__, static_folder=str(STATIC_PATH), static_url_path='/static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -41,7 +58,7 @@ def create_app():
             mp_tread = mix_panel.MixPanelThread()
             mp_tread.start()
 
-        logger.info('initializing app')
+        logger.info('initializing labml_app')
         logger.error(f'THIS IS NOT AN ERROR: Server Deployed SHA : {sha}')
 
     run_on_start()

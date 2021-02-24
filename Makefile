@@ -28,10 +28,20 @@ watch-ui: compile ## Watch and Compile JS
 	npm run watch
 
 build-ui: ## build production ui
-	npm install --prefix ./ui
-	npm run build --prefix ./ui
+	npm run build
+#	npm install --prefix ./ui
+#	npm run build --prefix ./ui
+
+package: build-ui ## Build PIPy Package
+	rm -rf server/labml_app/static
+	cp -r static/ server/labml_app/static
+	cd server && python setup.py sdist bdist_wheel
+
+check-package:  ## List contents of PIPy Package
+	cd server && tar -tvf dist/*.tar.gz
 
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
 
 
