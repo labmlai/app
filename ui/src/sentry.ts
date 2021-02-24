@@ -1,5 +1,5 @@
-let Sentry = (<any>window).sentry.browser
-let Integrations = (<any>window).sentry.Integrations
+let Sentry = (<any>window).Sentry
+let Integrations = (<any>window).Sentry.Integrations
 
 export {
     Sentry,

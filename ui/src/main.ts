@@ -1,4 +1,4 @@
-// import {Sentry, Integrations} from './sentry'
+import {Sentry, Integrations} from './sentry'
 
 import {ROUTER} from './app'
 import {RunHandler} from './views/run_view'
@@ -43,12 +43,12 @@ if (
     })
 }
 
-// if (SENTRY_DSN) {
-//     Sentry.init({
-//         dsn: SENTRY_DSN,
-//         integrations: [
-//             new Integrations.BrowserTracing(),
-//         ],
-//         tracesSampleRate: 1.0,
-//     })
-// }
+if (SENTRY_DSN) {
+    Sentry.init({
+        dsn: SENTRY_DSN,
+        integrations: [
+            new Integrations.BrowserTracing(),
+        ],
+        tracesSampleRate: 1.0,
+    })
+}
