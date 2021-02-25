@@ -47,6 +47,7 @@ class Project(Model['Project']):
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
+                run.delete(run_uuid)
 
         self.save()
 
@@ -96,3 +97,18 @@ def clean_project(labml_token: str):
             run.delete(run_uuid)
 
     p.save()
+
+
+def delete_unclaimed_runs():
+    run_keys = run.Run.get_all()
+    for run_key in run_keys:
+        if run_key:
+            try:
+                r = run_key.load()
+
+                if not r.is_claimed:
+                    run.delete(r.run_uuid)
+            except TypeError:
+                print(f'error while deleting the run {run_key}')
+
+
