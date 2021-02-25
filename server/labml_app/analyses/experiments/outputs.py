@@ -7,7 +7,7 @@ from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
-from labml_app.logging import logger
+from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from ..analysis import Analysis
 from ..series import SeriesModel

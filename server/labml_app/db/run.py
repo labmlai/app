@@ -7,7 +7,7 @@ from ..utils.mix_panel import MixPanelEvent
 from . import project
 from .status import create_status, Status
 from .. import settings
-from ..logging import logger
+from ..logger import logger
 
 
 class CardInfo(NamedTuple):

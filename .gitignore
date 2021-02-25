@@ -43,6 +43,7 @@ labml
 /server/labml_db
 /server/labml_app/analyses_settings.py
 /server/labml_app/app_analyses
+/server/labml_app/static
 
 # labml
 /logs/

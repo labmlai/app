@@ -1,18 +1,17 @@
-import logging
-from pathlib import Path
-
 import git
+import logging
 import time
 import warnings
+from pathlib import Path
 from time import strftime
 
 from flask import Flask, request, g, send_from_directory
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
-from labml_app import handlers
-from labml_app import settings
-from labml_app.logging import logger
-from labml_app.utils import mix_panel
+from . import handlers
+from . import settings
+from .logger import logger
+from .utils import mix_panel
 
 if settings.SENTRY_DSN:
     try:
@@ -30,6 +29,11 @@ if settings.SENTRY_DSN:
 
 def get_static_path():
     package_path = Path(__file__).parent
+    app_path = package_path.parent.parent
+
+    static_path = app_path / 'static'
+    if static_path.exists():
+        return static_path
 
     static_path = package_path.parent / 'static'
     if not static_path.exists():
@@ -48,7 +52,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__, static_folder=str(STATIC_PATH), static_url_path='/static')
+    _app = Flask(__name__, static_url_path='/static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -83,7 +87,7 @@ def root():
 def send_js(path):
     # TODO: Fix this properly
     try:
-        return send_from_directory('../static', path)
+        return send_from_directory(STATIC_PATH, path)
     except Exception as e:
         return app.send_static_file('index.html')
 
