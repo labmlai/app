@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "amd",
+    "target": "es5",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "sourceMap": false,
-    "outDir": "static/js",
-    "allowJs": true
+    "outDir": "dist",
+    "allowJs": true,
+    "downlevelIteration": true
   },
   "include": [
     "ui/src",
