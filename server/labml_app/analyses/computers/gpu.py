@@ -70,17 +70,32 @@ class GPUAnalysis(Analysis):
         gpu_key = GPUIndex.get(session_uuid)
 
         if not gpu_key:
-            c = GPUModel()
-            c.save()
-            GPUIndex.set(session_uuid, c.key)
+            g = GPUModel()
+            g.save()
+            GPUIndex.set(session_uuid, g.key)
 
-            cp = GPUPreferencesModel()
-            cp.save()
-            GPUPreferencesIndex.set(session_uuid, cp.key)
+            gp = GPUPreferencesModel()
+            gp.save()
+            GPUPreferencesIndex.set(session_uuid, gp.key)
 
-            return GPUAnalysis(c)
+            return GPUAnalysis(g)
 
         return GPUAnalysis(gpu_key.load())
+
+    @staticmethod
+    def delete(run_uuid: str):
+        gpu_key = GPUIndex.get(run_uuid)
+        preferences_key = GPUPreferencesIndex.get(run_uuid)
+
+        if gpu_key:
+            g: GPUModel = gpu_key.load()
+            GPUIndex.delete(run_uuid)
+            g.delete()
+
+        if preferences_key:
+            gp: GPUPreferencesModel = preferences_key.load()
+            GPUPreferencesIndex.delete(run_uuid)
+            gp.delete()
 
 
 @Analysis.route('GET', 'gpu/<session_uuid>')

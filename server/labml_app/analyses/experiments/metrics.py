@@ -80,6 +80,21 @@ class MetricsAnalysis(Analysis):
 
         return MetricsAnalysis(metrics_key.load())
 
+    @staticmethod
+    def delete(run_uuid: str):
+        metrics_key = MetricsIndex.get(run_uuid)
+        preferences_key = MetricsPreferencesIndex.get(run_uuid)
+
+        if metrics_key:
+            m: MetricsModel = metrics_key.load()
+            MetricsIndex.delete(run_uuid)
+            m.delete()
+
+        if preferences_key:
+            mp: MetricsPreferencesModel = preferences_key.load()
+            MetricsPreferencesIndex.delete(run_uuid)
+            mp.delete()
+
 
 @mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'metrics/<run_uuid>')

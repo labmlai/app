@@ -68,9 +68,9 @@ class MemoryAnalysis(Analysis):
 
     @staticmethod
     def get_or_create(session_uuid: str):
-        cpu_key = MemoryIndex.get(session_uuid)
+        memory_key = MemoryIndex.get(session_uuid)
 
-        if not cpu_key:
+        if not memory_key:
             m = MemoryModel()
             m.save()
             MemoryIndex.set(session_uuid, m.key)
@@ -81,7 +81,22 @@ class MemoryAnalysis(Analysis):
 
             return MemoryAnalysis(m)
 
-        return MemoryAnalysis(cpu_key.load())
+        return MemoryAnalysis(memory_key.load())
+
+    @staticmethod
+    def delete(run_uuid: str):
+        memory_key = MemoryIndex.get(run_uuid)
+        preferences_key = MemoryPreferencesIndex.get(run_uuid)
+
+        if memory_key:
+            m: MemoryModel = memory_key.load()
+            MemoryIndex.delete(run_uuid)
+            m.delete()
+
+        if preferences_key:
+            mp: MemoryPreferencesModel = preferences_key.load()
+            MemoryPreferencesIndex.delete(run_uuid)
+            mp.delete()
 
 
 @Analysis.route('GET', 'memory/<session_uuid>')

@@ -82,6 +82,21 @@ class GradientsAnalysis(Analysis):
 
         return GradientsAnalysis(gradients_key.load())
 
+    @staticmethod
+    def delete(run_uuid: str):
+        gradients_key = GradientsIndex.get(run_uuid)
+        preferences_key = GradientsPreferencesIndex.get(run_uuid)
+
+        if gradients_key:
+            g: GradientsModel = gradients_key.load()
+            GradientsIndex.delete(run_uuid)
+            g.delete()
+
+        if preferences_key:
+            gp: GradientsPreferencesModel = preferences_key.load()
+            GradientsPreferencesIndex.delete(run_uuid)
+            gp.delete()
+
 
 @mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'gradients/<run_uuid>')

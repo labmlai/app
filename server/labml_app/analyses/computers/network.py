@@ -64,9 +64,9 @@ class NetworkAnalysis(Analysis):
 
     @staticmethod
     def get_or_create(session_uuid: str):
-        cpu_key = NetworkIndex.get(session_uuid)
+        network_key = NetworkIndex.get(session_uuid)
 
-        if not cpu_key:
+        if not network_key:
             n = NetworkModel()
             n.save()
             NetworkIndex.set(session_uuid, n.key)
@@ -77,7 +77,22 @@ class NetworkAnalysis(Analysis):
 
             return NetworkAnalysis(n)
 
-        return NetworkAnalysis(cpu_key.load())
+        return NetworkAnalysis(network_key.load())
+
+    @staticmethod
+    def delete(run_uuid: str):
+        network_key = NetworkIndex.get(run_uuid)
+        preferences_key = NetworkPreferencesIndex.get(run_uuid)
+
+        if network_key:
+            n: NetworkModel = network_key.load()
+            NetworkIndex.delete(run_uuid)
+            n.delete()
+
+        if preferences_key:
+            np: NetworkPreferencesModel = preferences_key.load()
+            NetworkPreferencesIndex.delete(run_uuid)
+            np.delete()
 
 
 @Analysis.route('GET', 'network/<session_uuid>')
