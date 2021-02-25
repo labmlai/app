@@ -5,7 +5,7 @@ import flask
 import werkzeug.wrappers
 from flask import request, make_response, jsonify
 
-from .logging import logger
+from .logger import logger
 from . import settings
 from . import block_uuids
 from . import auth

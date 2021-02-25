@@ -40,7 +40,7 @@ function Auth0ProviderWithHistory(props: ProviderProps) {
 
     const onRedirectCallback = useCallback((appState: any) => {
         // This gets called when auth0 logs in the  user
-        // We set app state in app_container
+        // We set labml_app state in app_container
         history.replace(appState?.returnTo || '/', '/login')
     }, [history])
 
