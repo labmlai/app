@@ -24,6 +24,10 @@ new SettingsHandler()
 
 new RunHeaderHandler()
 
+ROUTER.route('', [() => {
+    ROUTER.navigate('/runs')
+}])
+
 experimentAnalyses.map((analysis, i) => {
     new analysis.viewHandler()
 })
