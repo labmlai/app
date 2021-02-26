@@ -32,6 +32,8 @@ class NetworkView extends ScreenView {
     sparkTimeLines: SparkTimeLines
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
+    saveButtonContainer: WeyaElement
+    saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
@@ -45,8 +47,9 @@ class NetworkView extends ScreenView {
         this.analysisCache = networkCache.getAnalysis(this.uuid)
         this.preferenceCache = networkCache.getPreferences(this.uuid)
 
-        this.isUpdateDisable = false
+        this.isUpdateDisable = true
         this.loader = new Loader(true)
+        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences})
     }
 
     get requiresAuth(): boolean {
@@ -115,7 +118,7 @@ class NetworkView extends ScreenView {
         $(this.metricsView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Session'}).render($)
-                new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
+                this.saveButtonContainer = $('div')
                 if (this.status && this.status.isRunning) {
                     this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
                     this.refreshButton.render($)
@@ -135,6 +138,15 @@ class NetworkView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
+        this.renderSaveButton()
+    }
+
+    renderSaveButton() {
+        this.saveButton.disabled = this.isUpdateDisable
+        this.saveButtonContainer.innerHTML = ''
+        $(this.saveButtonContainer, $ => {
+            this.saveButton.render($)
+        })
     }
 
     renderLineChart() {
@@ -178,6 +190,7 @@ class NetworkView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
+        this.renderSaveButton()
     }
 
     loadPreferences() {
@@ -201,6 +214,7 @@ class NetworkView extends ScreenView {
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
+        this.renderSaveButton()
     }
 }
 
