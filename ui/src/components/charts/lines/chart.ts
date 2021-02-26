@@ -86,7 +86,7 @@ export class LineChart {
     updateCursorStep(ev: any) {
         if (this.isCursorMoveOpt) {
             let cursorStep: number = null
-            let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
+            let clientX = ev.touches ? ev.touches[0].clientX : ev.clientX
 
             if (clientX) {
                 const info = this.svgElem.getBoundingClientRect()
