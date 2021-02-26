@@ -48,10 +48,9 @@ class LoggerView extends ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.page',
-            {style: {width: `${this.actualWidth}px`}}, $ => {
-                this.loggerView = $('div', '')
-            })
+        this.elem = <HTMLElement>$('div.page', $ => {
+            this.loggerView = $('div', '')
+        })
 
         this.elem.appendChild(this.loader.render($))
 
@@ -110,9 +109,7 @@ class LoggerView extends ScreenView {
             })
             this.runHeaderCard.render($).then()
             $('h2.header.text-center', 'Logger')
-            $('div.terminal-card', $ => {
-                this.outputContainer = $('div', '')
-            })
+            this.outputContainer = $('div.terminal-card')
         })
 
         this.renderOutput()
