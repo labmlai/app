@@ -14,7 +14,6 @@ import ChartGradients from '../chart_gradients';
 export interface TimeSeriesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
-    chartType: string
     chartHeightFraction?: number
     yExtend?: [number, number]
     stepExtend?: [number, number]
@@ -48,7 +47,6 @@ export class TimeSeriesChart {
 
     constructor(opt: TimeSeriesOptions) {
         this.series = opt.series
-        this.chartType = opt.chartType
         this.plotIdx = opt.plotIdx
         this.yExtend = opt.yExtend
         this.forceYStart = opt.forceYStart
@@ -192,7 +190,7 @@ export class TimeSeriesChart {
                                             chartId: this.chartId,
                                             scale: this.yScale,
                                             specifier: '.1s',
-                                            numTicks: this.numTicks
+                                            numTicks: 3
                                         }).render($)
                                     })
                             })

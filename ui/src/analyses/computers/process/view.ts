@@ -8,10 +8,10 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton, SaveButton} from "../../../components/buttons"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import processCache from "./cache"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
-import {ComputerHeaderCard} from '../computer_header/card';
-import {TimeSeriesChart} from '../../../components/charts/timeseries/chart';
-import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart';
+import {toPointValues} from "../../../components/charts/utils"
+import {ComputerHeaderCard} from '../computer_header/card'
+import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
+import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import Timeout = NodeJS.Timeout;
 
 
@@ -41,7 +41,6 @@ class ProcessView extends ScreenView {
         super()
 
         this.uuid = uuid
-        this.currentChart = 0
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.analysisCache = processCache.getAnalysis(this.uuid)
         this.preferenceCache = processCache.getPreferences(this.uuid)
@@ -145,7 +144,6 @@ class ProcessView extends ScreenView {
                 series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkTimeLines.changeCursorValues],
                 isCursorMoveOpt: true
             }).render($)
@@ -195,18 +193,6 @@ class ProcessView extends ScreenView {
             }
             this.plotIdx = res
         }
-    }
-
-    onChangeScale = () => {
-        this.isUpdateDisable = false
-
-        if (this.currentChart === 1) {
-            this.currentChart = 0
-        } else {
-            this.currentChart = this.currentChart + 1
-        }
-
-        this.renderLineChart()
     }
 
     updatePreferences = () => {

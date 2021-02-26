@@ -7,7 +7,7 @@ import {SeriesCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
 import cpuCache from './cache';
-import {SimpleTimeLinesChart} from '../../../components/charts/simple_time_lines/chart';
+import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 
 
 export class CPUCard extends Card {
@@ -56,12 +56,12 @@ export class CPUCard extends Card {
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         Weya(this.lineChartContainer, $ => {
-            new SimpleTimeLinesChart({
+            new TimeSeriesChart({
                 series: this.series,
                 width: this.width,
-                yExtend: [0, 100],
-                // plotIdx: [],
-                // chartType: 'linear'
+                plotIdx: [],
+                yExtend:[0, 100],
+                chartHeightFraction: 4
             }).render($)
         })
     }
