@@ -88,7 +88,9 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
-        ROUTER.navigate(this.navigatePath)
+        setTimeout(args => {
+            ROUTER.navigate(this.navigatePath)
+        }, isMobile ? 100 : 0)
     }
 
     render($: WeyaElementFunction) {
