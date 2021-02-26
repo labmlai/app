@@ -68,12 +68,12 @@ class RunHeaderView extends ScreenView {
 
         $(this.runHeaderView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Run'}).render($)
+                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                 if (this.isEditMode) {
-                    new CancelButton({onButtonClick: this.onToggleEdit}).render($)
-                    new SaveButton({onButtonClick: this.updateRun}).render($)
+                    new CancelButton({onButtonClick: this.onToggleEdit, parent: this.constructor.name}).render($)
+                    new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name}).render($)
                 } else {
-                    new EditButton({onButtonClick: this.onToggleEdit}).render($)
+                    new EditButton({onButtonClick: this.onToggleEdit, parent: this.constructor.name}).render($)
                 }
             })
             $('h2.header.text-center', 'Run Details')

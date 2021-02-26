@@ -96,9 +96,12 @@ class ConfigsView extends ScreenView {
 
         $(this.configsView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Run'}).render($)
+                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                 if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
                     this.refreshButton.render($)
                 }
             })

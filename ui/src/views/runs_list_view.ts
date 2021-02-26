@@ -9,6 +9,7 @@ import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
 import {HamburgerMenuView} from '../components/hamburger_menu';
 import isMobile from '../utils/mobile';
+import mixpanel from "../mix_panel";
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -31,14 +32,16 @@ class RunsListView extends ScreenView {
         this.runListCache = CACHE.getRunsList()
 
         this.loader = new Loader(true)
-        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete})
-        this.editButton = new EditButton({onButtonClick: this.onEdit})
-        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh})
-        this.cancelButton = new CancelButton({onButtonClick: this.onCancel})
+        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
+        this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
+        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh, parent: this.constructor.name})
+        this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
         this.searchQuery = ''
         this.isEditMode = false
         this.runsDeleteSet = new Set<string>()
+
+        mixpanel.track('Runs List View')
     }
 
     render() {

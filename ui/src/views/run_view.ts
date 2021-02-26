@@ -1,3 +1,4 @@
+import mixpanel from "../mix_panel"
 import {Run} from '../models/run'
 import {Status} from "../models/status"
 import {IsUserLogged} from '../models/user'
@@ -40,6 +41,8 @@ class RunView extends ScreenView {
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
         this.loader = new Loader(true)
+
+        mixpanel.track('Run View', {uuid: this.uuid})
     }
 
     get requiresAuth(): boolean {
@@ -116,15 +119,18 @@ class RunView extends ScreenView {
 
         $(this.runView, $ => {
             if (!this.isUserLogged.is_user_logged && !this.run.is_claimed) {
-            new AlertMessage({
-                message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
-                onClickMessage: this.onMessageClick.bind(this)
-            }).render($)
+                new AlertMessage({
+                    message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
+                    onClickMessage: this.onMessageClick.bind(this)
+                }).render($)
             }
             $('div.nav-container', $ => {
-                new BackButton({text: 'Runs'}).render($)
+                new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                 if (this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
                     this.refreshButton.render($)
                 }
             })

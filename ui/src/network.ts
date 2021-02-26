@@ -1,3 +1,4 @@
+import mixpanel from "./mix_panel"
 import {ROUTER} from './app'
 import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, API_BASE_URL} from './env'
 import {Auth0User, User, UserModel} from './models/user'
@@ -121,6 +122,12 @@ class Network {
     async signIn(token: string): Promise<any> {
         let res = await NETWORK.getAuth0Profile(token)
         let user = new Auth0User(res)
+
+        mixpanel.people.set({
+            $name: user.name,
+            $email: user.email,
+        })
+        mixpanel.identify(user.email)
 
         let data = {} as UserModel
         data.name = user.name

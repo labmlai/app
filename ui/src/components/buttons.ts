@@ -2,22 +2,26 @@ import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/wey
 import {ROUTER} from '../app'
 import {computerAnalyses, experimentAnalyses} from '../analyses/analyses'
 import runHeaderAnalysis from '../analyses/experiments/run_header/init'
-import isMobile from '../utils/mobile';
+import isMobile from '../utils/mobile'
+import mixpanel from "../mix_panel"
 
 
 interface buttonOptions {
     onButtonClick?: () => void
     isDisabled?: boolean
+    parent: string
 }
 
 abstract class Button {
     onButtonClick: () => void
     isDisabled: boolean
+    parent: string
     elem?: WeyaElement
 
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
         this.isDisabled = opt.isDisabled ? opt.isDisabled : false
+        this.parent = opt.parent
     }
 
     set disabled(isDisabled: boolean) {
@@ -42,7 +46,6 @@ abstract class Button {
 
     render($: WeyaElementFunction) {
     }
-
 }
 
 interface BackButtonOptions extends buttonOptions {
@@ -91,6 +94,8 @@ export class BackButton extends Button {
         setTimeout(args => {
             ROUTER.navigate(this.navigatePath)
         }, isMobile ? 100 : 0)
+
+        mixpanel.track('Back Button Clicked')
     }
 
     render($: WeyaElementFunction) {

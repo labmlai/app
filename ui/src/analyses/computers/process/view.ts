@@ -114,10 +114,17 @@ class ProcessView extends ScreenView {
 
         $(this.metricsView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Session'}).render($)
-                new SaveButton({onButtonClick: this.updatePreferences, isDisabled: this.isUpdateDisable}).render($)
+                new BackButton({text: 'Session', parent: this.constructor.name}).render($)
+                new SaveButton({
+                    onButtonClick: this.updatePreferences,
+                    isDisabled: this.isUpdateDisable,
+                    parent: this.constructor.name
+                }).render($)
                 if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
                     this.refreshButton.render($)
                 }
             })
