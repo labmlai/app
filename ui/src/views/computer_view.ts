@@ -8,9 +8,10 @@ import {BackButton, RefreshButton} from "../components/buttons"
 import Card from "../analyses/card"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer';
-import {ComputerHeaderCard} from '../analyses/computers/computer_header/card';
-import {computerAnalyses} from '../analyses/analyses';
+import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
+import {computerAnalyses} from '../analyses/analyses'
 import Timeout = NodeJS.Timeout;
+import {AlertMessage} from "../components/alert"
 
 
 class ComputerView extends ScreenView {
@@ -106,29 +107,39 @@ class ComputerView extends ScreenView {
         this.computerHeaderCard.refresh(this.lastUpdated).then()
     }
 
+    onMessageClick() {
+        ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+    }
+
     private async renderRun() {
         this.runView.innerHTML = ''
 
         $(this.runView, $ => {
-            $('div', '.nav-container', $ => {
-                new BackButton({text: 'Computers'}).render($)
-                if (this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
-                    this.refreshButton.render($)
+                if (!this.isUserLogged.is_user_logged && !this.computer.is_claimed) {
+                    new AlertMessage({
+                        message: 'This computer will be deleted in 12 hours. Click here to add it to your experiments.',
+                        onClickMessage: this.onMessageClick.bind(this)
+                    }).render($)
                 }
-            })
-            this.computerHeaderCard = new ComputerHeaderCard({
-                uuid: this.uuid,
-                width: this.actualWidth,
-                lastUpdated: this.lastUpdated
-            })
-            this.computerHeaderCard.render($)
-            computerAnalyses.map((analysis, i) => {
-                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
-                this.cards.push(card)
-                card.render($)
-            })
-        })
+                $('div', '.nav-container', $ => {
+                    new BackButton({text: 'Computers'}).render($)
+                    if (this.status.isRunning) {
+                        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                        this.refreshButton.render($)
+                    }
+                })
+                this.computerHeaderCard = new ComputerHeaderCard({
+                    uuid: this.uuid,
+                    width: this.actualWidth,
+                    lastUpdated: this.lastUpdated
+                })
+                this.computerHeaderCard.render($)
+                computerAnalyses.map((analysis, i) => {
+                    let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
+                    this.cards.push(card)
+                    card.render($)
+                })
+            } )
     }
 }
 
