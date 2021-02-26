@@ -52,7 +52,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__, static_url_path='/static')
+    _app = Flask(__name__, static_folder=STATIC_PATH, static_url_path='/static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
