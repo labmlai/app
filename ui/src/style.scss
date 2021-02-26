@@ -134,11 +134,11 @@ body {
 /* Loader */
 
 .loader {
-  border: 6px solid #f3f3f3;
+  border: 3px solid #f3f3f3;
   border-radius: 50%;
-  border-top: 6px solid #eb6134;
-  width: 40px;
-  height: 40px;
+  border-top: 3px solid #eb6134;
+  width: 30px;
+  height: 30px;
   -webkit-animation: spin 0.5s linear infinite; /* Safari */
   animation: spin 0.5s linear infinite;
   margin-top: 50px;
