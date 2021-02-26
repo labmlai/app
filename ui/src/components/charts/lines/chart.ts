@@ -163,8 +163,7 @@ export class LineChart {
                                 $('g.bottom-axis',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
-                                    },
-                                    $ => {
+                                    }, $ => {
                                         new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
                                     })
                                 $('g.right-axis',

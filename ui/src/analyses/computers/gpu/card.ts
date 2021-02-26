@@ -7,7 +7,7 @@ import {SeriesCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
 import gpuCache from './cache';
-import {SimpleTimeLinesChart} from '../../../components/charts/simple_time_lines/chart';
+import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 
 
 export class GPUCard extends Card {
@@ -18,7 +18,7 @@ export class GPUCard extends Card {
     lineChartContainer: WeyaElement
     elem: WeyaElement
     loader: Loader
-
+    plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
         super()
@@ -54,11 +54,20 @@ export class GPUCard extends Card {
     }
 
     renderLineChart() {
+        let res: number[] = []
+        for (let i = 0; i < this.series.length; i++) {
+            res.push(i)
+        }
+        this.plotIdx = res
+
         this.lineChartContainer.innerHTML = ''
         Weya(this.lineChartContainer, $ => {
-            new SimpleTimeLinesChart({
+            new TimeSeriesChart({
                 series: this.series,
                 width: this.width,
+                plotIdx: this.plotIdx,
+                yExtend: [0, 100],
+                chartHeightFraction: 4
             }).render($)
         })
     }

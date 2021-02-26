@@ -89,6 +89,21 @@ class CPUAnalysis(Analysis):
 
         return CPUAnalysis(cpu_key.load())
 
+    @staticmethod
+    def delete(run_uuid: str):
+        cpu_key = CPUIndex.get(run_uuid)
+        preferences_key = CPUPreferencesIndex.get(run_uuid)
+
+        if cpu_key:
+            c: CPUModel = cpu_key.load()
+            CPUIndex.delete(run_uuid)
+            c.delete()
+
+        if preferences_key:
+            cp: CPUPreferencesModel = preferences_key.load()
+            CPUPreferencesIndex.delete(run_uuid)
+            cp.delete()
+
 
 @Analysis.route('GET', 'cpu/<session_uuid>')
 def get_cpu_tracking(session_uuid: str) -> Any:

@@ -7,7 +7,7 @@ import {SeriesCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
 import networkCache from './cache';
-import {SimpleTimeLinesChart} from '../../../components/charts/simple_time_lines/chart';
+import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 
 
 export class NetworkCard extends Card {
@@ -56,9 +56,11 @@ export class NetworkCard extends Card {
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         Weya(this.lineChartContainer, $ => {
-            new SimpleTimeLinesChart({
+           new TimeSeriesChart({
                 series: this.series,
                 width: this.width,
+                plotIdx: [0],
+                chartHeightFraction: 4
             }).render($)
         })
     }

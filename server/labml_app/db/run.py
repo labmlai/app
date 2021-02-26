@@ -8,6 +8,7 @@ from . import project
 from .status import create_status, Status
 from .. import settings
 from ..logger import logger
+from ..analyses import AnalysisManager
 
 
 class CardInfo(NamedTuple):
@@ -263,6 +264,20 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
                         )
 
     return run
+
+
+def delete(run_uuid: str):
+    run_key = RunIndex.get(run_uuid)
+
+    if run_key:
+        r = run_key.load()
+        s = r.status.load()
+
+        s.delete()
+        r.delete()
+        RunIndex.delete(run_uuid)
+
+        AnalysisManager.delete_run(run_uuid)
 
 
 def get_runs(labml_token: str) -> List[Run]:
