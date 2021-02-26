@@ -70,7 +70,7 @@ $dark-success: #28a745;
 body.light {
   background-color: $light-background;
 
-  .detail-card {
+  .detail-card, .loader-container {
     background-color: $light-background;
   }
 
@@ -310,7 +310,7 @@ body.light {
 body.dark {
   background-color: $dark-background;
 
-  .detail-card {
+  .detail-card, .loader-container {
     background-color: $dark-background;
   }
 

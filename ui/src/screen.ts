@@ -36,7 +36,7 @@ class ScreenContainer {
             this.isUserLogged = val.is_user_logged
             this.updateTheme().then()
         })
-        this.loader = new Loader()
+        this.loader = new Loader(true)
         window.addEventListener('resize', this.onResize)
     }
 

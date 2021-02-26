@@ -149,6 +149,16 @@ body {
   text-align: center;
 }
 
+.loader-container {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
 /* Safari */
 @-webkit-keyframes spin {
   0% {

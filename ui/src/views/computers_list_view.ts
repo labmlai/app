@@ -30,7 +30,7 @@ class ComputersListView extends ScreenView {
 
         this.computerListCache = CACHE.getComputersList()
 
-        this.loader = new Loader()
+        this.loader = new Loader(true)
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete})
         this.editButton = new EditButton({onButtonClick: this.onEdit})
         this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh})

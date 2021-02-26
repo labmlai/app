@@ -26,7 +26,7 @@ class SettingsView extends ScreenView {
 
         this.userCache = CACHE.getUser()
 
-        this.loader = new Loader()
+        this.loader = new Loader(true)
     }
 
     onResize(width: number) {

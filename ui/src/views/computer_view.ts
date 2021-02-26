@@ -38,7 +38,7 @@ class ComputerView extends ScreenView {
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
-        this.loader = new Loader()
+        this.loader = new Loader(true)
     }
 
     get requiresAuth(): boolean {

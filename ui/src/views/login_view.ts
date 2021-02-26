@@ -19,7 +19,7 @@ class LoginView extends ScreenView {
         super()
 
         this.isUserLoggedCache = CACHE.getIsUserLogged()
-        this.loader = new Loader()
+        this.loader = new Loader(true)
 
         this.token = token
         this.returnUrl = returnUrl
