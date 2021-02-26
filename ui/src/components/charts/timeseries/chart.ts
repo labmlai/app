@@ -100,24 +100,22 @@ export class TimeSeriesChart {
     }
 
     updateCursorStep(ev: any) {
-        if (this.isCursorMoveOpt) {
-            let cursorStep: Date = null
-            let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
+        let cursorStep: Date = null
+        let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
 
-            if (clientX) {
-                const info = this.svgElem.getBoundingClientRect()
-                let currentX = this.xScale.invert(clientX - info.left - this.margin)
+        if (clientX) {
+            const info = this.svgElem.getBoundingClientRect()
+            let currentX = this.xScale.invert(clientX - info.left - this.margin)
 
-                cursorStep = currentX
-            }
+            cursorStep = currentX
+        }
 
-            this.renderStep(cursorStep)
-            for (let timeSeriesPlot of this.timeSeriesPlots) {
-                timeSeriesPlot.renderCursorCircle(cursorStep)
-            }
-            for (let func of this.onCursorMove) {
-                func(cursorStep)
-            }
+        this.renderStep(cursorStep)
+        for (let timeSeriesPlot of this.timeSeriesPlots) {
+            timeSeriesPlot.renderCursorCircle(cursorStep)
+        }
+        for (let func of this.onCursorMove) {
+            func(cursorStep)
         }
     }
 
@@ -137,16 +135,10 @@ export class TimeSeriesChart {
             $('div', $ => {
                 $('div', $ => {
                         this.stepContainer = $('div')
-                        this.svgElem = $('svg',
+                        this.svgElem = $('svg', '#time-series-chart',
                             {
-                                id: 'time-series-chart',
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
-                                on: {
-                                    mousemove: this.updateCursorStep.bind(this),
-                                    touchmove: this.updateCursorStep.bind(this),
-                                    touchstart: this.updateCursorStep.bind(this)
-                                }
                             }, $ => {
                                 new ChartGradients().render($)
                                 $('g',
@@ -197,6 +189,11 @@ export class TimeSeriesChart {
                     }
                 )
             })
+            if (this.isCursorMoveOpt) {
+                this.svgElem.addEventListener('touchmove', this.updateCursorStep.bind(this))
+                this.svgElem.addEventListener('touchstart', this.updateCursorStep.bind(this))
+                this.svgElem.addEventListener('mousemove', this.updateCursorStep.bind(this))
+            }
         }
     }
 }

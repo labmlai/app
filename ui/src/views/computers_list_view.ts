@@ -8,7 +8,6 @@ import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../componen
 import {ComputerListItemModel} from '../models/computer_list';
 import {ComputersListItemView} from '../components/computers_list_item';
 import {HamburgerMenuView} from '../components/hamburger_menu';
-import isMobile from '../utils/mobile';
 
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
@@ -108,9 +107,7 @@ class ComputersListView extends ScreenView {
     onItemClicked = (elem: ComputersListItemView) => {
         let uuid = elem.item.session_uuid
         if (!this.isEditMode) {
-            setTimeout(args => {
-                ROUTER.navigate(`/session/${uuid}`)
-            }, isMobile ? 100 : 0)
+            ROUTER.navigate(`/session/${uuid}`)
             return
         }
 

@@ -2,13 +2,11 @@ import d3 from "../../../d3"
 import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {getScale, getLogScale, getExtent, defaultSeriesToPlot} from "../utils"
+import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
 import {LineFill, LinePlot} from "./plot"
-import {getColor} from "../constants"
-import {RightAxis, BottomAxis} from "../axis"
-import {CHART_COLORS} from "../constants"
+import {CHART_COLORS, getColor} from "../constants"
+import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
-import isMobile from "../../../utils/mobile"
 import ChartGradients from "../chart_gradients"
 
 
@@ -84,25 +82,23 @@ export class LineChart {
     }
 
     updateCursorStep(ev: any) {
-        if (this.isCursorMoveOpt) {
-            let cursorStep: number = null
-            let clientX = ev.touches ? ev.touches[0].clientX : ev.clientX
+        let cursorStep: number = null
+        let clientX = ev.touches ? ev.touches[0].clientX : ev.clientX
 
-            if (clientX) {
-                const info = this.svgElem.getBoundingClientRect()
-                let currentX = this.xScale.invert(clientX - info.left - this.margin)
-                if (currentX > 0) {
-                    cursorStep = currentX
-                }
+        if (clientX) {
+            const info = this.svgElem.getBoundingClientRect()
+            let currentX = this.xScale.invert(clientX - info.left - this.margin)
+            if (currentX > 0) {
+                cursorStep = currentX
             }
+        }
 
-            this.renderStep(cursorStep)
-            for (let linePlot of this.linePlots) {
-                linePlot.renderCursorCircle(cursorStep)
-            }
-            for (let func of this.onCursorMove) {
-                func(cursorStep)
-            }
+        this.renderStep(cursorStep)
+        for (let linePlot of this.linePlots) {
+            linePlot.renderCursorCircle(cursorStep)
+        }
+        for (let func of this.onCursorMove) {
+            func(cursorStep)
         }
     }
 
@@ -122,16 +118,10 @@ export class LineChart {
             $('div', $ => {
                 $('div', $ => {
                         this.stepContainer = $('div')
-                        this.svgElem = $('svg',
+                        this.svgElem = $('svg', '#chart',
                             {
-                                id: 'chart',
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
-                                on: {
-                                    mousemove: this.updateCursorStep.bind(this),
-                                    touchmove: this.updateCursorStep.bind(this),
-                                    touchstart: this.updateCursorStep.bind(this)
-                                }
                             }, $ => {
                                 new ChartGradients().render($)
                                 $('g',
@@ -176,6 +166,11 @@ export class LineChart {
                     }
                 )
             })
+            if (this.isCursorMoveOpt) {
+                this.svgElem.addEventListener('touchmove', this.updateCursorStep.bind(this))
+                this.svgElem.addEventListener('touchstart', this.updateCursorStep.bind(this))
+                this.svgElem.addEventListener('mousemove', this.updateCursorStep.bind(this))
+            }
         }
     }
 }

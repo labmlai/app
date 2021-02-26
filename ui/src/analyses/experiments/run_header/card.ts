@@ -7,8 +7,7 @@ import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
-import Timeout = NodeJS.Timeout
-import isMobile from '../../../utils/mobile';
+import Timeout = NodeJS.Timeout;
 
 
 interface RunHeaderOptions extends CardOptions {
@@ -119,8 +118,6 @@ export class RunHeaderCard {
     }
 
     onClick = () => {
-        setTimeout(() => {
-            ROUTER.navigate(`/header/${this.uuid}`)
-        }, isMobile ? 100 : 0)
+        ROUTER.navigate(`/header/${this.uuid}`)
     }
 }

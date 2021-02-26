@@ -8,7 +8,6 @@ import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
 import {HamburgerMenuView} from '../components/hamburger_menu';
-import isMobile from '../utils/mobile';
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -107,9 +106,7 @@ class RunsListView extends ScreenView {
     onItemClicked = (elem: RunsListItemView) => {
         let uuid = elem.item.run_uuid
         if (!this.isEditMode) {
-            setTimeout(args => {
-                ROUTER.navigate(`/run/${uuid}`)
-            }, isMobile ? 100 : 0)
+            ROUTER.navigate(`/run/${uuid}`)
             return
         }
 
