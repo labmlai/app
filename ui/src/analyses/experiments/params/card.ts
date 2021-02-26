@@ -1,5 +1,4 @@
-import {WeyaElementFunction, Weya, WeyaElement,} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
+import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {AnalysisDataModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
@@ -19,7 +18,7 @@ export class ParametersCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'params'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -65,9 +64,5 @@ export class ParametersCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/params/${this.uuid}`)
     }
 }

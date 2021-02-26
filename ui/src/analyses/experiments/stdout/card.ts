@@ -1,5 +1,4 @@
-import {WeyaElement, WeyaElementFunction, Weya} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
+import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
@@ -18,7 +17,7 @@ export class StdOutCard extends Card {
     filter: Filter
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'stdout'})
 
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
@@ -80,9 +79,5 @@ export class StdOutCard extends Card {
             this.renderOutput()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/stdout/${this.uuid}`)
     }
 }

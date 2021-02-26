@@ -1,13 +1,14 @@
-import {WeyaElement, WeyaElementFunction, Weya} from '../../../../../lib/weya/weya'
+import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
-import {getTimeDiff, formatTime} from "../../../utils/time"
+import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
 import Timeout = NodeJS.Timeout
+import isMobile from '../../../utils/mobile';
 
 
 interface RunHeaderOptions extends CardOptions {
@@ -72,7 +73,7 @@ export class RunHeaderCard {
         this.lastRecordedContainer.innerHTML = ''
         Weya(this.lastRecordedContainer, $ => {
             $('div.last-updated.mb-2', `Last Recorded ${this.status.isRunning ?
-                getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
+                    getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
         })
     }
 
@@ -112,12 +113,14 @@ export class RunHeaderCard {
         this.renderLastRecorded()
         this.renderLastUpdated()
 
-        if(!this.status.isRunning){
+        if (!this.status.isRunning) {
             this.clearCounter()
         }
     }
 
     onClick = () => {
-        ROUTER.navigate(`/header/${this.uuid}`)
+        setTimeout(() => {
+            ROUTER.navigate(`/header/${this.uuid}`)
+        }, isMobile ? 100 : 0)
     }
 }

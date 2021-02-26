@@ -1,5 +1,4 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
 import {SeriesModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
@@ -21,7 +20,7 @@ export class NetworkCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'network'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -56,7 +55,7 @@ export class NetworkCard extends Card {
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         Weya(this.lineChartContainer, $ => {
-           new TimeSeriesChart({
+            new TimeSeriesChart({
                 series: this.series,
                 width: this.width,
                 plotIdx: [0],
@@ -72,9 +71,5 @@ export class NetworkCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/network/${this.uuid}`)
     }
 }

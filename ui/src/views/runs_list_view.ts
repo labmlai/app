@@ -8,6 +8,7 @@ import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search';
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
 import {HamburgerMenuView} from '../components/hamburger_menu';
+import isMobile from '../utils/mobile';
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -74,24 +75,6 @@ class RunsListView extends ScreenView {
         })
     }
 
-    private async renderList() {
-        this.currentRunsList = (await this.runListCache.get()).runs
-
-        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
-
-        this.loader.remove()
-        this.renderButtons()
-
-
-        this.runsListContainer.innerHTML = ''
-        $(this.runsListContainer, $ => {
-            for (let i = 0; i < this.currentRunsList.length; i++) {
-                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
-            }
-        })
-    }
-
     runsFilter = (run: RunListItemModel, query: RegExp) => {
         let name = run.name.toLowerCase()
         let comment = run.comment.toLowerCase()
@@ -117,13 +100,16 @@ class RunsListView extends ScreenView {
 
     onCancel = () => {
         this.isEditMode = false
-        this.renderButtons()
+        this.runsDeleteSet.clear()
+        this.renderList().then()
     }
 
     onItemClicked = (elem: RunsListItemView) => {
         let uuid = elem.item.run_uuid
         if (!this.isEditMode) {
-            ROUTER.navigate(`/run/${uuid}`)
+            setTimeout(args => {
+                ROUTER.navigate(`/run/${uuid}`)
+            }, isMobile ? 100 : 0)
             return
         }
 
@@ -140,6 +126,24 @@ class RunsListView extends ScreenView {
     onSearch = (query: string) => {
         this.searchQuery = query
         this.renderList().then()
+    }
+
+    private async renderList() {
+        this.currentRunsList = (await this.runListCache.get()).runs
+
+        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+        this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
+
+        this.loader.remove()
+        this.renderButtons()
+
+
+        this.runsListContainer.innerHTML = ''
+        $(this.runsListContainer, $ => {
+            for (let i = 0; i < this.currentRunsList.length; i++) {
+                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+            }
+        })
     }
 
 }

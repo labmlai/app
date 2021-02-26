@@ -1,5 +1,4 @@
-import {WeyaElementFunction, Weya, WeyaElement,} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
+import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import Card from "../../card"
@@ -27,7 +26,7 @@ export class MetricsCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'metrics'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -94,16 +93,12 @@ export class MetricsCard extends Card {
     }
 
     async refresh() {
-         this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
 
         if (this.series.length > 0) {
             this.renderLineChart()
             this.renderSparkLines()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/metrics/${this.uuid}`)
     }
 }

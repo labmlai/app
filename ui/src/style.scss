@@ -131,6 +131,15 @@ body {
   font-size: .8rem;
 }
 
+.btn, .tab, .list-item, .labml-card {
+  transition: all 0.1s;
+  transition-delay: 150ms;
+
+  &:active, &.selected {
+    transition: none;
+  }
+}
+
 
 /* Loader */
 

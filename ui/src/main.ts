@@ -47,6 +47,11 @@ if (
     })
 }
 
+// To make sure that :active is triggered in safari
+// Ref: https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/AdjustingtheTextSize/AdjustingtheTextSize.html
+document.addEventListener("touchstart", () => {
+}, true);
+
 if (SENTRY_DSN) {
     Sentry.init({
         dsn: SENTRY_DSN,

@@ -37,7 +37,7 @@ class ComputedValue {
             }
         }
         $('span.computed', $ => {
-                $('span.empty', truncated, {title: this.computed})
+            $('span.empty', truncated, {title: this.computed})
         })
     }
 }

@@ -1,5 +1,4 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
 import {SeriesModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
@@ -21,7 +20,7 @@ export class GPUCard extends Card {
     plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'gpu'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -79,9 +78,5 @@ export class GPUCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/gpu/${this.uuid}`)
     }
 }

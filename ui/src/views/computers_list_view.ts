@@ -8,6 +8,7 @@ import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../componen
 import {ComputerListItemModel} from '../models/computer_list';
 import {ComputersListItemView} from '../components/computers_list_item';
 import {HamburgerMenuView} from '../components/hamburger_menu';
+import isMobile from '../utils/mobile';
 
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
@@ -75,24 +76,6 @@ class ComputersListView extends ScreenView {
         })
     }
 
-    private async renderList() {
-        this.currentComputersList = (await this.computerListCache.get()).computers
-
-        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))
-
-        this.loader.remove()
-        this.renderButtons()
-
-
-        this.computersListContainer.innerHTML = ''
-        $(this.computersListContainer, $ => {
-            for (let i = 0; i < this.currentComputersList.length; i++) {
-                new ComputersListItemView({item: this.currentComputersList[i], onClick: this.onItemClicked}).render($)
-            }
-        })
-    }
-
     computersFilter = (computer: ComputerListItemModel, query: RegExp) => {
         let name = computer.name.toLowerCase()
         let comment = computer.comment.toLowerCase()
@@ -118,13 +101,16 @@ class ComputersListView extends ScreenView {
 
     onCancel = () => {
         this.isEditMode = false
-        this.renderButtons()
+        this.computersDeleteSet.clear()
+        this.renderList().then()
     }
 
     onItemClicked = (elem: ComputersListItemView) => {
         let uuid = elem.item.session_uuid
         if (!this.isEditMode) {
-            ROUTER.navigate(`/session/${uuid}`)
+            setTimeout(args => {
+                ROUTER.navigate(`/session/${uuid}`)
+            }, isMobile ? 100 : 0)
             return
         }
 
@@ -141,6 +127,24 @@ class ComputersListView extends ScreenView {
     onSearch = (query: string) => {
         this.searchQuery = query
         this.renderList().then()
+    }
+
+    private async renderList() {
+        this.currentComputersList = (await this.computerListCache.get()).computers
+
+        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+        this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))
+
+        this.loader.remove()
+        this.renderButtons()
+
+
+        this.computersListContainer.innerHTML = ''
+        $(this.computersListContainer, $ => {
+            for (let i = 0; i < this.currentComputersList.length; i++) {
+                new ComputersListItemView({item: this.currentComputersList[i], onClick: this.onItemClicked}).render($)
+            }
+        })
     }
 
 }

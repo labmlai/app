@@ -1,5 +1,4 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
 import {SeriesModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
@@ -21,7 +20,7 @@ export class ProcessCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'process'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -72,9 +71,5 @@ export class ProcessCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/process/${this.uuid}`)
     }
 }

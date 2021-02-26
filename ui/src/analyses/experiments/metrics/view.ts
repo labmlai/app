@@ -152,7 +152,7 @@ class MetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt : true
+                isCursorMoveOpt: true
             }).render($)
         })
     }
@@ -160,7 +160,7 @@ class MetricsView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            this.sparkLines =new SparkLines({
+            this.sparkLines = new SparkLines({
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,

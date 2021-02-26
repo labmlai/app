@@ -1,5 +1,4 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
 import {SeriesModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
@@ -21,7 +20,7 @@ export class CPUCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'cpu'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -60,7 +59,7 @@ export class CPUCard extends Card {
                 series: this.series,
                 width: this.width,
                 plotIdx: [],
-                yExtend:[0, 100],
+                yExtend: [0, 100],
                 chartHeightFraction: 4
             }).render($)
         })
@@ -73,9 +72,5 @@ export class CPUCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/cpu/${this.uuid}`)
     }
 }

@@ -2,6 +2,7 @@ import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/wey
 import {ROUTER} from '../app'
 import {computerAnalyses, experimentAnalyses} from '../analyses/analyses'
 import runHeaderAnalysis from '../analyses/experiments/run_header/init'
+import isMobile from '../utils/mobile';
 
 
 interface buttonOptions {
@@ -13,13 +14,6 @@ abstract class Button {
     onButtonClick: () => void
     isDisabled: boolean
     elem?: WeyaElement
-
-    onClick = (e: Event) => {
-        e.preventDefault()
-        if (!this.isDisabled) {
-            this.onButtonClick()
-        }
-    }
 
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
@@ -35,6 +29,15 @@ abstract class Button {
             }
             this.elem.classList.remove('disabled')
         }
+    }
+
+    onClick = (e: Event) => {
+        e.preventDefault()
+        setTimeout(args => {
+            if (!this.isDisabled) {
+                this.onButtonClick()
+            }
+        }, isMobile ? 100 : 0)
     }
 
     render($: WeyaElementFunction) {
@@ -219,15 +222,17 @@ export class NavButton extends Button {
 
     onClick = (e: Event) => {
         e.preventDefault()
-        if (this.link) {
-            if (this.target === '_blank') {
-                window.open(this.link)
+        setTimeout(args => {
+            if (this.link) {
+                if (this.target === '_blank') {
+                    window.open(this.link)
+                    return
+                }
+                ROUTER.navigate(this.link)
                 return
             }
-            ROUTER.navigate(this.link)
-            return
-        }
-        this.onButtonClick()
+            this.onButtonClick()
+        }, isMobile ? 100 : 0)
     }
 }
 

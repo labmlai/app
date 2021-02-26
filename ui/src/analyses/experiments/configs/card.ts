@@ -1,5 +1,4 @@
-import {WeyaElementFunction, Weya, WeyaElement} from '../../../../../lib/weya/weya'
-import {ROUTER} from '../../../app'
+import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
@@ -18,7 +17,7 @@ export class ConfigsCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super()
+        super({...opt, path: 'configs'})
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -64,9 +63,5 @@ export class ConfigsCard extends Card {
         Weya(this.configsContainer, $ => {
             new Configs({configs: this.run.configs, width: this.width, isHyperParamOnly: true}).render($)
         })
-    }
-
-    onClick = () => {
-        ROUTER.navigate(`/configs/${this.uuid}`)
     }
 }
