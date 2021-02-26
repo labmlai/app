@@ -64,9 +64,9 @@ class ProcessAnalysis(Analysis):
 
     @staticmethod
     def get_or_create(session_uuid: str):
-        cpu_key = ProcessIndex.get(session_uuid)
+        process_key = ProcessIndex.get(session_uuid)
 
-        if not cpu_key:
+        if not process_key:
             p = ProcessModel()
             p.save()
             ProcessIndex.set(session_uuid, p.key)
@@ -77,7 +77,22 @@ class ProcessAnalysis(Analysis):
 
             return ProcessAnalysis(p)
 
-        return ProcessAnalysis(cpu_key.load())
+        return ProcessAnalysis(process_key.load())
+
+    @staticmethod
+    def delete(run_uuid: str):
+        process_key = ProcessIndex.get(run_uuid)
+        preferences_key = ProcessPreferencesIndex.get(run_uuid)
+
+        if process_key:
+            p: ProcessModel = process_key.load()
+            ProcessIndex.delete(run_uuid)
+            p.delete()
+
+        if preferences_key:
+            pp: ProcessPreferencesModel = preferences_key.load()
+            ProcessPreferencesIndex.delete(run_uuid)
+            pp.delete()
 
 
 @Analysis.route('GET', 'process/<session_uuid>')

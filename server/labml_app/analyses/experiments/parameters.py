@@ -82,6 +82,21 @@ class ParametersAnalysis(Analysis):
 
         return ParametersAnalysis(parameters_key.load())
 
+    @staticmethod
+    def delete(run_uuid: str):
+        parameters_key = ParametersIndex.get(run_uuid)
+        preferences_key = ParametersPreferencesIndex.get(run_uuid)
+
+        if parameters_key:
+            p: ParametersModel = parameters_key.load()
+            ParametersIndex.delete(run_uuid)
+            p.delete()
+
+        if preferences_key:
+            pp: ParametersPreferencesModel = preferences_key.load()
+            ParametersPreferencesIndex.delete(run_uuid)
+            pp.delete()
+
 
 @mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'parameters/<run_uuid>')

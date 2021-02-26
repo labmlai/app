@@ -3,7 +3,7 @@ from typing import List, Dict, Union
 
 from labml_db import Model, Key, Index
 
-from .run import Run
+from . import run
 from .computer import Computer
 
 
@@ -11,7 +11,7 @@ class Project(Model['Project']):
     labml_token: str
     is_sharable: float
     name: str
-    runs: Dict[str, Key[Run]]
+    runs: Dict[str, Key[run.Run]]
     computers: Dict[str, Key[Computer]]
     is_run_added: bool
 
@@ -25,7 +25,7 @@ class Project(Model['Project']):
                     is_run_added=False,
                     )
 
-    def get_runs(self) -> List[Run]:
+    def get_runs(self) -> List[run.Run]:
         res = []
         for run_uuid, run_key in self.runs.items():
             res.append(run_key.load())
@@ -47,6 +47,7 @@ class Project(Model['Project']):
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
+                run.delete(run_uuid)
 
         self.save()
 
@@ -87,15 +88,27 @@ def clean_project(labml_token: str):
     project_key = ProjectIndex.get(labml_token)
     p = project_key.load()
 
-    delete_list = []
     for run_uuid, run_key in p.runs.items():
         r = run_key.load()
         s = r.status.load()
 
         if (time.time() - 86400) > s.last_updated_time:
-            delete_list.append(run_uuid)
-
-    for run_uuid in delete_list:
-        p.runs.pop(run_uuid)
+            p.runs.pop(run_uuid)
+            run.delete(run_uuid)
 
     p.save()
+
+
+def delete_unclaimed_runs():
+    run_keys = run.Run.get_all()
+    for run_key in run_keys:
+        if run_key:
+            try:
+                r = run_key.load()
+
+                if not r.is_claimed:
+                    run.delete(r.run_uuid)
+            except TypeError:
+                print(f'error while deleting the run {run_key}')
+
+

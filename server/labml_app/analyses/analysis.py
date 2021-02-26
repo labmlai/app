@@ -16,6 +16,10 @@ class Analysis:
         raise NotImplementedError
 
     @staticmethod
+    def delete(run_uuid: str):
+        raise NotImplementedError
+
+    @staticmethod
     def route(method: str, url: str):
         def decorator(f):
             URLS.append((method, f, url))

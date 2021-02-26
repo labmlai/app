@@ -82,6 +82,21 @@ class OutputsAnalysis(Analysis):
 
         return OutputsAnalysis(outputs_key.load())
 
+    @staticmethod
+    def delete(run_uuid: str):
+        outputs_key = OutputsIndex.get(run_uuid)
+        preferences_key = OutputsPreferencesIndex.get(run_uuid)
+
+        if outputs_key:
+            o: OutputsModel = outputs_key.load()
+            OutputsIndex.delete(run_uuid)
+            o.delete()
+
+        if preferences_key:
+            op: OutputsPreferencesModel = preferences_key.load()
+            OutputsPreferencesIndex.delete(run_uuid)
+            op.delete()
+
 
 @mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'outputs/<run_uuid>')
