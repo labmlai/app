@@ -19,7 +19,7 @@ class StdOutView extends ScreenView {
     statusCache: RunStatusCache
     runCache: RunCache
     actualWidth: number
-    loggerView: WeyaElement
+    stdOutView: WeyaElement
     outputContainer: WeyaElement
     autoRefresh: Timeout
     loader: Loader
@@ -48,10 +48,9 @@ class StdOutView extends ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.page',
-            {style: {width: `${this.actualWidth}px`}}, $ => {
-                this.loggerView = $('div', '')
-            })
+        this.elem = <HTMLElement>$('div.page', $ => {
+            this.stdOutView = $('div', '')
+        })
 
         this.elem.appendChild(this.loader.render($))
 
@@ -94,9 +93,9 @@ class StdOutView extends ScreenView {
     }
 
     renderStdOut() {
-        this.loggerView.innerHTML = ''
+        this.stdOutView.innerHTML = ''
 
-        $(this.loggerView, $ => {
+        $(this.stdOutView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Run'}).render($)
                 if (this.status && this.status.isRunning) {
@@ -110,9 +109,7 @@ class StdOutView extends ScreenView {
             })
             this.runHeaderCard.render($).then()
             $('h2.header.text-center', 'Standard Out')
-            $('div.terminal-card', $ => {
-                this.outputContainer = $('div', '')
-            })
+            this.outputContainer = $('div.terminal-card')
         })
 
         this.renderOutput()
