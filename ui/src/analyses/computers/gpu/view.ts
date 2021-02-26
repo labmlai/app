@@ -46,7 +46,7 @@ class GPUView extends ScreenView {
         this.preferenceCache = gpuCache.getPreferences(this.uuid)
 
         this.isUpdateDisable = false
-        this.loader = new Loader()
+        this.loader = new Loader(true)
     }
 
     get requiresAuth(): boolean {

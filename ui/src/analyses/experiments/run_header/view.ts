@@ -33,7 +33,7 @@ class RunHeaderView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isEditMode = false
-        this.loader = new Loader()
+        this.loader = new Loader(true)
     }
 
     get requiresAuth(): boolean {

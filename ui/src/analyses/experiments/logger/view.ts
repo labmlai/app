@@ -33,7 +33,7 @@ class LoggerView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.loader = new Loader()
+        this.loader = new Loader(true)
         this.filter = new Filter({})
     }
 

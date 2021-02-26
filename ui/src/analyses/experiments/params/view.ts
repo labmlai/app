@@ -47,7 +47,7 @@ class ParametersView extends ScreenView {
         this.preferenceCache = parametersCache.getPreferences(this.uuid)
 
         this.isUpdateDisable = false
-        this.loader = new Loader()
+        this.loader = new Loader(true)
     }
 
     get requiresAuth(): boolean {
