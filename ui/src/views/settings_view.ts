@@ -3,10 +3,10 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {UserCache} from "../cache/cache"
-import {HamburgerMenuView} from '../components/hamburger_menu';
-import {User} from '../models/user';
-import EditableField from '../components/editable_field';
-import mixpanel from "../mix_panel";
+import {HamburgerMenuView} from '../components/hamburger_menu'
+import {User} from '../models/user'
+import EditableField from '../components/editable_field'
+import mix_panel from "../mix_panel"
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 const LIGHT = 'light'
@@ -28,7 +28,7 @@ class SettingsView extends ScreenView {
         this.userCache = CACHE.getUser()
         this.loader = new Loader(true)
 
-        mixpanel.track('Settings View')
+        mix_panel.track('Settings View')
     }
 
     onResize(width: number) {

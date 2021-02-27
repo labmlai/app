@@ -1,4 +1,3 @@
-import mixpanel from "../mix_panel"
 import {Run} from '../models/run'
 import {Status} from "../models/status"
 import {IsUserLogged} from '../models/user'
@@ -13,6 +12,7 @@ import {experimentAnalyses} from "../analyses/analyses"
 import Card from "../analyses/card"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import Timeout = NodeJS.Timeout
+import mix_panel from "../mix_panel"
 
 
 class RunView extends ScreenView {
@@ -42,7 +42,7 @@ class RunView extends ScreenView {
 
         this.loader = new Loader(true)
 
-        mixpanel.track('Run View', {uuid: this.uuid})
+        mix_panel.track('Run View', {uuid: this.uuid})
     }
 
     get requiresAuth(): boolean {

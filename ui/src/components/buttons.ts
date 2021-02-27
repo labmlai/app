@@ -3,7 +3,7 @@ import {ROUTER} from '../app'
 import {computerAnalyses, experimentAnalyses} from '../analyses/analyses'
 import runHeaderAnalysis from '../analyses/experiments/run_header/init'
 import isMobile from '../utils/mobile'
-import mixpanel from "../mix_panel"
+import mix_panel from "../mix_panel"
 
 
 interface buttonOptions {
@@ -36,6 +36,8 @@ abstract class Button {
     }
 
     onClick = (e: Event) => {
+        mix_panel.track(`${this.constructor.name} Clicked`, {parent: this.parent})
+
         e.preventDefault()
         setTimeout(args => {
             if (!this.isDisabled) {
@@ -94,8 +96,6 @@ export class BackButton extends Button {
         setTimeout(args => {
             ROUTER.navigate(this.navigatePath)
         }, isMobile ? 100 : 0)
-
-        mixpanel.track('Back Button Clicked')
     }
 
     render($: WeyaElementFunction) {

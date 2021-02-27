@@ -10,6 +10,7 @@ import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
+import mix_panel from "../../../mix_panel";
 
 
 class RunHeaderView extends ScreenView {
@@ -34,6 +35,8 @@ class RunHeaderView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isEditMode = false
         this.loader = new Loader(true)
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

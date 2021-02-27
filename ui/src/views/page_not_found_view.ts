@@ -1,7 +1,7 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
-import mixpanel from "../mix_panel";
+import mix_panel from "../mix_panel"
 
 function wrapEvent(eventName: string, func: Function) {
     function wrapper() {
@@ -32,7 +32,7 @@ class PageNotFoundView extends ScreenView {
             this.events[k] = wrapEvent(k, func)
         }
 
-        mixpanel.track('404 View')
+        mix_panel.track('404 View')
     }
 
     render() {

@@ -13,6 +13,7 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel";
 
 
 class ProcessView extends ScreenView {
@@ -47,6 +48,8 @@ class ProcessView extends ScreenView {
 
         this.isUpdateDisable = false
         this.loader = new Loader(true)
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

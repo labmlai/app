@@ -5,11 +5,11 @@ import {Loader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
-import {SearchView} from '../components/search';
-import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
-import {HamburgerMenuView} from '../components/hamburger_menu';
-import isMobile from '../utils/mobile';
-import mixpanel from "../mix_panel";
+import {SearchView} from '../components/search'
+import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
+import {HamburgerMenuView} from '../components/hamburger_menu'
+import isMobile from '../utils/mobile'
+import mix_panel from "../mix_panel"
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -41,7 +41,7 @@ class RunsListView extends ScreenView {
         this.isEditMode = false
         this.runsDeleteSet = new Set<string>()
 
-        mixpanel.track('Runs List View')
+        mix_panel.track('Runs List View')
     }
 
     render() {

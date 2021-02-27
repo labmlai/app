@@ -12,7 +12,7 @@ import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
 import Timeout = NodeJS.Timeout;
 import {AlertMessage} from "../components/alert"
-import mixpanel from "../mix_panel"
+import mix_panel from "../mix_panel"
 
 
 class ComputerView extends ScreenView {
@@ -42,7 +42,7 @@ class ComputerView extends ScreenView {
 
         this.loader = new Loader(true)
 
-        mixpanel.track('Computer View', {uuid: this.uuid})
+        mix_panel.track('Computer View', {uuid: this.uuid})
     }
 
     get requiresAuth(): boolean {

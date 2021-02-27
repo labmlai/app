@@ -1,4 +1,4 @@
-import mixpanel from "./mix_panel"
+import mix_panel from "./mix_panel"
 import {ROUTER} from './app'
 import {APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, API_BASE_URL} from './env'
 import {Auth0User, User, UserModel} from './models/user'
@@ -123,11 +123,11 @@ class Network {
         let res = await NETWORK.getAuth0Profile(token)
         let user = new Auth0User(res)
 
-        mixpanel.people.set({
+        mix_panel.people.set({
             $name: user.name,
             $email: user.email,
         })
-        mixpanel.identify(user.email)
+        mix_panel.identify(user.email)
 
         let data = {} as UserModel
         data.name = user.name

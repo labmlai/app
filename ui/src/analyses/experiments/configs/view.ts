@@ -9,6 +9,7 @@ import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Configs} from "./components"
 import Timeout = NodeJS.Timeout
+import mix_panel from "../../../mix_panel";
 
 
 class ConfigsView extends ScreenView {
@@ -33,6 +34,8 @@ class ConfigsView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.loader = new Loader(true)
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {

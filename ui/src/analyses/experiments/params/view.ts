@@ -13,6 +13,7 @@ import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import Timeout = NodeJS.Timeout
 import {ROUTER, SCREEN} from "../../../app"
+import mix_panel from "../../../mix_panel";
 
 
 class ParametersView extends ScreenView {
@@ -51,6 +52,8 @@ class ParametersView extends ScreenView {
         this.isUpdateDisable = true
         this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
