@@ -7,6 +7,7 @@ import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
 import gpuCache from './cache';
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
+import {Labels} from "../../../components/charts/labels"
 
 
 export class GPUCard extends Card {
@@ -43,6 +44,7 @@ export class GPUCard extends Card {
 
         Weya(this.elem, $ => {
             this.lineChartContainer = $('div', '')
+            new Labels({labels: Array.from(this.series, x => x['name'])}).render($)
         })
 
         if (this.series.length > 0) {

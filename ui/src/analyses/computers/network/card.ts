@@ -5,8 +5,9 @@ import {CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
-import networkCache from './cache';
+import networkCache from './cache'
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
+import {Labels} from "../../../components/charts/labels"
 
 
 export class NetworkCard extends Card {
@@ -43,6 +44,7 @@ export class NetworkCard extends Card {
 
         Weya(this.elem, $ => {
             this.lineChartContainer = $('div', '')
+            new Labels({labels: Array.from(this.series, x => x['name'])}).render($)
         })
 
         if (this.series.length > 0) {
