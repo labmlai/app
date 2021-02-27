@@ -111,6 +111,8 @@ class RunView extends ScreenView {
     }
 
     onMessageClick() {
+        mix_panel.track('Unclaimed Warning Clicked', {uuid: this.uuid, analysis: this.constructor.name})
+
         ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
     }
 
