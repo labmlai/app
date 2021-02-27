@@ -18,7 +18,7 @@ server-prod: ## compile and start server in prod
 
 compile: ## Compile JS
 	rm -rf static
-	mkdir static
+	mkdir -p static/js
 	cp ui/src/index.html static/index.html
 	cp -r ui/images static/
 	npm run build
