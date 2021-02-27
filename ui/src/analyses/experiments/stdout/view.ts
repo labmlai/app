@@ -9,6 +9,7 @@ import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
 import Timeout = NodeJS.Timeout
+import mix_panel from "../../../mix_panel";
 
 
 class StdOutView extends ScreenView {
@@ -35,6 +36,8 @@ class StdOutView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.loader = new Loader(true)
         this.filter = new Filter({})
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -97,9 +100,12 @@ class StdOutView extends ScreenView {
 
         $(this.stdOutView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Run'}).render($)
+                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                 if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
                     this.refreshButton.render($)
                 }
             })

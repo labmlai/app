@@ -4,10 +4,13 @@ import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {ComputersListCache} from "../cache/cache"
 import {SearchView} from '../components/search';
-import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons';
-import {ComputerListItemModel} from '../models/computer_list';
-import {ComputersListItemView} from '../components/computers_list_item';
-import {HamburgerMenuView} from '../components/hamburger_menu';
+import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
+import {ComputerListItemModel} from '../models/computer_list'
+import {ComputersListItemView} from '../components/computers_list_item'
+import {HamburgerMenuView} from '../components/hamburger_menu'
+import isMobile from '../utils/mobile'
+import mix_panel from "../mix_panel"
+
 
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
@@ -31,14 +34,16 @@ class ComputersListView extends ScreenView {
         this.computerListCache = CACHE.getComputersList()
 
         this.loader = new Loader(true)
-        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete})
-        this.editButton = new EditButton({onButtonClick: this.onEdit})
-        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh})
-        this.cancelButton = new CancelButton({onButtonClick: this.onCancel})
+        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
+        this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
+        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh, parent: this.constructor.name})
+        this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
         this.searchQuery = ''
         this.isEditMode = false
         this.computersDeleteSet = new Set<string>()
+
+        mix_panel.track('Computers List View')
     }
 
     render() {

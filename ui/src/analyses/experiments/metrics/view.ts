@@ -13,6 +13,7 @@ import Timeout = NodeJS.Timeout
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
+import mix_panel from "../../../mix_panel";
 
 
 class MetricsView extends ScreenView {
@@ -50,7 +51,9 @@ class MetricsView extends ScreenView {
 
         this.isUpdateDisable = true
         this.loader = new Loader(true)
-        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences})
+        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -118,10 +121,13 @@ class MetricsView extends ScreenView {
 
         $(this.metricsView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Run'}).render($)
+                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                 this.saveButtonContainer = $('div')
                 if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
                     this.refreshButton.render($)
                 }
             })
@@ -133,7 +139,8 @@ class MetricsView extends ScreenView {
             new ToggleButton({
                 onButtonClick: this.onChangeScale,
                 text: 'Log',
-                isToggled: this.currentChart > 0
+                isToggled: this.currentChart > 0,
+                parent: this.constructor.name
             }).render($)
             $('h2.header.text-center', 'Metrics')
             $('div.detail-card', $ => {

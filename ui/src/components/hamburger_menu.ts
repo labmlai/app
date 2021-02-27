@@ -1,10 +1,9 @@
 import {Weya as $, WeyaElementFunction} from '../../../lib/weya/weya'
-import {MenuButton, NavButton} from './buttons';
-import {Loader} from './loader';
+import {MenuButton, NavButton} from './buttons'
+import {Loader} from './loader'
 import CACHE, {UserCache} from "../cache/cache"
-import {User} from '../models/user';
-import {ROUTER} from '../app';
-import NETWORK from '../network';
+import {User} from '../models/user'
+import NETWORK from '../network'
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 
@@ -42,7 +41,7 @@ export class HamburgerMenuView {
                 this.navLinksContainer = $('nav', '.nav-links', $ => {
                     this.loader.render($)
                 })
-                new MenuButton({onButtonClick: this.onMenuToggle}).render($)
+                new MenuButton({onButtonClick: this.onMenuToggle, parent: this.constructor.name}).render($)
                 $('div', '.title', $ => {
                     $('h5', this.title)
                 })
@@ -76,31 +75,41 @@ export class HamburgerMenuView {
             new NavButton({
                 icon: '.fas.fa-running',
                 text: 'Runs',
-                link: '/runs'
+                link: '/runs',
+                parent: this.constructor.name
             }).render($)
             new NavButton({
                 icon: '.fas.fa-desktop',
                 text: 'Computers',
-                link: '/computers'
+                link: '/computers',
+                parent: this.constructor.name
             }).render($)
             new NavButton({
                 icon: '.fas.fa-book',
                 text: 'Documentation',
                 link: 'https://docs.labml.ai',
-                target: '_blank'
+                target: '_blank',
+                parent: this.constructor.name
             }).render($)
             new NavButton({
                 icon: '.fas.fa-sliders-h',
                 text: 'Settings',
-                link: '/settings'
+                link: '/settings',
+                parent: this.constructor.name
             }).render($)
             $('span', '.mt-5', '')
-            new NavButton({icon: '.fas.fa-power-off', text: 'Log out', onButtonClick: this.onLogOut}).render($)
+            new NavButton({
+                icon: '.fas.fa-power-off',
+                text: 'Log out',
+                onButtonClick: this.onLogOut,
+                parent: this.constructor.name
+            }).render($)
             new NavButton({
                 icon: '.fas.fa-comments',
                 text: 'Join our Slack',
                 link: 'https://join.slack.com/t/labforml/shared_invite/zt-egj9zvq9-Dl3hhZqobexgT7aVKnD14g/',
-                target: '_blank'
+                target: '_blank',
+                parent: this.constructor.name
             }).render($)
         })
     }

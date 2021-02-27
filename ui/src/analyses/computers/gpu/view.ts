@@ -13,6 +13,7 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel";
 
 
 class GPUView extends ScreenView {
@@ -49,7 +50,9 @@ class GPUView extends ScreenView {
 
         this.isUpdateDisable = true
         this.loader = new Loader(true)
-        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences})
+        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -117,10 +120,13 @@ class GPUView extends ScreenView {
 
         $(this.metricsView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Session'}).render($)
+                new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                 this.saveButtonContainer = $('div')
                 if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
                     this.refreshButton.render($)
                 }
             })

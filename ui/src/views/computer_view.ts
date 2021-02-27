@@ -12,6 +12,7 @@ import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
 import Timeout = NodeJS.Timeout;
 import {AlertMessage} from "../components/alert"
+import mix_panel from "../mix_panel"
 
 
 class ComputerView extends ScreenView {
@@ -40,6 +41,8 @@ class ComputerView extends ScreenView {
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
         this.loader = new Loader(true)
+
+        mix_panel.track('Computer View', {uuid: this.uuid})
     }
 
     get requiresAuth(): boolean {
@@ -115,31 +118,34 @@ class ComputerView extends ScreenView {
         this.runView.innerHTML = ''
 
         $(this.runView, $ => {
-                if (!this.isUserLogged.is_user_logged && !this.computer.is_claimed) {
-                    new AlertMessage({
-                        message: 'This computer will be deleted in 12 hours. Click here to add it to your experiments.',
-                        onClickMessage: this.onMessageClick.bind(this)
-                    }).render($)
+            if (!this.isUserLogged.is_user_logged && !this.computer.is_claimed) {
+                new AlertMessage({
+                    message: 'This computer will be deleted in 12 hours. Click here to add it to your experiments.',
+                    onClickMessage: this.onMessageClick.bind(this)
+                }).render($)
+            }
+            $('div', '.nav-container', $ => {
+                new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
+                if (this.status.isRunning) {
+                    this.refreshButton = new RefreshButton({
+                        onButtonClick: this.onRefresh.bind(this),
+                        parent: this.constructor.name
+                    })
+                    this.refreshButton.render($)
                 }
-                $('div', '.nav-container', $ => {
-                    new BackButton({text: 'Computers'}).render($)
-                    if (this.status.isRunning) {
-                        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh.bind(this)})
-                        this.refreshButton.render($)
-                    }
-                })
-                this.computerHeaderCard = new ComputerHeaderCard({
-                    uuid: this.uuid,
-                    width: this.actualWidth,
-                    lastUpdated: this.lastUpdated
-                })
-                this.computerHeaderCard.render($)
-                computerAnalyses.map((analysis, i) => {
-                    let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
-                    this.cards.push(card)
-                    card.render($)
-                })
-            } )
+            })
+            this.computerHeaderCard = new ComputerHeaderCard({
+                uuid: this.uuid,
+                width: this.actualWidth,
+                lastUpdated: this.lastUpdated
+            })
+            this.computerHeaderCard.render($)
+            computerAnalyses.map((analysis, i) => {
+                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
+                this.cards.push(card)
+                card.render($)
+            })
+        })
     }
 }
 

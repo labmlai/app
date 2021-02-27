@@ -10,6 +10,7 @@ import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
+import mix_panel from "../../../mix_panel";
 
 
 class RunHeaderView extends ScreenView {
@@ -34,6 +35,8 @@ class RunHeaderView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isEditMode = false
         this.loader = new Loader(true)
+
+        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -68,12 +71,12 @@ class RunHeaderView extends ScreenView {
 
         $(this.runHeaderView, $ => {
             $('div.nav-container', $ => {
-                new BackButton({text: 'Run'}).render($)
+                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                 if (this.isEditMode) {
-                    new CancelButton({onButtonClick: this.onToggleEdit}).render($)
-                    new SaveButton({onButtonClick: this.updateRun}).render($)
+                    new CancelButton({onButtonClick: this.onToggleEdit, parent: this.constructor.name}).render($)
+                    new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name}).render($)
                 } else {
-                    new EditButton({onButtonClick: this.onToggleEdit}).render($)
+                    new EditButton({onButtonClick: this.onToggleEdit, parent: this.constructor.name}).render($)
                 }
             })
             $('h2.header.text-center', 'Run Details')

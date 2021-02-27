@@ -11,7 +11,6 @@ class LoginView extends ScreenView {
     isUserLoggedCache: IsUserLoggedCache
     elem: WeyaElement
     loader: Loader
-
     token: string
     returnUrl: string
 
@@ -20,7 +19,6 @@ class LoginView extends ScreenView {
 
         this.isUserLoggedCache = CACHE.getIsUserLogged()
         this.loader = new Loader(true)
-
         this.token = token
         this.returnUrl = returnUrl
     }
