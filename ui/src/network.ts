@@ -22,7 +22,9 @@ class Network {
 
             xhr.onload = () => {
                 if (xhr.status >= 400) {
-                    reject(xhr.response)
+                    if (xhr.status != 403) {
+                        reject(xhr.response)
+                    }
                 } else {
                     resolve(xhr.response.data)
                 }
