@@ -66,7 +66,7 @@ class CPUAnalysis(Analysis):
             mean_value = [sum(x) / len(x) for x in zip(*[s['value'] for s in res])]
             mean_smoothed = [sum(x) / len(x) for x in zip(*[s['smoothed'] for s in res])]
             step = res[0]['step']
-            summary = [{'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'cpu.perc.total'}]
+            summary = [{'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'total'}]
 
         res.sort(key=lambda s: s['name'])
 

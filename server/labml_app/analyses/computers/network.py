@@ -12,6 +12,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
+from .. import utils
 
 
 @Analysis.db_model(PickleSerializer, 'Network')
@@ -59,6 +60,8 @@ class NetworkAnalysis(Analysis):
             res.append(series)
 
         res.sort(key=lambda s: s['name'])
+
+        utils.remove_common_prefix(res, 'name')
 
         return res
 

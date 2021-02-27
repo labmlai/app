@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response, request
+from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -12,6 +12,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
+from .. import utils
 
 
 @Analysis.db_model(PickleSerializer, 'Memory')
@@ -63,6 +64,8 @@ class MemoryAnalysis(Analysis):
             res.append(series)
 
         res.sort(key=lambda s: s['name'])
+
+        utils.remove_common_prefix(res, 'name')
 
         return res
 
