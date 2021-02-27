@@ -11,6 +11,7 @@ import {HamburgerMenuView} from '../components/hamburger_menu'
 import isMobile from '../utils/mobile'
 import mix_panel from "../mix_panel"
 
+
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
     currentRunsList: RunListItemModel[]
@@ -110,9 +111,7 @@ class RunsListView extends ScreenView {
     onItemClicked = (elem: RunsListItemView) => {
         let uuid = elem.item.run_uuid
         if (!this.isEditMode) {
-            setTimeout(args => {
-                ROUTER.navigate(`/run/${uuid}`)
-            }, isMobile ? 100 : 0)
+            ROUTER.navigate(`/run/${uuid}`)
             return
         }
 

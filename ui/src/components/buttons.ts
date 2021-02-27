@@ -39,11 +39,9 @@ abstract class Button {
         mix_panel.track(`${this.constructor.name} Clicked`, {parent: this.parent})
 
         e.preventDefault()
-        setTimeout(args => {
-            if (!this.isDisabled) {
-                this.onButtonClick()
-            }
-        }, isMobile ? 100 : 0)
+        if (!this.isDisabled) {
+            this.onButtonClick()
+        }
     }
 
     render($: WeyaElementFunction) {
@@ -93,9 +91,7 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
-        setTimeout(args => {
-            ROUTER.navigate(this.navigatePath)
-        }, isMobile ? 100 : 0)
+        ROUTER.navigate(this.navigatePath)
     }
 
     render($: WeyaElementFunction) {
@@ -229,17 +225,15 @@ export class NavButton extends Button {
 
     onClick = (e: Event) => {
         e.preventDefault()
-        setTimeout(args => {
-            if (this.link) {
-                if (this.target === '_blank') {
-                    window.open(this.link)
-                    return
-                }
-                ROUTER.navigate(this.link)
+        if (this.link) {
+            if (this.target === '_blank') {
+                window.open(this.link)
                 return
             }
-            this.onButtonClick()
-        }, isMobile ? 100 : 0)
+            ROUTER.navigate(this.link)
+            return
+        }
+        this.onButtonClick()
     }
 }
 

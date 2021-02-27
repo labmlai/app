@@ -11,6 +11,7 @@ import {HamburgerMenuView} from '../components/hamburger_menu'
 import isMobile from '../utils/mobile'
 import mix_panel from "../mix_panel"
 
+
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
     currentComputersList: ComputerListItemModel[]
@@ -111,9 +112,7 @@ class ComputersListView extends ScreenView {
     onItemClicked = (elem: ComputersListItemView) => {
         let uuid = elem.item.session_uuid
         if (!this.isEditMode) {
-            setTimeout(args => {
-                ROUTER.navigate(`/session/${uuid}`)
-            }, isMobile ? 100 : 0)
+            ROUTER.navigate(`/session/${uuid}`)
             return
         }
 

@@ -244,7 +244,6 @@ class MetricsView extends ScreenView {
     }
 }
 
-
 export class MetricsHandler {
     constructor() {
         ROUTER.route('metrics/:uuid', [this.handleMetrics])
