@@ -12,8 +12,8 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
-import Timeout = NodeJS.Timeout
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class ActivationsView extends ScreenView {
@@ -84,7 +84,8 @@ class ActivationsView extends ScreenView {
             this.loadPreferences()
 
             this.renderActivations()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -252,7 +253,7 @@ class ActivationsView extends ScreenView {
 
 export class ActivationsHandler {
     constructor() {
-        ROUTER.route('outputs/:uuid', [this.handleActivations])
+        ROUTER.route('run/:uuid/outputs', [this.handleActivations])
     }
 
     handleActivations = (uuid: string) => {

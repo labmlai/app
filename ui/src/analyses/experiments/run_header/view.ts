@@ -66,7 +66,7 @@ class RunHeaderView extends ScreenView {
 
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
-        }  catch (e) {
+        } catch (e) {
             ROUTER.navigate('/404')
             return
         }
@@ -200,7 +200,7 @@ class RunHeaderView extends ScreenView {
 
 export class RunHeaderHandler {
     constructor() {
-        ROUTER.route('header/:uuid', [this.handleRunHeader])
+        ROUTER.route('run/:uuid/header', [this.handleRunHeader])
     }
 
     handleRunHeader = (uuid: string) => {

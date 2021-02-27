@@ -65,7 +65,8 @@ class StdOutView extends ScreenView {
             }
 
             this.renderStdOut()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -138,7 +139,7 @@ class StdOutView extends ScreenView {
 
 export class StdOutHandler {
     constructor() {
-        ROUTER.route('stdout/:uuid', [this.handleStdOut])
+        ROUTER.route('run/:uuid/stdout', [this.handleStdOut])
     }
 
     handleStdOut = (uuid: string) => {

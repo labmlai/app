@@ -68,7 +68,8 @@ class RunView extends ScreenView {
             }
 
             this.renderRun().then()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }

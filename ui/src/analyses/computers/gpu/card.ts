@@ -8,6 +8,7 @@ import {Loader} from "../../../components/loader"
 import gpuCache from './cache';
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
+import {ROUTER} from '../../../app';
 
 
 export class GPUCard extends Card {
@@ -21,7 +22,7 @@ export class GPUCard extends Card {
     plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'gpu'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -80,5 +81,9 @@ export class GPUCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/session/${this.uuid}/gpu`)
     }
 }

@@ -83,7 +83,8 @@ class MemoryView extends ScreenView {
             this.loadPreferences()
 
             this.renderMemory()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -233,7 +234,7 @@ class MemoryView extends ScreenView {
 
 export class MemoryHandler {
     constructor() {
-        ROUTER.route('memory/:uuid', [this.handleMemory])
+        ROUTER.route('session/:uuid/memory', [this.handleMemory])
     }
 
     handleMemory = (uuid: string) => {

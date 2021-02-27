@@ -8,6 +8,7 @@ import {Loader} from "../../../components/loader"
 import diskCache from './cache'
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
+import {ROUTER} from '../../../app';
 
 
 export class DiskCard extends Card {
@@ -21,7 +22,7 @@ export class DiskCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'disk'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -73,5 +74,9 @@ export class DiskCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/session/${this.uuid}/disk`)
     }
 }

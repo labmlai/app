@@ -68,7 +68,8 @@ class ComputerView extends ScreenView {
             }
 
             this.renderRun().then()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }

@@ -83,7 +83,8 @@ class NetworkView extends ScreenView {
             this.loadPreferences()
 
             this.renderNetwork()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -233,7 +234,7 @@ class NetworkView extends ScreenView {
 
 export class NetworkHandler {
     constructor() {
-        ROUTER.route('network/:uuid', [this.handleNetwork])
+        ROUTER.route('session/:uuid/network', [this.handleNetwork])
     }
 
     handleNetwork = (uuid: string) => {

@@ -12,8 +12,8 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import Timeout = NodeJS.Timeout;
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class DiskView extends ScreenView {
@@ -83,7 +83,8 @@ class DiskView extends ScreenView {
             this.loadPreferences()
 
             this.renderDisk()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -233,7 +234,7 @@ class DiskView extends ScreenView {
 
 export class DiskHandler {
     constructor() {
-        ROUTER.route('disk/:uuid', [this.handleDisk])
+        ROUTER.route('session/:uuid/disk', [this.handleDisk])
     }
 
     handleDisk = (uuid: string) => {

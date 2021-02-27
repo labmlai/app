@@ -12,8 +12,8 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import Timeout = NodeJS.Timeout;
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class CPUView extends ScreenView {
@@ -83,7 +83,8 @@ class CPUView extends ScreenView {
             this.loadPreferences()
 
             this.renderCpu()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -234,7 +235,7 @@ class CPUView extends ScreenView {
 
 export class CPUHandler {
     constructor() {
-        ROUTER.route('cpu/:uuid', [this.handleCPU])
+        ROUTER.route('session/:uuid/cpu', [this.handleCPU])
     }
 
     handleCPU = (uuid: string) => {

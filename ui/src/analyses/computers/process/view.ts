@@ -80,7 +80,8 @@ class ProcessView extends ScreenView {
             this.loadPreferences()
 
             this.renderMetrics()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -223,7 +224,7 @@ class ProcessView extends ScreenView {
 
 export class ProcessHandler {
     constructor() {
-        ROUTER.route('process/:uuid', [this.handleProcess])
+        ROUTER.route('session/:uuid/process', [this.handleProcess])
     }
 
     handleProcess = (uuid: string) => {

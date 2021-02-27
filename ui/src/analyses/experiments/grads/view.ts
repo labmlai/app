@@ -10,10 +10,10 @@ import gradientsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import Timeout = NodeJS.Timeout
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class GradientsView extends ScreenView {
@@ -84,7 +84,8 @@ class GradientsView extends ScreenView {
             this.loadPreferences()
 
             this.renderGradients()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -252,7 +253,7 @@ class GradientsView extends ScreenView {
 
 export class GradientsHandler {
     constructor() {
-        ROUTER.route('grads/:uuid', [this.handleGradients])
+        ROUTER.route('run/:uuid/grads', [this.handleGradients])
     }
 
     handleGradients = (uuid: string) => {

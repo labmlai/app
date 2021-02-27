@@ -6,6 +6,7 @@ import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import activationsCache from "./cache"
 import {Loader} from "../../../components/loader"
+import {ROUTER} from '../../../app';
 
 
 export class ActivationsCard extends Card {
@@ -18,7 +19,7 @@ export class ActivationsCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'outputs'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -64,5 +65,9 @@ export class ActivationsCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/run/${this.uuid}/outputs`)
     }
 }

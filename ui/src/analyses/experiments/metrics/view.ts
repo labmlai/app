@@ -84,7 +84,8 @@ class MetricsView extends ScreenView {
             this.loadPreferences()
 
             this.renderMetrics()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -252,7 +253,7 @@ class MetricsView extends ScreenView {
 
 export class MetricsHandler {
     constructor() {
-        ROUTER.route('metrics/:uuid', [this.handleMetrics])
+        ROUTER.route('run/:uuid/metrics', [this.handleMetrics])
     }
 
     handleMetrics = (uuid: string) => {

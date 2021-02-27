@@ -65,7 +65,8 @@ class StdErrorView extends ScreenView {
             }
 
             this.renderStdOut()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -138,7 +139,7 @@ class StdErrorView extends ScreenView {
 
 export class StdErrorHandler {
     constructor() {
-        ROUTER.route('stderr/:uuid', [this.handleStdError])
+        ROUTER.route('run/:uuid/stderr', [this.handleStdError])
     }
 
     handleStdError = (uuid: string) => {

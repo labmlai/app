@@ -65,7 +65,8 @@ class LoggerView extends ScreenView {
             }
 
             this.renderStdOut()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -138,7 +139,7 @@ class LoggerView extends ScreenView {
 
 export class LoggerHandler {
     constructor() {
-        ROUTER.route('logger/:uuid', [this.handleLogger])
+        ROUTER.route('run/:uuid/logger', [this.handleLogger])
     }
 
     handleLogger = (uuid: string) => {

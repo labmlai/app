@@ -8,8 +8,8 @@ import {Loader} from "../../../components/loader"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Configs} from "./components"
-import Timeout = NodeJS.Timeout
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class ConfigsView extends ScreenView {
@@ -64,7 +64,8 @@ class ConfigsView extends ScreenView {
             }
 
             this.renderConfigs()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -138,7 +139,7 @@ class ConfigsView extends ScreenView {
 
 export class ConfigsHandler {
     constructor() {
-        ROUTER.route('configs/:uuid', [this.handleConfigs])
+        ROUTER.route('run/:uuid/configs', [this.handleConfigs])
     }
 
     handleConfigs = (uuid: string) => {

@@ -5,6 +5,7 @@ import {CardOptions} from "../../types"
 import Card from "../../card"
 import {Loader} from "../../../components/loader"
 import {Configs} from "./components"
+import {ROUTER} from '../../../app';
 
 
 export class ConfigsCard extends Card {
@@ -17,7 +18,7 @@ export class ConfigsCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'configs'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -63,5 +64,9 @@ export class ConfigsCard extends Card {
         Weya(this.configsContainer, $ => {
             new Configs({configs: this.run.configs, width: this.width, isHyperParamOnly: true}).render($)
         })
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/run/${this.uuid}/configs`)
     }
 }

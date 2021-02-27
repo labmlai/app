@@ -7,6 +7,7 @@ import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
 import processCache from './cache';
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
+import {ROUTER} from '../../../app';
 
 
 export class ProcessCard extends Card {
@@ -20,7 +21,7 @@ export class ProcessCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'process'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -71,5 +72,9 @@ export class ProcessCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/session/${this.uuid}/process`)
     }
 }

@@ -5,6 +5,7 @@ import {CardOptions} from "../../types"
 import Card from "../../card"
 import Filter from "../../../utils/ansi_to_html"
 import {Loader} from "../../../components/loader"
+import {ROUTER} from '../../../app';
 
 
 export class StdErrorCard extends Card {
@@ -17,7 +18,7 @@ export class StdErrorCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'stderr'})
+        super()
 
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
@@ -79,5 +80,9 @@ export class StdErrorCard extends Card {
             this.renderOutput()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/run/${this.uuid}/stderr`)
     }
 }

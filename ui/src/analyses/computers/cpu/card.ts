@@ -8,6 +8,7 @@ import {Loader} from "../../../components/loader"
 import cpuCache from './cache'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {Labels} from "../../../components/charts/labels"
+import {ROUTER} from '../../../app';
 
 
 export class CPUCard extends Card {
@@ -21,7 +22,7 @@ export class CPUCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'cpu'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -74,5 +75,9 @@ export class CPUCard extends Card {
             this.renderLineChart()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/session/${this.uuid}/cpu`)
     }
 }

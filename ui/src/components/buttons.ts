@@ -1,8 +1,6 @@
 import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
-import {computerAnalyses, experimentAnalyses} from '../analyses/analyses'
 import runHeaderAnalysis from '../analyses/experiments/run_header/init'
-import isMobile from '../utils/mobile'
 import mix_panel from "../mix_panel"
 
 
@@ -63,7 +61,13 @@ export class BackButton extends Button {
         this.text = opt.text
         this.currentPath = window.location.pathname
 
-        if (this.currentPath.includes('run')) {
+        if (/\/run\/.+\/.+/.test(this.currentPath)) {
+            this.text = 'Run'
+            this.navigatePath = this.currentPath.replace(/\/run\/(.+)\/.+/, '/run/$1')
+        } else if (/\/session\/.+\/.+/.test(this.currentPath)) {
+            this.text = 'Computer'
+            this.navigatePath = this.currentPath.replace(/\/session\/(.+)\/.+/, '/session/$1')
+        } else if (this.currentPath.includes('run')) {
             this.text = 'Runs'
             this.navigatePath = 'runs'
         } else if (this.currentPath.includes('session')) {
@@ -72,21 +76,6 @@ export class BackButton extends Button {
         } else if (this.currentPath.includes(runHeaderAnalysis.route)) {
             this.text = 'Run'
             this.navigatePath = this.currentPath.replace(runHeaderAnalysis.route, 'run')
-        } else {
-            for (let analysis of experimentAnalyses) {
-                if (this.currentPath.includes(analysis.route)) {
-                    this.text = 'Run'
-                    this.navigatePath = this.currentPath.replace(analysis.route, 'run')
-                    break
-                }
-            }
-            for (let analysis of computerAnalyses) {
-                if (this.currentPath.includes(analysis.route)) {
-                    this.text = 'Computer'
-                    this.navigatePath = this.currentPath.replace(analysis.route, 'session')
-                    break
-                }
-            }
         }
     }
 

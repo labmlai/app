@@ -19,6 +19,11 @@ function wrapEvent(eventName: string, func: Function) {
 
 class PageNotFoundView extends ScreenView {
     elem: WeyaElement
+    private events = {
+        home: () => {
+            ROUTER.navigate(`/`)
+        },
+    }
 
     constructor() {
         super()
@@ -52,12 +57,6 @@ class PageNotFoundView extends ScreenView {
     }
 
     destroy() {
-    }
-
-    private events = {
-        home: () => {
-            ROUTER.navigate(`/`)
-        },
     }
 }
 

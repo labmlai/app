@@ -11,9 +11,9 @@ import parametersCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import Timeout = NodeJS.Timeout
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class ParametersView extends ScreenView {
@@ -84,7 +84,8 @@ class ParametersView extends ScreenView {
             this.loadPreferences()
 
             this.renderParameters()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -253,7 +254,7 @@ class ParametersView extends ScreenView {
 
 export class ParametersHandler {
     constructor() {
-        ROUTER.route('params/:uuid', [this.handleParameters])
+        ROUTER.route('run/:uuid/params', [this.handleParameters])
     }
 
     handleParameters = (uuid: string) => {

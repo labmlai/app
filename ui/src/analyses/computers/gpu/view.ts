@@ -83,7 +83,8 @@ class GPUView extends ScreenView {
             this.loadPreferences()
 
             this.renderGpu()
-        }).catch(() => {})
+        }).catch(() => {
+        })
 
         return this.elem
     }
@@ -234,7 +235,7 @@ class GPUView extends ScreenView {
 
 export class GPUHandler {
     constructor() {
-        ROUTER.route('gpu/:uuid', [this.handleGPU])
+        ROUTER.route('session/:uuid/gpu', [this.handleGPU])
     }
 
     handleGPU = (uuid: string) => {

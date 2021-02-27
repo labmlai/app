@@ -9,6 +9,7 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {Loader} from "../../../components/loader"
+import {ROUTER} from '../../../app';
 
 
 export class MetricsCard extends Card {
@@ -26,7 +27,7 @@ export class MetricsCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super({...opt, path: 'metrics'})
+        super()
 
         this.uuid = opt.uuid
         this.width = opt.width
@@ -100,5 +101,9 @@ export class MetricsCard extends Card {
             this.renderSparkLines()
             this.elem.classList.remove('hide')
         }
+    }
+
+    onClick = () => {
+        ROUTER.navigate(`/run/${this.uuid}/metrics`)
     }
 }
