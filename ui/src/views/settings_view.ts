@@ -48,7 +48,11 @@ class SettingsView extends ScreenView {
     }
 
     private async renderContent() {
-        this.user = await this.userCache.get()
+        try {
+            this.user = await this.userCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
 
         this.loader.remove()
 

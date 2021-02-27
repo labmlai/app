@@ -8,7 +8,6 @@ import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../componen
 import {ComputerListItemModel} from '../models/computer_list'
 import {ComputersListItemView} from '../components/computers_list_item'
 import {HamburgerMenuView} from '../components/hamburger_menu'
-import isMobile from '../utils/mobile'
 import mix_panel from "../mix_panel"
 
 
@@ -132,7 +131,12 @@ class ComputersListView extends ScreenView {
     }
 
     private async renderList() {
-        this.currentComputersList = (await this.computerListCache.get()).computers
+        try {
+            this.currentComputersList = (await this.computerListCache.get()).computers
+        } catch (e) {
+            ROUTER.navigate('/404')
+            return
+        }
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
         this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))

@@ -9,11 +9,11 @@ import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../../../comp
 import {RunHeaderCard} from "../run_header/card"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import metricsCache from "./cache"
-import Timeout = NodeJS.Timeout
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class MetricsView extends ScreenView {
@@ -84,22 +84,28 @@ class MetricsView extends ScreenView {
             this.loadPreferences()
 
             this.renderMetrics()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.series = toPointValues((await this.analysisCache.get()).series)
-        this.status = await this.statusCache.get()
-        this.preferenceData = await this.preferenceCache.get()
+        try {
+            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.status = await this.statusCache.get()
+            this.preferenceData = await this.preferenceCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
     }
 
     destroy() {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.runHeaderCard.clearCounter()
+        if (this.runHeaderCard) {
+            this.runHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

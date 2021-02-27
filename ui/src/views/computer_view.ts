@@ -10,9 +10,9 @@ import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../c
 import {Computer} from '../models/computer';
 import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
-import Timeout = NodeJS.Timeout;
 import {AlertMessage} from "../components/alert"
 import mix_panel from "../mix_panel"
+import Timeout = NodeJS.Timeout;
 
 
 class ComputerView extends ScreenView {
@@ -68,15 +68,19 @@ class ComputerView extends ScreenView {
             }
 
             this.renderRun().then()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.computer = await this.computerCache.get()
-        this.status = await this.statusCache.get()
-        this.isUserLogged = await this.isUserLoggedCache.get()
+        try {
+            this.computer = await this.computerCache.get()
+            this.status = await this.statusCache.get()
+            this.isUserLogged = await this.isUserLoggedCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
 
         this.loader.remove()
     }
@@ -85,7 +89,9 @@ class ComputerView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.computerHeaderCard.clearCounter()
+        if (this.computerHeaderCard) {
+            this.computerHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

@@ -84,22 +84,28 @@ class ParametersView extends ScreenView {
             this.loadPreferences()
 
             this.renderParameters()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.series = toPointValues((await this.analysisCache.get()).series)
-        this.status = await this.statusCache.get()
-        this.preferenceData = await this.preferenceCache.get()
+        try {
+            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.status = await this.statusCache.get()
+            this.preferenceData = await this.preferenceCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
     }
 
     destroy() {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.runHeaderCard.clearCounter()
+        if (this.runHeaderCard) {
+            this.runHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

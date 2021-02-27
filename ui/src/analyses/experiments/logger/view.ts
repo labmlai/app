@@ -8,8 +8,8 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
-import Timeout = NodeJS.Timeout
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class LoggerView extends ScreenView {
@@ -65,21 +65,27 @@ class LoggerView extends ScreenView {
             }
 
             this.renderStdOut()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.run = await this.runCache.get()
-        this.status = await this.statusCache.get()
+        try {
+            this.run = await this.runCache.get()
+            this.status = await this.statusCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
     }
 
     destroy() {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.runHeaderCard.clearCounter()
+        if (this.runHeaderCard) {
+            this.runHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

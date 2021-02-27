@@ -62,8 +62,14 @@ class RunHeaderView extends ScreenView {
     }
 
     async renderRunHeader() {
-        this.run = await this.runCache.get()
-        this.status = await this.statusCache.get()
+        try {
+
+            this.run = await this.runCache.get()
+            this.status = await this.statusCache.get()
+        }  catch (e) {
+            ROUTER.navigate('/404')
+            return
+        }
 
         this.loader.remove()
 

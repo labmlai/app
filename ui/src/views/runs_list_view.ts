@@ -8,7 +8,6 @@ import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
-import isMobile from '../utils/mobile'
 import mix_panel from "../mix_panel"
 
 
@@ -131,7 +130,12 @@ class RunsListView extends ScreenView {
     }
 
     private async renderList() {
-        this.currentRunsList = (await this.runListCache.get()).runs
+        try {
+            this.currentRunsList = (await this.runListCache.get()).runs
+        } catch (e) {
+            ROUTER.navigate('/404')
+            return
+        }
 
         let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
         this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))

@@ -40,7 +40,7 @@ class PageNotFoundView extends ScreenView {
             $('h2.mt-5', 'Ooops! Page not found.' + '')
             $('h1', '404')
             $('p', 'We can\'t find the page.' + '')
-            $('button.danger',
+            $('button.btn.btn-danger',
                 {on: {click: this.events.home}},
                 $ => {
                     $('span.mt-3', 'Go Back to Home' + '')

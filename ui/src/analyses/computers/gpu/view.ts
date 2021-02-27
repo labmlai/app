@@ -12,8 +12,8 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import Timeout = NodeJS.Timeout;
 import mix_panel from "../../../mix_panel";
+import Timeout = NodeJS.Timeout;
 
 
 class GPUView extends ScreenView {
@@ -83,22 +83,28 @@ class GPUView extends ScreenView {
             this.loadPreferences()
 
             this.renderGpu()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.series = toPointValues((await this.analysisCache.get()).series)
-        this.status = await this.statusCache.get()
-        this.preferenceData = await this.preferenceCache.get()
+        try {
+            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.status = await this.statusCache.get()
+            this.preferenceData = await this.preferenceCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
     }
 
     destroy() {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.computerHeaderCard.clearCounter()
+        if (this.computerHeaderCard) {
+            this.computerHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

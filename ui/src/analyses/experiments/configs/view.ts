@@ -64,21 +64,27 @@ class ConfigsView extends ScreenView {
             }
 
             this.renderConfigs()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.run = await this.runCache.get()
-        this.status = await this.statusCache.get()
+        try {
+            this.run = await this.runCache.get()
+            this.status = await this.statusCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
     }
 
     destroy() {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.runHeaderCard.clearCounter()
+        if (this.runHeaderCard) {
+            this.runHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

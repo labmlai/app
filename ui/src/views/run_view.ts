@@ -11,8 +11,8 @@ import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import Card from "../analyses/card"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
-import Timeout = NodeJS.Timeout
 import mix_panel from "../mix_panel"
+import Timeout = NodeJS.Timeout;
 
 
 class RunView extends ScreenView {
@@ -68,15 +68,20 @@ class RunView extends ScreenView {
             }
 
             this.renderRun().then()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.run = await this.runCache.get()
-        this.status = await this.statusCache.get()
-        this.isUserLogged = await this.isUserLoggedCache.get()
+        try {
+            this.run = await this.runCache.get()
+            this.status = await this.statusCache.get()
+            this.isUserLogged = await this.isUserLoggedCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+            throw e
+        }
 
         this.loader.remove()
     }
@@ -85,7 +90,9 @@ class RunView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.runHeaderCard.clearCounter()
+        if (this.runHeaderCard) {
+            this.runHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

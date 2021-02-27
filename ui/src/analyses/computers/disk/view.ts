@@ -83,22 +83,28 @@ class DiskView extends ScreenView {
             this.loadPreferences()
 
             this.renderDisk()
-        })
+        }).catch(() => {})
 
         return this.elem
     }
 
     async loadData() {
-        this.series = toPointValues((await this.analysisCache.get()).series)
-        this.status = await this.statusCache.get()
-        this.preferenceData = await this.preferenceCache.get()
+        try {
+            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.status = await this.statusCache.get()
+            this.preferenceData = await this.preferenceCache.get()
+        } catch (e) {
+            ROUTER.navigate('/404')
+        }
     }
 
     destroy() {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        this.computerHeaderCard.clearCounter()
+        if (this.computerHeaderCard) {
+            this.computerHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {
