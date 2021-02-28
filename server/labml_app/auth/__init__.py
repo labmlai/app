@@ -47,7 +47,7 @@ def login_required(func) -> functools.wraps:
             response.status_code = 403
 
             if session_id != s.session_id:
-                response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite=None)
+                response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
 
             return response
 

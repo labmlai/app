@@ -43,7 +43,7 @@ def sign_in() -> flask.Response:
     response = make_response(utils.format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite=None)
+        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
 
     logger.debug(f'sign_in, user: {u.key}')
 
@@ -60,7 +60,7 @@ def sign_out() -> flask.Response:
     response = make_response(utils.format_rv({'is_successful': True}))
 
     if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite=None)
+        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
 
     logger.debug(f'sign_out, session_id: {s.session_id}')
 
