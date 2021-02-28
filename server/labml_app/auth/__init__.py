@@ -8,6 +8,7 @@ from flask import request, make_response
 from ..db import session
 from ..db import project
 from ..db import user
+from .. import settings
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -46,7 +47,7 @@ def login_required(func) -> functools.wraps:
             response.status_code = 403
 
             if session_id != s.session_id:
-                response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY)
+                response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, settings.DOMAIN)
 
             return response
 
