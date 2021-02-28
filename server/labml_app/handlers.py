@@ -34,6 +34,8 @@ def is_new_run_added():
 def sign_in() -> flask.Response:
     u = user.get_or_create_user(user.AuthOInfo(**request.json))
 
+    mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
+
     session_id = request.cookies.get('session_id')
     s = session.get_or_create(session_id)
 
