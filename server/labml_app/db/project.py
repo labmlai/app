@@ -94,7 +94,6 @@ def clean_project(labml_token: str):
 
         if (time.time() - 86400) > s.last_updated_time:
             p.runs.pop(run_uuid)
-            run.delete(run_uuid)
 
     p.save()
 
@@ -105,8 +104,9 @@ def delete_unclaimed_runs():
         if run_key:
             try:
                 r = run_key.load()
+                s = r.status.load()
 
-                if not r.is_claimed:
+                if not r.is_claimed and (time.time() - 86400) > s.last_updated_time:
                     run.delete(r.run_uuid)
             except TypeError:
                 print(f'error while deleting the run {run_key}')
