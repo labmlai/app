@@ -49,6 +49,7 @@ class ScreenContainer {
 
     async updateTheme() {
         let theme = 'light'
+        this.isUserLogged = (await this.isUserLoggedCache.get()).is_user_logged
         if (this.isUserLogged) {
             theme = (await this.userCache.get()).theme
         }

@@ -43,8 +43,8 @@ class LoginView extends ScreenView {
         if (this.token) {
             let res = await NETWORK.signIn(this.token)
             if (res.is_successful) {
-                this.isUserLoggedCache.userLogged = true
-                SCREEN.updateTheme().then()
+                this.isUserLogged = await this.isUserLoggedCache.get(true)
+                await SCREEN.updateTheme().then()
                 ROUTER.navigate(this.returnUrl)
             }
         }

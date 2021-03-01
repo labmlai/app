@@ -411,4 +411,6 @@ class Cache {
     }
 }
 
-export default new Cache()
+let CACHE = new Cache()
+
+export default CACHE
