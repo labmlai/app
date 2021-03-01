@@ -2,6 +2,7 @@ import sys
 import typing
 
 import flask
+import requests
 import werkzeug.wrappers
 from flask import request, make_response, jsonify
 
@@ -30,24 +31,40 @@ def is_new_run_added():
     return is_run_added
 
 
+def get_user_profile(token: str):
+    res = requests.get(f'{settings.AUTH0_DOMAIN}/userinfo', headers={'Authorization': f'Bearer {token}'})
+
+    return res.json()
+
+
 @mix_panel.MixPanelEvent.time_this(None)
 def sign_in() -> flask.Response:
-    u = user.get_or_create_user(user.AuthOInfo(**request.json))
+    ret = request.json
+    if 'token' in ret:
+        user_profile = get_user_profile(ret['token'])
 
-    mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
+        u = user.get_or_create_user(
+            user.AuthOInfo(
+                **{k: user_profile.get(k, '') for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
 
-    session_id = request.cookies.get('session_id')
-    s = session.get_or_create(session_id)
+        mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    s.user = u.key
-    s.save()
+        session_id = request.cookies.get('session_id')
+        s = session.get_or_create(session_id)
 
-    response = make_response(utils.format_rv({'is_successful': True}))
+        s.user = u.key
+        s.save()
 
-    if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
+        response = make_response(utils.format_rv({'is_successful': True, 'app_token': s.session_id}))
 
-    logger.debug(f'sign_in, user: {u.key}')
+        if session_id != s.session_id:
+            response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
+
+        logger.debug(f'sign_in, user: {u.key}')
+
+    else:
+        response = make_response(
+            utils.format_rv({'is_successful': False, 'app_token': '', 'reason': 'auth0 token not found'}))
 
     return response
 
@@ -270,7 +287,8 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
     if not s.user:
         return
 
-    default_project = s.user.load().default_project
+    u = s.user.load()
+    default_project = u.default_project
 
     if run_uuid not in default_project.runs:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
@@ -283,6 +301,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
             r.save()
 
             mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid})
+            mix_panel.MixPanelEvent.run_claimed_set(u.email)
 
 
 @mix_panel.MixPanelEvent.time_this(None)

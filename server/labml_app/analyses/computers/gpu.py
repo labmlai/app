@@ -57,11 +57,12 @@ class GPUAnalysis(Analysis):
                 continue
 
             series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = '.'.join(name)
+            series['name'] = '.'.join(name[-1])
 
             res.append(series)
 
-        res.sort(key=lambda s: s['name'])
+        if len(res) > 1:
+            res.sort(key=lambda s: int(s['name']))
 
         return res
 

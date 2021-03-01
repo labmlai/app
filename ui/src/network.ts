@@ -115,21 +115,7 @@ class Network {
     }
 
     async signIn(token: string): Promise<any> {
-        let res = await NETWORK.getAuth0Profile(token)
-        let user = new Auth0User(res)
-
-        mix_panel.people.set({
-            $name: user.name,
-            $email: user.email,
-        })
-        mix_panel.identify(user.email)
-
-        let data = {} as UserModel
-        data.name = user.name
-        data.email = user.email
-        data.sub = user.sub
-        data.email_verified = user.email_verified
-        data.picture = user.picture
+        let data = {token: token }
 
         return this.sendHttpRequest('POST', `/auth/sign_in`, data)
     }
