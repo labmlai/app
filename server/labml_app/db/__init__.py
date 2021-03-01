@@ -23,7 +23,7 @@ Models = [(YamlSerializer(), User), (YamlSerializer(), Project), (JsonSerializer
           (JsonSerializer(), Computer)] + [(s(), m) for s, m, p in AnalysisManager.get_db_models()]
 
 Indexes = [ProjectIndex, UserIndex, TokenOwnerIndex, SessionIndex, RunIndex, ComputerIndex] + [m for s, m, p in
-                                                                            AnalysisManager.get_db_indexes()]
+                                                                                    AnalysisManager.get_db_indexes()]
 
 DATA_PATH = settings.DATA_PATH
 
@@ -44,5 +44,6 @@ else:
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
 
-# clean_project(settings.FLOAT_PROJECT_TOKEN)
-# delete_unclaimed_runs()
+clean_project(settings.FLOAT_PROJECT_TOKEN)
+# TODO schedule this event to run every 12 hours later
+delete_unclaimed_runs()
