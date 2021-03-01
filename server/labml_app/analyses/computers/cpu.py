@@ -58,7 +58,7 @@ class CPUAnalysis(Analysis):
                 continue
 
             series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = '.'.join(name)
+            series['name'] = '.'.join(name[-1])
 
             res.append(series)
 
@@ -68,7 +68,8 @@ class CPUAnalysis(Analysis):
             step = res[0]['step']
             summary = [{'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'total'}]
 
-        res.sort(key=lambda s: s['name'])
+        if len(res) > 1:
+            res.sort(key=lambda s: int(s['name']))
 
         return res, summary
 
