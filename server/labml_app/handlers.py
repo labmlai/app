@@ -287,7 +287,8 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
     if not s.user:
         return
 
-    default_project = s.user.load().default_project
+    u = s.user.load()
+    default_project = u.default_project
 
     if run_uuid not in default_project.runs:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
@@ -300,6 +301,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
             r.save()
 
             mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid})
+            mix_panel.MixPanelEvent.run_claimed_set(u.email)
 
 
 @mix_panel.MixPanelEvent.time_this(None)

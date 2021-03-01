@@ -42,6 +42,12 @@ class Event:
                 '$email': email,
             })
 
+    def run_claimed_set(self, identifier: str):
+        if self.__mp:
+            self.__mp.people_set(identifier, {
+                '$has_run_claimed': True
+            })
+
     @staticmethod
     def has_numbers(input_string):
         return bool(re.search(r'\d', input_string))
