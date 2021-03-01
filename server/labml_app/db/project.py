@@ -88,12 +88,16 @@ def clean_project(labml_token: str):
     project_key = ProjectIndex.get(labml_token)
     p = project_key.load()
 
+    delete_list = []
     for run_uuid, run_key in p.runs.items():
         r = run_key.load()
         s = r.status.load()
 
         if (time.time() - 86400) > s.last_updated_time:
-            p.runs.pop(run_uuid)
+            delete_list.append(run_uuid)
+
+    for run_uuid in delete_list:
+        p.runs.pop(run_uuid)
 
     p.save()
 
@@ -110,5 +114,3 @@ def delete_unclaimed_runs():
                     run.delete(r.run_uuid)
             except TypeError:
                 print(f'error while deleting the run {run_key}')
-
-
