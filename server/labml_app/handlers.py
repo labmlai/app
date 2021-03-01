@@ -43,28 +43,25 @@ def sign_in() -> flask.Response:
     if 'token' in ret:
         user_profile = get_user_profile(ret['token'])
 
-        u = user.get_or_create_user(
-            user.AuthOInfo(
-                **{k: user_profile.get(k, '') for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
-
-        mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
-
-        session_id = request.cookies.get('session_id')
-        s = session.get_or_create(session_id)
-
-        s.user = u.key
-        s.save()
-
-        response = make_response(utils.format_rv({'is_successful': True, 'app_token': s.session_id}))
-
-        if session_id != s.session_id:
-            response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
-
-        logger.debug(f'sign_in, user: {u.key}')
-
+        u = user.get_or_create_user(user.AuthOInfo(
+            **{k: user_profile.get(k, '') for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
     else:
-        response = make_response(
-            utils.format_rv({'is_successful': False, 'app_token': '', 'reason': 'auth0 token not found'}))
+        u = user.get_or_create_user(user.AuthOInfo(**request.json))
+
+    mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
+
+    session_id = request.cookies.get('session_id')
+    s = session.get_or_create(session_id)
+
+    s.user = u.key
+    s.save()
+
+    response = make_response(utils.format_rv({'is_successful': True, 'app_token': s.session_id}))
+
+    if session_id != s.session_id:
+        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
+
+    logger.debug(f'sign_in, user: {u.key}')
 
     return response
 
