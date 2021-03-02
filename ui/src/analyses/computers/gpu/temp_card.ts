@@ -39,7 +39,7 @@ export class GPUTempCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = getSeriesData((await this.analysisCache.get()).series, 'temperature')
+        this.series = getSeriesData((await this.analysisCache.get()).series, 'temperature', true)
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -73,7 +73,7 @@ export class GPUTempCard extends Card {
     }
 
     async refresh() {
-        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'temperature')
+        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'temperature', true)
 
         if (this.series.length > 0) {
             this.renderLineChart()

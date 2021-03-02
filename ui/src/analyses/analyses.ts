@@ -10,7 +10,7 @@ import loggerAnalysis from "./experiments/logger/init"
 import configsAnalysis from "./experiments/configs/init"
 import cpuAnalysis from './computers/cpu/init'
 import diskAnalysis from './computers/disk/init'
-import {gpuUtilAnalysis, gpuTempAnalysis, gpuMemoryAnalysis} from './computers/gpu/init'
+import {gpuUtilAnalysis, gpuTempAnalysis, gpuMemoryAnalysis, gpuPowerAnalysis} from './computers/gpu/init'
 import memoryAnalysis from './computers/memory/init'
 import networkAnalysis from './computers/network/init'
 import processAnalysis from './computers/process/init'
@@ -33,6 +33,7 @@ let computerAnalyses: Analysis[] = [
     gpuUtilAnalysis,
     gpuTempAnalysis,
     gpuMemoryAnalysis,
+    gpuPowerAnalysis,
     networkAnalysis,
     processAnalysis
 ]

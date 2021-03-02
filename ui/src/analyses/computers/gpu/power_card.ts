@@ -10,7 +10,7 @@ import {Labels} from "../../../components/charts/labels"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {ROUTER} from "../../../app"
 
-export class GPUMemoryCard extends Card {
+export class GPUPowerCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
@@ -35,11 +35,11 @@ export class GPUMemoryCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'GPU - Memory')
+            $('h3.header', 'GPU - Power')
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = getSeriesData((await this.analysisCache.get()).series, 'memory', true)
+        this.series = getSeriesData((await this.analysisCache.get()).series, 'power', true)
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -73,7 +73,7 @@ export class GPUMemoryCard extends Card {
     }
 
     async refresh() {
-        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'memory', true)
+        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power', true)
 
         if (this.series.length > 0) {
             this.renderLineChart()
@@ -82,6 +82,6 @@ export class GPUMemoryCard extends Card {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/session/${this.uuid}/gpu_memory`)
+        ROUTER.navigate(`/session/${this.uuid}/gpu_power`)
     }
 }

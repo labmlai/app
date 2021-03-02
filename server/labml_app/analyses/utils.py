@@ -41,3 +41,11 @@ def replace_nans(series: List[Dict[str, Any]], keys: List[str]):
                 s[key] = [0 if math.isnan(x) else x for x in s[key]]
             else:
                 s[key] = 0 if math.isnan(s[key]) else s[key]
+
+
+def get_mean_series(res: List[Dict[str, Any]]) -> Dict[str, Any]:
+    mean_value = [sum(x) / len(x) for x in zip(*[s['value'] for s in res])]
+    mean_smoothed = [sum(x) / len(x) for x in zip(*[s['smoothed'] for s in res])]
+    step = res[0]['step']
+
+    return {'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'mean'}

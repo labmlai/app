@@ -11,6 +11,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..preferences import Preferences
 from ..series_collection import SeriesCollection
+from ..utils import get_mean_series
 
 
 @Analysis.db_model(PickleSerializer, 'GPU')
@@ -50,6 +51,7 @@ class GPUAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
+        inds = {}
         for ind, track in self.gpu.tracking.items():
             name = ind.split('.')
 
@@ -59,7 +61,16 @@ class GPUAnalysis(Analysis):
             series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name[1:])
 
-            res.append(series)
+            if name[1] in inds:
+                inds[name[1]].append(series)
+            else:
+                inds[name[1]] = []
+
+        for k, v in inds.items():
+            res.extend(v)
+            mean_series = get_mean_series(v)
+            mean_series['name'] = f'{k}.mean'
+            res.append(mean_series)
 
         return res
 

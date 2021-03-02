@@ -11,6 +11,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
+from ..utils import get_mean_series
 
 
 @Analysis.db_model(PickleSerializer, 'CPU')
@@ -63,10 +64,7 @@ class CPUAnalysis(Analysis):
             res.append(series)
 
         if res:
-            mean_value = [sum(x) / len(x) for x in zip(*[s['value'] for s in res])]
-            mean_smoothed = [sum(x) / len(x) for x in zip(*[s['smoothed'] for s in res])]
-            step = res[0]['step']
-            summary = [{'step': step, 'value': mean_value, 'smoothed': mean_smoothed, 'name': 'total'}]
+            summary = [get_mean_series(res)]
 
         if len(res) > 1:
             res.sort(key=lambda s: int(s['name']))
