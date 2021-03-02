@@ -12,8 +12,8 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import mix_panel from "../../../mix_panel";
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import Timeout = NodeJS.Timeout
 
 
 class ProcessView extends ScreenView {
@@ -21,7 +21,6 @@ class ProcessView extends ScreenView {
     uuid: string
     status: Status
     plotIdx: number[] = []
-    currentChart: number
     statusCache: ComputerStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
@@ -36,7 +35,7 @@ class ProcessView extends ScreenView {
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
-    metricsView: HTMLDivElement
+    processView: HTMLDivElement
 
     constructor(uuid: string) {
         super()
@@ -66,7 +65,7 @@ class ProcessView extends ScreenView {
         this.elem = <HTMLElement>$('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
-                this.metricsView = <HTMLDivElement>$('div', '')
+                this.processView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })
 
@@ -120,9 +119,9 @@ class ProcessView extends ScreenView {
     }
 
     renderMetrics() {
-        this.metricsView.innerHTML = ''
+        this.processView.innerHTML = ''
 
-        $(this.metricsView, $ => {
+        $(this.processView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                 new SaveButton({
@@ -198,8 +197,6 @@ class ProcessView extends ScreenView {
     }
 
     loadPreferences() {
-        this.currentChart = this.preferenceData.chart_type
-
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
@@ -214,7 +211,6 @@ class ProcessView extends ScreenView {
 
     updatePreferences = () => {
         this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true

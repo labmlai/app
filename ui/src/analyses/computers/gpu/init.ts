@@ -1,12 +1,24 @@
-import {GPUCard} from "./card"
-import {GPUHandler} from "./view"
+import {GPUUtilCard} from "./util_card"
+import {GPUUtilHandler} from "./util_view"
+import {GPUTempCard} from "./temp_card"
+import {GPUTempHandler} from "./temp_view"
 import {Analysis} from "../../types"
 
 
-let gpuAnalysis: Analysis = {
-    card: GPUCard,
-    viewHandler: GPUHandler,
-    route: 'gpu'
+let gpuUtilAnalysis: Analysis = {
+    card: GPUUtilCard,
+    viewHandler: GPUUtilHandler,
+    route: 'gpu_util'
 }
 
-export default gpuAnalysis
+let gpuTempAnalysis: Analysis = {
+    card: GPUTempCard,
+    viewHandler: GPUTempHandler,
+    route: 'gpu_temp'
+}
+
+
+export  {
+    gpuUtilAnalysis,
+    gpuTempAnalysis
+}

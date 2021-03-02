@@ -1,10 +1,12 @@
 export interface AnalysisPreferenceModel {
     series_preferences: number[]
+    sub_series_preferences: Object
     chart_type: number
 }
 
 export class AnalysisPreference {
     series_preferences: number[]
+    sub_series_preferences: object
     chart_type: number
 
     constructor(preference: AnalysisPreferenceModel) {
@@ -14,5 +16,6 @@ export class AnalysisPreference {
             this.series_preferences = []
         }
         this.chart_type = preference.chart_type
+        this.sub_series_preferences = preference.sub_series_preferences
     }
 }

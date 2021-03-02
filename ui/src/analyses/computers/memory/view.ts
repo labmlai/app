@@ -21,7 +21,6 @@ class MemoryView extends ScreenView {
     uuid: string
     status: Status
     plotIdx: number[] = []
-    currentChart: number
     statusCache: ComputerStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
@@ -207,8 +206,6 @@ class MemoryView extends ScreenView {
     }
 
     loadPreferences() {
-        this.currentChart = this.preferenceData.chart_type
-
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
@@ -223,7 +220,6 @@ class MemoryView extends ScreenView {
 
     updatePreferences = () => {
         this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true

@@ -8,12 +8,12 @@ import stdOutAnalysis from "./experiments/stdout/init"
 import stderrAnalysis from "./experiments/stderror/init"
 import loggerAnalysis from "./experiments/logger/init"
 import configsAnalysis from "./experiments/configs/init"
-import cpuAnalysis from './computers/cpu/init';
-import diskAnalysis from './computers/disk/init';
-import gpuAnalysis from './computers/gpu/init';
-import memoryAnalysis from './computers/memory/init';
-import networkAnalysis from './computers/network/init';
-import processAnalysis from './computers/process/init';
+import cpuAnalysis from './computers/cpu/init'
+import diskAnalysis from './computers/disk/init'
+import {gpuUtilAnalysis, gpuTempAnalysis} from './computers/gpu/init'
+import memoryAnalysis from './computers/memory/init'
+import networkAnalysis from './computers/network/init'
+import processAnalysis from './computers/process/init'
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -28,7 +28,8 @@ let experimentAnalyses: Analysis[] = [
 
 let computerAnalyses: Analysis[] = [
     cpuAnalysis,
-    gpuAnalysis,
+    gpuUtilAnalysis,
+    gpuTempAnalysis,
     memoryAnalysis,
     diskAnalysis,
     networkAnalysis,

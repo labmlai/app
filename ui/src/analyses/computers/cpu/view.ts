@@ -21,7 +21,6 @@ class CPUView extends ScreenView {
     uuid: string
     status: Status
     plotIdx: number[] = []
-    currentChart: number
     statusCache: ComputerStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
@@ -38,7 +37,7 @@ class CPUView extends ScreenView {
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
-    metricsView: HTMLDivElement
+    CPUView: HTMLDivElement
 
     constructor(uuid: string) {
         super()
@@ -69,7 +68,7 @@ class CPUView extends ScreenView {
         this.elem = <HTMLElement>$('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
-                this.metricsView = <HTMLDivElement>$('div', '')
+                this.CPUView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })
 
@@ -123,9 +122,9 @@ class CPUView extends ScreenView {
     }
 
     renderCpu() {
-        this.metricsView.innerHTML = ''
+        this.CPUView.innerHTML = ''
 
-        $(this.metricsView, $ => {
+        $(this.CPUView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                 this.saveButtonContainer = $('div')
@@ -208,8 +207,6 @@ class CPUView extends ScreenView {
     }
 
     loadPreferences() {
-        this.currentChart = this.preferenceData.chart_type
-
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
@@ -224,7 +221,6 @@ class CPUView extends ScreenView {
 
     updatePreferences = () => {
         this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true

@@ -1,17 +1,16 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {SeriesModel} from "../../../models/run"
 import Card from "../../card"
-import {CardOptions} from "../../types"
+import {SeriesModel} from "../../../models/run"
 import {SeriesCache} from "../../../cache/cache"
-import {toPointValues} from "../../../components/charts/utils"
+import {Weya, WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {Loader} from "../../../components/loader"
-import gpuCache from './cache';
-import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
+import {CardOptions} from "../../types";
+import gpuCache from "./cache"
+import {getSeriesData} from "./utils"
 import {Labels} from "../../../components/charts/labels"
-import {ROUTER} from '../../../app';
+import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
+import {ROUTER} from "../../../app"
 
-
-export class GPUCard extends Card {
+export class GPUTempCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
@@ -36,11 +35,11 @@ export class GPUCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'GPU')
+            $('h3.header', 'GPU - Tempreture')
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = toPointValues((await this.analysisCache.get()).summary)
+        this.series = getSeriesData((await this.analysisCache.get()).series, 'temperature')
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -75,7 +74,7 @@ export class GPUCard extends Card {
     }
 
     async refresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).summary)
+        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'temperature')
 
         if (this.series.length > 0) {
             this.renderLineChart()
@@ -84,6 +83,6 @@ export class GPUCard extends Card {
     }
 
     onClick = () => {
-        ROUTER.navigate(`/session/${this.uuid}/gpu`)
+        ROUTER.navigate(`/session/${this.uuid}/gpu_temp`)
     }
 }
