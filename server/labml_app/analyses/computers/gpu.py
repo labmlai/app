@@ -53,7 +53,7 @@ class GPUAnalysis(Analysis):
         for ind, track in self.gpu.tracking.items():
             name = ind.split('.')
 
-            if not [i for i in name if i in ['utilization', 'temperature']]:
+            if [i for i in name if i in ['total', 'limit']]:
                 continue
 
             series: Dict[str, Any] = Series().load(track).detail
