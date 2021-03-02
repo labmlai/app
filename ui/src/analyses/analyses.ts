@@ -28,11 +28,11 @@ let experimentAnalyses: Analysis[] = [
 
 let computerAnalyses: Analysis[] = [
     cpuAnalysis,
-    gpuUtilAnalysis,
-    gpuTempAnalysis,
     memoryAnalysis,
     diskAnalysis,
     networkAnalysis,
+    gpuUtilAnalysis,
+    gpuTempAnalysis,
     processAnalysis
 ]
 

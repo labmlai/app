@@ -103,7 +103,7 @@ def get_gpu_tracking(session_uuid: str) -> Any:
 
     ans = GPUAnalysis.get_or_create(session_uuid)
     if ans:
-        track_data = ans.get_gpu_tracking()
+        track_data = ans.get_tracking()
         status_code = 200
 
     response = make_response(format_rv({'series': track_data, 'insights': []}))
