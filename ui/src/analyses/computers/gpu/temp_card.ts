@@ -67,7 +67,6 @@ export class GPUTempCard extends Card {
                 series: this.series,
                 width: this.width,
                 plotIdx: this.plotIdx,
-                yExtend: [0, 100],
                 chartHeightFraction: 4
             }).render($)
         })

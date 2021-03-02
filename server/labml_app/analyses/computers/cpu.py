@@ -58,7 +58,7 @@ class CPUAnalysis(Analysis):
                 continue
 
             series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = '.'.join(name[-1])
+            series['name'] = ''.join(name[-1])
 
             res.append(series)
 

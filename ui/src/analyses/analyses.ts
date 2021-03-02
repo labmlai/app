@@ -30,9 +30,9 @@ let computerAnalyses: Analysis[] = [
     cpuAnalysis,
     memoryAnalysis,
     diskAnalysis,
-    networkAnalysis,
     gpuUtilAnalysis,
     gpuTempAnalysis,
+    networkAnalysis,
     processAnalysis
 ]
 

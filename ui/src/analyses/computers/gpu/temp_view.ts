@@ -168,7 +168,6 @@ class GPUTempView extends ScreenView {
                 series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                yExtend: [0, 100],
                 onCursorMove: [this.sparkTimeLines.changeCursorValues],
                 isCursorMoveOpt: true
             }).render($)
