@@ -40,7 +40,7 @@ export class DiskCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = toPointValues((await this.analysisCache.get()).summary)
+        this.series = toPointValues((await this.analysisCache.get()).series)
         this.loader.remove()
 
         Weya(this.elem, $ => {

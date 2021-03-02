@@ -112,7 +112,7 @@ def get_memory_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': track_data}))
+    response = make_response(format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
