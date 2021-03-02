@@ -141,7 +141,7 @@ class GPUMemoryView extends ScreenView {
                 width: this.actualWidth
             })
             this.computerHeaderCard.render($).then()
-            $('h2.header.text-center', 'GPU - Tempreture')
+            $('h2.header.text-center', 'GPU - Memory')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')

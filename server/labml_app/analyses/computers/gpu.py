@@ -68,9 +68,10 @@ class GPUAnalysis(Analysis):
 
         for k, v in inds.items():
             res.extend(v)
-            mean_series = get_mean_series(v)
-            mean_series['name'] = f'{k}.mean'
-            res.append(mean_series)
+            if v:
+                mean_series = get_mean_series(v)
+                mean_series['name'] = f'{k}.mean'
+                res.append(mean_series)
 
         return res
 
