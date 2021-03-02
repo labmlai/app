@@ -7,16 +7,16 @@ import {Loader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton, SaveButton} from "../../../components/buttons"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import networkCache from "./cache"
-import {toPointValues} from "../../../components/charts/utils"
+import gpuCache from "./cache"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout
+import {getSeriesData} from "./utils"
 
 
-class NetworkView extends ScreenView {
+class GPUTempView extends ScreenView {
     elem: WeyaElement
     uuid: string
     status: Status
@@ -37,15 +37,15 @@ class NetworkView extends ScreenView {
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
-    NetworkView: HTMLDivElement
+    GPUView: HTMLDivElement
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
         this.statusCache = CACHE.getComputerStatus(this.uuid)
-        this.analysisCache = networkCache.getAnalysis(this.uuid)
-        this.preferenceCache = networkCache.getPreferences(this.uuid)
+        this.analysisCache = gpuCache.getAnalysis(this.uuid)
+        this.preferenceCache = gpuCache.getPreferences(this.uuid)
 
         this.isUpdateDisable = true
         this.loader = new Loader(true)
@@ -68,7 +68,7 @@ class NetworkView extends ScreenView {
         this.elem = <HTMLElement>$('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
-                this.NetworkView = <HTMLDivElement>$('div', '')
+                this.GPUView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })
 
@@ -81,7 +81,7 @@ class NetworkView extends ScreenView {
 
             this.loadPreferences()
 
-            this.renderNetwork()
+            this.renderGpu()
         }).catch(() => {
         })
 
@@ -90,7 +90,7 @@ class NetworkView extends ScreenView {
 
     async loadData() {
         try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.series = getSeriesData((await this.analysisCache.get(true)).series, 'temperature')
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
         } catch (e) {
@@ -108,7 +108,7 @@ class NetworkView extends ScreenView {
     }
 
     async onRefresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'temperature')
         this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
@@ -121,10 +121,10 @@ class NetworkView extends ScreenView {
         this.computerHeaderCard.refresh().then()
     }
 
-    renderNetwork() {
-        this.NetworkView.innerHTML = ''
+    renderGpu() {
+        this.GPUView.innerHTML = ''
 
-        $(this.NetworkView, $ => {
+        $(this.GPUView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                 this.saveButtonContainer = $('div')
@@ -141,7 +141,7 @@ class NetworkView extends ScreenView {
                 width: this.actualWidth
             })
             this.computerHeaderCard.render($).then()
-            $('h2.header.text-center', 'Network')
+            $('h2.header.text-center', 'GPU - Tempreture')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')
@@ -206,7 +206,7 @@ class NetworkView extends ScreenView {
     }
 
     loadPreferences() {
-        let analysisPreferences = this.preferenceData.series_preferences
+        let analysisPreferences = this.preferenceData.sub_series_preferences['temp']
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
         } else if (this.series) {
@@ -219,7 +219,7 @@ class NetworkView extends ScreenView {
     }
 
     updatePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
+        this.preferenceData.sub_series_preferences['temp'] = this.plotIdx
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
@@ -228,12 +228,12 @@ class NetworkView extends ScreenView {
 }
 
 
-export class NetworkHandler {
+export class GPUTempHandler {
     constructor() {
-        ROUTER.route('session/:uuid/network', [this.handleNetwork])
+        ROUTER.route('session/:uuid/gpu_temp', [this.handleGPU])
     }
 
-    handleNetwork = (uuid: string) => {
-        SCREEN.setView(new NetworkView(uuid))
+    handleGPU = (uuid: string) => {
+        SCREEN.setView(new GPUTempView(uuid))
     }
 }

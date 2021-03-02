@@ -12,8 +12,8 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import mix_panel from "../../../mix_panel";
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import Timeout = NodeJS.Timeout
 
 
 class DiskView extends ScreenView {
@@ -21,7 +21,6 @@ class DiskView extends ScreenView {
     uuid: string
     status: Status
     plotIdx: number[] = []
-    currentChart: number
     statusCache: ComputerStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
@@ -38,7 +37,7 @@ class DiskView extends ScreenView {
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
-    metricsView: HTMLDivElement
+    diskView: HTMLDivElement
 
     constructor(uuid: string) {
         super()
@@ -69,7 +68,7 @@ class DiskView extends ScreenView {
         this.elem = <HTMLElement>$('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
-                this.metricsView = <HTMLDivElement>$('div', '')
+                this.diskView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })
 
@@ -123,9 +122,9 @@ class DiskView extends ScreenView {
     }
 
     renderDisk() {
-        this.metricsView.innerHTML = ''
+        this.diskView.innerHTML = ''
 
-        $(this.metricsView, $ => {
+        $(this.diskView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                 this.saveButtonContainer = $('div')
@@ -207,8 +206,6 @@ class DiskView extends ScreenView {
     }
 
     loadPreferences() {
-        this.currentChart = this.preferenceData.chart_type
-
         let analysisPreferences = this.preferenceData.series_preferences
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
@@ -223,7 +220,6 @@ class DiskView extends ScreenView {
 
     updatePreferences = () => {
         this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true

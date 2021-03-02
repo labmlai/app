@@ -9,8 +9,9 @@ from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel, Series
-from ..series_collection import SeriesCollection
 from ..preferences import Preferences
+from ..series_collection import SeriesCollection
+from ..utils import get_mean_series
 
 
 @Analysis.db_model(PickleSerializer, 'GPU')
@@ -50,19 +51,26 @@ class GPUAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
+        inds = {}
         for ind, track in self.gpu.tracking.items():
             name = ind.split('.')
 
-            if 'utilization' not in name:
+            if [i for i in name if i in ['total', 'limit']]:
                 continue
 
             series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = '.'.join(name[-1])
+            series['name'] = '.'.join(name[1:])
 
-            res.append(series)
+            if name[1] in inds:
+                inds[name[1]].append(series)
+            else:
+                inds[name[1]] = []
 
-        if len(res) > 1:
-            res.sort(key=lambda s: int(s['name']))
+        for k, v in inds.items():
+            res.extend(v)
+            mean_series = get_mean_series(v)
+            mean_series['name'] = f'{k}.mean'
+            res.append(mean_series)
 
         return res
 
@@ -109,7 +117,7 @@ def get_gpu_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': track_data}))
+    response = make_response(format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
@@ -139,7 +147,7 @@ def set_gpu_preferences(session_uuid: str) -> Any:
         return format_rv({})
 
     gp = preferences_key.load()
-    gp.update_preferences(request.json)
+    gp.update_sub_series_preferences(request.json)
 
     logger.debug(f'update gpu preferences: {gp.key}')
 

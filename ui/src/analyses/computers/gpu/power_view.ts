@@ -8,20 +8,19 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton, SaveButton} from "../../../components/buttons"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import gpuCache from "./cache"
-import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import mix_panel from "../../../mix_panel";
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import Timeout = NodeJS.Timeout
+import {getSeriesData} from "./utils"
 
 
-class GPUView extends ScreenView {
+class GPUPowerView extends ScreenView {
     elem: WeyaElement
     uuid: string
     status: Status
     plotIdx: number[] = []
-    currentChart: number
     statusCache: ComputerStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
@@ -38,7 +37,7 @@ class GPUView extends ScreenView {
     isUpdateDisable: boolean
     actualWidth: number
     autoRefresh: Timeout
-    metricsView: HTMLDivElement
+    GPUView: HTMLDivElement
 
     constructor(uuid: string) {
         super()
@@ -69,7 +68,7 @@ class GPUView extends ScreenView {
         this.elem = <HTMLElement>$('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
-                this.metricsView = <HTMLDivElement>$('div', '')
+                this.GPUView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })
 
@@ -91,7 +90,7 @@ class GPUView extends ScreenView {
 
     async loadData() {
         try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power')
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
         } catch (e) {
@@ -109,7 +108,7 @@ class GPUView extends ScreenView {
     }
 
     async onRefresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power')
         this.status = await this.statusCache.get(true)
 
         if (!this.status.isRunning) {
@@ -123,9 +122,9 @@ class GPUView extends ScreenView {
     }
 
     renderGpu() {
-        this.metricsView.innerHTML = ''
+        this.GPUView.innerHTML = ''
 
-        $(this.metricsView, $ => {
+        $(this.GPUView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                 this.saveButtonContainer = $('div')
@@ -142,7 +141,7 @@ class GPUView extends ScreenView {
                 width: this.actualWidth
             })
             this.computerHeaderCard.render($).then()
-            $('h2.header.text-center', 'GPU')
+            $('h2.header.text-center', 'GPU - Power')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')
@@ -169,7 +168,6 @@ class GPUView extends ScreenView {
                 series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                yExtend: [0, 100],
                 onCursorMove: [this.sparkTimeLines.changeCursorValues],
                 isCursorMoveOpt: true
             }).render($)
@@ -208,9 +206,7 @@ class GPUView extends ScreenView {
     }
 
     loadPreferences() {
-        this.currentChart = this.preferenceData.chart_type
-
-        let analysisPreferences = this.preferenceData.series_preferences
+        let analysisPreferences = this.preferenceData.sub_series_preferences['power']
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
         } else if (this.series) {
@@ -223,8 +219,7 @@ class GPUView extends ScreenView {
     }
 
     updatePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceData.chart_type = this.currentChart
+        this.preferenceData.sub_series_preferences['power'] = this.plotIdx
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
@@ -233,12 +228,12 @@ class GPUView extends ScreenView {
 }
 
 
-export class GPUHandler {
+export class GPUPowerHandler {
     constructor() {
-        ROUTER.route('session/:uuid/gpu', [this.handleGPU])
+        ROUTER.route('session/:uuid/gpu_power', [this.handleGPU])
     }
 
     handleGPU = (uuid: string) => {
-        SCREEN.setView(new GPUView(uuid))
+        SCREEN.setView(new GPUPowerView(uuid))
     }
 }
