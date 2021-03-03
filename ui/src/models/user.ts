@@ -19,7 +19,6 @@ export class User {
     projects: object
     default_project: object
 
-
     constructor(user: UserModel) {
         this.sub = user.sub
         this.email = user.email
@@ -29,31 +28,6 @@ export class User {
         this.email_verified = user.email_verified
         this.projects = user.projects
         this.default_project = user.default_project
-    }
-}
-
-export interface Auth0UserModel {
-    sub: string
-    email: string
-    name: string
-    picture: string
-    email_verified: boolean
-}
-
-export class Auth0User {
-    sub: string
-    email: string
-    name: string
-    picture: string
-    email_verified: boolean
-
-
-    constructor(user: Auth0UserModel) {
-        this.sub = user.sub
-        this.email = user.email
-        this.name = user.name
-        this.picture = user.picture
-        this.email_verified = user.email_verified
     }
 }
 

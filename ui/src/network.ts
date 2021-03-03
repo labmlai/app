@@ -1,6 +1,5 @@
-import mix_panel from "./mix_panel"
 import {API_BASE_URL, APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
-import {Auth0User, User, UserModel} from './models/user'
+import {User} from './models/user'
 
 class Network {
     baseURL: string
@@ -16,6 +15,11 @@ class Network {
             xhr.open(method, this.baseURL + url)
             xhr.responseType = 'json'
 
+            let authToken = localStorage.getItem('app_token')
+            if (authToken) {
+                xhr.setRequestHeader('Authorization', authToken)
+            }
+
             if (data) {
                 xhr.setRequestHeader('Content-Type', 'application/json')
             }
@@ -27,38 +31,6 @@ class Network {
                     }
                 } else {
                     resolve(xhr.response.data)
-                }
-            }
-
-            xhr.onerror = () => {
-                reject('Something went wrong!')
-            }
-
-            xhr.send(JSON.stringify(data))
-        })
-    }
-
-    private sendCustomHttpRequest = (method: string, url: string, data: object = {}, host: string = this.baseURL, headers: object = {}) => {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
-            xhr.open(method, host + url)
-            xhr.responseType = 'json'
-
-            if (data) {
-                xhr.setRequestHeader('Content-Type', 'application/json')
-            }
-
-            for (let key in headers) {
-                if (!headers.hasOwnProperty(key)) continue;
-
-                xhr.setRequestHeader(key, headers[key])
-            }
-
-            xhr.onload = () => {
-                if (xhr.status >= 400) {
-                    reject(xhr.response)
-                } else {
-                    resolve(xhr.response)
                 }
             }
 
@@ -115,15 +87,9 @@ class Network {
     }
 
     async signIn(token: string): Promise<any> {
-        let data = {token: token }
+        let data = {token: token}
 
         return this.sendHttpRequest('POST', `/auth/sign_in`, data)
-    }
-
-    async getAuth0Profile(token: string): Promise<any> {
-        return this.sendCustomHttpRequest('GET', `/userinfo`, {}, AUTH0_DOMAIN, {
-            'Authorization': `Bearer ${token}`
-        })
     }
 
     async signOut(): Promise<any> {
