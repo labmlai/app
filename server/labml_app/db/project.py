@@ -5,6 +5,7 @@ from labml_db import Model, Key, Index
 
 from . import run
 from .computer import Computer
+from ..logger import logger
 
 
 class Project(Model['Project']):
@@ -28,7 +29,10 @@ class Project(Model['Project']):
     def get_runs(self) -> List[run.Run]:
         res = []
         for run_uuid, run_key in self.runs.items():
-            res.append(run_key.load())
+            try:
+                res.append(run_key.load())
+            except TypeError as e:
+                logger.error(run_uuid + ':' + str(e))
 
         if self.is_run_added:
             self.is_run_added = False
