@@ -15,10 +15,10 @@
 <img src="https://github.com/lab-ml/lab/blob/master/images/cover.png" alt=""/>
 </div>
 
-This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://web.lab-ml.com/run?uuid=39b03a1e454011ebbaff2b26e3148b3d)
+This is an open-source library to push updates of your ML/DL model training to mobile. [Here's a sample experiment](https://app.labml.ai/run/39b03a1e454011ebbaff2b26e3148b3d)
 
 [You can host this on your own](https://github.com/lab-ml/app/blob/master/docs/installation.rst).
-We also have a small [AWS instance running](https://web.lab-ml.com). and you are welcome to use it. Please consider using your own installation if you are running lots of
+We also have a small [AWS instance running](https://app.labml.ai). and you are welcome to use it. Please consider using your own installation if you are running lots of
 experiments. Thanks.
 
 ### Notable Features
@@ -37,7 +37,7 @@ pip install labml
 ```
 
 2. Start pushing updates to the app  [with two lines of code](http://lab-ml.com/guide/tracker.html). Refer to the examples below.
-3. Click on the link printed in the terminal to open the app. [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://web.lab-ml.com/run?uuid=9e7f39e047e811ebbaff2b26e3148b3d)
+3. Click on the link printed in the terminal to open the app. [![View Run](https://img.shields.io/badge/labml-experiment-brightgreen)](https://app.labml.ai/run/9e7f39e047e811ebbaff2b26e3148b3d)
 
 ### Examples
 
