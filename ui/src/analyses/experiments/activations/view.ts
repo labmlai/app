@@ -239,6 +239,7 @@ class ActivationsView extends ScreenView {
         }
 
         this.renderLineChart()
+        this.renderSaveButton()
     }
 
     updatePreferences = () => {

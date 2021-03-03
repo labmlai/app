@@ -12,8 +12,8 @@ import metricsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
-import mix_panel from "../../../mix_panel";
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import Timeout = NodeJS.Timeout
 
 
 class MetricsView extends ScreenView {
@@ -239,6 +239,7 @@ class MetricsView extends ScreenView {
         }
 
         this.renderLineChart()
+        this.renderSaveButton()
     }
 
     updatePreferences = () => {

@@ -239,6 +239,7 @@ class ParametersView extends ScreenView {
         }
 
         this.renderLineChart()
+        this.renderSaveButton()
     }
 
     updatePreferences = () => {

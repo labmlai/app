@@ -239,6 +239,7 @@ class GradientsView extends ScreenView {
         }
 
         this.renderLineChart()
+        this.renderSaveButton()
     }
 
     updatePreferences = () => {

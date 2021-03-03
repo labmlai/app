@@ -27,6 +27,9 @@ class Preferences:
 
         self.save()
 
+    def update_series_preferences(self, data: SeriesPreferences) -> None:
+        self.series_preferences = data
+
     def update_sub_series_preferences(self, data: PreferencesData):
         data = data.get('sub_series_preferences', {})
         for k, v in data.items():
