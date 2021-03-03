@@ -54,7 +54,7 @@ export class LoggerCard extends Card {
 
         Weya(this.elem, $ => {
             $('div.terminal-card.no-scroll', $ => {
-                this.outputContainer = $('div', '')
+                this.outputContainer = $('pre', '')
             })
         })
 
