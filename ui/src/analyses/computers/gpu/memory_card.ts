@@ -39,7 +39,7 @@ export class GPUMemoryCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = getSeriesData((await this.analysisCache.get()).series, 'memory', true)
+        this.series = getSeriesData((await this.analysisCache.get()).series, 'memory')
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -73,7 +73,7 @@ export class GPUMemoryCard extends Card {
     }
 
     async refresh() {
-        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'memory', true)
+        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'memory')
 
         if (this.series.length > 0) {
             this.renderLineChart()
