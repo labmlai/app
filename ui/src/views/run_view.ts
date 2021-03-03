@@ -5,7 +5,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import {BackButton, RefreshButton} from "../components/buttons"
+import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -141,6 +141,13 @@ class RunView extends ScreenView {
         ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
     }
 
+    onDelete = async () => {
+        if (confirm("Are you sure?")) {
+            await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+            ROUTER.navigate('/runs')
+        }
+    }
+
     private async renderRun() {
         this.runView.innerHTML = ''
 
@@ -153,6 +160,9 @@ class RunView extends ScreenView {
             }
             $('div.nav-container', $ => {
                 new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
+                if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
+                    new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name}).render($)
+                }
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({
                         onButtonClick: this.onRefresh.bind(this),

@@ -148,7 +148,7 @@ export class ComputersListCache extends CacheObject<ComputersList> {
         let computers: ComputerListItemModel[] = []
         let currentComputers = <ComputerListItemModel[]>this.data.computers
         for (let computer of currentComputers) {
-            if (!sessionUUIDS.has(computer.computer_uuid)) {
+            if (!sessionUUIDS.has(computer.session_uuid)) {
                 computers.push(computer)
             }
         }

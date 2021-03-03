@@ -4,7 +4,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import {BackButton, RefreshButton} from "../components/buttons"
+import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
 import Card from "../analyses/card"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer';
@@ -141,6 +141,13 @@ class ComputerView extends ScreenView {
         ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
     }
 
+    onDelete = async () => {
+        if (confirm("Are you sure?")) {
+            await CACHE.getComputersList().deleteSessions(new Set<string>([this.uuid]))
+            ROUTER.navigate('/computers')
+        }
+    }
+
     private async renderRun() {
         this.runView.innerHTML = ''
 
@@ -153,6 +160,9 @@ class ComputerView extends ScreenView {
             }
             $('div', '.nav-container', $ => {
                 new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
+                if (this.isUserLogged.is_user_logged && this.computer.is_claimed) {
+                    new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name}).render($)
+                }
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({
                         onButtonClick: this.onRefresh.bind(this),
