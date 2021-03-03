@@ -67,7 +67,7 @@ class MetricsAnalysis(Analysis):
             series: Dict[str, Any] = s.detail
             series['name'] = '.'.join(name)
 
-            if series['is_smoothed_updated']:
+            if s.is_smoothed_updated:
                 self.metrics.tracking[ind] = s.to_data()
                 is_series_updated = True
 

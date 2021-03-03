@@ -33,7 +33,7 @@ class Series:
 
     @property
     def detail(self) -> Dict[str, List[float]]:
-        if not self.smoothed or len(self.smoothed) < len(self.step):
+        if not self.smoothed or len(self.smoothed) != len(self.step):
             self.smoothed = self.smooth_45()
             self.is_smoothed_updated = True
         else:
@@ -44,7 +44,6 @@ class Series:
             'value': self.value,
             'smoothed': self.smoothed,
             'mean': np.mean(self.value),
-            'is_smoothed_updated': self.is_smoothed_updated
         }
 
     @property
@@ -204,10 +203,6 @@ class Series:
         self.step = data['step'].copy()
         self.last_step = data['last_step'].copy()
         self.value = data['value'].copy()
-        if 'is_smoothed_updated' in data:
-            self.is_smoothed_updated = data['is_smoothed_updated']
-        else:
-            self.is_smoothed_updated = False
         if 'smoothed' in data:
             self.smoothed = data['smoothed'].copy()
         else:
