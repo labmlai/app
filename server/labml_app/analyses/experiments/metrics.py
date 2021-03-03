@@ -59,12 +59,22 @@ class MetricsAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
+        is_series_updated = False
         for ind, track in self.metrics.tracking.items():
             name = ind.split('.')
-            series: Dict[str, Any] = Series().load(track).detail
+
+            s = Series().load(track)
+            series: Dict[str, Any] = s.detail
             series['name'] = '.'.join(name)
 
+            if series['is_smoothed_updated']:
+                self.metrics.tracking[ind] = s.to_data()
+                is_series_updated = True
+
             res.append(series)
+
+        if is_series_updated:
+            self.metrics.save()
 
         res.sort(key=lambda s: s['name'])
 

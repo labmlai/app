@@ -15,12 +15,16 @@ class Series:
     step: List[float]
     last_step: List[float]
     value: List[float]
+    smoothed: List[float]
+    is_smoothed_updated: bool
     step_gap: float
 
     def __init__(self):
         self.step = []
         self.last_step = []
         self.value = []
+        self.smoothed = []
+        self.is_smoothed_updated = False
         self.step_gap = 0
 
     @property
@@ -29,11 +33,18 @@ class Series:
 
     @property
     def detail(self) -> Dict[str, List[float]]:
+        if not self.smoothed or len(self.smoothed) < len(self.step):
+            self.smoothed = self.smooth_45()
+            self.is_smoothed_updated = True
+        else:
+            self.is_smoothed_updated = False
+
         return {
             'step': self.last_step,
             'value': self.value,
-            'smoothed': self.smooth_45(),
-            'mean': np.mean(self.value)
+            'smoothed': self.smoothed,
+            'mean': np.mean(self.value),
+            'is_smoothed_updated': self.is_smoothed_updated
         }
 
     @property
@@ -47,6 +58,8 @@ class Series:
             'step': self.step,
             'value': self.value,
             'last_step': self.last_step,
+            'smoothed': self.smoothed,
+            'is_smoothed_updated': self.is_smoothed_updated,
             'step_gap': self.step_gap
         }
 
@@ -191,6 +204,14 @@ class Series:
         self.step = data['step'].copy()
         self.last_step = data['last_step'].copy()
         self.value = data['value'].copy()
+        if 'is_smoothed_updated' in data:
+            self.is_smoothed_updated = data['is_smoothed_updated']
+        else:
+            self.is_smoothed_updated = False
+        if 'smoothed' in data:
+            self.smoothed = data['smoothed'].copy()
+        else:
+            self.smoothed = []
         self._remove_nan(0)
 
         return self

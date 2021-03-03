@@ -16,6 +16,7 @@ class SeriesCollection:
 
     def get_tracks(self):
         res = []
+        is_series_updated = False
         for ind, track in self.tracking.items():
             name = ind.split('.')
             if name[-1] not in ['l2', 'var']:
@@ -24,10 +25,18 @@ class SeriesCollection:
                 name = name[:-1]
             name = name[1:]
 
-            series: Dict[str, Any] = Series().load(track).detail
+            s = Series().load(track)
+            series: Dict[str, Any] = s.detail
             series['name'] = '.'.join(name)
 
+            if series['is_smoothed_updated']:
+                self.tracking[ind] = s.to_data()
+                is_series_updated = True
+
             res.append(series)
+
+        if is_series_updated:
+            self.save()
 
         return res
 
