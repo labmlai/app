@@ -36,7 +36,7 @@ class Computer(Model['Computer']):
 
     @property
     def url(self) -> str:
-        return f'{settings.WEB_URL}/session?uuid={self.session_uuid}'
+        return f'{settings.WEB_URL}/session/{self.session_uuid}'
 
     def update_computer(self, data: Dict[str, any]) -> None:
         if not self.name:
