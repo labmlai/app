@@ -32,7 +32,7 @@ class Project(Model['Project']):
             try:
                 res.append(run_key.load())
             except TypeError as e:
-                logger.error(str(e))
+                logger.error(run_uuid + ':' + str(e))
 
         if self.is_run_added:
             self.is_run_added = False
