@@ -128,6 +128,7 @@ export class HamburgerMenuView {
     onLogOut = async () => {
         let res = await NETWORK.signOut()
         if (res.is_successful) {
+            localStorage.removeItem('app_token')
             NETWORK.redirectLogout()
         } else {
             //TODO: Sentry
