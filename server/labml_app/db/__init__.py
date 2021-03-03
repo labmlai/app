@@ -13,16 +13,16 @@ from .. import settings
 from .project import Project, ProjectIndex, create_project, clean_project, delete_unclaimed_runs
 from .user import User, UserIndex, TokenOwnerIndex, add_token_owners
 from .status import Status, RunStatus
-from .session import Session, SessionIndex
+from .app_token import AppToken, AppTokenIndex
 from .run import Run, RunIndex
 from .computer import Computer, ComputerIndex
 from ..analyses import AnalysisManager
 
 Models = [(YamlSerializer(), User), (YamlSerializer(), Project), (JsonSerializer(), Status),
-          (JsonSerializer(), RunStatus), (JsonSerializer(), Session), (JsonSerializer(), Run),
+          (JsonSerializer(), RunStatus), (JsonSerializer(), AppToken), (JsonSerializer(), Run),
           (JsonSerializer(), Computer)] + [(s(), m) for s, m, p in AnalysisManager.get_db_models()]
 
-Indexes = [ProjectIndex, UserIndex, TokenOwnerIndex, SessionIndex, RunIndex, ComputerIndex] + [m for s, m, p in
+Indexes = [ProjectIndex, UserIndex, TokenOwnerIndex, AppTokenIndex, RunIndex, ComputerIndex] + [m for s, m, p in
                                                                                     AnalysisManager.get_db_indexes()]
 
 DATA_PATH = settings.DATA_PATH

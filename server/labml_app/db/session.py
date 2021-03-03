@@ -1,3 +1,5 @@
+# TODO use session for each connect with the server
+
 import time
 from uuid import uuid4
 

@@ -13,7 +13,7 @@ from . import auth
 from . import utils
 from .db import run
 from .db import computer
-from .db import session
+from .db import app_token
 from .db import user
 from .db import project
 from .utils import mix_panel
@@ -50,16 +50,13 @@ def sign_in() -> flask.Response:
 
     mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    session_id = request.cookies.get('session_id')
-    s = session.get_or_create(session_id)
+    token_id = ''  # request.headers.get('Authorization', '')
+    at = app_token.get_or_create(token_id)
 
-    s.user = u.key
-    s.save()
+    at.user = u.key
+    at.save()
 
-    response = make_response(utils.format_rv({'is_successful': True, 'app_token': s.session_id}))
-
-    if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
+    response = make_response(utils.format_rv({'is_successful': True, 'app_token': at.token_id}))
 
     logger.debug(f'sign_in, user: {u.key}')
 
@@ -68,17 +65,14 @@ def sign_in() -> flask.Response:
 
 @mix_panel.MixPanelEvent.time_this(None)
 def sign_out() -> flask.Response:
-    session_id = request.cookies.get('session_id')
-    s = session.get_or_create(session_id)
+    token_id = request.headers.get('Authorization', '')
+    at = app_token.get_or_create(token_id)
 
-    session.delete(s)
+    app_token.delete(at)
 
     response = make_response(utils.format_rv({'is_successful': True}))
 
-    if session_id != s.session_id:
-        response.set_cookie('session_id', s.session_id, session.EXPIRATION_DELAY, secure=True, samesite='None')
-
-    logger.debug(f'sign_out, session_id: {s.session_id}')
+    logger.debug(f'sign_out, session_id: {at.token_id}')
 
     return response
 
