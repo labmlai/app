@@ -119,7 +119,7 @@ class Series:
             return [min(self.value), max(self.value)]
 
         values = np.sort(self.value)
-        margin = int(len(values) * OUTLIER_MARGIN)
+        margin = max(int(len(values) * OUTLIER_MARGIN), 1)
         std_dev = np.std(self.value[margin:-margin])
         start = 0
         while start < margin:

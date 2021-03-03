@@ -119,12 +119,12 @@ def update_computer() -> flask.Response:
     if not c and not p:
         if request.args.get('labml_token', ''):
             error = {'error': 'invalid_token',
-                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                     'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
                                 'add it to your experiments list.'}
         else:
             error = {'warning': 'empty_token',
-                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                     'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
                                 'add it to your experiments list.'}
         errors.append(error)
@@ -249,12 +249,12 @@ def update_run() -> flask.Response:
     if not r and not p:
         if request.args.get('labml_token', ''):
             error = {'error': 'invalid_token',
-                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                     'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
                                 'add it to your experiments list.'}
         else:
             error = {'warning': 'empty_token',
-                     'message': 'Please create a valid token at https://web.lab-ml.com.\n'
+                     'message': 'Please create a valid token at https://app.labml.ai.\n'
                                 'Click on the experiment link to monitor the experiment and '
                                 'add it to your experiments list.'}
         errors.append(error)
