@@ -149,7 +149,7 @@ class GradientsView extends ScreenView {
                 isToggled: this.currentChart > 0,
                 parent: this.constructor.name
             }).render($)
-            $('h2.header.text-center', 'Gradients')
+            $('h2.header.text-center', 'Gradients - L2 Norm')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')

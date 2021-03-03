@@ -149,7 +149,7 @@ class ActivationsView extends ScreenView {
                 isToggled: this.currentChart > 0,
                 parent: this.constructor.name
             }).render($)
-            $('h2.header.text-center', 'Activations')
+            $('h2.header.text-center', 'Activations - Variance')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')

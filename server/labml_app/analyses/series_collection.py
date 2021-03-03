@@ -1,17 +1,17 @@
 from typing import Dict, Any
 
 from ..analyses.series import SeriesModel, Series
-from ..enums import SeriesEnums
-
 
 class SeriesCollection:
     tracking: Dict[str, SeriesModel]
+    indicators: set
     step: int
 
     @classmethod
     def defaults(cls):
         return dict(tracking={},
                     step=0,
+                    indicators=set()
                     )
 
     def get_tracks(self):

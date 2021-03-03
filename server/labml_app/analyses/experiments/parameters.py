@@ -9,6 +9,7 @@ from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
 from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
+from labml_app.settings import INDICATOR_LIMIT
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
@@ -45,8 +46,14 @@ class ParametersAnalysis(Analysis):
     def track(self, data: Dict[str, SeriesModel]):
         res = {}
         for ind, s in data.items():
-            ind_type = ind.split('.')[0]
+            ind_split = ind.split('.')
+            ind_type = ind_split[0]
+            ind_prefix = '.'.join(ind_split[:-1])
             if ind_type == SeriesEnums.PARAM:
+                if ind_prefix not in self.parameters.indicators:
+                    if len(self.parameters.indicators) >= INDICATOR_LIMIT:
+                        continue
+                    self.parameters.indicators.add('.'.join(ind_prefix))
                 res[ind] = s
 
         self.parameters.track(res)

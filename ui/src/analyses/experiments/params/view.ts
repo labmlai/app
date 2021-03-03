@@ -149,7 +149,7 @@ class ParametersView extends ScreenView {
                 isToggled: this.currentChart > 0,
                 parent: this.constructor.name
             }).render($)
-            $('h2.header.text-center', 'Parameters')
+            $('h2.header.text-center', 'Parameters - L2 Norm')
             $('div.detail-card', $ => {
                 this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')

@@ -13,6 +13,7 @@ from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
+from labml_app.settings import INDICATOR_LIMIT
 
 
 @Analysis.db_model(PickleSerializer, 'metrics')
@@ -44,8 +45,14 @@ class MetricsAnalysis(Analysis):
     def track(self, data: Dict[str, SeriesModel]):
         res = {}
         for ind, s in data.items():
-            ind_type = ind.split('.')[0]
+            ind_split = ind.split('.')
+            ind_type = ind_split[0]
             if ind_type not in INDICATORS:
+                if ind not in self.metrics.indicators:
+                    if len(self.metrics.indicators) >= INDICATOR_LIMIT:
+                        continue
+                    self.metrics.indicators.add('.'.join(ind))
+
                 res[ind] = s
 
         self.metrics.track(res)

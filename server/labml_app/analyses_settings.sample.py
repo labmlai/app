@@ -21,3 +21,5 @@ computer_analyses = [CPUAnalysis,
                      NetworkAnalysis,
                      DiskAnalysis,
                      ProcessAnalysis]
+
+INDICATORS_LIMIT = 100
