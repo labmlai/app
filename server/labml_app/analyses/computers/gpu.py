@@ -43,7 +43,6 @@ class GPUAnalysis(Analysis):
     def track(self, data: Dict[str, SeriesModel]):
         res: Dict[str, SeriesModel] = {}
         for ind, s in data.items():
-            print(ind)
             ind_type = ind.split('.')[0]
             if ind_type == COMPUTEREnums.GPU:
                 res[ind] = s
@@ -54,6 +53,7 @@ class GPUAnalysis(Analysis):
         res = []
         inds = {}
         for ind, track in self.gpu.tracking.items():
+            print(ind)
             name = ind.split('.')
 
             if [i for i in name if i in ['total', 'limit']]:
