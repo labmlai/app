@@ -5,7 +5,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import {BackButton, RefreshButton} from "../components/buttons"
+import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -14,6 +14,7 @@ import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache
 import mix_panel from "../mix_panel"
 import Timeout = NodeJS.Timeout;
 
+const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class RunView extends ScreenView {
     uuid: string
@@ -32,6 +33,7 @@ class RunView extends ScreenView {
     refreshButton: RefreshButton
     cards: Card[] = []
     lastUpdated: number
+    lastVisibilityChange: number
 
     constructor(uuid: string) {
         super()
@@ -64,7 +66,7 @@ class RunView extends ScreenView {
 
         this.loadData().then(() => {
             if (this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.renderRun().then()
@@ -118,10 +120,32 @@ class RunView extends ScreenView {
         this.runHeaderCard.refresh(this.lastUpdated).then()
     }
 
+    onVisibilityChange() {
+        let currentTime = Date.now()
+        if (document.hidden) {
+            this.lastVisibilityChange = currentTime
+            clearInterval(this.autoRefresh)
+        } else {
+            if (this.status.isRunning) {
+                setTimeout(args => {
+                    this.onRefresh().then()
+                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+            }
+        }
+    }
+
     onMessageClick() {
         mix_panel.track('Unclaimed Warning Clicked', {uuid: this.uuid, analysis: this.constructor.name})
 
         ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+    }
+
+    onDelete = async () => {
+        if (confirm("Are you sure?")) {
+            await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+            ROUTER.navigate('/runs')
+        }
     }
 
     private async renderRun() {
@@ -136,6 +160,9 @@ class RunView extends ScreenView {
             }
             $('div.nav-container', $ => {
                 new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
+                if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
+                    new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name}).render($)
+                }
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({
                         onButtonClick: this.onRefresh.bind(this),

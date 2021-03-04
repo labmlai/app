@@ -11,6 +11,7 @@ import {Loader} from "../../../components/loader"
 import mix_panel from "../../../mix_panel";
 import Timeout = NodeJS.Timeout;
 
+const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class StdErrorView extends ScreenView {
     elem: WeyaElement
@@ -27,6 +28,7 @@ class StdErrorView extends ScreenView {
     refreshButton: RefreshButton
     runHeaderCard: RunHeaderCard
     filter: Filter
+    lastVisibilityChange: number
 
     constructor(uuid: string) {
         super()
@@ -61,7 +63,7 @@ class StdErrorView extends ScreenView {
             this.loader.remove()
 
             if (this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.renderStdOut()
@@ -100,6 +102,21 @@ class StdErrorView extends ScreenView {
 
         this.runHeaderCard.render($).then()
         this.renderOutput()
+    }
+
+    onVisibilityChange() {
+        let currentTime = Date.now()
+        if (document.hidden) {
+            this.lastVisibilityChange = currentTime
+            clearInterval(this.autoRefresh)
+        } else {
+            if (this.status.isRunning) {
+                setTimeout(args => {
+                    this.onRefresh().then()
+                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+            }
+        }
     }
 
     renderStdOut() {

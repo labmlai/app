@@ -144,7 +144,7 @@ def update_computer() -> flask.Response:
 
 
 def claim_computer(session_uuid: str, c: computer.Computer) -> None:
-    s = auth.get_session()
+    s = auth.get_app_token()
 
     if not s.user:
         return
@@ -273,7 +273,7 @@ def update_run() -> flask.Response:
 
 
 def claim_run(run_uuid: str, r: run.Run) -> None:
-    s = auth.get_session()
+    s = auth.get_app_token()
 
     if not s.user:
         return

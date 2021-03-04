@@ -2,15 +2,16 @@ import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {BackButton, CancelButton, EditButton, SaveButton} from "../../../components/buttons"
+import {BackButton, CancelButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel";
+import {IsUserLogged} from '../../../models/user';
 
 
 class RunHeaderView extends ScreenView {
@@ -19,6 +20,8 @@ class RunHeaderView extends ScreenView {
     runCache: RunCache
     status: Status
     statusCache: RunStatusCache
+    isUserLogged: IsUserLogged
+    isUserLoggedCache: IsUserLoggedCache
     isEditMode: boolean
     runHeaderView: HTMLDivElement
     loader: Loader
@@ -33,6 +36,7 @@ class RunHeaderView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.isUserLoggedCache = CACHE.getIsUserLogged()
         this.isEditMode = false
         this.loader = new Loader(true)
 
@@ -66,6 +70,7 @@ class RunHeaderView extends ScreenView {
 
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
+            this.isUserLogged = await this.isUserLoggedCache.get()
         } catch (e) {
             ROUTER.navigate('/404')
             return
@@ -81,6 +86,12 @@ class RunHeaderView extends ScreenView {
                 if (this.isEditMode) {
                     new CancelButton({onButtonClick: this.onToggleEdit, parent: this.constructor.name}).render($)
                     new SaveButton({onButtonClick: this.updateRun, parent: this.constructor.name}).render($)
+                    if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
+                        new DeleteButton({
+                            onButtonClick: this.onDelete.bind(this),
+                            parent: this.constructor.name
+                        }).render($)
+                    }
                 } else {
                     new EditButton({onButtonClick: this.onToggleEdit, parent: this.constructor.name}).render($)
                 }
@@ -178,6 +189,13 @@ class RunHeaderView extends ScreenView {
         this.isEditMode = !this.isEditMode
 
         this.renderRunHeader().then()
+    }
+
+    onDelete = async () => {
+        if (confirm("Are you sure?")) {
+            await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+            ROUTER.navigate('/runs')
+        }
     }
 
     updateRun = () => {

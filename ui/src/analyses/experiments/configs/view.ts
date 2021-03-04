@@ -11,6 +11,7 @@ import {Configs} from "./components"
 import mix_panel from "../../../mix_panel";
 import Timeout = NodeJS.Timeout;
 
+const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class ConfigsView extends ScreenView {
     elem: WeyaElement
@@ -26,6 +27,7 @@ class ConfigsView extends ScreenView {
     runHeaderCard: RunHeaderCard
     configsView: WeyaElement
     configsContainer: WeyaElement
+    lastVisibilityChange: number
 
     constructor(uuid: string) {
         super()
@@ -60,7 +62,7 @@ class ConfigsView extends ScreenView {
             this.loader.remove()
 
             if (this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.renderConfigs()
@@ -100,6 +102,20 @@ class ConfigsView extends ScreenView {
         this.runHeaderCard.refresh().then()
     }
 
+    onVisibilityChange() {
+        let currentTime = Date.now()
+        if (document.hidden) {
+            this.lastVisibilityChange = currentTime
+            clearInterval(this.autoRefresh)
+        } else {
+            if (this.status.isRunning) {
+                setTimeout(args => {
+                    this.onRefresh().then()
+                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+            }
+        }
+    }
 
     renderConfigs() {
         this.configsView.innerHTML = ''

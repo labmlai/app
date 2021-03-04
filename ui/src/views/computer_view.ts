@@ -4,7 +4,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
-import {BackButton, RefreshButton} from "../components/buttons"
+import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
 import Card from "../analyses/card"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer';
@@ -14,6 +14,8 @@ import {AlertMessage} from "../components/alert"
 import mix_panel from "../mix_panel"
 import Timeout = NodeJS.Timeout;
 
+
+const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class ComputerView extends ScreenView {
     uuid: string
@@ -32,6 +34,7 @@ class ComputerView extends ScreenView {
     refreshButton: RefreshButton
     cards: Card[] = []
     lastUpdated: number
+    lastVisibilityChange: number
 
     constructor(uuid: string) {
         super()
@@ -64,7 +67,7 @@ class ComputerView extends ScreenView {
 
         this.loadData().then(() => {
             if (this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.renderRun().then()
@@ -117,10 +120,32 @@ class ComputerView extends ScreenView {
         this.computerHeaderCard.refresh(this.lastUpdated).then()
     }
 
+    onVisibilityChange() {
+        let currentTime = Date.now()
+        if (document.hidden) {
+            this.lastVisibilityChange = currentTime
+            clearInterval(this.autoRefresh)
+        } else {
+            if (this.status.isRunning) {
+                setTimeout(args => {
+                    this.onRefresh().then()
+                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+            }
+        }
+    }
+
     onMessageClick() {
         mix_panel.track('Unclaimed Warning Clicked', {uuid: this.uuid, analysis: this.constructor.name})
 
         ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+    }
+
+    onDelete = async () => {
+        if (confirm("Are you sure?")) {
+            await CACHE.getComputersList().deleteSessions(new Set<string>([this.uuid]))
+            ROUTER.navigate('/computers')
+        }
     }
 
     private async renderRun() {
@@ -135,6 +160,9 @@ class ComputerView extends ScreenView {
             }
             $('div', '.nav-container', $ => {
                 new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
+                if (this.isUserLogged.is_user_logged && this.computer.is_claimed) {
+                    new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name}).render($)
+                }
                 if (this.status.isRunning) {
                     this.refreshButton = new RefreshButton({
                         onButtonClick: this.onRefresh.bind(this),

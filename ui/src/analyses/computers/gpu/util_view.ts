@@ -15,6 +15,7 @@ import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout
 import {getSeriesData} from "./utils"
 
+const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class GPUUtilView extends ScreenView {
     elem: WeyaElement
@@ -38,6 +39,7 @@ class GPUUtilView extends ScreenView {
     actualWidth: number
     autoRefresh: Timeout
     GPUView: HTMLDivElement
+    lastVisibilityChange: number
 
     constructor(uuid: string) {
         super()
@@ -76,7 +78,7 @@ class GPUUtilView extends ScreenView {
             this.loader.remove()
 
             if (this.status && this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.loadPreferences()
@@ -119,6 +121,21 @@ class GPUUtilView extends ScreenView {
         this.renderSparkLines()
         this.renderLineChart()
         this.computerHeaderCard.refresh().then()
+    }
+
+    onVisibilityChange() {
+        let currentTime = Date.now()
+        if (document.hidden) {
+            this.lastVisibilityChange = currentTime
+            clearInterval(this.autoRefresh)
+        } else {
+            if (this.status.isRunning) {
+                setTimeout(args => {
+                    this.onRefresh().then()
+                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+            }
+        }
     }
 
     renderGpu() {

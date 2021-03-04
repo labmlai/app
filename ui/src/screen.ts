@@ -16,6 +16,9 @@ abstract class ScreenView {
     onRefresh() {
     }
 
+    onVisibilityChange() {
+    }
+
     get requiresAuth() {
         return true
     }
@@ -37,13 +40,20 @@ class ScreenContainer {
             this.updateTheme().then()
         })
         this.loader = new Loader(true)
-        window.addEventListener('resize', this.onResize)
+        window.addEventListener('resize', this.onResize.bind(this))
+        document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this))
     }
 
     onResize = () => {
         let windowWidth = getWindowDimensions().width
         if (this.view) {
             this.view.onResize(windowWidth)
+        }
+    }
+
+    onVisibilityChange() {
+        if (this.view) {
+            this.view.onVisibilityChange()
         }
     }
 

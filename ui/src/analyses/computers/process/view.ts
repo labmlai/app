@@ -15,6 +15,7 @@ import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout
 
+const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class ProcessView extends ScreenView {
     elem: WeyaElement
@@ -36,6 +37,7 @@ class ProcessView extends ScreenView {
     actualWidth: number
     autoRefresh: Timeout
     processView: HTMLDivElement
+    lastVisibilityChange: number
 
     constructor(uuid: string) {
         super()
@@ -73,7 +75,7 @@ class ProcessView extends ScreenView {
             this.loader.remove()
 
             if (this.status && this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), 2 * 60 * 1000)
+                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.loadPreferences()
@@ -116,6 +118,21 @@ class ProcessView extends ScreenView {
         this.renderSparkLines()
         this.renderLineChart()
         this.computerHeaderCard.refresh().then()
+    }
+
+    onVisibilityChange() {
+        let currentTime = Date.now()
+        if (document.hidden) {
+            this.lastVisibilityChange = currentTime
+            clearInterval(this.autoRefresh)
+        } else {
+            if (this.status.isRunning) {
+                setTimeout(args => {
+                    this.onRefresh().then()
+                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+            }
+        }
     }
 
     renderMetrics() {
