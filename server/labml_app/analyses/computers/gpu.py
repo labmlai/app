@@ -51,9 +51,7 @@ class GPUAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
-        inds = {}
         for ind, track in self.gpu.tracking.items():
-            print(ind)
             name = ind.split('.')
 
             if [i for i in name if i in ['total', 'limit']]:
@@ -62,17 +60,7 @@ class GPUAnalysis(Analysis):
             series: Dict[str, Any] = Series().load(track).detail
             series['name'] = '.'.join(name[1:])
 
-            if name[1] in inds:
-                inds[name[1]].append(series)
-            else:
-                inds[name[1]] = []
-
-        for k, v in inds.items():
-            res.extend(v)
-            if v:
-                mean_series = get_mean_series(v)
-                mean_series['name'] = f'{k}.mean'
-                res.append(mean_series)
+            res.append(series)
 
         return res
 
