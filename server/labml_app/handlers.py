@@ -144,12 +144,12 @@ def update_computer() -> flask.Response:
 
 
 def claim_computer(session_uuid: str, c: computer.Computer) -> None:
-    s = auth.get_app_token()
+    at = auth.get_app_token()
 
-    if not s.user:
+    if not at.user:
         return
 
-    default_project = s.user.load().default_project
+    default_project = at.user.load().default_project
 
     if session_uuid not in default_project.computers:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
@@ -269,16 +269,16 @@ def update_run() -> flask.Response:
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return jsonify({'errors': errors, 'url': r.url})
+    return jsonify({'errors': errors, 'url': r.url, 'dynamic': r.dynamic})
 
 
 def claim_run(run_uuid: str, r: run.Run) -> None:
-    s = auth.get_app_token()
+    at = auth.get_app_token()
 
-    if not s.user:
+    if not at.user:
         return
 
-    u = s.user.load()
+    u = at.user.load()
     default_project = u.default_project
 
     if run_uuid not in default_project.runs:
@@ -318,15 +318,20 @@ def get_run(run_uuid: str) -> flask.Response:
 
 def edit_run(run_uuid: str) -> flask.Response:
     r = run.get_run(run_uuid)
+    errors = []
 
     if r:
-        r.edit_run(request.json)
+        data = request.json
+        if 'dynamic' in data:
+            r.edit_hyper_params(data['dynamic'])
+        else:
+            r.edit_run(data)
+
+        logger.debug(f'edit run: {r.key}')
     else:
-        r.errors.append({'edit_run': 'invalid run uuid'})
+        errors.append({'edit_run': 'invalid run uuid'})
 
-    logger.debug(f'edit run: {r.key}')
-
-    return utils.format_rv({'errors': r.errors})
+    return utils.format_rv({'errors': errors})
 
 
 @mix_panel.MixPanelEvent.time_this(None)
