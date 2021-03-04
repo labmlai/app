@@ -37,7 +37,11 @@ export class GradientsCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.analysisData = await this.analysisCache.get()
+        try {
+            this.analysisData = await this.analysisCache.get()
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -59,7 +63,11 @@ export class GradientsCard extends Card {
     }
 
     async refresh() {
-        this.analysisData = await this.analysisCache.get(true)
+        try {
+            this.analysisData = await this.analysisCache.get(true)
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
 
         if (this.analysisData.summary.length > 0) {
             this.renderLineChart()

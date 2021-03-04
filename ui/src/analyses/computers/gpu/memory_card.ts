@@ -9,6 +9,7 @@ import {getSeriesData} from "./utils"
 import {Labels} from "../../../components/charts/labels"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {ROUTER} from "../../../app"
+import {handleNetworkError} from '../../../utils/redirect';
 
 export class GPUMemoryCard extends Card {
     uuid: string
@@ -39,7 +40,11 @@ export class GPUMemoryCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = getSeriesData((await this.analysisCache.get()).series, 'memory')
+        try {
+            this.series = getSeriesData((await this.analysisCache.get()).series, 'memory')
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -73,7 +78,11 @@ export class GPUMemoryCard extends Card {
     }
 
     async refresh() {
-        this.series = getSeriesData((await this.analysisCache.get(true)).series, 'memory')
+        try {
+            this.series = getSeriesData((await this.analysisCache.get(true)).series, 'memory')
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
 
         if (this.series.length > 0) {
             this.renderLineChart()

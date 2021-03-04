@@ -9,6 +9,7 @@ import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
 import mix_panel from "../../../mix_panel";
+import {handleNetworkError} from '../../../utils/redirect';
 import Timeout = NodeJS.Timeout;
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -77,8 +78,9 @@ class LoggerView extends ScreenView {
         try {
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
+        }  catch (e) {
+            handleNetworkError(e)
+            return
         }
     }
 
@@ -92,8 +94,14 @@ class LoggerView extends ScreenView {
     }
 
     async onRefresh() {
-        this.run = await this.runCache.get(true)
-        this.status = await this.statusCache.get(true)
+        try {
+            this.run = await this.runCache.get(true)
+            this.status = await this.statusCache.get(true)
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()

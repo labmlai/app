@@ -7,6 +7,8 @@ import {HamburgerMenuView} from '../components/hamburger_menu'
 import {User} from '../models/user'
 import EditableField from '../components/editable_field'
 import mix_panel from "../mix_panel"
+import {NetworkError} from '../network';
+import {handleNetworkError} from '../utils/redirect';
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 const LIGHT = 'light'
@@ -50,8 +52,9 @@ class SettingsView extends ScreenView {
     private async renderContent() {
         try {
             this.user = await this.userCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
+        }  catch (e) {
+            handleNetworkError(e)
+            return
         }
 
         this.loader.remove()

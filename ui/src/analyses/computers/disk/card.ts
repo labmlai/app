@@ -40,7 +40,11 @@ export class DiskCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = toPointValues((await this.analysisCache.get()).series)
+        try {
+            this.series = toPointValues((await this.analysisCache.get()).series)
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -68,7 +72,11 @@ export class DiskCard extends Card {
     }
 
     async refresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        try {
+            this.series = toPointValues((await this.analysisCache.get(true)).series)
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
 
         if (this.series.length > 0) {
             this.renderLineChart()

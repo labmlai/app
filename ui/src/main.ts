@@ -2,7 +2,7 @@ import {Sentry, Integrations} from './sentry'
 
 import {ROUTER} from './app'
 import {RunHandler} from './views/run_view'
-import {PageNotFoundHandler} from './views/page_not_found_view'
+import {PageNotFoundHandler} from './views/errors/page_not_found_view'
 import {RunsListHandler} from './views/runs_list_view'
 import {ComputersListHandler} from './views/computers_list_view'
 import {LoginHandler} from './views/login_view'
@@ -12,12 +12,19 @@ import {computerAnalyses, experimentAnalyses} from "./analyses/analyses"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {ComputerHandler} from './views/computer_view'
 import {SENTRY_DSN} from './env'
+import {AuthErrorHandler} from './views/errors/auth_error_view';
+import {OtherErrorHandler} from './views/errors/other_error_view';
+import {NetworkErrorHandler} from './views/errors/network_error_view';
 
 new LoginHandler()
 
+new PageNotFoundHandler()
+new AuthErrorHandler()
+new OtherErrorHandler()
+new NetworkErrorHandler()
+
 new RunHandler()
 new ComputerHandler()
-new PageNotFoundHandler()
 new RunsListHandler()
 new ComputersListHandler()
 new SettingsHandler()

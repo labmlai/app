@@ -44,8 +44,12 @@ export class ComputerHeaderCard {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}})
 
         this.elem.appendChild(this.loader.render($))
-        this.status = await this.statusCache.get()
-        this.computer = await this.computerCache.get()
+        try {
+            this.status = await this.statusCache.get()
+            this.computer = await this.computerCache.get()
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         if (this.status.isRunning) {
@@ -113,7 +117,11 @@ export class ComputerHeaderCard {
     }
 
     async refresh(lastUpdated?: number) {
-        this.status = await this.statusCache.get()
+        try {
+            this.status = await this.statusCache.get()
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
 
         this.lastUpdated = lastUpdated ? lastUpdated : this.statusCache.lastUpdated
 

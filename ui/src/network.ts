@@ -27,7 +27,7 @@ class Network {
             xhr.onload = () => {
                 if (xhr.status >= 400) {
                     if (xhr.status != 403) {
-                        reject(xhr.response)
+                        reject(new NetworkError(xhr.status, url, xhr.response))
                     }
                 } else {
                     resolve(xhr.response.data)
@@ -35,7 +35,7 @@ class Network {
             }
 
             xhr.onerror = () => {
-                reject('Something went wrong!')
+                reject('Network Failure')
             }
 
             xhr.send(JSON.stringify(data))
@@ -118,6 +118,18 @@ class Network {
 
     async updatePreferences(url: string, run_uuid: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/${url}/preferences/${run_uuid}`, data)
+    }
+}
+
+export class NetworkError extends Error {
+    statusCode: number
+    url: string
+
+    constructor(statusCode: number, url: string, message: string) {
+        super(message);
+        this.name = "NetworkError"
+        this.statusCode = statusCode
+        this.url = url
     }
 }
 

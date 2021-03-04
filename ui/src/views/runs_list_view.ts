@@ -9,6 +9,7 @@ import {SearchView} from '../components/search'
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
+import {handleNetworkError} from '../utils/redirect';
 
 
 class RunsListView extends ScreenView {
@@ -86,7 +87,13 @@ class RunsListView extends ScreenView {
     }
 
     onRefresh = async () => {
-        this.currentRunsList = (await this.runListCache.get(true)).runs
+        try {
+            this.currentRunsList = (await this.runListCache.get(true)).runs
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
         await this.renderList()
     }
 
@@ -97,7 +104,12 @@ class RunsListView extends ScreenView {
     }
 
     onDelete = async () => {
-        await this.runListCache.deleteRuns(this.runsDeleteSet)
+        try {
+            await this.runListCache.deleteRuns(this.runsDeleteSet)
+        } catch (e) {
+            handleNetworkError(e)
+            return
+        }
         await this.renderList()
     }
 
@@ -133,7 +145,7 @@ class RunsListView extends ScreenView {
         try {
             this.currentRunsList = (await this.runListCache.get()).runs
         } catch (e) {
-            ROUTER.navigate('/404')
+            handleNetworkError(e)
             return
         }
 

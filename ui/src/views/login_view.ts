@@ -5,6 +5,7 @@ import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {IsUserLoggedCache} from "../cache/cache"
 import NETWORK from '../network'
+import {handleNetworkError} from '../utils/redirect';
 
 class LoginView extends ScreenView {
     isUserLogged: IsUserLogged
@@ -41,13 +42,18 @@ class LoginView extends ScreenView {
         this.isUserLogged = await this.isUserLoggedCache.get()
 
         if (this.token) {
-            let res = await NETWORK.signIn(this.token)
-            if (res.is_successful) {
+            try {
+                let res = await NETWORK.signIn(this.token)
+                if (!res.is_successful) {
+                    ROUTER.navigate('/401')
+                }
                 localStorage.setItem('app_token', res.app_token)
                 this.isUserLogged = await this.isUserLoggedCache.get(true)
-                await SCREEN.updateTheme().then()
-                ROUTER.navigate(this.returnUrl)
+            } catch (e) {
+                handleNetworkError(e)
+                return
             }
+            await SCREEN.updateTheme().then()
         }
 
         if (!this.isUserLogged.is_user_logged) {
@@ -55,6 +61,7 @@ class LoginView extends ScreenView {
             return
         }
 
+        ROUTER.navigate(this.returnUrl)
         this.loader.remove()
     }
 }

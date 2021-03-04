@@ -14,6 +14,7 @@ import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout
+import {handleNetworkError} from '../../../utils/redirect';
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -96,7 +97,8 @@ class DiskView extends ScreenView {
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
         } catch (e) {
-            ROUTER.navigate('/404')
+            handleNetworkError(e)
+            return
         }
     }
 
@@ -110,8 +112,14 @@ class DiskView extends ScreenView {
     }
 
     async onRefresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).series)
-        this.status = await this.statusCache.get(true)
+        try {
+            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            this.status = await this.statusCache.get(true)
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()

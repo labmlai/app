@@ -1,7 +1,7 @@
-import {ROUTER, SCREEN} from '../app'
-import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {ScreenView} from "../screen"
-import mix_panel from "../mix_panel"
+import {ROUTER, SCREEN} from '../../app'
+import {Weya as $, WeyaElement} from '../../../../lib/weya/weya'
+import {ScreenView} from "../../screen"
+import mix_panel from "../../mix_panel"
 
 function wrapEvent(eventName: string, func: Function) {
     function wrapper() {
@@ -17,11 +17,13 @@ function wrapEvent(eventName: string, func: Function) {
     return wrapper
 }
 
-class PageNotFoundView extends ScreenView {
+class NetworkErrorView extends ScreenView {
     elem: WeyaElement
     private events = {
-        home: () => {
-            ROUTER.navigate(`/`)
+        retry: () => {
+            if (ROUTER.canBack()) {
+                ROUTER.back()
+            }
         },
     }
 
@@ -37,18 +39,17 @@ class PageNotFoundView extends ScreenView {
             this.events[k] = wrapEvent(k, func)
         }
 
-        mix_panel.track('404 View')
+        mix_panel.track('Network Error View')
     }
 
     render() {
         this.elem = <HTMLElement>$('div.error-container', $ => {
-            $('h2.mt-5', 'Ooops! Page not found.' + '')
-            $('h1', '404')
-            $('p', 'We can\'t find the page.' + '')
-            $('button.btn.btn-danger',
-                {on: {click: this.events.home}},
+            $('h2.mt-5', 'Ooops!' + '')
+            $('p', 'There\'s a problem with the connection between you and us' + '')
+            $('button.btn.btn-danger.mt-3',
+                {on: {click: this.events.retry}},
                 $ => {
-                    $('span.mt-3', 'Go Back to Home' + '')
+                    $('span.mt-3', 'Retry' + '')
                 }
             )
         })
@@ -60,12 +61,12 @@ class PageNotFoundView extends ScreenView {
     }
 }
 
-export class PageNotFoundHandler {
+export class NetworkErrorHandler {
     constructor() {
-        ROUTER.route('404', [this.handlePageNotFound])
+        ROUTER.route('network_error', [this.handleNetworkError])
     }
 
-    handlePageNotFound = () => {
-        SCREEN.setView(new PageNotFoundView())
+    handleNetworkError = () => {
+        SCREEN.setView(new NetworkErrorView())
     }
 }

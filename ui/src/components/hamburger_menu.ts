@@ -4,6 +4,8 @@ import {Loader} from './loader'
 import CACHE, {UserCache} from "../cache/cache"
 import {User} from '../models/user'
 import NETWORK from '../network'
+import {handleNetworkError} from '../utils/redirect';
+import {Sentry} from '../sentry';
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 
@@ -59,7 +61,11 @@ export class HamburgerMenuView {
     }
 
     private async renderProfile() {
-        this.user = await this.userCache.get()
+        try {
+            this.user = await this.userCache.get()
+        } catch (e) {
+            //Do nothing since the error is handled by the parent view
+        }
 
         this.loader.remove()
 
@@ -126,12 +132,17 @@ export class HamburgerMenuView {
     }
 
     onLogOut = async () => {
-        let res = await NETWORK.signOut()
-        if (res.is_successful) {
-            localStorage.removeItem('app_token')
-            NETWORK.redirectLogout()
-        } else {
-            //TODO: Sentry
+        try {
+            let res = await NETWORK.signOut()
+            if (res.is_successful) {
+                localStorage.removeItem('app_token')
+                NETWORK.redirectLogout()
+            } else {
+                Sentry.captureException("Logout failed")
+            }
+        } catch (e) {
+            handleNetworkError(e)
+            return
         }
     }
 }

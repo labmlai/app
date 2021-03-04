@@ -13,7 +13,8 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
+import {handleNetworkError} from '../../../utils/redirect';
+import Timeout = NodeJS.Timeout;
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -97,8 +98,9 @@ class MetricsView extends ScreenView {
             this.series = toPointValues((await this.analysisCache.get()).series)
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
+        }  catch (e) {
+            handleNetworkError(e)
+            return
         }
     }
 
@@ -112,8 +114,14 @@ class MetricsView extends ScreenView {
     }
 
     async onRefresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).series)
-        this.status = await this.statusCache.get(true)
+        try {
+            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            this.status = await this.statusCache.get(true)
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()

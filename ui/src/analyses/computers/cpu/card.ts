@@ -40,7 +40,11 @@ export class CPUCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.series = toPointValues((await this.analysisCache.get()).summary)
+        try {
+            this.series = toPointValues((await this.analysisCache.get()).summary)
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -69,7 +73,11 @@ export class CPUCard extends Card {
     }
 
     async refresh() {
-        this.series = toPointValues((await this.analysisCache.get(true)).summary)
+        try {
+            this.series = toPointValues((await this.analysisCache.get(true)).summary)
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
 
         if (this.series.length > 0) {
             this.renderLineChart()

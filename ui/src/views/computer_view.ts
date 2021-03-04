@@ -12,6 +12,7 @@ import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
 import {AlertMessage} from "../components/alert"
 import mix_panel from "../mix_panel"
+import {handleNetworkError} from '../utils/redirect';
 import Timeout = NodeJS.Timeout;
 
 
@@ -82,8 +83,10 @@ class ComputerView extends ScreenView {
             this.computer = await this.computerCache.get()
             this.status = await this.statusCache.get()
             this.isUserLogged = await this.isUserLoggedCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
+        }  catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
         }
 
         this.loader.remove()
@@ -101,7 +104,13 @@ class ComputerView extends ScreenView {
     async onRefresh() {
         let oldest = (new Date()).getTime()
 
-        this.status = await this.statusCache.get()
+        try {
+            this.status = await this.statusCache.get()
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
         if (!this.status.isRunning) {
             this.refreshButton.remove()
             clearInterval(this.autoRefresh)
@@ -143,7 +152,12 @@ class ComputerView extends ScreenView {
 
     onDelete = async () => {
         if (confirm("Are you sure?")) {
-            await CACHE.getComputersList().deleteSessions(new Set<string>([this.uuid]))
+            try {
+                await CACHE.getComputersList().deleteSessions(new Set<string>([this.uuid]))
+            } catch (e) {
+                handleNetworkError(e)
+                return
+            }
             ROUTER.navigate('/computers')
         }
     }

@@ -12,6 +12,7 @@ import {experimentAnalyses} from "../analyses/analyses"
 import Card from "../analyses/card"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
+import {handleNetworkError} from '../utils/redirect';
 import Timeout = NodeJS.Timeout;
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -81,9 +82,10 @@ class RunView extends ScreenView {
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
             this.isUserLogged = await this.isUserLoggedCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
-            throw e
+        }  catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
         }
 
         this.loader.remove()
@@ -101,7 +103,13 @@ class RunView extends ScreenView {
     async onRefresh() {
         let oldest = (new Date()).getTime()
 
-        this.status = await this.statusCache.get()
+        try {
+            this.status = await this.statusCache.get(true)
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
         if (!this.status.isRunning) {
             this.refreshButton.remove()
             clearInterval(this.autoRefresh)
@@ -143,7 +151,12 @@ class RunView extends ScreenView {
 
     onDelete = async () => {
         if (confirm("Are you sure?")) {
-            await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+            try {
+                await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+            } catch (e) {
+                handleNetworkError(e)
+                return
+            }
             ROUTER.navigate('/runs')
         }
     }

@@ -6,6 +6,7 @@ import Card from "../../card"
 import Filter from "../../../utils/ansi_to_html"
 import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app';
+import {handleNetworkError} from '../../../utils/redirect';
 
 
 export class StdOutCard extends Card {
@@ -49,7 +50,11 @@ export class StdOutCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.run = await this.runCache.get()
+        try {
+            this.run = await this.runCache.get()
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -74,7 +79,13 @@ export class StdOutCard extends Card {
     }
 
     async refresh() {
-        this.run = await this.runCache.get(true)
+        try {
+            this.run = await this.runCache.get(true)
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
 
         if (this.run.stdout) {
             this.renderOutput()

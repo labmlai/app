@@ -36,7 +36,11 @@ export class ConfigsCard extends Card {
         })
 
         this.elem.appendChild(this.loader.render($))
-        this.run = await this.runCache.get()
+        try {
+            this.run = await this.runCache.get()
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
         this.loader.remove()
 
         Weya(this.elem, $ => {
@@ -51,7 +55,11 @@ export class ConfigsCard extends Card {
     }
 
     async refresh() {
-        this.run = await this.runCache.get(true)
+        try {
+            this.run = await this.runCache.get(true)
+        } catch (e) {
+            // Let the parent view handle network failures
+        }
 
         if (this.run.configs.length > 0) {
             this.renderConfigs()

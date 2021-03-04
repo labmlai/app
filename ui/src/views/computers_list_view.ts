@@ -9,6 +9,7 @@ import {ComputerListItemModel} from '../models/computer_list'
 import {ComputersListItemView} from '../components/computers_list_item'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
+import {handleNetworkError} from '../utils/redirect';
 
 
 class ComputersListView extends ScreenView {
@@ -87,7 +88,13 @@ class ComputersListView extends ScreenView {
     }
 
     onRefresh = async () => {
-        this.currentComputersList = (await this.computerListCache.get(true)).computers
+        try {
+            this.currentComputersList = (await this.computerListCache.get(true)).computers
+        } catch (e) {
+            //TODO: redirect after multiple refresh failures
+            handleNetworkError(e)
+            return
+        }
         await this.renderList()
     }
 
@@ -98,7 +105,12 @@ class ComputersListView extends ScreenView {
     }
 
     onDelete = async () => {
-        await this.computerListCache.deleteSessions(this.computersDeleteSet)
+        try {
+            await this.computerListCache.deleteSessions(this.computersDeleteSet)
+        } catch (e) {
+            handleNetworkError(e)
+            return
+        }
         await this.renderList()
     }
 
@@ -134,7 +146,7 @@ class ComputersListView extends ScreenView {
         try {
             this.currentComputersList = (await this.computerListCache.get()).computers
         } catch (e) {
-            ROUTER.navigate('/404')
+            handleNetworkError(e)
             return
         }
 

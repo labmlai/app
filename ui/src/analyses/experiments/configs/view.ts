@@ -10,6 +10,7 @@ import {RunHeaderCard} from "../run_header/card"
 import {Configs} from "./components"
 import mix_panel from "../../../mix_panel";
 import Timeout = NodeJS.Timeout;
+import {handleNetworkError} from '../../../utils/redirect';
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -76,8 +77,9 @@ class ConfigsView extends ScreenView {
         try {
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
+        }  catch (e) {
+            handleNetworkError(e)
+            return
         }
     }
 
