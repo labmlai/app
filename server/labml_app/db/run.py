@@ -102,9 +102,11 @@ class Run(Model['Run']):
             self.configs.update(configs)
 
             for k, v in configs.items():
-                val = v['value']
-                if val['type'] == 'DynamicSchedule':
-                    self.dynamic[v['name']] = val['default']
+                value = v['value']
+                name = v['name']
+                if value['type'] == 'DynamicSchedule':
+                    self.dynamic[name] = value['default']
+
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
             self.stdout += stdout_processed
@@ -223,8 +225,7 @@ class Run(Model['Run']):
     def edit_hyper_params(self, data: Dict[str, any]) -> None:
         for k, v in data.items():
             if k in self.dynamic and v:
-                if self.dynamic[k] != v:
-                    self.dynamic[k] = v
+                self.dynamic[k] = v
 
         self.save()
 
