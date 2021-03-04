@@ -50,7 +50,7 @@ def sign_in() -> flask.Response:
 
     mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
-    token_id = ''  # request.headers.get('Authorization', '')
+    token_id = ''  # generate different token for every login
     at = app_token.get_or_create(token_id)
 
     at.user = u.key
