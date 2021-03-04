@@ -104,7 +104,7 @@ class Run(Model['Run']):
             for k, v in configs.items():
                 value = v['value']
                 name = v['name']
-                if value['type'] == 'DynamicSchedule':
+                if value and type(value) == dict and value['type'] == 'DynamicSchedule':
                     self.dynamic[name] = value['default']
 
         if 'stdout' in data and data['stdout']:
