@@ -34,6 +34,7 @@ class Run(Model['Run']):
     is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
+    dynamic: Dict[str, any]
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -62,6 +63,7 @@ class Run(Model['Run']):
                     is_claimed=True,
                     status=None,
                     configs={},
+                    dynamic={},
                     stdout='',
                     stdout_unmerged='',
                     logger='',
@@ -96,7 +98,13 @@ class Run(Model['Run']):
             self.start_step = data.get('start_step', '')
 
         if 'configs' in data:
-            self.configs.update(data.get('configs', {}))
+            configs = data.get('configs', {})
+            self.configs.update(configs)
+
+            for k, v in configs.items():
+                val = v['value']
+                if val['type'] == 'DynamicSchedule':
+                    self.dynamic[v['name']] = val['default']
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
             self.stdout += stdout_processed
@@ -209,6 +217,14 @@ class Run(Model['Run']):
             self.comment = data.get('comment', self.comment)
         if 'note' in data:
             self.note = data.get('note', self.note)
+
+        self.save()
+
+    def edit_hyper_params(self, data: Dict[str, any]) -> None:
+        for k, v in data.items():
+            if k in self.dynamic and v:
+                if self.dynamic[k] != v:
+                    self.dynamic[k] = v
 
         self.save()
 
