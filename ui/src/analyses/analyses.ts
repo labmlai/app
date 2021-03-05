@@ -1,6 +1,7 @@
 import {Analysis} from "./types"
 
 import metricAnalysis from "./experiments/metrics/init"
+import hyperPramsAnalysis from "./experiments/hyper_params/init"
 import gradientAnalysis from "./experiments/grads/init"
 import parameterAnalysis from "./experiments/params/init"
 import moduleAnalysis from "./experiments/activations/init"
@@ -18,6 +19,7 @@ import processAnalysis from './computers/process/init'
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
     configsAnalysis,
+    hyperPramsAnalysis,
     gradientAnalysis,
     parameterAnalysis,
     moduleAnalysis,

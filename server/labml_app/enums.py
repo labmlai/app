@@ -13,6 +13,7 @@ class SeriesEnums:
     MODULE = 'module'
     TIME = 'time'
     METRIC = 'metric'
+    HYPERPARAMS = 'hp'
 
 
 class COMPUTEREnums:
@@ -34,4 +35,5 @@ INDICATORS = [SeriesEnums.GRAD,
               SeriesEnums.PARAM,
               SeriesEnums.TIME,
               SeriesEnums.MODULE,
-              SeriesEnums.METRIC]
+              SeriesEnums.METRIC,
+              SeriesEnums.HYPERPARAMS]

@@ -156,6 +156,6 @@ def set_metrics_preferences(run_uuid: str) -> Any:
     mp = preferences_key.load()
     mp.update_preferences(request.json)
 
-    logger.debug(f'update metrics references: {mp.key}')
+    logger.debug(f'update metrics preferences: {mp.key}')
 
     return format_rv({'errors': mp.errors})

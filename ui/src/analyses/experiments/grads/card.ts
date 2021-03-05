@@ -6,7 +6,7 @@ import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import gradientsCache from "./cache"
 import {Loader} from "../../../components/loader"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
 
 
 export class GradientsCard extends Card {
