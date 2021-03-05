@@ -92,7 +92,8 @@ export class MetricsCard extends Card {
             new SparkLines({
                 series: this.series,
                 plotIdx: this.plotIdx,
-                width: this.width
+                width: this.width,
+                isEditable: false
             }).render($)
         })
     }

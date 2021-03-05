@@ -4,21 +4,13 @@ import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
+import {SparkLineOptions} from "./spark_line"
 import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
 
-export interface SparkLineOptions {
-    name: string
-    series: PointValue[]
-    width: number
-    stepExtent: [number, number]
-    selected: number
-    minLastValue: number
-    maxLastValue: number
-    onClick?: () => void
-    color: string
+interface EditableSparkLineOptions extends SparkLineOptions {
 }
 
-export class SparkLine {
+export class EditableSparkLine {
     series: PointValue[]
     name: string
     minLastValue: number
@@ -35,7 +27,7 @@ export class SparkLine {
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
 
-    constructor(opt: SparkLineOptions) {
+    constructor(opt: EditableSparkLineOptions) {
         this.series = opt.series
         this.name = opt.name
         this.selected = opt.selected
@@ -77,17 +69,10 @@ export class SparkLine {
 
         this.valueElem.innerHTML = ''
 
-        if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
-            $(this.valueElem, $ => {
-                $('span.value-secondary', formatFixed(last.value, 6), {style: {color: valueColor}})
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
-            })
-        } else {
-            this.valueElem.classList.add('primary-only')
-            $(this.valueElem, $ => {
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
-            })
-        }
+        this.valueElem.classList.add('primary-only')
+        $(this.valueElem, $ => {
+            $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
+        })
     }
 
     render($: WeyaElementFunction) {

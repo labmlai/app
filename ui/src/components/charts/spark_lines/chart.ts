@@ -9,6 +9,7 @@ import {getColor} from "../constants"
 interface SparkLinesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
+    isEditable: boolean
 }
 
 export class SparkLines {
