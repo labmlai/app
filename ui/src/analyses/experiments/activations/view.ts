@@ -98,7 +98,7 @@ class ActivationsView extends ScreenView {
             this.series = toPointValues((await this.analysisCache.get()).series)
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }
@@ -215,7 +215,8 @@ class ActivationsView extends ScreenView {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
-                onSelect: this.toggleChart
+                onSelect: this.toggleChart,
+                isEditable: false
             })
             this.sparkLines.render($)
         })

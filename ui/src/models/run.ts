@@ -60,6 +60,7 @@ export class Run {
     start_step: number
     is_claimed: boolean
     configs: Config[]
+    dynamic: object
     stdout: string
     logger: string
     stderr: string

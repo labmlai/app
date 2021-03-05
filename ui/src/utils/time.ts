@@ -19,8 +19,8 @@ export function getTimeDiff(timestamp: number): string {
     }
 }
 
-const monthNames = ["Jan", "Feb", "March", "April", "May", "June",
-    "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 
 export function formatDateTime(dateTime: Date) {
@@ -28,5 +28,5 @@ export function formatDateTime(dateTime: Date) {
     let month = monthNames[dateTime.getMonth()]
     let timeStr = dateTime.toTimeString().substr(0, 8)
 
-    return `${month}-${date}:${timeStr}`
+    return `${month} ${date},${timeStr}`
 }

@@ -1,18 +1,17 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {SeriesModel} from "../../../models/run"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {AnalysisDataModel, SeriesModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
-import {getChartType, toPointValues} from "../../../components/charts/utils"
-import {LineChart} from "../../../components/charts/lines/chart"
-import metricsCache from "./cache"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
+import hyperParamsCache from "./cache"
 import {Loader} from "../../../components/loader"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
+import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {toPointValues} from "../../../components/charts/utils"
+import {SparkLines} from "../../../components/charts/spark_lines/chart"
 
 
-export class MetricsCard extends Card {
+export class HyperParamsCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
@@ -31,8 +30,8 @@ export class MetricsCard extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.analysisCache = metricsCache.getAnalysis(this.uuid)
-        this.preferenceCache = metricsCache.getPreferences(this.uuid)
+        this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
+        this.preferenceCache = hyperParamsCache.getPreferences(this.uuid)
         this.loader = new Loader()
     }
 
@@ -42,7 +41,7 @@ export class MetricsCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Metrics')
+            $('h3.header', 'Hyperparameters')
         })
 
         this.elem.appendChild(this.loader.render($))
@@ -59,31 +58,16 @@ export class MetricsCard extends Card {
             this.plotIdx = [...analysisPreferences]
         }
 
-
         Weya(this.elem, $ => {
             this.lineChartContainer = $('div', '')
             this.sparkLinesContainer = $('div', '')
         })
 
         if (this.series.length > 0) {
-            this.renderLineChart()
             this.renderSparkLines()
         } else {
             this.elem.classList.add('hide')
         }
-    }
-
-    renderLineChart() {
-        this.lineChartContainer.innerHTML = ''
-        Weya(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.series,
-                width: this.width,
-                plotIdx: this.plotIdx,
-                chartType: this.preferenceData && this.preferenceData.chart_type ?
-                    getChartType(this.preferenceData.chart_type) : 'linear'
-            }).render($)
-        })
     }
 
     renderSparkLines() {
@@ -106,13 +90,12 @@ export class MetricsCard extends Card {
         }
 
         if (this.series.length > 0) {
-            this.renderLineChart()
             this.renderSparkLines()
             this.elem.classList.remove('hide')
         }
     }
 
     onClick = () => {
-        ROUTER.navigate(`/run/${this.uuid}/metrics`)
+        ROUTER.navigate(`/run/${this.uuid}/hyper_params`)
     }
 }

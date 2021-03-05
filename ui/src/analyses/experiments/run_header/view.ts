@@ -10,9 +10,9 @@ import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
-import mix_panel from "../../../mix_panel";
-import {IsUserLogged} from '../../../models/user';
-import {handleNetworkError} from '../../../utils/redirect';
+import mix_panel from "../../../mix_panel"
+import {IsUserLogged} from '../../../models/user'
+import {handleNetworkError} from '../../../utils/redirect'
 
 
 class RunHeaderView extends ScreenView {

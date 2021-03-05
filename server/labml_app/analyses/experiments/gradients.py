@@ -151,6 +151,6 @@ def set_grads_preferences(run_uuid: str) -> Any:
     gp = preferences_key.load()
     gp.update_preferences(request.json)
 
-    logger.debug(f'update gradients references: {gp.key}')
+    logger.debug(f'update gradients preferences: {gp.key}')
 
     return format_rv({'errors': gp.errors})

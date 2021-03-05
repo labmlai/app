@@ -19,7 +19,7 @@ export class StatusView {
     render($: WeyaElementFunction) {
         if (this.status.status === 'in progress') {
             if (this.type === 'computer') {
-                $('div.status.text-info.text-uppercase', 'computer is monitoring')
+                $('div.status.text-info.text-uppercase', 'monitoring')
                 return
             }
             $('div.status.text-info.text-uppercase', 'experiment is running')
