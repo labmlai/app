@@ -15,6 +15,7 @@ export interface SparkLineOptions {
     minLastValue: number
     maxLastValue: number
     onClick?: () => void
+    isMouseMoveOpt?: boolean
     color: string
 }
 
@@ -28,6 +29,7 @@ export class SparkLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
+    isMouseMoveOpt?: boolean
     valueElem: HTMLSpanElement
     className: string = 'empty'
     xScale: d3.ScaleLinear<number, number>
@@ -40,6 +42,7 @@ export class SparkLine {
         this.name = opt.name
         this.selected = opt.selected
         this.onClick = opt.onClick
+        this.isMouseMoveOpt = opt.isMouseMoveOpt
         this.color = this.selected >= 0 ? opt.color : BASE_COLOR
         this.titleWidth = Math.min(150, Math.round(opt.width * .375))
         this.chartWidth = opt.width - this.titleWidth * 2
@@ -63,14 +66,15 @@ export class SparkLine {
     }
 
     changeCursorValue(cursorStep?: number | null) {
-        if (this.selected >= 0) {
+        if (this.selected >= 0 || this.isMouseMoveOpt) {
             this.linePlot.renderCursorCircle(cursorStep)
             this.renderValue(cursorStep)
         }
     }
 
     renderValue(cursorStep?: number | null) {
-        const last = this.series[this.selected >= 0 ? getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
+        const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
+            getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
         let lastValue = scaleValue(last.value, this.minLastValue, this.maxLastValue)
         let valueColor = pickHex(lastValue)

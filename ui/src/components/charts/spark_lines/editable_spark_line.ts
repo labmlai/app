@@ -1,11 +1,10 @@
 import d3 from "../../../d3"
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
-import {BASE_COLOR} from "../constants"
-import {getExtent, getScale, getSelectedIdx} from "../utils"
+import {getExtent, getScale} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
 import {SparkLineOptions} from "./spark_line"
-import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
+import {formatFixed} from "../../../utils/value"
 
 interface EditableSparkLineOptions extends SparkLineOptions {
 }
@@ -13,70 +12,43 @@ interface EditableSparkLineOptions extends SparkLineOptions {
 export class EditableSparkLine {
     series: PointValue[]
     name: string
-    minLastValue: number
-    maxLastValue: number
     color: string
-    selected: number
     titleWidth: number
     chartWidth: number
-    onClick?: () => void
     valueElem: HTMLSpanElement
+    inputElem: HTMLInputElement
     className: string = 'empty'
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
-    bisect: d3.Bisector<number, number>
     linePlot: LinePlot
 
     constructor(opt: EditableSparkLineOptions) {
         this.series = opt.series
         this.name = opt.name
-        this.selected = opt.selected
-        this.onClick = opt.onClick
-        this.color = this.selected >= 0 ? opt.color : BASE_COLOR
         this.titleWidth = Math.min(150, Math.round(opt.width * .375))
         this.chartWidth = opt.width - this.titleWidth * 2
-        this.minLastValue = opt.minLastValue
-        this.maxLastValue = opt.maxLastValue
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
-
-        this.bisect = d3.bisector(function (d: PointValue) {
-            return d.step
-        }).left
-
-        if (this.onClick != null && this.selected >= 0) {
-            this.className = 'selected'
-        }
-
-        if (this.onClick != null) {
-            this.className += '.list-group-item-action'
-        }
     }
 
-    changeCursorValue(cursorStep?: number | null) {
-        if (this.selected >= 0) {
-            this.linePlot.renderCursorCircle(cursorStep)
-            this.renderValue(cursorStep)
-        }
-    }
-
-    renderValue(cursorStep?: number | null) {
-        const last = this.series[this.selected >= 0 ? getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
-
-        let lastValue = scaleValue(last.value, this.minLastValue, this.maxLastValue)
-        let valueColor = pickHex(lastValue)
+    renderValue() {
+        const last = this.series[this.series.length - 1]
 
         this.valueElem.innerHTML = ''
-
-        this.valueElem.classList.add('primary-only')
         $(this.valueElem, $ => {
-            $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
+            $('span.input-content', $ => {
+                this.inputElem = <HTMLInputElement>$('input', {
+                        value: formatFixed(last.smoothed, 4),
+                        type: "number"
+                    }
+                )
+            })
         })
     }
 
     render($: WeyaElementFunction) {
-        $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
+        $(`div.sparkline-list-item.list-group-item.${this.className}`, $ => {
             $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                 $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
                 $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
@@ -97,10 +69,14 @@ export class EditableSparkLine {
                         this.linePlot.render($)
                     })
                 })
-                this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})
+                this.valueElem = <HTMLSpanElement>$('span.input-container.value', {style: {width: `${this.titleWidth}px`}})
             })
         })
 
         this.renderValue()
+    }
+
+    getInput() {
+        return this.inputElem.value
     }
 }

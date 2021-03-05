@@ -138,6 +138,10 @@ export class EditButton extends Button {
                 $('span.fas.fa-edit', '')
             })
     }
+
+    remove() {
+        this.elem.remove()
+    }
 }
 
 export class DeleteButton extends Button {
