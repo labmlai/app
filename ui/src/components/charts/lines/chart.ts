@@ -4,10 +4,10 @@ import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
 import {LineFill, LinePlot} from "./plot"
-import {CHART_COLORS, getColor} from "../constants"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
 import ChartGradients from "../chart_gradients"
+import ChartColors from "../chart_colors"
 
 
 interface LineChartOptions extends ChartOptions {
@@ -36,6 +36,7 @@ export class LineChart {
     linePlots: LinePlot[] = []
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
+    chartColors : ChartColors
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
@@ -67,6 +68,8 @@ export class LineChart {
 
         const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
+
+        this.chartColors = new ChartColors({nColors: this.series.length})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -134,8 +137,8 @@ export class LineChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i] % CHART_COLORS.length
+                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                    colorIdx: this.filteredPlotIdx[i] % this.chartColors.getColors().length
                                                 }).render($)
                                             })
                                         }
@@ -144,7 +147,7 @@ export class LineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: getColor(this.filteredPlotIdx[i])
+                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
