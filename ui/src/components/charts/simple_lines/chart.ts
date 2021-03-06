@@ -6,7 +6,7 @@ import d3 from "../../../d3"
 import {SimpleLineFill, SimpleLinePlot} from "./plot"
 import {RightAxis} from "../axis"
 import {Labels} from "../labels"
-import {LineGradients} from "../chart_gradients"
+import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 
 
@@ -56,7 +56,8 @@ export class SimpleLinesChart {
                         width: 2 * this.margin + this.axisSize + this.chartWidth
                     },
                     $ => {
-                         new LineGradients().render($)
+                         new DropShadow().render($)
+                         new LineGradients({chartColors: this.chartColors}).render($)
                         $('g',
                             {
                                 transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`

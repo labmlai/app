@@ -14,7 +14,7 @@ import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
 import Timeout = NodeJS.Timeout
-import {DropShadow} from "../components/charts/chart_gradients"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -62,7 +62,6 @@ class RunView extends ScreenView {
     render() {
         this.elem = <HTMLElement>$('div.run.page',
             {style: {width: `${this.actualWidth}px`}}, $ => {
-                new DropShadow().render($)
                 this.runView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })

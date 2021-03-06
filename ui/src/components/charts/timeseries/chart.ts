@@ -3,12 +3,12 @@ import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/we
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
-import {CHART_COLORS, getColor} from "../constants"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
 import isMobile from '../../../utils/mobile'
-import {LineGradients} from "../chart_gradients"
+import {DropShadow, LineGradients} from "../chart_gradients"
+import ChartColors from "../chart_colors"
 
 
 export interface TimeSeriesOptions extends ChartOptions {
@@ -44,6 +44,7 @@ export class TimeSeriesChart {
     numTicks?: number
     onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
+    chartColors: ChartColors
 
     constructor(opt: TimeSeriesOptions) {
         this.series = opt.series
@@ -81,6 +82,8 @@ export class TimeSeriesChart {
 
         const stepExtent = opt.stepExtend ? opt.stepExtend : getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], this.chartWidth)
+
+        this.chartColors = new ChartColors({nColors: this.series.length})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -140,7 +143,8 @@ export class TimeSeriesChart {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
-                                new LineGradients().render($)
+                                new DropShadow().render($)
+                                new LineGradients({chartColors: this.chartColors}).render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
@@ -151,8 +155,8 @@ export class TimeSeriesChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i] % CHART_COLORS.length
+                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                    colorIdx: this.filteredPlotIdx[i] % this.chartColors.getColors().length
                                                 }).render($)
                                             })
                                         }
@@ -161,7 +165,7 @@ export class TimeSeriesChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: getColor(this.filteredPlotIdx[i])
+                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
                                             })
                                             this.timeSeriesPlots.push(timeSeriesPlot)
                                             timeSeriesPlot.render($)
