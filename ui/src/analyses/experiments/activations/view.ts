@@ -12,9 +12,11 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
-import mix_panel from "../../../mix_panel";
-import {handleNetworkError} from '../../../utils/redirect';
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import {handleNetworkError} from '../../../utils/redirect'
+import Timeout = NodeJS.Timeout
+import {DropShadow} from "../../../components/charts/chart_gradients"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -73,6 +75,7 @@ class ActivationsView extends ScreenView {
         this.elem = <HTMLElement>$('div.page',
             {style: {width: `${this.actualWidth}px`}},
             $ => {
+                new DropShadow().render($)
                 this.metricsView = <HTMLDivElement>$('div', '')
                 this.loader.render($)
             })

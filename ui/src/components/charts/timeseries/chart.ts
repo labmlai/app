@@ -5,10 +5,10 @@ import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
 import {CHART_COLORS, getColor} from "../constants"
 import {BottomTimeAxis, RightAxis} from "../axis"
-import {TimeSeriesFill, TimeSeriesPlot} from './plot';
-import {formatDateTime} from '../../../utils/time';
-import isMobile from '../../../utils/mobile';
-import ChartGradients from '../chart_gradients';
+import {TimeSeriesFill, TimeSeriesPlot} from './plot'
+import {formatDateTime} from '../../../utils/time'
+import isMobile from '../../../utils/mobile'
+import {LineGradients} from "../chart_gradients"
 
 
 export interface TimeSeriesOptions extends ChartOptions {
@@ -140,7 +140,7 @@ export class TimeSeriesChart {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
-                                new ChartGradients().render($)
+                                new LineGradients().render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`

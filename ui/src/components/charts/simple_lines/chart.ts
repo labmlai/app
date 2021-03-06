@@ -5,9 +5,9 @@ import {getScale} from "../utils"
 import d3 from "../../../d3"
 import {SimpleLineFill, SimpleLinePlot} from "./plot"
 import {RightAxis} from "../axis"
-import {getColor} from "../constants"
 import {Labels} from "../labels"
-import ChartGradients from "../chart_gradients"
+import {LineGradients} from "../chart_gradients"
+import ChartColors from "../chart_colors"
 
 
 export class SimpleLinesChart {
@@ -19,6 +19,7 @@ export class SimpleLinesChart {
     labels: string[] = []
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
+    chartColors: ChartColors
 
     constructor(opt: ChartOptions) {
         this.series = opt.series
@@ -37,6 +38,8 @@ export class SimpleLinesChart {
 
         this.xScale = getScale([0, this.series[0].value.length - 1], this.chartWidth, false)
         this.yScale = getScale([Math.min(...plot), Math.max(...plot)], -this.chartHeight)
+
+        this.chartColors = new ChartColors({nColors: this.series.length})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -53,7 +56,7 @@ export class SimpleLinesChart {
                         width: 2 * this.margin + this.axisSize + this.chartWidth
                     },
                     $ => {
-                        new ChartGradients().render($)
+                         new LineGradients().render($)
                         $('g',
                             {
                                 transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
@@ -65,7 +68,7 @@ export class SimpleLinesChart {
                                             series: s.value,
                                             xScale: this.xScale,
                                             yScale: this.yScale,
-                                            color: getColor(i),
+                                            color: this.chartColors.getColor(i),
                                             colorIdx: i
                                         }).render($)
                                     })
@@ -74,7 +77,7 @@ export class SimpleLinesChart {
                                             series: s.value,
                                             xScale: this.xScale,
                                             yScale: this.yScale,
-                                            color: getColor(i)
+                                            color: this.chartColors.getColor(i)
                                         }).render($)
                                     })
                                 })
@@ -87,7 +90,7 @@ export class SimpleLinesChart {
                                 new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
                             })
                     })
-                new Labels({labels: this.labels}).render($)
+                new Labels({labels: this.labels, chartColors: this.chartColors}).render($)
             })
         }
     }
