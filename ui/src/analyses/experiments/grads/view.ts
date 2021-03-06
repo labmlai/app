@@ -14,7 +14,7 @@ import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel";
 import Timeout = NodeJS.Timeout;
-import {handleNetworkError} from '../../../utils/redirect';
+import {handleNetworkError} from '../../../utils/redirect'
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
