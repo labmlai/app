@@ -23,6 +23,17 @@ compile: ## Compile JS
 	cp -r ui/images static/
 	npm run build
 
+compile-prod: compile
+	$(eval JS_CHECKSUM := $(shell md5sum static/js/bundle.min.js | cut -f 1 -d " "))
+	$(eval CSS_CHECKSUM := $(shell md5sum static/css/style.css | cut -f 1 -d " "))
+	mv static/js/bundle.min.js static/js/$(JS_CHECKSUM).min.js
+	mv static/js/bundle.js static/js/$(JS_CHECKSUM).js
+	mv static/css/style.css static/css/$(CSS_CHECKSUM).css
+	mv static/css/style.css.map static/css/$(CSS_CHECKSUM).css.map
+	sed -i '' 's/bundle.min.js/$(JS_CHECKSUM).min.js/g' static/index.html
+	sed -i '' 's/style.css/$(CSS_CHECKSUM).css/g' static/index.html
+
+
 watch-ui: compile ## Watch and Compile JS
 	npm run build
 	npm run watch
