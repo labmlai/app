@@ -30,8 +30,8 @@ compile-prod: compile
 	mv static/js/bundle.js static/js/$(JS_CHECKSUM).js
 	mv static/css/style.css static/css/$(CSS_CHECKSUM).css
 	mv static/css/style.css.map static/css/$(CSS_CHECKSUM).css.map
-	sed -i '' 's/bundle.min.js/$(JS_CHECKSUM).min.js/g' static/index.html
-	sed -i '' 's/style.css/$(CSS_CHECKSUM).css/g' static/index.html
+	sed -i 's/bundle.min.js/$(JS_CHECKSUM).min.js/g' static/index.html
+	sed -i 's/style.css/$(CSS_CHECKSUM).css/g' static/index.html
 
 
 watch-ui: compile ## Watch and Compile JS
