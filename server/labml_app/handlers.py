@@ -149,7 +149,8 @@ def claim_computer(session_uuid: str, c: computer.Computer) -> None:
     if not at.user:
         return
 
-    default_project = at.user.load().default_project
+    u = at.user.load()
+    default_project = u.default_project
 
     if session_uuid not in default_project.computers:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
@@ -159,6 +160,9 @@ def claim_computer(session_uuid: str, c: computer.Computer) -> None:
             default_project.save()
             c.is_claimed = True
             c.save()
+
+            mix_panel.MixPanelEvent.track('computer_claimed', {'session_uuid': session_uuid})
+            mix_panel.MixPanelEvent.computer_claimed_set(u.email)
 
 
 @mix_panel.MixPanelEvent.time_this(None)

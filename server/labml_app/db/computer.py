@@ -3,6 +3,8 @@ from typing import Dict, List, Optional, Union
 
 from labml_db import Model, Key, Index
 
+from ..utils.mix_panel import MixPanelEvent
+
 from . import project
 from .status import create_status, Status
 from .. import settings
@@ -88,9 +90,15 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
     if session_uuid in p.computers:
         return p.computers[session_uuid].load()
 
-    is_claimed = True
     if labml_token == settings.FLOAT_PROJECT_TOKEN:
         is_claimed = False
+    else:
+        is_claimed = True
+
+        from . import user
+        identifier = user.get_token_owner(labml_token)
+        MixPanelEvent.track('computer_claimed', {'session_uuid': session_uuid}, identifier=identifier)
+        MixPanelEvent.computer_claimed_set(identifier)
 
     time_now = time.time()
 
@@ -108,6 +116,8 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
     p.save()
 
     ComputerIndex.set(computer.session_uuid, computer.key)
+
+    MixPanelEvent.track('computer_created', {'session_uuid': session_uuid, 'labml_token': labml_token})
 
     return computer
 
