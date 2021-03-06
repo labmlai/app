@@ -21,6 +21,7 @@ import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout;
 import {handleNetworkError} from '../../../utils/redirect'
 
+
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class HyperParamsView extends ScreenView {
@@ -28,10 +29,10 @@ class HyperParamsView extends ScreenView {
     uuid: string
     status: Status
     run: Run
+    series: SeriesModel[]
     statusCache: RunStatusCache
     runCache: RunCache
     analysisCache: SeriesCache
-    series: SeriesModel[]
     plotIdx: number[] = []
     loader: Loader
     runHeaderCard: RunHeaderCard
@@ -54,8 +55,8 @@ class HyperParamsView extends ScreenView {
 
         this.uuid = uuid
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
         this.runCache = CACHE.getRun(this.uuid)
+        this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
         this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.onSave, parent: this.constructor.name})
@@ -249,13 +250,29 @@ class HyperParamsView extends ScreenView {
         $(this.sparkLinesContainer, $ => {
             this.sparkLines = new SparkLines({
                 series: this.series,
-                plotIdx: [],
+                plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
-                isMouseMoveOpt: true
+                onSelect: this.toggleChart,
+                isMouseMoveOpt: !this.isEditMode,
             })
             this.sparkLines.render($)
         })
+    }
+
+    toggleChart = (idx: number) => {
+        if (this.plotIdx[idx] >= 0) {
+            this.plotIdx[idx] = -1
+        } else {
+            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
+        }
+
+        if (this.plotIdx.length > 1) {
+            this.plotIdx = new Array<number>(...this.plotIdx)
+        }
+
+        this.renderSparkLines()
+        this.renderLineChart()
     }
 }
 
