@@ -1,5 +1,5 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {AnalysisDataModel, SeriesModel} from "../../../models/run"
+import {SeriesModel} from "../../../models/run"
 import Card from "../../card"
 import {CardOptions} from "../../types"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
@@ -77,7 +77,8 @@ export class HyperParamsCard extends Card {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width,
-                isEditable: false
+                isEditable: false,
+                isDivergent : true
             }).render($)
         })
     }

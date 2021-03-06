@@ -88,7 +88,7 @@ export class LinePlot {
 interface LineFillOptions extends FillOptions {
     xScale: d3.ScaleLinear<number, number>
     series: PointValue[]
-    chartId: string
+    chartId?: string
 }
 
 

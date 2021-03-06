@@ -9,7 +9,7 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {Loader} from "../../../components/loader"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
 
 
 export class MetricsCard extends Card {
@@ -81,7 +81,8 @@ export class MetricsCard extends Card {
                 width: this.width,
                 plotIdx: this.plotIdx,
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
-                    getChartType(this.preferenceData.chart_type) : 'linear'
+                    getChartType(this.preferenceData.chart_type) : 'linear',
+                isDivergent : true
             }).render($)
         })
     }
@@ -93,7 +94,8 @@ export class MetricsCard extends Card {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width,
-                isEditable: false
+                isEditable: false,
+                isDivergent : true
             }).render($)
         })
     }

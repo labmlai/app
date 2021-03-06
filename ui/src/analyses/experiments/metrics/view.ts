@@ -204,7 +204,8 @@ class MetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: true
+                isCursorMoveOpt: true,
+                isDivergent : true
             }).render($)
         })
     }
@@ -217,7 +218,8 @@ class MetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
-                isEditable: false
+                isEditable: false,
+                isDivergent : true
             })
             this.sparkLines.render($)
         })

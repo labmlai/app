@@ -240,7 +240,8 @@ class HyperParamsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 chartType: 'linear',
                 onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: !this.isEditMode
+                isCursorMoveOpt: !this.isEditMode,
+                isDivergent : true
             }).render($)
         })
     }
@@ -255,6 +256,7 @@ class HyperParamsView extends ScreenView {
                 isEditable: this.isEditMode,
                 onSelect: this.toggleChart,
                 isMouseMoveOpt: !this.isEditMode,
+                isDivergent : true
             })
             this.sparkLines.render($)
         })

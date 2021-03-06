@@ -13,10 +13,10 @@ const SINGLE_HUE_SCALE = [
 ]
 
 const DIVERGENT_SCALE = [
-    '#00876c',
-    '#57a18b',
-    '#8cbcac',
-    '#bed6ce',
+    '#488f31',
+    '#75a760',
+    '#9fc08f',
+    '#c8d8bf',
     '#f1f1f1',
     '#f1c6c6',
     '#ec9c9d',

@@ -88,7 +88,7 @@ export class TimeSeriesPlot {
 interface TimeSeriesFillOptions extends FillOptions {
     xScale: d3.ScaleTime<number, number>
     series: PointValue[]
-    chartId: string
+    chartId?: string
 }
 
 
