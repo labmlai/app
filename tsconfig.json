@@ -6,7 +6,7 @@
     "sourceMap": false,
     "outDir": "dist",
     "allowJs": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
   },
   "include": [
     "ui/src",

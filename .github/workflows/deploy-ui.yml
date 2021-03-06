@@ -35,7 +35,7 @@ jobs:
 
       - name: Prepare build environment
         run: |
-          npm install --prefix ./ui
+          npm install
           echo "${{ secrets.ENV_TS }}" > ui/src/env.ts
 
       - name: Build
