@@ -7,7 +7,6 @@
     "outDir": "dist",
     "allowJs": true,
     "downlevelIteration": true,
-    "lib": ["es2018", "dom", "node"],
   },
   "include": [
     "ui/src",
