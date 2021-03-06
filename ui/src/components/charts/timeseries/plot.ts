@@ -88,11 +88,13 @@ export class TimeSeriesPlot {
 interface TimeSeriesFillOptions extends FillOptions {
     xScale: d3.ScaleTime<number, number>
     series: PointValue[]
+    chartId: string
 }
 
 
 export class TimeSeriesFill {
     series: PointValue[]
+    chartId: string
     xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
@@ -106,6 +108,7 @@ export class TimeSeriesFill {
         this.yScale = opt.yScale
         this.color = opt.color
         this.colorIdx = opt.colorIdx
+        this.chartId = opt.chartId
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
@@ -127,7 +130,7 @@ export class TimeSeriesFill {
                 {
                     fill: this.color,
                     stroke: 'none',
-                    style: {fill: `url(#gradient-${this.colorIdx}`},
+                    style: {fill: `url(#gradient-${this.colorIdx}-${this.chartId}`},
                     d: this.dFill
                 })
         })

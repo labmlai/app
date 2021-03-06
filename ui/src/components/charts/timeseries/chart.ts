@@ -144,7 +144,7 @@ export class TimeSeriesChart {
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
                                 new DropShadow().render($)
-                                new LineGradients({chartColors: this.chartColors}).render($)
+                                new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
@@ -156,7 +156,8 @@ export class TimeSeriesChart {
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
                                                     color: this.chartColors.getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i] % this.chartColors.getColors().length
+                                                    colorIdx: this.filteredPlotIdx[i] % this.chartColors.getColors().length,
+                                                    chartId: this.chartId
                                                 }).render($)
                                             })
                                         }

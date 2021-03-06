@@ -56,8 +56,8 @@ export class SimpleLinesChart {
                         width: 2 * this.margin + this.axisSize + this.chartWidth
                     },
                     $ => {
-                         new DropShadow().render($)
-                         new LineGradients({chartColors: this.chartColors}).render($)
+                        new DropShadow().render($)
+                        new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                         $('g',
                             {
                                 transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
@@ -70,7 +70,8 @@ export class SimpleLinesChart {
                                             xScale: this.xScale,
                                             yScale: this.yScale,
                                             color: this.chartColors.getColor(i),
-                                            colorIdx: i
+                                            colorIdx: i,
+                                            chartId: this.chartId
                                         }).render($)
                                     })
                                     this.series.map((s, i) => {

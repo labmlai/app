@@ -16,6 +16,7 @@ interface LineChartOptions extends ChartOptions {
     chartType: string
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
+    isDivergent?: boolean
 }
 
 export class LineChart {
@@ -37,6 +38,7 @@ export class LineChart {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     chartColors: ChartColors
+    isDivergent: boolean
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
@@ -69,7 +71,7 @@ export class LineChart {
         const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        this.chartColors = new ChartColors({nColors: this.series.length})
+        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -127,7 +129,7 @@ export class LineChart {
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
                                 new DropShadow().render($)
-                                new LineGradients({chartColors: this.chartColors}).render($)
+                                new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
@@ -139,7 +141,8 @@ export class LineChart {
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
                                                     color: this.chartColors.getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i]
+                                                    colorIdx: this.filteredPlotIdx[i],
+                                                    chartId: this.chartId
                                                 }).render($)
                                             })
                                         }
