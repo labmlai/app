@@ -1,10 +1,10 @@
 <div align="center" style="margin-bottom: 100px;">
     
-<h1>LabML App</h1>
+<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
+
 <h2>Mobile first web app to monitor PyTorch & TensorFlow model training</h2>
 <h3>Relax while your models are training instead of sitting in front of a computer</h3>
 
-<img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
 
 [![PyPI - Python Version](https://badge.fury.io/py/labml.svg)](https://badge.fury.io/py/labml)
 [![PyPI Status](https://pepy.tech/badge/labml)](https://pepy.tech/project/labml)
