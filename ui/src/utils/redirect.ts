@@ -14,6 +14,6 @@ export function handleNetworkError(error: any) {
     } else {
         ROUTER.navigate('/network_error')
     }
-    Sentry.setExtra(error)
+    Sentry.setExtra('error', error)
     Sentry.captureException(error)
 }
