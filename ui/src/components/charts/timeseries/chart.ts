@@ -6,7 +6,6 @@ import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toD
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
-import isMobile from '../../../utils/mobile'
 import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 
@@ -104,9 +103,9 @@ export class TimeSeriesChart {
         }
     }
 
-    updateCursorStep(ev: any) {
+    updateCursorStep(ev: TouchEvent | MouseEvent) {
         let cursorStep: Date = null
-        let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
+        let clientX = ev instanceof TouchEvent ? ev.touches[0].clientX : ev.clientX
 
         if (clientX) {
             const info = this.svgElem.getBoundingClientRect()

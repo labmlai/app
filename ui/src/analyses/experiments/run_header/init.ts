@@ -1,9 +1,8 @@
 import {RunHeaderCard} from "./card"
 import {RunHeaderHandler} from "./view"
-import {Analysis} from "../../types"
 
 
-let runHeaderAnalysis: Analysis = {
+let runHeaderAnalysis = {
     card: RunHeaderCard,
     viewHandler: RunHeaderHandler,
     route: 'header'

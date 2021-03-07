@@ -31,8 +31,8 @@ interface ChartColorsOptions {
 export default class ChartColors {
     nColors: number
     isDivergent: boolean
-    linerScale: d3.ScaleLinear<number, number>
-    colors: any[] = []
+    linerScale: d3.ScaleLinear<number, string>
+    colors: string[] = []
 
     constructor(opt: ChartColorsOptions) {
         this.nColors = opt.nColors

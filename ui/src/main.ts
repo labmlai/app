@@ -12,9 +12,9 @@ import {computerAnalyses, experimentAnalyses} from "./analyses/analyses"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
 import {ComputerHandler} from './views/computer_view'
 import {SENTRY_DSN} from './env'
-import {AuthErrorHandler} from './views/errors/auth_error_view';
-import {OtherErrorHandler} from './views/errors/other_error_view';
-import {NetworkErrorHandler} from './views/errors/network_error_view';
+import {AuthErrorHandler} from './views/errors/auth_error_view'
+import {OtherErrorHandler} from './views/errors/other_error_view'
+import {NetworkErrorHandler} from './views/errors/network_error_view'
 
 new LoginHandler()
 

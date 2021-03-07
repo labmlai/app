@@ -21,7 +21,7 @@ export class GPUTempCard extends Card {
     plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

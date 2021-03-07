@@ -19,7 +19,7 @@ export class GradientsCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

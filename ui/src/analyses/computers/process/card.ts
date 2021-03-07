@@ -5,9 +5,9 @@ import {CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {Loader} from "../../../components/loader"
-import processCache from './cache';
+import processCache from './cache'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
 
 
 export class ProcessCard extends Card {
@@ -21,7 +21,7 @@ export class ProcessCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

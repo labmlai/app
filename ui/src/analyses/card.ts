@@ -1,7 +1,8 @@
 import {WeyaElementFunction} from "../../../lib/weya/weya"
+import {CardOptions} from "./types"
 
 export default abstract class Card {
-    protected constructor() {
+    protected constructor(opt: CardOptions) {
     }
 
     abstract render($: WeyaElementFunction)

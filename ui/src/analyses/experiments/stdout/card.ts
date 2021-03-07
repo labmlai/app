@@ -19,7 +19,7 @@ export class StdOutCard extends Card {
     filter: Filter
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)

@@ -22,7 +22,7 @@ export class DiskCard extends Card {
 
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

@@ -114,7 +114,7 @@ export function toPointValues(track: SeriesModel[]) {
     return series
 }
 
-export function getSelectedIdx(series: any[], bisect: any, currentX?: any | null, stepKey: string = 'step') {
+export function getSelectedIdx(series: any[], bisect: typeof d3.bisect, currentX?: any | null, stepKey: string = 'step') {
     let idx = series.length - 1
     if (currentX != null) {
         idx = bisect(series, currentX)

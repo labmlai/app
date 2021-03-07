@@ -86,9 +86,9 @@ export class LineChart {
         }
     }
 
-    updateCursorStep(ev: any) {
+    updateCursorStep(ev: TouchEvent | MouseEvent) {
         let cursorStep: number = null
-        let clientX = ev.touches ? ev.touches[0].clientX : ev.clientX
+        let clientX = ev instanceof TouchEvent ? ev.touches[0].clientX : ev.clientX
 
         if (clientX) {
             const info = this.svgElem.getBoundingClientRect()

@@ -26,7 +26,8 @@ export class SparkLines {
     stepExtent: [number, number]
     colorIndices: number[] = []
     onSelect?: (i: number) => void
-    sparkLines: any[] = []
+    sparkLines: SparkLine[] = []
+    editableSparkLines: EditableSparkLine[] = []
     chartColors: ChartColors
     isDivergent?: boolean
 
@@ -70,7 +71,7 @@ export class SparkLines {
 
     getSparkLinesValues() {
         let res = {}
-        for (let sparkLine of this.sparkLines) {
+        for (let sparkLine of this.editableSparkLines) {
             res[sparkLine.name] = sparkLine.getInput()
         }
 
@@ -97,6 +98,7 @@ export class SparkLines {
                         maxLastValue: this.maxLastValue,
                         color: this.chartColors.getColor(this.colorIndices[i]),
                     })
+                    this.editableSparkLines.push(sparkLine)
                 } else {
                     sparkLine = new SparkLine({
                         name: s.name,
@@ -110,8 +112,8 @@ export class SparkLines {
                         color: this.chartColors.getColor(this.colorIndices[i]),
                         isMouseMoveOpt: this.isMouseMoveOpt
                     })
+                    this.sparkLines.push(sparkLine)
                 }
-                this.sparkLines.push(sparkLine)
                 sparkLine.render($)
             })
         })
