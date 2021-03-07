@@ -21,9 +21,9 @@ compile: ## Compile JS
 	mkdir -p static/js
 	cp ui/src/index.html static/index.html
 	cp -r ui/images static/
+	npm run build
 
 compile-prod: compile
-	npm run build
 	$(eval JS_CHECKSUM := $(shell md5sum static/js/bundle.min.js | cut -f 1 -d " "))
 	$(eval CSS_CHECKSUM := $(shell md5sum static/css/style.css | cut -f 1 -d " "))
 	sed -i 's/bundle.min.js/$(JS_CHECKSUM).min.js/g' static/index.html
@@ -39,7 +39,6 @@ watch-ui: compile ## Compile and Watch JS & CSS
 	npm run watch
 
 build-ui: compile ## build production ui
-	npm run build
 
 package: build-ui ## Build PIPy Package
 	rm -rf server/labml_app/static
