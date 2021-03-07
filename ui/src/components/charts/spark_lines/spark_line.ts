@@ -4,7 +4,7 @@ import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
-import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
+import {formatFixed} from "../../../utils/value"
 
 export interface SparkLineOptions {
     name: string
@@ -76,20 +76,17 @@ export class SparkLine {
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
-        let lastValue = scaleValue(last.value, this.minLastValue, this.maxLastValue)
-        let valueColor = pickHex(lastValue)
-
         this.valueElem.innerHTML = ''
 
         if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
             $(this.valueElem, $ => {
-                $('span.value-secondary', formatFixed(last.value, 6), {style: {color: valueColor}})
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
+                $('span.value-secondary', formatFixed(last.value, 6), {style: {color: this.color}})
+                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: this.color}})
             })
         } else {
             this.valueElem.classList.add('primary-only')
             $(this.valueElem, $ => {
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
+                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: this.color}})
             })
         }
     }
