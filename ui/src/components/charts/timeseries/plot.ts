@@ -101,6 +101,7 @@ export class TimeSeriesFill {
     colorIdx: number
     smoothedLine
     dFill: string
+    fill : string
 
     constructor(opt: TimeSeriesFillOptions) {
         this.series = opt.series
@@ -122,6 +123,8 @@ export class TimeSeriesFill {
         let d = this.smoothedLine(this.series) as string
         this.dFill = `M${this.xScale(toDate(this.series[0].step))},0L` + d.substr(1) +
             `L${this.xScale(toDate(this.series[this.series.length - 1].step))},0`
+
+        this.fill = this.chartId ? `url(#gradient-${this.colorIdx}-${this.chartId}` : `url(#gradient-grey)`
     }
 
     render($: WeyaElementFunction) {
@@ -130,7 +133,7 @@ export class TimeSeriesFill {
                 {
                     fill: this.color,
                     stroke: 'none',
-                    style: {fill: `url(#gradient-${this.colorIdx}-${this.chartId}`},
+                    style: {fill: this.fill},
                     d: this.dFill
                 })
         })

@@ -100,6 +100,7 @@ export class LineFill {
     color: string
     colorIdx: number
     smoothedLine
+    fill: string
     dFill: string
 
     constructor(opt: LineFillOptions) {
@@ -122,6 +123,8 @@ export class LineFill {
         let d = this.smoothedLine(this.series) as string
         this.dFill = `M${this.xScale(this.series[0].step)},0L` + d.substr(1) +
             `L${this.xScale(this.series[this.series.length - 1].step)},0`
+
+        this.fill = this.chartId ? `url(#gradient-${this.colorIdx}-${this.chartId}` : `url(#gradient-grey)`
     }
 
     render($: WeyaElementFunction) {
@@ -130,7 +133,7 @@ export class LineFill {
                 {
                     fill: this.color,
                     stroke: 'none',
-                    style: {fill: `url(#gradient-${this.colorIdx}-${this.chartId}`},
+                    style: {fill: this.fill},
                     d: this.dFill
                 })
         })
