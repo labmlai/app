@@ -8,7 +8,7 @@ import {Loader} from "../../../components/loader"
 import diskCache from './cache'
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
 
 
 export class DiskCard extends Card {

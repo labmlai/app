@@ -9,7 +9,6 @@ import {getSeriesData} from "./utils"
 import {Labels} from "../../../components/charts/labels"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {ROUTER} from "../../../app"
-import {handleNetworkError} from '../../../utils/redirect';
 
 export class GPUMemoryCard extends Card {
     uuid: string
@@ -17,7 +16,7 @@ export class GPUMemoryCard extends Card {
     series: SeriesModel[]
     analysisCache: SeriesCache
     lineChartContainer: WeyaElement
-    elem: WeyaElement
+    elem: HTMLDivElement
     loader: Loader
     plotIdx: number[] = []
 
@@ -35,7 +34,7 @@ export class GPUMemoryCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'GPU - Memory')
         })
 

@@ -9,7 +9,7 @@ import stdOutAnalysis from "./experiments/stdout/init"
 import stderrAnalysis from "./experiments/stderror/init"
 import loggerAnalysis from "./experiments/logger/init"
 import configsAnalysis from "./experiments/configs/init"
-import cpuAnalysis from './computers/cpu/init'
+import cpuAnalysis from './computers/cpu'
 import diskAnalysis from './computers/disk/init'
 import {gpuUtilAnalysis, gpuTempAnalysis, gpuMemoryAnalysis, gpuPowerAnalysis} from './computers/gpu/init'
 import memoryAnalysis from './computers/memory/init'
