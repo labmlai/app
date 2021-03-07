@@ -13,8 +13,9 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
-import {handleNetworkError} from '../../../utils/redirect';
-import Timeout = NodeJS.Timeout;
+import {handleNetworkError} from '../../../utils/redirect'
+import Timeout = NodeJS.Timeout
+import {ViewHandler} from "../../types"
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -281,8 +282,9 @@ class MetricsView extends ScreenView {
     }
 }
 
-export class MetricsHandler {
+export class MetricsHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('run/:uuid/metrics', [this.handleMetrics])
     }
 

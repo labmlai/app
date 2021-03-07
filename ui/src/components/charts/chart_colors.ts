@@ -31,14 +31,21 @@ interface ChartColorsOptions {
 export default class ChartColors {
     nColors: number
     isDivergent: boolean
-    linerScale: d3.ScaleLinear<number, number>
-    colors: any[] = []
+    linerScale: d3.ScaleLinear<number, string>
+    colors: string[] = []
 
     constructor(opt: ChartColorsOptions) {
         this.nColors = opt.nColors
         this.isDivergent = opt.isDivergent
 
-        let colorScale = this.isDivergent ? DIVERGENT_SCALE : SINGLE_HUE_SCALE
+        let colorScale = DIVERGENT_SCALE
+        if (!this.isDivergent) {
+            if (document.body.classList.contains('light')) {
+                colorScale = [...SINGLE_HUE_SCALE].reverse()
+            } else {
+                colorScale = SINGLE_HUE_SCALE
+            }
+        }
 
         this.linerScale = d3.scaleLinear()
             .domain(d3.ticks(0, this.nColors, colorScale.length))

@@ -1,7 +1,6 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
-import Card from "../../card"
-import {CardOptions} from "../../types"
+import {Card, CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {Loader} from "../../../components/loader"
 import gpuCache from './cache'
@@ -22,7 +21,7 @@ export class GPUUtilCard extends Card {
     plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

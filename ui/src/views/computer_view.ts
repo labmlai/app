@@ -5,7 +5,7 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
-import Card from "../analyses/card"
+import {Card} from "../analyses/types"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer'
 import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'

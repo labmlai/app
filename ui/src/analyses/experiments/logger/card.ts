@@ -1,11 +1,10 @@
 import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
-import {CardOptions} from "../../types"
-import Card from "../../card"
+import {Card, CardOptions} from "../../types"
 import Filter from "../../../utils/ansi_to_html"
 import {Loader} from "../../../components/loader"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
 
 
 export class LoggerCard extends Card {
@@ -18,7 +17,7 @@ export class LoggerCard extends Card {
     filter: Filter
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)

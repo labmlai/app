@@ -1,13 +1,12 @@
 import d3 from "../../../d3"
-import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
-import isMobile from '../../../utils/mobile'
-import {DropShadow, LineGradients} from "../chart_gradients"
+import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 
 
@@ -40,6 +39,7 @@ export class TimeSeriesChart {
     yExtend?: [number, number]
     forceYStart?: number
     svgElem: WeyaElement
+    stepElement: WeyaElement
     stepContainer: WeyaElement
     timeSeriesPlots: TimeSeriesPlot[] = []
     numTicks?: number
@@ -104,9 +104,9 @@ export class TimeSeriesChart {
         }
     }
 
-    updateCursorStep(ev: any) {
+    updateCursorStep(ev: TouchEvent | MouseEvent) {
         let cursorStep: Date = null
-        let clientX = isMobile ? ev.touches[0].clientX : ev.clientX
+        let clientX = ev instanceof TouchEvent ? ev.touches[0].clientX : ev.clientX
 
         if (clientX) {
             const info = this.svgElem.getBoundingClientRect()
@@ -125,10 +125,7 @@ export class TimeSeriesChart {
     }
 
     renderStep(cursorStep: Date) {
-        this.stepContainer.innerHTML = ''
-        $(this.stepContainer, $ => {
-            $('h6.text-center.selected-step', formatDateTime(cursorStep))
-        })
+        this.stepElement.textContent = `${formatDateTime(cursorStep)}`
     }
 
     render($: WeyaElementFunction) {
@@ -139,12 +136,13 @@ export class TimeSeriesChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        this.stepContainer = $('div')
+                        this.stepElement = $('h6.text-center.selected-step')
                         this.svgElem = $('svg', '#time-series-chart',
                             {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
+                                new DefaultLineGradient().render($)
                                 new DropShadow().render($)
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g',

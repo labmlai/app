@@ -1,10 +1,10 @@
 import d3 from "../../../d3"
-import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
 import {getExtent, getScale, getSelectedIdx, getTimeScale, toDate} from "../utils"
-import {formatFixed, pickHex, scaleValue} from "../../../utils/value"
-import {TimeSeriesFill, TimeSeriesPlot} from '../timeseries/plot';
+import {formatFixed} from "../../../utils/value"
+import {TimeSeriesFill, TimeSeriesPlot} from '../timeseries/plot'
 
 interface SparkTimeLineOptions {
     name: string
@@ -28,7 +28,8 @@ export class SparkTimeLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
-    valueElem: HTMLSpanElement
+    primaryElem: WeyaElement
+    secondaryElem: WeyaElement
     className: string = 'empty'
     xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
@@ -70,24 +71,15 @@ export class SparkTimeLine {
     }
 
     renderValue(cursorStep?: Date | null) {
-        const last = this.series[this.selected >= 0 ? getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
-
-        let lastValue = scaleValue(last.value, this.minLastValue, this.maxLastValue)
-        let valueColor = pickHex(lastValue)
-
-        this.valueElem.innerHTML = ''
+        const last = this.series[this.selected >= 0 ? getSelectedIdx(this.series, this.bisect, cursorStep)
+            : this.series.length - 1]
 
         if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
-            $(this.valueElem, $ => {
-                $('span.value-secondary', formatFixed(last.value, 6), {style: {color: valueColor}})
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
-            })
+            this.secondaryElem.textContent = formatFixed(last.value, 6)
         } else {
-            this.valueElem.classList.add('primary-only')
-            $(this.valueElem, $ => {
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: valueColor}})
-            })
+            this.secondaryElem.textContent = ''
         }
+        this.primaryElem.textContent = formatFixed(last.smoothed, 6)
     }
 
     render($: WeyaElementFunction) {
@@ -112,7 +104,10 @@ export class SparkTimeLine {
                         this.timeSeriesPlot.render($)
                     })
                 })
-                this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})
+                $('span.value', {style: {width: `${this.titleWidth}px`}}, $ => {
+                    this.secondaryElem = $('span.value-secondary', {style: {color: this.color}})
+                    this.primaryElem = $('span.value-primary', {style: {color: this.color}})
+                })
             })
         })
 

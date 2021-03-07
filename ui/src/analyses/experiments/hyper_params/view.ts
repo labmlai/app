@@ -20,6 +20,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout;
 import {handleNetworkError} from '../../../utils/redirect'
+import {ViewHandler} from "../../types";
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -241,7 +242,7 @@ class HyperParamsView extends ScreenView {
                 chartType: 'linear',
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: !this.isEditMode,
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
@@ -256,7 +257,7 @@ class HyperParamsView extends ScreenView {
                 isEditable: this.isEditMode,
                 onSelect: this.toggleChart,
                 isMouseMoveOpt: !this.isEditMode,
-                isDivergent : true
+                isDivergent: true
             })
             this.sparkLines.render($)
         })
@@ -278,8 +279,9 @@ class HyperParamsView extends ScreenView {
     }
 }
 
-export class HyperParamsHandler {
+export class HyperParamsHandler extends ViewHandler {
     constructor() {
+        super()
         ROUTER.route('run/:uuid/hyper_params', [this.handleHyperParams])
     }
 

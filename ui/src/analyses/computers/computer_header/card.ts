@@ -4,8 +4,8 @@ import {CardOptions} from "../../types"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
-import {Computer} from '../../../models/computer';
-import {Loader} from '../../../components/loader';
+import {Computer} from '../../../models/computer'
+import {Loader} from '../../../components/loader'
 import Timeout = NodeJS.Timeout;
 
 

@@ -13,8 +13,10 @@ import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import {getSeriesData} from "./utils"
-import {handleNetworkError} from '../../../utils/redirect';
-import Timeout = NodeJS.Timeout;
+import {handleNetworkError} from '../../../utils/redirect'
+import Timeout = NodeJS.Timeout
+import {ViewHandler} from "../../types"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -254,8 +256,9 @@ class GPUMemoryView extends ScreenView {
 }
 
 
-export class GPUMemoryHandler {
+export class GPUMemoryHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('session/:uuid/gpu_memory', [this.handleGPU])
     }
 

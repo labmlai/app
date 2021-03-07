@@ -1,7 +1,7 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {getExtent} from "../utils"
+import {defaultSeriesToPlot, getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
 import {EditableSparkLine} from "./editable_spark_line"
 import ChartColors from "../chart_colors"
@@ -26,7 +26,8 @@ export class SparkLines {
     stepExtent: [number, number]
     colorIndices: number[] = []
     onSelect?: (i: number) => void
-    sparkLines: any[] = []
+    sparkLines: SparkLine[] = []
+    editableSparkLines: EditableSparkLine[] = []
     chartColors: ChartColors
     isDivergent?: boolean
 
@@ -51,6 +52,10 @@ export class SparkLines {
 
         this.stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
 
+        if (this.plotIdx.length === 0) {
+            this.plotIdx = defaultSeriesToPlot(this.series)
+        }
+
         for (let i = 0; i < this.plotIdx.length; i++) {
             if (this.plotIdx[i] >= 0) {
                 this.colorIndices.push(i)
@@ -70,7 +75,7 @@ export class SparkLines {
 
     getSparkLinesValues() {
         let res = {}
-        for (let sparkLine of this.sparkLines) {
+        for (let sparkLine of this.editableSparkLines) {
             res[sparkLine.name] = sparkLine.getInput()
         }
 
@@ -97,6 +102,7 @@ export class SparkLines {
                         maxLastValue: this.maxLastValue,
                         color: this.chartColors.getColor(this.colorIndices[i]),
                     })
+                    this.editableSparkLines.push(sparkLine)
                 } else {
                     sparkLine = new SparkLine({
                         name: s.name,
@@ -110,8 +116,8 @@ export class SparkLines {
                         color: this.chartColors.getColor(this.colorIndices[i]),
                         isMouseMoveOpt: this.isMouseMoveOpt
                     })
+                    this.sparkLines.push(sparkLine)
                 }
-                this.sparkLines.push(sparkLine)
                 sparkLine.render($)
             })
         })

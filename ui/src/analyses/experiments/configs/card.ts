@@ -1,11 +1,10 @@
 import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
-import {CardOptions} from "../../types"
-import Card from "../../card"
+import {Card, CardOptions} from "../../types"
 import {Loader} from "../../../components/loader"
 import {Configs} from "./components"
-import {ROUTER} from '../../../app';
+import {ROUTER} from '../../../app'
 
 
 export class ConfigsCard extends Card {
@@ -18,7 +17,7 @@ export class ConfigsCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

@@ -2,7 +2,7 @@ import {NetworkError} from '../network';
 import {ROUTER} from '../app';
 import {Sentry} from '../sentry';
 
-export function handleNetworkError(error: any) {
+export function handleNetworkError(error: Error) {
     if(error instanceof NetworkError) {
         if (error.statusCode === 404 || error.statusCode === 400) {
             ROUTER.navigate('/404')

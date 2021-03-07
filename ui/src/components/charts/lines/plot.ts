@@ -1,5 +1,5 @@
 import d3 from "../../../d3"
-import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {FillOptions, PlotOptions} from '../types'
 import {PointValue} from "../../../models/run"
 import {getSelectedIdx} from "../utils"
@@ -15,7 +15,7 @@ export class LinePlot {
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
-    circleContainer: WeyaElement
+    circleElem: WeyaElement
     smoothedLine: d3.Line<PointValue>
     unsmoothedLine: d3.Line<PointValue>
     bisect: d3.Bisector<number, number>
@@ -63,7 +63,12 @@ export class LinePlot {
                     stroke: this.color,
                     d: this.unsmoothedLine(this.series) as string
                 })
-            this.circleContainer = $('g')
+            $('g', $ => {
+                this.circleElem = $('circle',
+                    {
+                        fill: this.color
+                    })
+            })
         })
     }
 
@@ -71,16 +76,9 @@ export class LinePlot {
         if (cursorStep != null) {
             let idx = getSelectedIdx(this.series, this.bisect, cursorStep)
 
-            this.circleContainer.innerHTML = ''
-            $(this.circleContainer, $ => {
-                $('circle',
-                    {
-                        r: 5,
-                        cx: this.xScale(this.series[idx].step),
-                        cy: this.yScale(this.series[idx].smoothed),
-                        fill: this.color
-                    })
-            })
+            this.circleElem.setAttribute("cx", `${this.xScale(this.series[idx].step)}`)
+            this.circleElem.setAttribute("cy", `${this.yScale(this.series[idx].smoothed)}`)
+            this.circleElem.setAttribute("r", `5`)
         }
     }
 }
@@ -100,6 +98,7 @@ export class LineFill {
     color: string
     colorIdx: number
     smoothedLine
+    fill: string
     dFill: string
 
     constructor(opt: LineFillOptions) {
@@ -122,6 +121,8 @@ export class LineFill {
         let d = this.smoothedLine(this.series) as string
         this.dFill = `M${this.xScale(this.series[0].step)},0L` + d.substr(1) +
             `L${this.xScale(this.series[this.series.length - 1].step)},0`
+
+        this.fill = this.chartId ? `url(#gradient-${this.colorIdx}-${this.chartId}` : `url(#gradient-grey)`
     }
 
     render($: WeyaElementFunction) {
@@ -130,7 +131,7 @@ export class LineFill {
                 {
                     fill: this.color,
                     stroke: 'none',
-                    style: {fill: `url(#gradient-${this.colorIdx}-${this.chartId}`},
+                    style: {fill: this.fill},
                     d: this.dFill
                 })
         })

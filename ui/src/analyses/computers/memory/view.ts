@@ -12,9 +12,11 @@ import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
-import mix_panel from "../../../mix_panel";
-import Timeout = NodeJS.Timeout;
-import {handleNetworkError} from '../../../utils/redirect';
+import mix_panel from "../../../mix_panel"
+import Timeout = NodeJS.Timeout
+import {handleNetworkError} from '../../../utils/redirect'
+import {ViewHandler} from "../../types"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -253,8 +255,9 @@ class MemoryView extends ScreenView {
 }
 
 
-export class MemoryHandler {
+export class MemoryHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('session/:uuid/memory', [this.handleMemory])
     }
 

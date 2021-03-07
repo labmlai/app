@@ -104,7 +104,7 @@ class DiskAnalysis(Analysis):
 @Analysis.route('GET', 'disk/<session_uuid>')
 def get_disk_tracking(session_uuid: str) -> Any:
     track_data = []
-    status_code = 400
+    status_code = 404
 
     ans = DiskAnalysis.get_or_create(session_uuid)
     if ans:

@@ -1,7 +1,6 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {AnalysisDataModel} from "../../../models/run"
-import Card from "../../card"
-import {CardOptions} from "../../types"
+import {Card, CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import gradientsCache from "./cache"
@@ -19,7 +18,7 @@ export class GradientsCard extends Card {
     loader: Loader
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width

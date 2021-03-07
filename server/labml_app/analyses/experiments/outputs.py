@@ -112,7 +112,7 @@ class OutputsAnalysis(Analysis):
 def get_modules_tracking(run_uuid: str) -> Any:
     track_data = []
     summary_data = []
-    status_code = 400
+    status_code = 404
 
     ans = OutputsAnalysis.get_or_create(run_uuid)
     if ans:

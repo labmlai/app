@@ -117,7 +117,7 @@ class MetricsAnalysis(Analysis):
 @Analysis.route('GET', 'metrics/<run_uuid>')
 def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
-    status_code = 400
+    status_code = 404
 
     ans = MetricsAnalysis.get_or_create(run_uuid)
     if ans:

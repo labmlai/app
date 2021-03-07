@@ -1,15 +1,14 @@
-import Card from "../../card"
 import {SeriesModel} from "../../../models/run"
 import {SeriesCache} from "../../../cache/cache"
 import {Weya, WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {Loader} from "../../../components/loader"
-import {CardOptions} from "../../types";
+import {Card, CardOptions} from "../../types"
 import gpuCache from "./cache"
 import {getSeriesData} from "./utils"
 import {Labels} from "../../../components/charts/labels"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {ROUTER} from "../../../app"
-import {handleNetworkError} from '../../../utils/redirect';
+
 
 export class GPUPowerCard extends Card {
     uuid: string
@@ -22,7 +21,7 @@ export class GPUPowerCard extends Card {
     plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
-        super()
+        super(opt)
 
         this.uuid = opt.uuid
         this.width = opt.width
