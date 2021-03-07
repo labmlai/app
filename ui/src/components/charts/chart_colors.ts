@@ -13,15 +13,14 @@ const SINGLE_HUE_SCALE = [
 ]
 
 const DIVERGENT_SCALE = [
-    '#488f31',
-    '#75a760',
-    '#9fc08f',
-    '#c8d8bf',
-    '#f1f1f1',
-    '#f1c6c6',
-    '#ec9c9d',
-    '#e27076',
-    '#d43d51',
+    '#003f5c',
+    '#2f4b7c',
+    '#665191',
+    '#a05195',
+    '#d45087',
+    '#f95d6a',
+    '#ff7c43',
+    '#ffa600'
 ]
 
 interface ChartColorsOptions {
