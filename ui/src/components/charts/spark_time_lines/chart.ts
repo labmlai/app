@@ -3,12 +3,13 @@ import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {getExtent, toDate} from "../utils"
 import {SparkTimeLine} from "./spark_time_line"
-import {getColor} from "../constants"
+import ChartColors from "../chart_colors"
 
 
 interface SparkTimeLinesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
+    isDivergent?: boolean
 }
 
 export class SparkTimeLines {
@@ -21,6 +22,8 @@ export class SparkTimeLines {
     colorIndices: number[] = []
     onSelect?: (i: number) => void
     sparkTimeLines: SparkTimeLine[] = []
+    chartColors: ChartColors
+    isDivergent?: boolean
 
     constructor(opt: SparkTimeLinesOptions) {
         this.series = opt.series
@@ -48,6 +51,8 @@ export class SparkTimeLines {
                 this.colorIndices.push(-1)
             }
         }
+
+        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
     changeCursorValues = (cursorStep?: Date | null) => {
@@ -72,7 +77,7 @@ export class SparkTimeLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color: getColor(this.colorIndices[i]),
+                    color:this.chartColors.getColor(this.colorIndices[i]),
                 })
                 this.sparkTimeLines.push(sparkTimeLine)
                 sparkTimeLine.render($)

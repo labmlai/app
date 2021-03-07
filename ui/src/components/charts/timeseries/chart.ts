@@ -21,6 +21,7 @@ export interface TimeSeriesOptions extends ChartOptions {
     numTicks?: number
     onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
+    isDivergent?: boolean
 }
 
 export class TimeSeriesChart {
@@ -45,6 +46,7 @@ export class TimeSeriesChart {
     onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
     chartColors: ChartColors
+    isDivergent: boolean
 
     constructor(opt: TimeSeriesOptions) {
         this.series = opt.series
@@ -83,7 +85,7 @@ export class TimeSeriesChart {
         const stepExtent = opt.stepExtend ? opt.stepExtend : getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], this.chartWidth)
 
-        this.chartColors = new ChartColors({nColors: this.series.length})
+        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
