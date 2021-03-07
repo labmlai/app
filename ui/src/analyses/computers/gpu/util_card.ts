@@ -9,7 +9,6 @@ import {getSeriesData} from './utils'
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
 import {ROUTER} from '../../../app'
-import {handleNetworkError} from '../../../utils/redirect';
 
 
 export class GPUUtilCard extends Card {

@@ -4,7 +4,7 @@ import {SeriesModel} from "../../../models/run"
 import {getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
 import {EditableSparkLine} from "./editable_spark_line"
-import {getColor} from "../constants"
+import ChartColors from "../chart_colors"
 
 
 interface SparkLinesOptions extends ChartOptions {
@@ -12,6 +12,7 @@ interface SparkLinesOptions extends ChartOptions {
     onSelect?: (i: number) => void
     isEditable: boolean
     isMouseMoveOpt?: boolean
+    isDivergent?: boolean
 }
 
 export class SparkLines {
@@ -26,6 +27,8 @@ export class SparkLines {
     colorIndices: number[] = []
     onSelect?: (i: number) => void
     sparkLines: any[] = []
+    chartColors: ChartColors
+    isDivergent?: boolean
 
     constructor(opt: SparkLinesOptions) {
         this.series = opt.series
@@ -55,6 +58,8 @@ export class SparkLines {
                 this.colorIndices.push(-1)
             }
         }
+
+        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
     changeCursorValues = (cursorStep?: number | null) => {
@@ -90,7 +95,7 @@ export class SparkLines {
                         onClick: onClick,
                         minLastValue: this.minLastValue,
                         maxLastValue: this.maxLastValue,
-                        color: getColor(this.colorIndices[i]),
+                        color: this.chartColors.getColor(this.colorIndices[i]),
                     })
                 } else {
                     sparkLine = new SparkLine({
@@ -102,7 +107,7 @@ export class SparkLines {
                         onClick: onClick,
                         minLastValue: this.minLastValue,
                         maxLastValue: this.maxLastValue,
-                        color: getColor(this.colorIndices[i]),
+                        color: this.chartColors.getColor(this.colorIndices[i]),
                         isMouseMoveOpt: this.isMouseMoveOpt
                     })
                 }

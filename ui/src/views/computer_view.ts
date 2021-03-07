@@ -7,13 +7,13 @@ import {Loader} from "../components/loader"
 import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
 import Card from "../analyses/card"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
-import {Computer} from '../models/computer';
+import {Computer} from '../models/computer'
 import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
 import {AlertMessage} from "../components/alert"
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect';
-import Timeout = NodeJS.Timeout;
+import {handleNetworkError} from '../utils/redirect'
+import Timeout = NodeJS.Timeout
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -83,7 +83,7 @@ class ComputerView extends ScreenView {
             this.computer = await this.computerCache.get()
             this.status = await this.statusCache.get()
             this.isUserLogged = await this.isUserLoggedCache.get()
-        }  catch (e) {
+        } catch (e) {
             //TODO: redirect after multiple refresh failures
             handleNetworkError(e)
             return

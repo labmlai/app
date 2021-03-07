@@ -16,6 +16,7 @@ import mix_panel from "../../../mix_panel"
 import {handleNetworkError} from '../../../utils/redirect';
 import Timeout = NodeJS.Timeout;
 
+
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
 class MetricsView extends ScreenView {
@@ -203,7 +204,8 @@ class MetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: true
+                isCursorMoveOpt: true,
+                isDivergent : true
             }).render($)
         })
     }
@@ -216,7 +218,8 @@ class MetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
-                isEditable: false
+                isEditable: false,
+                isDivergent : true
             })
             this.sparkLines.render($)
         })

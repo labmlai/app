@@ -46,10 +46,12 @@ export class SimpleLinePlot {
 interface SimpleLineFillOptions extends FillOptions {
     xScale: d3.ScaleLinear<number, number>
     series: number[]
+    chartId: string
 }
 
 export class SimpleLineFill {
     series: number[]
+    chartId: string
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
     color: string
@@ -63,6 +65,7 @@ export class SimpleLineFill {
         this.yScale = opt.yScale
         this.color = opt.color
         this.colorIdx = opt.colorIdx
+        this.chartId = opt.chartId
 
         this.smoothedLine = d3.line()
             .curve(d3.curveMonotoneX)
@@ -83,7 +86,7 @@ export class SimpleLineFill {
                 {
                     fill: this.color,
                     stroke: 'none',
-                    style: {fill: `url(#gradient-${this.colorIdx}`},
+                    style: {fill: `url(#gradient-${this.colorIdx}-${this.chartId}`},
                     d: this.dFill
                 })
         })

@@ -1,7 +1,53 @@
-import {CHART_COLORS} from "./constants"
 import {WeyaElementFunction} from "../../../../lib/weya/weya"
+import ChartColors from "./chart_colors"
 
-export default class ChartGradients {
+interface LineGradientsOptions {
+    chartColors: ChartColors
+    chartId: string
+}
+
+export class LineGradients {
+    chartColors: ChartColors
+    chartId: string
+
+    constructor(opt: LineGradientsOptions) {
+        this.chartColors = opt.chartColors
+        this.chartId = opt.chartId
+    }
+
+    render($: WeyaElementFunction) {
+        $('defs', $ => {
+            this.chartColors.getColors().map((c, i) => {
+                $('linearGradient', {
+                    id: `gradient-${i}-${this.chartId}`,
+                    x1: '0%',
+                    x2: '0%',
+                    y1: '0%',
+                    y2: '100%'
+                }, $ => {
+                    $('stop', {offset: '0%', 'stop-color': c, 'stop-opacity': 1.0})
+                    $('stop', {offset: '100%', 'stop-color': c, 'stop-opacity': 0.0})
+                })
+            })
+        })
+    }
+}
+
+export class DefaultLineGradient {
+    constructor() {
+    }
+
+    render($: WeyaElementFunction) {
+        $('defs', $ => {
+            $('linearGradient', {id: `gradient-grey`, x1: '0%', x2: '0%', y1: '0%', y2: '100%'}, $ => {
+                $('stop', {offset: '0%', 'stop-color': '#7f8c8d', 'stop-opacity': 1.0})
+                $('stop', {offset: '100%', 'stop-color': '#7f8c8d', 'stop-opacity': 0.0})
+            })
+        })
+    }
+}
+
+export class DropShadow {
     constructor() {
     }
 
@@ -16,12 +62,6 @@ export default class ChartGradients {
                 $('feMerge', $ => {
                     $('feMergeNode')
                     $('feMergeNode', {in: "SourceGraphic"})
-                })
-            })
-            CHART_COLORS.map((c, i) => {
-                $('linearGradient', {id: `gradient-${i}`, x1: '0%', x2: '0%', y1: '0%', y2: '100%'}, $ => {
-                    $('stop', {offset: '0%', 'stop-color': c, 'stop-opacity': 1.0})
-                    $('stop', {offset: '100%', 'stop-color': c, 'stop-opacity': 0.0})
                 })
             })
         })

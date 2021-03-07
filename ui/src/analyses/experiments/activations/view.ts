@@ -12,9 +12,10 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
-import mix_panel from "../../../mix_panel";
-import {handleNetworkError} from '../../../utils/redirect';
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import {handleNetworkError} from '../../../utils/redirect'
+import Timeout = NodeJS.Timeout
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 

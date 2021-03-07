@@ -1,27 +1,26 @@
 import {WeyaElementFunction} from "../../../../lib/weya/weya"
-import {getColor} from "./constants"
+import ChartColors from "./chart_colors"
 
 interface LabelsOptions {
     labels: string[]
-    colorBias?: number
+    chartColors?: ChartColors
 }
 
 export class Labels {
     labels: string[]
-    colorBias?: number
+    chartColors: ChartColors
 
     constructor(opt: LabelsOptions) {
         this.labels = opt.labels
-        this.colorBias = opt.colorBias
+        this.chartColors = opt.chartColors ? opt.chartColors : new ChartColors({nColors: this.labels.length})
     }
 
     render($: WeyaElementFunction) {
         $('div.text-center.labels.text-secondary',
             $ => {
                 this.labels.map((label, i) => {
-                    const colorBias = this.colorBias ? this.colorBias : 0
                     $('span', $ => {
-                        $('div.box', {style: {background: getColor(i + colorBias)}})
+                        $('div.box', {style: {background: this.chartColors.getColor(i)}})
                     })
                     $('span', label)
                 })

@@ -3,12 +3,12 @@ import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/we
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
-import {CHART_COLORS, getColor} from "../constants"
 import {BottomTimeAxis, RightAxis} from "../axis"
-import {TimeSeriesFill, TimeSeriesPlot} from './plot';
-import {formatDateTime} from '../../../utils/time';
-import isMobile from '../../../utils/mobile';
-import ChartGradients from '../chart_gradients';
+import {TimeSeriesFill, TimeSeriesPlot} from './plot'
+import {formatDateTime} from '../../../utils/time'
+import isMobile from '../../../utils/mobile'
+import {DropShadow, LineGradients} from "../chart_gradients"
+import ChartColors from "../chart_colors"
 
 
 export interface TimeSeriesOptions extends ChartOptions {
@@ -21,6 +21,7 @@ export interface TimeSeriesOptions extends ChartOptions {
     numTicks?: number
     onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
+    isDivergent?: boolean
 }
 
 export class TimeSeriesChart {
@@ -44,6 +45,8 @@ export class TimeSeriesChart {
     numTicks?: number
     onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
+    chartColors: ChartColors
+    isDivergent: boolean
 
     constructor(opt: TimeSeriesOptions) {
         this.series = opt.series
@@ -81,6 +84,8 @@ export class TimeSeriesChart {
 
         const stepExtent = opt.stepExtend ? opt.stepExtend : getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], this.chartWidth)
+
+        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -140,7 +145,8 @@ export class TimeSeriesChart {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
-                                new ChartGradients().render($)
+                                new DropShadow().render($)
+                                new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
@@ -151,8 +157,9 @@ export class TimeSeriesChart {
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i] % CHART_COLORS.length
+                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                    colorIdx: this.filteredPlotIdx[i] % this.chartColors.getColors().length,
+                                                    chartId: this.chartId
                                                 }).render($)
                                             })
                                         }
@@ -161,7 +168,7 @@ export class TimeSeriesChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: getColor(this.filteredPlotIdx[i])
+                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
                                             })
                                             this.timeSeriesPlots.push(timeSeriesPlot)
                                             timeSeriesPlot.render($)
