@@ -18,7 +18,7 @@
     "watch": "$npm_execpath run watch:ui & $npm_execpath run watch:sass",
     "build:bundle": "browserify dist/ui/src/main.js > static/js/bundle.js && uglifyjs -c -m -- static/js/bundle.js > static/js/bundle.min.js",
     "build:ui": "tsc -p tsconfig.json",
-    "watch:ui": "tsc -w -p tsconfig.json",
+    "watch:ui": "tsc -w -p tsconfig-watch.json",
     "build:sass": "sass ui/src/style.scss:static/css/style.css",
     "watch:sass": "sass --watch ui/src/style.scss:static/css/style.css",
     "clean": "rm -rf static/"

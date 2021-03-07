@@ -34,14 +34,15 @@ compile-prod: compile
 	sed -i 's/style.css/$(CSS_CHECKSUM).css/g' static/index.html
 
 
-watch-ui: compile ## Watch and Compile JS
-	npm run build
+watch-ui: ## Watch and Compile JS
+	rm -rf static
+	mkdir -p static/js
+	cp ui/src/index_watch.html static/index.html
+	cp -r ui/images static/
 	npm run watch
 
 build-ui: ## build production ui
 	npm run build
-#	npm install --prefix ./ui
-#	npm run build --prefix ./ui
 
 package: build-ui ## Build PIPy Package
 	rm -rf server/labml_app/static
