@@ -1,20 +1,20 @@
 import {Analysis} from "./types"
 
-import metricAnalysis from "./experiments/metrics/init"
-import hyperPramsAnalysis from "./experiments/hyper_params/init"
-import gradientAnalysis from "./experiments/grads/init"
-import parameterAnalysis from "./experiments/params/init"
-import moduleAnalysis from "./experiments/activations/init"
-import stdOutAnalysis from "./experiments/stdout/init"
-import stderrAnalysis from "./experiments/stderror/init"
-import loggerAnalysis from "./experiments/logger/init"
-import configsAnalysis from "./experiments/configs/init"
+import metricAnalysis from "./experiments/metrics"
+import hyperPramsAnalysis from "./experiments/hyper_params"
+import gradientAnalysis from "./experiments/grads"
+import parameterAnalysis from "./experiments/params"
+import moduleAnalysis from "./experiments/activations"
+import stdOutAnalysis from "./experiments/stdout"
+import stderrAnalysis from "./experiments/stderror"
+import loggerAnalysis from "./experiments/logger"
+import configsAnalysis from "./experiments/configs"
 import cpuAnalysis from './computers/cpu'
-import diskAnalysis from './computers/disk/init'
-import {gpuUtilAnalysis, gpuTempAnalysis, gpuMemoryAnalysis, gpuPowerAnalysis} from './computers/gpu/init'
-import memoryAnalysis from './computers/memory/init'
-import networkAnalysis from './computers/network/init'
-import processAnalysis from './computers/process/init'
+import diskAnalysis from './computers/disk'
+import {gpuMemoryAnalysis, gpuPowerAnalysis, gpuTempAnalysis, gpuUtilAnalysis} from './computers/gpu'
+import memoryAnalysis from './computers/memory'
+import networkAnalysis from './computers/network'
+import processAnalysis from './computers/process'
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
