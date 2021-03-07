@@ -168,7 +168,7 @@ def claim_computer(session_uuid: str, c: computer.Computer) -> None:
 @mix_panel.MixPanelEvent.time_this(None)
 def get_computer(session_uuid: str) -> flask.Response:
     computer_data = {}
-    status_code = 400
+    status_code = 404
 
     c = computer.get_computer(session_uuid)
     if c:
@@ -302,7 +302,7 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
 @mix_panel.MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
-    status_code = 400
+    status_code = 404
 
     r = run.get_run(run_uuid)
     if r:
@@ -341,7 +341,7 @@ def edit_run(run_uuid: str) -> flask.Response:
 @mix_panel.MixPanelEvent.time_this(None)
 def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
-    status_code = 400
+    status_code = 404
 
     s = run.get_status(run_uuid)
     if s:
@@ -359,7 +359,7 @@ def get_run_status(run_uuid: str) -> flask.Response:
 @mix_panel.MixPanelEvent.time_this(None)
 def get_computer_status(session_uuid: str) -> flask.Response:
     status_data = {}
-    status_code = 400
+    status_code = 404
 
     s = computer.get_status(session_uuid)
     if s:

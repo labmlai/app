@@ -101,7 +101,7 @@ class NetworkAnalysis(Analysis):
 @Analysis.route('GET', 'network/<session_uuid>')
 def get_network_tracking(session_uuid: str) -> Any:
     track_data = []
-    status_code = 400
+    status_code = 404
 
     ans = NetworkAnalysis.get_or_create(session_uuid)
     if ans:

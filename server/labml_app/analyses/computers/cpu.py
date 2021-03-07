@@ -108,7 +108,7 @@ class CPUAnalysis(Analysis):
 def get_cpu_tracking(session_uuid: str) -> Any:
     track_data = []
     summary_data = []
-    status_code = 400
+    status_code = 404
 
     ans = CPUAnalysis.get_or_create(session_uuid)
     if ans:

@@ -38,7 +38,14 @@ export default class ChartColors {
         this.nColors = opt.nColors
         this.isDivergent = opt.isDivergent
 
-        let colorScale = this.isDivergent ? DIVERGENT_SCALE : SINGLE_HUE_SCALE
+        let colorScale = DIVERGENT_SCALE
+        if (!this.isDivergent) {
+            if (document.body.classList.contains('light')) {
+                colorScale = [...SINGLE_HUE_SCALE].reverse()
+            } else {
+                colorScale = SINGLE_HUE_SCALE
+            }
+        }
 
         this.linerScale = d3.scaleLinear()
             .domain(d3.ticks(0, this.nColors, colorScale.length))
