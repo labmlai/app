@@ -47,6 +47,10 @@ class OtherErrorView extends ScreenView {
         mix_panel.track('500 View')
     }
 
+    get requiresAuth(): boolean {
+        return false
+    }
+
     render() {
         this.elem = <HTMLElement>$('div.error-container', $ => {
             $('h2.mt-5', 'Ooops! Something went wrong' + '')
