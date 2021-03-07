@@ -1,5 +1,5 @@
 import d3 from "../../../d3"
-import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
@@ -30,7 +30,8 @@ export class SparkLine {
     chartWidth: number
     onClick?: () => void
     isMouseMoveOpt?: boolean
-    valueElem: HTMLSpanElement
+    primaryElem: WeyaElement
+    secondaryElem: WeyaElement
     className: string = 'empty'
     xScale: d3.ScaleLinear<number, number>
     yScale: d3.ScaleLinear<number, number>
@@ -76,19 +77,12 @@ export class SparkLine {
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
-        this.valueElem.innerHTML = ''
-
         if (Math.abs(last.value - last.smoothed) > Math.abs(last.value) / 1e6) {
-            $(this.valueElem, $ => {
-                $('span.value-secondary', formatFixed(last.value, 6), {style: {color: this.color}})
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: this.color}})
-            })
+            this.secondaryElem.textContent = formatFixed(last.value, 6)
         } else {
-            this.valueElem.classList.add('primary-only')
-            $(this.valueElem, $ => {
-                $('span.value-primary', formatFixed(last.smoothed, 6), {style: {color: this.color}})
-            })
+            this.secondaryElem.textContent = ''
         }
+        this.primaryElem.textContent = formatFixed(last.smoothed, 6)
     }
 
     render($: WeyaElementFunction) {
@@ -113,7 +107,10 @@ export class SparkLine {
                         this.linePlot.render($)
                     })
                 })
-                this.valueElem = <HTMLSpanElement>$('span.value', {style: {width: `${this.titleWidth}px`}})
+                $('span.value', {style: {width: `${this.titleWidth}px`}}, $ => {
+                    this.secondaryElem = $('span.value-secondary', {style: {color: this.color}})
+                    this.primaryElem = $('span.value-primary', {style: {color: this.color}})
+                })
             })
         })
 

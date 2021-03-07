@@ -1,5 +1,5 @@
 import d3 from "../../../d3"
-import {Weya as $, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toDate} from "../utils"
@@ -39,6 +39,7 @@ export class TimeSeriesChart {
     yExtend?: [number, number]
     forceYStart?: number
     svgElem: WeyaElement
+    stepElement: WeyaElement
     stepContainer: WeyaElement
     timeSeriesPlots: TimeSeriesPlot[] = []
     numTicks?: number
@@ -124,10 +125,7 @@ export class TimeSeriesChart {
     }
 
     renderStep(cursorStep: Date) {
-        this.stepContainer.innerHTML = ''
-        $(this.stepContainer, $ => {
-            $('h6.text-center.selected-step', formatDateTime(cursorStep))
-        })
+        this.stepElement.textContent = `${formatDateTime(cursorStep)}`
     }
 
     render($: WeyaElementFunction) {
@@ -138,7 +136,7 @@ export class TimeSeriesChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        this.stepContainer = $('div')
+                        this.stepElement = $('h6.text-center.selected-step')
                         this.svgElem = $('svg', '#time-series-chart',
                             {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
