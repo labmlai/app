@@ -12,9 +12,10 @@ import {LineChart} from "../../../components/charts/lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ROUTER, SCREEN} from "../../../app"
-import mix_panel from "../../../mix_panel";
+import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout;
-import {handleNetworkError} from '../../../utils/redirect';
+import {handleNetworkError} from '../../../utils/redirect'
+import {ViewHandler} from "../../types"
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -280,8 +281,9 @@ class ParametersView extends ScreenView {
 }
 
 
-export class ParametersHandler {
+export class ParametersHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('run/:uuid/params', [this.handleParameters])
     }
 

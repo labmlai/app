@@ -9,7 +9,7 @@ import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
-import Card from "../analyses/card"
+import {Card} from "../analyses/types"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'

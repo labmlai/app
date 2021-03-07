@@ -8,9 +8,11 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
-import mix_panel from "../../../mix_panel";
-import {handleNetworkError} from '../../../utils/redirect';
-import Timeout = NodeJS.Timeout;
+import mix_panel from "../../../mix_panel"
+import {handleNetworkError} from '../../../utils/redirect'
+import Timeout = NodeJS.Timeout
+import {ViewHandler} from "../../types"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -163,8 +165,9 @@ class StdErrorView extends ScreenView {
     }
 }
 
-export class StdErrorHandler {
+export class StdErrorHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('run/:uuid/stderr', [this.handleStdError])
     }
 

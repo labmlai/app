@@ -7,7 +7,7 @@ import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
-import Timeout = NodeJS.Timeout;
+import Timeout = NodeJS.Timeout
 
 
 interface RunHeaderOptions extends CardOptions {

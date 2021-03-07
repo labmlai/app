@@ -1,8 +1,7 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import Card from "../../card"
-import {CardOptions} from "../../types"
+import {Card, CardOptions} from "../../types"
 import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"

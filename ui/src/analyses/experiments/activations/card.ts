@@ -1,7 +1,6 @@
 import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {AnalysisDataModel} from "../../../models/run"
-import Card from "../../card"
-import {CardOptions} from "../../types"
+import {Card, CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import activationsCache from "./cache"

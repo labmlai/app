@@ -14,7 +14,9 @@ import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout
-import {handleNetworkError} from '../../../utils/redirect';
+import {handleNetworkError} from '../../../utils/redirect'
+import {ViewHandler} from "../../types"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -253,8 +255,9 @@ class DiskView extends ScreenView {
 }
 
 
-export class DiskHandler {
+export class DiskHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('session/:uuid/disk', [this.handleDisk])
     }
 

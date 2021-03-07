@@ -14,7 +14,9 @@ import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import Timeout = NodeJS.Timeout
 import {getSeriesData} from "./utils"
-import {handleNetworkError} from '../../../utils/redirect';
+import {handleNetworkError} from '../../../utils/redirect'
+import {ViewHandler} from "../../types"
+
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -253,8 +255,9 @@ class GPUPowerView extends ScreenView {
 }
 
 
-export class GPUPowerHandler {
+export class GPUPowerHandler extends ViewHandler{
     constructor() {
+        super()
         ROUTER.route('session/:uuid/gpu_power', [this.handleGPU])
     }
 

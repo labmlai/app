@@ -15,6 +15,7 @@ import {ScreenView} from "../../../screen"
 import mix_panel from "../../../mix_panel"
 import {handleNetworkError} from '../../../utils/redirect'
 import Timeout = NodeJS.Timeout
+import {ViewHandler} from "../../types"
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -279,8 +280,9 @@ class ActivationsView extends ScreenView {
     }
 }
 
-export class ActivationsHandler {
+export class ActivationsHandler extends ViewHandler {
     constructor() {
+        super()
         ROUTER.route('run/:uuid/outputs', [this.handleActivations])
     }
 

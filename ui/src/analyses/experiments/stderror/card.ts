@@ -1,8 +1,7 @@
 import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
-import {CardOptions} from "../../types"
-import Card from "../../card"
+import {Card, CardOptions} from "../../types"
 import Filter from "../../../utils/ansi_to_html"
 import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app';
