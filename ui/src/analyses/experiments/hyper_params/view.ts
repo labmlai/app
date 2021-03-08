@@ -18,9 +18,9 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout;
+import Timeout = NodeJS.Timeout
 import {handleNetworkError} from '../../../utils/redirect'
-import {ViewHandler} from "../../types";
+import {ViewHandler} from "../../types"
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
@@ -182,10 +182,10 @@ class HyperParamsView extends ScreenView {
                 width: this.actualWidth
             })
             this.runHeaderCard.render($).then()
-            $('h2.header.text-center', 'HyperParameters')
+            $('h2.header.text-center', 'Hyperparameters')
             $('div.detail-card', $ => {
-                this.lineChartContainer = $('div.fixed-chart')
                 this.sparkLinesContainer = $('div')
+                this.lineChartContainer = $('div')
             })
         })
 
