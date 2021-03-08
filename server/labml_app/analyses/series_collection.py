@@ -60,7 +60,9 @@ class SeriesCollection:
         if not data:
             return []
 
-        res = [v for k, v in data.items()]
+        sort_key = 'l2' if 'l2' in inds else 'var'
+
+        res = [v for k, v in data.items() if sort_key in v]
         sorted_res = sorted(res, key=lambda k: k['l2' if 'l2' in inds else 'var'])
 
         ret = {}
