@@ -12,7 +12,7 @@ export class Loader {
         if (this.isScreenLoader) {
             this.elem = $('div', '.loader-container', $ => {
                 $('div', '.text-center.mt-5', $ => {
-                    $('img', '.image-style', {src: '/images/lab_logo.png'})
+                    $('img', '.logo-style', {src: '/images/lab_logo.png'})
                 })
                 $('div', '.center', $ => {
                     $('div.loader', '')

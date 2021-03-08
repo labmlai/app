@@ -139,7 +139,7 @@ class MemoryView extends ScreenView {
             this.lastVisibilityChange = currentTime
             clearInterval(this.autoRefresh)
         } else {
-            if (this.status.isRunning) {
+            if (this.status?.isRunning) {
                 setTimeout(args => {
                     this.onRefresh().then()
                     this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
