@@ -125,8 +125,8 @@ export class NetworkError extends Error {
     statusCode: number
     url: string
 
-    constructor(statusCode: number, url: string, message: string) {
-        super(message);
+    constructor(statusCode: number, url: string, message?: string) {
+        super(message || '');
         this.name = "NetworkError"
         this.statusCode = statusCode
         this.url = url

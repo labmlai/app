@@ -45,4 +45,4 @@ jobs:
 
       - name: Deploy
         run: |
-          rsync -zravKLt --perms --executability --delete static/ ubuntu@app.labml.ai:~/labml/app/ui/build/static/
+          rsync -zravKLt --perms --executability static/ ubuntu@app.labml.ai:~/labml/app/ui/build/static/
