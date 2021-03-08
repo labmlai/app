@@ -6,8 +6,7 @@ import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Computer} from '../../../models/computer'
 import {Loader} from '../../../components/loader'
-import Timeout = NodeJS.Timeout;
-
+import Timeout = NodeJS.Timeout
 
 interface ComputerHeaderOptions extends CardOptions {
     lastUpdated?: number

@@ -8,7 +8,6 @@ import {GPUMemoryHandler} from "./memory_view"
 import {GPUPowerHandler} from "./power_view"
 import {Analysis} from "../../types"
 
-
 let gpuUtilAnalysis: Analysis = {
     card: GPUUtilCard,
     viewHandler: GPUUtilHandler,
@@ -33,7 +32,7 @@ let gpuPowerAnalysis: Analysis = {
     route: 'gpu_power'
 }
 
-export  {
+export {
     gpuUtilAnalysis,
     gpuTempAnalysis,
     gpuMemoryAnalysis,

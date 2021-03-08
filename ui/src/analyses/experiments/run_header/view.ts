@@ -14,7 +14,6 @@ import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError} from '../../../utils/redirect'
 
-
 class RunHeaderView extends ScreenView {
     elem: WeyaElement
     run: Run
@@ -72,7 +71,7 @@ class RunHeaderView extends ScreenView {
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
             this.isUserLogged = await this.isUserLoggedCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }

@@ -3,7 +3,6 @@ import {ROUTER} from '../app'
 import runHeaderAnalysis from '../analyses/experiments/run_header'
 import mix_panel from "../mix_panel"
 
-
 interface buttonOptions {
     onButtonClick?: () => void
     isDisabled?: boolean

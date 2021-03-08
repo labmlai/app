@@ -13,10 +13,9 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout;
 import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -255,8 +254,7 @@ class CPUView extends ScreenView {
     }
 }
 
-
-export class CPUHandler extends ViewHandler{
+export class CPUHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('session/:uuid/cpu', [this.handleCPU])

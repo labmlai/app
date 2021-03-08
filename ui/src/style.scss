@@ -58,6 +58,11 @@ html, body {
   &.labml-card-action {
     cursor: pointer;
   }
+
+  & > .error > .fas {
+    font-size: 2em;
+    margin: 0.2em;
+  }
 }
 
 .page {

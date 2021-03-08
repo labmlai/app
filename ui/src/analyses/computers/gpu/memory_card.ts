@@ -1,6 +1,6 @@
 import {SeriesModel} from "../../../models/run"
 import {SeriesCache} from "../../../cache/cache"
-import {Weya, WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
+import {Weya, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {Loader} from "../../../components/loader"
 import {Card, CardOptions} from "../../types"
 import gpuCache from "./cache"
@@ -8,16 +8,20 @@ import {getSeriesData} from "./utils"
 import {Labels} from "../../../components/charts/labels"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {ROUTER} from "../../../app"
+import {ErrorMessage} from '../../../components/error_message'
 
 export class GPUMemoryCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
     analysisCache: SeriesCache
-    lineChartContainer: WeyaElement
+    lineChartContainer: HTMLDivElement
+    rootContainer: HTMLDivElement
     elem: HTMLDivElement
     loader: Loader
     plotIdx: number[] = []
+    errorMessage: ErrorMessage
+    labels: Labels
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -26,6 +30,7 @@ export class GPUMemoryCard extends Card {
         this.width = opt.width
         this.analysisCache = gpuCache.getAnalysis(this.uuid)
         this.loader = new Loader()
+        this.errorMessage = new ErrorMessage()
     }
 
     getLastUpdated(): number {
@@ -35,20 +40,23 @@ export class GPUMemoryCard extends Card {
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'GPU - Memory')
+            this.rootContainer = $('div')
         })
 
         this.elem.appendChild(this.loader.render($))
+
+        Weya(this.rootContainer, $ => {
+            this.lineChartContainer = $('div', '')
+        })
+
         try {
             this.series = getSeriesData((await this.analysisCache.get()).series, 'memory')
         } catch (e) {
-            // Let the parent view handle network failures
+            this.loader.remove()
+            this.errorMessage.render(this.elem)
+            return
         }
         this.loader.remove()
-
-        Weya(this.elem, $ => {
-            this.lineChartContainer = $('div', '')
-            new Labels({labels: Array.from(this.series, x => x['name'])}).render($)
-        })
 
         if (this.series.length > 0) {
             this.renderLineChart()
@@ -73,18 +81,35 @@ export class GPUMemoryCard extends Card {
                 chartHeightFraction: 4
             }).render($)
         })
+        if (!this.labels) {
+            Weya(this.rootContainer, $ => {
+                this.labels = new Labels({labels: Array.from(this.series, x => x['name'])})
+                this.labels.render($)
+            })
+        }
     }
 
     async refresh() {
+        if (this.errorMessage.isVisible) {
+            this.errorMessage.remove()
+            Weya(this.elem, $ => {
+                this.loader.render($)
+            })
+        }
         try {
             this.series = getSeriesData((await this.analysisCache.get(true)).series, 'memory')
         } catch (e) {
-            // Let the parent view handle network failures
+            this.loader.remove()
+            this.rootContainer.classList.add('hide')
+            this.errorMessage.render(this.elem)
+            return
         }
+        this.loader.remove()
 
         if (this.series.length > 0) {
             this.renderLineChart()
             this.elem.classList.remove('hide')
+            this.rootContainer.classList.remove('hide')
         }
     }
 

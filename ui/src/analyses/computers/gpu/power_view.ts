@@ -12,11 +12,10 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
 import {getSeriesData} from "./utils"
 import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -98,7 +97,7 @@ class GPUPowerView extends ScreenView {
             this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power')
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }
@@ -254,8 +253,7 @@ class GPUPowerView extends ScreenView {
     }
 }
 
-
-export class GPUPowerHandler extends ViewHandler{
+export class GPUPowerHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('session/:uuid/gpu_power', [this.handleGPU])

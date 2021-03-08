@@ -10,8 +10,8 @@ import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
 import mix_panel from "../../../mix_panel"
 import {handleNetworkError} from '../../../utils/redirect'
-import Timeout = NodeJS.Timeout
 import {ViewHandler} from "../../types"
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -79,7 +79,7 @@ class LoggerView extends ScreenView {
         try {
             this.run = await this.runCache.get()
             this.status = await this.statusCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }
@@ -163,7 +163,7 @@ class LoggerView extends ScreenView {
     }
 }
 
-export class LoggerHandler extends ViewHandler{
+export class LoggerHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/logger', [this.handleLogger])

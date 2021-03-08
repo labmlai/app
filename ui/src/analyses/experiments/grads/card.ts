@@ -1,4 +1,4 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {AnalysisDataModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
 import {SeriesCache} from "../../../cache/cache"
@@ -6,16 +6,17 @@ import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import gradientsCache from "./cache"
 import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
-
+import {ErrorMessage} from '../../../components/error_message'
 
 export class GradientsCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
     analysisCache: SeriesCache
-    lineChartContainer: WeyaElement
-    elem: WeyaElement
+    lineChartContainer: HTMLDivElement
+    elem: HTMLDivElement
     loader: Loader
+    errorMessage: ErrorMessage
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -24,6 +25,7 @@ export class GradientsCard extends Card {
         this.width = opt.width
         this.analysisCache = gradientsCache.getAnalysis(this.uuid)
         this.loader = new Loader()
+        this.errorMessage = new ErrorMessage()
     }
 
     getLastUpdated(): number {
@@ -31,21 +33,24 @@ export class GradientsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Gradients')
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'Gradients')
         })
 
         this.elem.appendChild(this.loader.render($))
-        try {
-            this.analysisData = await this.analysisCache.get()
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
 
         Weya(this.elem, $ => {
             this.lineChartContainer = $('div', '')
         })
+
+        try {
+            this.analysisData = await this.analysisCache.get()
+        } catch (e) {
+            this.loader.remove()
+            this.errorMessage.render(this.elem)
+            return
+        }
+        this.loader.remove()
 
         if (this.analysisData.summary.length > 0) {
             this.renderLineChart()
@@ -62,11 +67,21 @@ export class GradientsCard extends Card {
     }
 
     async refresh() {
+        if (this.errorMessage.isVisible) {
+            this.errorMessage.remove()
+            Weya(this.elem, $ => {
+                this.loader.render($)
+            })
+        }
         try {
             this.analysisData = await this.analysisCache.get(true)
         } catch (e) {
-            // Let the parent view handle network failures
+            this.loader.remove()
+            this.lineChartContainer.innerHTML = ''
+            this.errorMessage.render(this.elem)
+            return
         }
+        this.loader.remove()
 
         if (this.analysisData.summary.length > 0) {
             this.renderLineChart()

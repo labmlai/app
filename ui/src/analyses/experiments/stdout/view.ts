@@ -9,9 +9,8 @@ import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Loader} from "../../../components/loader"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
 import {ViewHandler} from "../../types"
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -156,7 +155,7 @@ class StdOutView extends ScreenView {
     }
 }
 
-export class StdOutHandler extends ViewHandler{
+export class StdOutHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/stdout', [this.handleStdOut])

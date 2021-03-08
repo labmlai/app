@@ -11,7 +11,6 @@ import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect';
 
-
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
     currentComputersList: ComputerListItemModel[]
@@ -155,7 +154,6 @@ class ComputersListView extends ScreenView {
 
         this.loader.remove()
         this.renderButtons()
-
 
         this.computersListContainer.innerHTML = ''
         $(this.computersListContainer, $ => {

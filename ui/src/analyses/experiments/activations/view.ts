@@ -14,9 +14,8 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import mix_panel from "../../../mix_panel"
 import {handleNetworkError} from '../../../utils/redirect'
-import Timeout = NodeJS.Timeout
 import {ViewHandler} from "../../types"
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 

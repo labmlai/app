@@ -13,10 +13,9 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout;
 import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -281,7 +280,7 @@ class GradientsView extends ScreenView {
     }
 }
 
-export class GradientsHandler extends ViewHandler{
+export class GradientsHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/grads', [this.handleGradients])

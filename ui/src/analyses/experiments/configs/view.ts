@@ -9,9 +9,9 @@ import {BackButton, RefreshButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {Configs} from "./components"
 import mix_panel from "../../../mix_panel";
-import Timeout = NodeJS.Timeout;
 import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -154,7 +154,6 @@ class ConfigsView extends ScreenView {
     }
 
 }
-
 
 export class ConfigsHandler extends ViewHandler {
     constructor() {

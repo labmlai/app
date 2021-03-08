@@ -4,7 +4,7 @@ import {toPointValues} from "../../../components/charts/utils"
 export function getSeriesData(series: SeriesModel[], analysis: string, isMean: boolean = false) {
     let res = []
     for (let r of series) {
-        let s  = {...r}
+        let s = {...r}
         if (s.name.includes(analysis)) {
             if (s.name.includes('mean')) {
                 if (isMean) {

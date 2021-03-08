@@ -8,40 +8,6 @@ class Network {
         this.baseURL = baseURL
     }
 
-    private sendHttpRequest = (method: string, url: string, data: object = {}) => {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
-            xhr.withCredentials = true
-            xhr.open(method, this.baseURL + url)
-            xhr.responseType = 'json'
-
-            let authToken = localStorage.getItem('app_token')
-            if (authToken) {
-                xhr.setRequestHeader('Authorization', authToken)
-            }
-
-            if (data) {
-                xhr.setRequestHeader('Content-Type', 'application/json')
-            }
-
-            xhr.onload = () => {
-                if (xhr.status >= 400) {
-                    if (xhr.status != 403) {
-                        reject(new NetworkError(xhr.status, url, xhr.response))
-                    }
-                } else {
-                    resolve(xhr.response.data)
-                }
-            }
-
-            xhr.onerror = () => {
-                reject('Network Failure')
-            }
-
-            xhr.send(JSON.stringify(data))
-        })
-    }
-
     async getRun(run_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/${run_uuid}`)
     }
@@ -118,6 +84,40 @@ class Network {
 
     async updatePreferences(url: string, run_uuid: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/${url}/preferences/${run_uuid}`, data)
+    }
+
+    private sendHttpRequest = (method: string, url: string, data: object = {}) => {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.withCredentials = true
+            xhr.open(method, this.baseURL + url)
+            xhr.responseType = 'json'
+
+            let authToken = localStorage.getItem('app_token')
+            if (authToken) {
+                xhr.setRequestHeader('Authorization', authToken)
+            }
+
+            if (data) {
+                xhr.setRequestHeader('Content-Type', 'application/json')
+            }
+
+            xhr.onload = () => {
+                if (xhr.status >= 400) {
+                    if (xhr.status != 403) {
+                        reject(new NetworkError(xhr.status, url, xhr.response))
+                    }
+                } else {
+                    resolve(xhr.response.data)
+                }
+            }
+
+            xhr.onerror = () => {
+                reject('Network Failure')
+            }
+
+            xhr.send(JSON.stringify(data))
+        })
     }
 }
 

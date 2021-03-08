@@ -14,9 +14,8 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {handleNetworkError} from '../../../utils/redirect'
-import Timeout = NodeJS.Timeout
 import {ViewHandler} from "../../types"
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -100,7 +99,7 @@ class MetricsView extends ScreenView {
             this.series = toPointValues((await this.analysisCache.get()).series)
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }
@@ -206,7 +205,7 @@ class MetricsView extends ScreenView {
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
@@ -220,7 +219,7 @@ class MetricsView extends ScreenView {
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
                 isEditable: false,
-                isDivergent : true
+                isDivergent: true
             })
             this.sparkLines.render($)
         })
@@ -282,7 +281,7 @@ class MetricsView extends ScreenView {
     }
 }
 
-export class MetricsHandler extends ViewHandler{
+export class MetricsHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/metrics', [this.handleMetrics])

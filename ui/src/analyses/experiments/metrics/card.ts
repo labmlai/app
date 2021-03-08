@@ -1,4 +1,4 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
@@ -9,7 +9,7 @@ import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
-
+import {ErrorMessage} from '../../../components/error_message';
 
 export class MetricsCard extends Card {
     uuid: string
@@ -17,13 +17,13 @@ export class MetricsCard extends Card {
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: SeriesCache
-    elem: WeyaElement
-    lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
+    elem: HTMLDivElement
+    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
     preferenceCache: SeriesPreferenceCache
     plotIdx: number[] = []
     loader: Loader
-
+    errorMessage: ErrorMessage
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -33,6 +33,7 @@ export class MetricsCard extends Card {
         this.analysisCache = metricsCache.getAnalysis(this.uuid)
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
         this.loader = new Loader()
+        this.errorMessage = new ErrorMessage()
     }
 
     getLastUpdated(): number {
@@ -40,16 +41,24 @@ export class MetricsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Metrics')
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'Metrics')
         })
 
         this.elem.appendChild(this.loader.render($))
+
+        Weya(this.elem, $ => {
+            this.lineChartContainer = $('div', '')
+            this.sparkLinesContainer = $('div', '')
+        })
+
         try {
             this.series = toPointValues((await this.analysisCache.get()).series)
             this.preferenceData = await this.preferenceCache.get()
         } catch (e) {
-            // Let the parent view handle network failures
+            this.loader.remove()
+            this.errorMessage.render(this.elem)
+            return
         }
         this.loader.remove()
 
@@ -57,12 +66,6 @@ export class MetricsCard extends Card {
         if (analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
         }
-
-
-        Weya(this.elem, $ => {
-            this.lineChartContainer = $('div', '')
-            this.sparkLinesContainer = $('div', '')
-        })
 
         if (this.series.length > 0) {
             this.renderLineChart()
@@ -81,7 +84,7 @@ export class MetricsCard extends Card {
                 plotIdx: this.plotIdx,
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
                     getChartType(this.preferenceData.chart_type) : 'linear',
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
@@ -94,17 +97,28 @@ export class MetricsCard extends Card {
                 plotIdx: this.plotIdx,
                 width: this.width,
                 isEditable: false,
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
 
     async refresh() {
+        if (this.errorMessage.isVisible) {
+            this.errorMessage.remove()
+            Weya(this.elem, $ => {
+                this.loader.render($)
+            })
+        }
         try {
             this.series = toPointValues((await this.analysisCache.get(true)).series)
         } catch (e) {
-            // Let the parent view handle network failures
+            this.loader.remove()
+            this.lineChartContainer.innerHTML = ''
+            this.sparkLinesContainer.innerHTML = ''
+            this.errorMessage.render(this.elem)
+            return
         }
+        this.loader.remove()
 
         if (this.series.length > 0) {
             this.renderLineChart()

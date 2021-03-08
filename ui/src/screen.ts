@@ -5,6 +5,10 @@ import {Loader} from './components/loader'
 import {ROUTER} from './app'
 
 abstract class ScreenView {
+    get requiresAuth() {
+        return true
+    }
+
     abstract render(): WeyaElement
 
     onResize(width: number) {
@@ -17,10 +21,6 @@ abstract class ScreenView {
     }
 
     onVisibilityChange() {
-    }
-
-    get requiresAuth() {
-        return true
     }
 }
 

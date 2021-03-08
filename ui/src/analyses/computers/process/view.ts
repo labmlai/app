@@ -13,8 +13,8 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
 import {handleNetworkError} from '../../../utils/redirect';
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -93,7 +93,7 @@ class ProcessView extends ScreenView {
             this.series = toPointValues((await this.analysisCache.get()).series)
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }
@@ -241,7 +241,6 @@ class ProcessView extends ScreenView {
         this.isUpdateDisable = true
     }
 }
-
 
 export class ProcessHandler {
     constructor() {

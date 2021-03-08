@@ -2,7 +2,6 @@ import {FormattedValue} from "../../../utils/value"
 import {Config} from "../../../models/config"
 import {WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
 
-
 const CONFIG_PRINT_LEN = 20
 const KEY_WIDTH = 125
 const PADDING = 11
@@ -45,6 +44,7 @@ class ComputedValue {
 class Option {
     value: any
 
+    //TODO: change to at least union types
     constructor(opt: { value: any }) {
         this.value = opt.value
     }

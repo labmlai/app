@@ -3,13 +3,7 @@ import {Status} from "../../../models/status"
 import CACHE, {RunCache, RunStatusCache, SeriesCache} from "../../../cache/cache"
 import {Run, SeriesModel} from "../../../models/run"
 import {Loader} from "../../../components/loader"
-import {
-    BackButton,
-    CancelButton,
-    EditButton,
-    RefreshButton,
-    SaveButton
-} from "../../../components/buttons"
+import {BackButton, CancelButton, EditButton, RefreshButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
@@ -18,10 +12,9 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout;
 import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types";
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 

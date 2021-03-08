@@ -1,4 +1,4 @@
-import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {Weya, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ROUTER} from '../../../app'
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {CardOptions} from "../../types"
@@ -8,7 +8,6 @@ import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Loader} from "../../../components/loader"
 import Timeout = NodeJS.Timeout
-
 
 interface RunHeaderOptions extends CardOptions {
     lastUpdated?: number
@@ -20,10 +19,10 @@ export class RunHeaderCard {
     status: Status
     lastUpdated: number
     runCache: RunCache
-    elem: WeyaElement
-    lastRecordedContainer: WeyaElement
-    lastUpdatedContainer: WeyaElement
-    statusViewContainer: WeyaElement
+    elem: HTMLDivElement
+    lastRecordedContainer: HTMLDivElement
+    lastUpdatedContainer: HTMLDivElement
+    statusViewContainer: HTMLDivElement
     autoRefresh: Timeout
     loader: Loader
     statusCache: RunStatusCache
@@ -39,7 +38,7 @@ export class RunHeaderCard {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}})
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}})
 
         this.elem.appendChild(this.loader.render($))
         try {
