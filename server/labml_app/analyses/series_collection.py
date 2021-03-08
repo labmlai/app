@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 from ..analyses.series import SeriesModel, Series
 
+
 class SeriesCollection:
     tracking: Dict[str, SeriesModel]
     indicators: set
@@ -60,7 +61,9 @@ class SeriesCollection:
         if not data:
             return []
 
-        res = [v for k, v in data.items()]
+        sort_key = 'l2' if 'l2' in inds else 'var'
+
+        res = [v for k, v in data.items() if sort_key in v]
         sorted_res = sorted(res, key=lambda k: k['l2' if 'l2' in inds else 'var'])
 
         ret = {}
@@ -88,3 +91,6 @@ class SeriesCollection:
         s.update(series['step'], series['value'])
 
         self.tracking[ind] = s.to_data()
+
+    def save(self):
+        raise NotImplementedError

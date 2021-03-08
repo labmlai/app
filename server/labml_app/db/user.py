@@ -3,6 +3,7 @@ from typing import List, NamedTuple, Dict, Optional
 from labml_db import Model, Key, Index
 
 from .project import Project, ProjectIndex
+from . import run
 from ..utils import gen_token
 
 
@@ -108,3 +109,20 @@ def add_token_owners():
 
         TokenOwnerIndex.set(labml_token, user_key)
         print(labml_token)
+
+
+def remove_corrupted_runs():
+    user_keys = User.get_all()
+    for user_key in user_keys:
+        u = user_key.load()
+        p = u.default_project
+
+        delete_runs = []
+        for run_uuid in p.runs:
+            if not run.get_run(run_uuid):
+                delete_runs.append(run_uuid)
+
+        for run_uuid in delete_runs:
+            p.runs.pop(run_uuid)
+
+        p.save()

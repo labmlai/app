@@ -30,9 +30,13 @@ class Project(Model['Project']):
         res = []
         for run_uuid, run_key in self.runs.items():
             try:
-                res.append(run_key.load())
+                r = run.get_run(run_uuid)
+                if r:
+                    res.append(r)
+                else:
+                    logger.error('error in creating run list, ' + run_uuid)
             except TypeError as e:
-                logger.log('error in creating run list, ' + run_uuid + ':' + str(e))
+                logger.error('error in creating run list, ' + run_uuid + ':' + str(e))
 
         if self.is_run_added:
             self.is_run_added = False
