@@ -20,6 +20,8 @@ compile: ## Compile JS
 	rm -rf static
 	mkdir -p static/js
 	cp ui/src/index.html static/index.html
+	cp ui/src/site.webmanifest static/site.webmanifest
+	cp ui/images/favicon.ico static/favicon.ico
 	cp -r ui/images static/
 	npm run build
 
