@@ -37,7 +37,7 @@ export class EditableSparkLine {
 
         this.valueElem.innerHTML = ''
         $(this.valueElem, $ => {
-            $('span.input-content', $ => {
+            $('span.input-content.float-right', {style: {width: `${this.titleWidth/1.5}px`}},$ => {
                 this.inputElem = <HTMLInputElement>$('input', {
                         value: formatFixed(last.smoothed, 4),
                         type: "number"
