@@ -11,17 +11,16 @@ export class Loader {
     render($: WeyaElementFunction) {
         if (this.isScreenLoader) {
             this.elem = $('div', '.loader-container', $ => {
-                $(`div.text-center.mt-5`, $ => {
-                    $('img.image-style', {src: '../../images/lab_logo.png'})
-                    $('h1.mt-3', 'LabML')
+                $('div', '.text-center.mt-5', $ => {
+                    $('img', '.image-style', {src: '/images/lab_logo.png'})
                 })
-                $(`div.center`, $ => {
+                $('div', '.center', $ => {
                     $('div.loader', '')
                 })
             })
         } else {
-            this.elem = $(`div.center`, $ => {
-                $('div.loader', '')
+            this.elem = $('div', '.center', $ => {
+                $('div', '.loader', '')
             })
         }
 

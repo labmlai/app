@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElement, WeyaElementFunction} from "../../../lib/weya/weya"
 import {ROUTER} from '../app'
-import runHeaderAnalysis from '../analyses/experiments/run_header/init'
+import runHeaderAnalysis from '../analyses/experiments/run_header'
 import mix_panel from "../mix_panel"
 
 

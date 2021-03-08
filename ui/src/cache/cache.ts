@@ -124,14 +124,17 @@ export class RunsListCache extends CacheObject<RunsList> {
 
     async deleteRuns(runUUIDS: Set<string>): Promise<void> {
         let runs: RunListItemModel[] = []
-        let currentRuns = <RunListItemModel[]>this.data.runs
-        for (let run of currentRuns) {
-            if (!runUUIDS.has(run.run_uuid)) {
-                runs.push(run)
+        // Only updating the cache manually, if the cache exists
+        if (this.data) {
+            let currentRuns = <RunListItemModel[]>this.data.runs
+            for (let run of currentRuns) {
+                if (!runUUIDS.has(run.run_uuid)) {
+                    runs.push(run)
+                }
             }
-        }
 
-        this.data.runs = runs
+            this.data.runs = runs
+        }
         await NETWORK.deleteRuns(Array.from(runUUIDS))
     }
 }
@@ -146,14 +149,17 @@ export class ComputersListCache extends CacheObject<ComputersList> {
 
     async deleteSessions(sessionUUIDS: Set<string>): Promise<void> {
         let computers: ComputerListItemModel[] = []
-        let currentComputers = <ComputerListItemModel[]>this.data.computers
-        for (let computer of currentComputers) {
-            if (!sessionUUIDS.has(computer.session_uuid)) {
-                computers.push(computer)
+        // Only updating the cache manually, if the cache exists
+        if (this.data) {
+            let currentComputers = <ComputerListItemModel[]>this.data.computers
+            for (let computer of currentComputers) {
+                if (!sessionUUIDS.has(computer.session_uuid)) {
+                    computers.push(computer)
+                }
             }
-        }
 
-        this.data.computers = computers
+            this.data.computers = computers
+        }
         await NETWORK.deleteSessions(Array.from(sessionUUIDS))
     }
 }
