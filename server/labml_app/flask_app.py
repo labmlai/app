@@ -8,10 +8,10 @@ from time import strftime
 from flask import Flask, request, g, send_from_directory
 from flask_cors import CORS
 
-from . import handlers
-from . import settings
-from .logger import logger
-from .utils import mix_panel
+from labml_app import handlers
+from labml_app import settings
+from labml_app.logger import logger
+from labml_app.utils import mix_panel
 
 if settings.SENTRY_DSN:
     try:
@@ -52,7 +52,7 @@ def create_app():
     log = logging.getLogger('werkzeug')
     log.setLevel(logging.ERROR)
 
-    _app = Flask(__name__, static_folder=STATIC_PATH, static_url_path='/static')
+    _app = Flask(__name__, static_folder=str(STATIC_PATH), static_url_path='/static')
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
