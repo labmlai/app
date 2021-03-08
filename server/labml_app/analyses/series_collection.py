@@ -2,6 +2,7 @@ from typing import Dict, Any
 
 from ..analyses.series import SeriesModel, Series
 
+
 class SeriesCollection:
     tracking: Dict[str, SeriesModel]
     indicators: set
