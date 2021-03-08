@@ -33,6 +33,8 @@ class Project(Model['Project']):
                 r = run.get_run(run_uuid)
                 if r:
                     res.append(r)
+                else:
+                    logger.error('error in creating run list, ' + run_uuid)
             except TypeError as e:
                 logger.error('error in creating run list, ' + run_uuid + ':' + str(e))
 
