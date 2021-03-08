@@ -145,7 +145,7 @@ export class LineChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        this.stepElement = $('h6.text-center.selected-step')
+                        this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
@@ -158,6 +158,7 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
+                                        // this.stepElement = $('text', '')
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
                                                 new LineFill({
