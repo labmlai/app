@@ -168,7 +168,7 @@ class RunView extends ScreenView {
         $(this.runView, $ => {
             if (!this.isUserLogged.is_user_logged && !this.run.is_claimed) {
                 new AlertMessage({
-                    message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
+                    message: 'This run will be deleted in 12 hours. Click here to add it to your runs.',
                     onClickMessage: this.onMessageClick.bind(this)
                 }).render($)
             }

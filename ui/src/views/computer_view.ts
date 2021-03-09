@@ -168,7 +168,7 @@ class ComputerView extends ScreenView {
         $(this.runView, $ => {
             if (!this.isUserLogged.is_user_logged && !this.computer.is_claimed) {
                 new AlertMessage({
-                    message: 'This computer will be deleted in 12 hours. Click here to add it to your experiments.',
+                    message: 'This computer will be deleted in 12 hours. Click here to add it to your computers.',
                     onClickMessage: this.onMessageClick.bind(this)
                 }).render($)
             }
