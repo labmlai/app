@@ -1,6 +1,7 @@
 import {Weya, WeyaElementFunction, WeyaElement} from '../../../lib/weya/weya'
 import PyTorchCode from '../components/codes/pytorch'
 import KerasCode from '../components/codes/keras'
+import PyTorchLightningCode from '../components/codes/pytorch_lightning'
 
 export class EmptyRunsList {
     currentTab: string
@@ -39,6 +40,8 @@ export class EmptyRunsList {
                 new PyTorchCode().render($)
             } else if (this.currentTab === 'keras') {
                 new KerasCode().render($)
+            } else if (this.currentTab === 'lightning') {
+                new PyTorchLightningCode().render($)
             }
         })
     }
