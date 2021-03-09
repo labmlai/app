@@ -1,7 +1,7 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import {AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import hyperParamsCache from "./cache"
 import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
@@ -15,11 +15,11 @@ export class HyperParamsCard extends Card {
     width: number
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
-    analysisCache: SeriesCache
+    analysisCache: AnalysisCache
     elem: WeyaElement
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
-    preferenceCache: SeriesPreferenceCache
+    preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
     loader: Loader
 

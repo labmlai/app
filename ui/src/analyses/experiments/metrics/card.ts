@@ -2,7 +2,7 @@ import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/w
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
-import {SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import {AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
@@ -16,11 +16,11 @@ export class MetricsCard extends Card {
     width: number
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
-    analysisCache: SeriesCache
+    analysisCache: AnalysisCache
     elem: WeyaElement
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
-    preferenceCache: SeriesPreferenceCache
+    preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
     loader: Loader
 

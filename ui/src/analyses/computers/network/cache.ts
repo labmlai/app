@@ -1,13 +1,13 @@
-import {ComputerStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import {ComputerStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 
-class NetworkAnalysisCache extends SeriesCache {
+class NetworkAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: ComputerStatusCache) {
         super(uuid, 'network', statusCache)
     }
 }
 
-class NetworkPreferenceCache extends SeriesPreferenceCache {
+class NetworkPreferenceCache extends AnalysisPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'network')
     }

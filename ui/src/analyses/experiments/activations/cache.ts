@@ -1,13 +1,13 @@
-import {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import {RunStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 
-class ActivationsAnalysisCache extends SeriesCache {
+class ActivationsAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: RunStatusCache) {
         super(uuid, 'outputs', statusCache)
     }
 }
 
-class ActivationsPreferenceCache extends SeriesPreferenceCache {
+class ActivationsPreferenceCache extends AnalysisPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'outputs')
     }

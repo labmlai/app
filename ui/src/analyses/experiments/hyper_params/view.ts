@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {RunCache, RunStatusCache, SeriesCache} from "../../../cache/cache"
+import CACHE, {RunCache, RunStatusCache, AnalysisCache} from "../../../cache/cache"
 import {Run, SeriesModel} from "../../../models/run"
 import {Loader} from "../../../components/loader"
 import {
@@ -33,7 +33,7 @@ class HyperParamsView extends ScreenView {
     series: SeriesModel[]
     statusCache: RunStatusCache
     runCache: RunCache
-    analysisCache: SeriesCache
+    analysisCache: AnalysisCache
     plotIdx: number[] = []
     loader: Loader
     runHeaderCard: RunHeaderCard

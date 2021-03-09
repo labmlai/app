@@ -1,6 +1,6 @@
 import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
-import CACHE, {ComputerStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import CACHE, {ComputerStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {Loader} from "../../../components/loader"
@@ -28,8 +28,8 @@ class GPUMemoryView extends ScreenView {
     statusCache: ComputerStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
-    analysisCache: SeriesCache
-    preferenceCache: SeriesPreferenceCache
+    analysisCache: AnalysisCache
+    preferenceCache: AnalysisPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
     computerHeaderCard: ComputerHeaderCard

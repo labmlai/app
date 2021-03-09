@@ -1,13 +1,13 @@
-import {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import {RunStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 
-class HyperPramsAnalysisCache extends SeriesCache {
+class HyperPramsAnalysisCache extends AnalysisCache {
     constructor(uuid: string, statusCache: RunStatusCache) {
         super(uuid, 'hyper_params', statusCache)
     }
 }
 
-class HyperPramsPreferenceCache extends SeriesPreferenceCache {
+class HyperPramsPreferenceCache extends AnalysisPreferenceCache {
     constructor(uuid: string) {
         super(uuid, 'hyper_params')
     }

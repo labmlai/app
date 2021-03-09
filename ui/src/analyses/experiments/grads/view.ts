@@ -1,6 +1,6 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {RunStatusCache, SeriesCache, SeriesPreferenceCache} from "../../../cache/cache"
+import CACHE, {RunStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Loader} from "../../../components/loader"
@@ -29,8 +29,8 @@ class GradientsView extends ScreenView {
     statusCache: RunStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
-    analysisCache: SeriesCache
-    preferenceCache: SeriesPreferenceCache
+    analysisCache: AnalysisCache
+    preferenceCache: AnalysisPreferenceCache
     loader: Loader
     refreshButton: RefreshButton
     runHeaderCard: RunHeaderCard

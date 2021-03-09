@@ -1,7 +1,7 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {SeriesCache} from "../../../cache/cache"
+import {AnalysisCache} from "../../../cache/cache"
 import {Loader} from "../../../components/loader"
 import gpuCache from './cache'
 import {getSeriesData} from './utils'
@@ -14,7 +14,7 @@ export class GPUUtilCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
-    analysisCache: SeriesCache
+    analysisCache: AnalysisCache
     lineChartContainer: WeyaElement
     elem: WeyaElement
     loader: Loader
