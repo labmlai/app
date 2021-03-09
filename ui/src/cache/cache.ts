@@ -217,7 +217,10 @@ export class ComputerCache extends CacheObject<Computer> {
     }
 }
 
-export class RunStatusCache extends CacheObject<Status> {
+export abstract class StatusCache extends CacheObject<Status> {
+}
+
+export class RunStatusCache extends StatusCache {
     private readonly uuid: string
 
     constructor(uuid: string) {
@@ -233,7 +236,7 @@ export class RunStatusCache extends CacheObject<Status> {
     }
 }
 
-export class ComputerStatusCache extends CacheObject<Status> {
+export class ComputerStatusCache extends StatusCache {
     private readonly uuid: string
 
     constructor(uuid: string) {
@@ -278,9 +281,9 @@ export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
 export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     private readonly uuid: string
     private readonly url: string
-    private statusCache: RunStatusCache | ComputerStatusCache
+    private statusCache: StatusCache
 
-    constructor(uuid: string, url: string, statusCache: RunStatusCache | ComputerStatusCache) {
+    constructor(uuid: string, url: string, statusCache: StatusCache) {
         super()
         this.uuid = uuid
         this.statusCache = statusCache
