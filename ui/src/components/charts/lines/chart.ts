@@ -6,7 +6,7 @@ import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
-import {LineGradients, DropShadow, DefaultLineGradient} from "../chart_gradients"
+import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 
 
@@ -86,9 +86,35 @@ export class LineChart {
         }
     }
 
-    updateCursorStep(ev: TouchEvent | MouseEvent) {
+    onTouchStart = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return
+        this.updateCursorStep(ev.touches[0].clientX)
+    }
+
+    onTouchMove = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return
+        this.updateCursorStep(ev.touches[0].clientX)
+    }
+
+    onTouchEnd = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return
+        this.updateCursorStep(ev.touches[0].clientX)
+    }
+
+    onMouseDown = (ev: MouseEvent) => {
+        this.updateCursorStep(ev.clientX)
+    }
+
+    onMouseUp = (ev: MouseEvent) => {
+        this.updateCursorStep(ev.clientX)
+    }
+
+    onMouseMove = (ev: MouseEvent) => {
+        this.updateCursorStep(ev.clientX)
+    }
+
+    updateCursorStep(clientX: number) {
         let cursorStep: number = null
-        let clientX = ev instanceof TouchEvent ? ev.touches[0].clientX : ev.clientX
 
         if (clientX) {
             const info = this.svgElem.getBoundingClientRect()
@@ -119,7 +145,7 @@ export class LineChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        this.stepElement = $('h6.text-center.selected-step')
+                        this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
@@ -132,6 +158,7 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
+                                        // this.stepElement = $('text', '')
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
                                                 new LineFill({
@@ -171,10 +198,14 @@ export class LineChart {
                     }
                 )
             })
+
             if (this.isCursorMoveOpt) {
-                this.svgElem.addEventListener('touchmove', this.updateCursorStep.bind(this))
-                this.svgElem.addEventListener('touchstart', this.updateCursorStep.bind(this))
-                this.svgElem.addEventListener('mousemove', this.updateCursorStep.bind(this))
+                this.svgElem.addEventListener('touchstart', this.onTouchStart)
+                this.svgElem.addEventListener('touchmove', this.onTouchMove)
+                this.svgElem.addEventListener('touchend', this.onTouchEnd)
+                this.svgElem.addEventListener('mouseup', this.onMouseUp)
+                this.svgElem.addEventListener('mousemove', this.onMouseMove)
+                this.svgElem.addEventListener('mousedown', this.onMouseDown)
             }
         }
     }
