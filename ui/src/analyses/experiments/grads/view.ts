@@ -1,9 +1,8 @@
-import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
+import {Weya, Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {Loader} from "../../../components/loader"
 import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import gradientsCache from "./cache"
@@ -13,12 +12,86 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout;
-import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
+import {Loader} from "../../../components/loader";
+import Timeout = NodeJS.Timeout;
 
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
+
+export class ErrorMessage {
+    elem: HTMLDivElement
+
+    constructor() {
+        this.elem = null
+    }
+
+    render(parent: HTMLDivElement) {
+        Weya(parent, $ => {
+            this.elem = $('div', '.error.text-center.warning', $ => {
+                $('span', '.fas.fa-exclamation-triangle', '')
+                $('h4', '.text-uppercase', 'Network error')
+            })
+        })
+    }
+
+    remove() {
+        if (this.elem == null) {
+            return
+        }
+        this.elem.remove()
+        this.elem = null
+    }
+}
+
+
+async function waitForFrame() {
+    return new Promise<void>((resolve) => {
+        window.requestAnimationFrame(() => {
+            resolve()
+        })
+    })
+}
+
+class DataLoader {
+    private _load: () => Promise<void>;
+    private loaded: boolean;
+    private loader: Loader;
+    private elem: HTMLDivElement;
+    private errorMessage: ErrorMessage;
+
+    constructor(load: () => Promise<void>) {
+        this._load = load
+        this.loaded = false
+        this.loader = new Loader()
+        this.errorMessage = new ErrorMessage()
+    }
+
+    render(parent: HTMLElement) {
+        Weya(parent, $ => {
+            this.elem = $('div', '.data-loader')
+        })
+    }
+
+    async load() {
+        this.errorMessage.remove()
+        if (!this.loaded) {
+            this.elem.appendChild(this.loader.render(Weya))
+            await waitForFrame()
+        }
+
+        try {
+            await this._load()
+            this.loaded = true
+        } catch (e) {
+            this.errorMessage.render(this.elem)
+            throw e
+        } finally {
+            this.loader.remove()
+        }
+    }
+}
+
 
 class GradientsView extends ScreenView {
     elem: WeyaElement
@@ -31,7 +104,6 @@ class GradientsView extends ScreenView {
     preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
-    loader: Loader
     refreshButton: RefreshButton
     runHeaderCard: RunHeaderCard
     sparkLines: SparkLines
@@ -44,6 +116,7 @@ class GradientsView extends ScreenView {
     autoRefresh: Timeout
     metricsView: HTMLDivElement
     lastVisibilityChange: number
+    private loader: DataLoader;
 
     constructor(uuid: string) {
         super()
@@ -55,9 +128,13 @@ class GradientsView extends ScreenView {
         this.preferenceCache = gradientsCache.getPreferences(this.uuid)
 
         this.isUpdateDisable = true
-        this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
+        this.loader = new DataLoader(async () => {
+            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.status = await this.statusCache.get()
+            this.preferenceData = await this.preferenceCache.get()
+        })
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
@@ -69,42 +146,41 @@ class GradientsView extends ScreenView {
         super.onResize(width)
 
         this.actualWidth = Math.min(800, width)
+
+        this._render()
     }
 
-    render(): WeyaElement {
-        this.elem = <HTMLElement>$('div.page',
-            {style: {width: `${this.actualWidth}px`}},
-            $ => {
-                this.metricsView = <HTMLDivElement>$('div', '')
-                this.loader.render($)
-            })
+    async _render() {
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', '.page',
+                {style: {width: `${this.actualWidth}px`}},
+                $ => {
+                    this.metricsView = $('div', '')
+                })
+        })
 
-        this.loadData().then(() => {
-            this.loader.remove()
+        this.loader.render(this.metricsView)
 
+        try {
+            await this.loader.load()
             if (this.status && this.status.isRunning) {
                 this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
             this.loadPreferences()
-
             this.renderGradients()
-        }).catch(() => {
-        })
+        } catch (e) {
 
-        return this.elem
+        }
     }
 
-    async loadData() {
-        try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
-            this.status = await this.statusCache.get()
-            this.preferenceData = await this.preferenceCache.get()
-        } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
+    render(): WeyaElement {
+        this.elem = $('div', '.page',)
+
+        this._render()
+
+        return this.elem
     }
 
     destroy() {
@@ -118,22 +194,18 @@ class GradientsView extends ScreenView {
 
     async onRefresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
-            this.status = await this.statusCache.get(true)
+            await this.loader.load()
+            if (!this.status.isRunning) {
+                this.refreshButton.remove()
+                clearInterval(this.autoRefresh)
+            }
+
+            this.renderSparkLines()
+            this.renderLineChart()
+            this.runHeaderCard.refresh().then()
         } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
 
-        if (!this.status.isRunning) {
-            this.refreshButton.remove()
-            clearInterval(this.autoRefresh)
         }
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.runHeaderCard.refresh().then()
     }
 
     onVisibilityChange() {
@@ -281,7 +353,7 @@ class GradientsView extends ScreenView {
     }
 }
 
-export class GradientsHandler extends ViewHandler{
+export class GradientsHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/grads', [this.handleGradients])
