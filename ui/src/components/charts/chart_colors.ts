@@ -2,7 +2,7 @@ import d3 from "../../d3"
 
 const LIGHT_SINGLE_HUE = d3.piecewise(d3.interpolateHsl, ["#004c6d", "#c1e7ff"])
 const DARK_SINGLE_HUE = d3.piecewise(d3.interpolateHsl, ["#c1e7ff", "#004c6d"])
-const DIVERGENT = d3.piecewise(d3.interpolateHsl, ["#ffa600", "#bc5090", "#003f5d"])
+const DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#bc5090", "#003f5d"])
 
 interface ChartColorsOptions {
     nColors: number
