@@ -18,7 +18,7 @@ export class EmptyRunsList {
 
     render($: WeyaElementFunction) {
         $('div.text-center', $ => {
-            $('h5.mt-4.px-1', 'You will see your experiments here')
+            $('h5.mt-4.px-1', 'You will see your runs here')
             $('p.px-1', 'Start monitoring your models by adding just two lines of code:')
         })
 
