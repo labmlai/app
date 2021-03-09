@@ -1,7 +1,7 @@
-import {RunStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import {RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 
-class GradientAnalysisCache extends AnalysisCache {
+class GradientAnalysisCache extends AnalysisDataCache {
     constructor(uuid: string, statusCache: RunStatusCache) {
         super(uuid, 'gradients', statusCache)
     }

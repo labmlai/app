@@ -275,7 +275,7 @@ export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
     }
 }
 
-export class AnalysisCache extends CacheObject<AnalysisDataModel> {
+export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     private readonly uuid: string
     private readonly url: string
     private statusCache: RunStatusCache | ComputerStatusCache
