@@ -956,3 +956,51 @@ $keyFontSize: 0.8rem;
   }
 }
 
+/* codes */
+.tab-space {
+  display: inline-block;
+  margin-left: 40px;
+}
+
+.code-sample {
+  box-shadow: 3px 3px 6px #666, -3px -3px 6px #999;
+
+  pre {
+    max-width: 400px;
+    margin: 0 auto;
+
+    div {
+      opacity: 0.5;
+
+      &.labml-api {
+        font-weight: bolder;
+        opacity: 1.0;
+      }
+    }
+
+    .key-word {
+      color: coral;
+    }
+
+    .param {
+      color: orangered;
+    }
+
+    .value {
+      color: dodgerblue;
+    }
+
+    .string {
+      color: greenyellow;
+    }
+
+    .built-ins {
+      color: mediumpurple;
+    }
+
+    .method {
+      color: yellow;
+    }
+  }
+}
+
