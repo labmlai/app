@@ -9,6 +9,8 @@ import {formatStep} from "../../../utils/value"
 import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 
+const LABEL_HEIGHT = 10
+
 interface LineChartOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
@@ -38,6 +40,7 @@ export class LineChart {
     isCursorMoveOpt?: boolean
     chartColors: ChartColors
     isDivergent: boolean
+    private svgBoundingClientRect: DOMRect
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
@@ -115,9 +118,12 @@ export class LineChart {
     updateCursorStep(clientX: number) {
         let cursorStep: number = null
 
+        if (this.svgBoundingClientRect == null) {
+            return
+        }
+
         if (clientX) {
-            const info = this.svgElem.getBoundingClientRect()
-            let currentX = this.xScale.invert(clientX - info.left - this.margin)
+            let currentX = this.xScale.invert(clientX - this.svgBoundingClientRect.left - this.margin)
             if (currentX > 0) {
                 cursorStep = currentX
             }
@@ -147,7 +153,7 @@ export class LineChart {
                         // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
-                                height: 2 * this.margin + this.axisSize + this.chartHeight,
+                                height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
                                 new DefaultLineGradient().render($)
@@ -155,11 +161,11 @@ export class LineChart {
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g', {}, $ => {
                                     this.stepElement = $('text', '.selected-step',
-                                        {transform: `translate(${(2 * this.margin + this.axisSize + this.chartWidth) / 2},${this.margin})`})
+                                        {transform: `translate(${(2 * this.margin + this.axisSize + this.chartWidth) / 2},${LABEL_HEIGHT})`})
                                 })
                                 $('g',
                                     {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
                                     }, $ => {
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
@@ -186,7 +192,7 @@ export class LineChart {
                                     })
                                 $('g.bottom-axis',
                                     {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
                                     }, $ => {
                                         new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
                                     })
@@ -209,6 +215,12 @@ export class LineChart {
                 this.svgElem.addEventListener('mousemove', this.onMouseMove)
                 this.svgElem.addEventListener('mousedown', this.onMouseDown)
             }
+
+            this.svgBoundingClientRect = null
+
+            window.requestAnimationFrame(() => {
+                this.svgBoundingClientRect = this.svgElem.getBoundingClientRect()
+            })
         }
     }
 }

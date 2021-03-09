@@ -89,7 +89,7 @@ export class SparkLine {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                 $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
+                $('svg.sparkline', {style: {width: `${this.chartWidth * 2}px`}, height: 25}, $ => {
                     $('g', {transform: `translate(${0}, 25)`}, $ => {
                         new LineFill({
                             series: this.series,
@@ -106,10 +106,16 @@ export class SparkLine {
                         })
                         this.linePlot.render($)
                     })
-                })
-                $('span.value', {style: {width: `${this.titleWidth}px`}}, $ => {
-                    this.secondaryElem = $('span.value-secondary', {style: {color: this.color}})
-                    this.primaryElem = $('span.value-primary', {style: {color: this.color}})
+                    $('g', {transform: `translate(${(this.titleWidth / 4) * 3}, ${0})`}, $ => {
+                        this.secondaryElem = $('text', '.value-secondary', {
+                            style: {fill: this.color},
+                            transform: `translate(${this.chartWidth - 24},${10})`
+                        })
+                        this.primaryElem = $('text', '.value-primary', {
+                            style: {fill: this.color},
+                            transform: `translate(${this.chartWidth - 24},${25})`
+                        })
+                    })
                 })
             })
         })

@@ -632,16 +632,6 @@ button.sparkline-list-item {
       font-weight: bold;
       font-size: 12px;
       display: inline-block;
-
-      &.value-primary {
-        font-weight: bold;
-        fill: #34495e;
-      }
-
-      &.value-secondary {
-        font-weight: normal;
-        fill: #7f8c8d;
-      }
     }
 
     svg.sparkline {
@@ -655,6 +645,20 @@ button.sparkline-list-item {
 
       path.line-fill {
         opacity: 0.3;
+      }
+
+      & .value-primary {
+        font-weight: bold;
+        font-size: 12px;
+        text-anchor: end;
+        fill: #34495e;
+      }
+
+      & .value-secondary {
+        font-weight: normal;
+        font-size: 12px;
+        text-anchor: end;
+        fill: #7f8c8d;
       }
     }
 
