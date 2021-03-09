@@ -1,7 +1,7 @@
-import {ComputerStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import {ComputerStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
 
-class DiskAnalysisCache extends AnalysisCache {
+class DiskAnalysisCache extends AnalysisDataCache {
     constructor(uuid: string, statusCache: ComputerStatusCache) {
         super(uuid, 'disk', statusCache)
     }

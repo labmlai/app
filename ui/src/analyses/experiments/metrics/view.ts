@@ -1,6 +1,6 @@
 import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
-import CACHE, {RunStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import CACHE, {RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {Loader} from "../../../components/loader"
@@ -29,7 +29,7 @@ class MetricsView extends ScreenView {
     statusCache: RunStatusCache
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
-    analysisCache: AnalysisCache
+    analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
     loader: Loader
     refreshButton: RefreshButton

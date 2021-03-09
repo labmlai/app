@@ -1,11 +1,11 @@
-import CACHE, {ComputerStatusCache, RunStatusCache, AnalysisCache, AnalysisPreferenceCache} from "../cache/cache"
+import CACHE, {ComputerStatusCache, RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../cache/cache"
 import {ContentType} from '../types'
 
 
-export class AnalysisCache<TA extends AnalysisCache, TAP extends AnalysisPreferenceCache> {
+export class AnalysisCache<TA extends AnalysisDataCache, TAP extends AnalysisPreferenceCache> {
     private readonly type: ContentType
     private readonly series: new (uuid: string, status: RunStatusCache | ComputerStatusCache) => TA
-    private readonly seriesCaches: { [uuid: string]: AnalysisCache }
+    private readonly seriesCaches: { [uuid: string]: AnalysisDataCache }
     private readonly preferences: new (uuid: string) => TAP
     private readonly preferencesCaches: { [uuid: string]: AnalysisPreferenceCache }
 

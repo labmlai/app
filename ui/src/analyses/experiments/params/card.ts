@@ -1,7 +1,7 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {AnalysisDataModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {AnalysisCache} from "../../../cache/cache"
+import {AnalysisDataCache} from "../../../cache/cache"
 import {SimpleLinesChart} from "../../../components/charts/simple_lines/chart"
 import parametersCache from "./cache"
 import {Loader} from "../../../components/loader"
@@ -12,7 +12,7 @@ export class ParametersCard extends Card {
     uuid: string
     width: number
     analysisData: AnalysisDataModel
-    analysisCache: AnalysisCache
+    analysisCache: AnalysisDataCache
     elem: WeyaElement
     lineChartContainer: WeyaElement
     loader: Loader
