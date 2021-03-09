@@ -29,7 +29,7 @@ export default class ChartColors {
         }
 
         for (let n = 0; n < this.nColors; ++n) {
-            this.colors.push(this.colorScale(n / (this.nColors - 1)))
+            this.colors.push(this.colorScale(n / (this.nColors)))
         }
     }
 

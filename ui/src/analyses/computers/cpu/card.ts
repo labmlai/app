@@ -65,7 +65,8 @@ export class CPUCard extends Card {
                 width: this.width,
                 plotIdx: [],
                 yExtend: [0, 100],
-                chartHeightFraction: 4
+                chartHeightFraction: 4,
+                isDivergent: true
             }).render($)
         })
     }

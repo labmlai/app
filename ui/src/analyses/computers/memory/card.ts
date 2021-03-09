@@ -65,7 +65,8 @@ export class MemoryCard extends Card {
                 series: this.series,
                 width: this.width,
                 plotIdx: [0, 1],
-                chartHeightFraction: 4
+                chartHeightFraction: 4,
+                isDivergent: true
             }).render($)
         })
     }

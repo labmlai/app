@@ -70,7 +70,8 @@ export class GPUTempCard extends Card {
                 series: this.series,
                 width: this.width,
                 plotIdx: this.plotIdx,
-                chartHeightFraction: 4
+                chartHeightFraction: 4,
+                isDivergent: true
             }).render($)
         })
     }

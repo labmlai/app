@@ -72,7 +72,8 @@ export class GPUUtilCard extends Card {
                 width: this.width,
                 plotIdx: this.plotIdx,
                 yExtend: [0, 100],
-                chartHeightFraction: 4
+                chartHeightFraction: 4,
+                isDivergent: true
             }).render($)
         })
     }

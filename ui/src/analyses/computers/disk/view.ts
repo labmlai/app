@@ -196,7 +196,8 @@ class DiskView extends ScreenView {
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
                 onCursorMove: [this.sparkTimeLines.changeCursorValues],
-                isCursorMoveOpt: true
+                isCursorMoveOpt: true,
+                isDivergent: true
             }).render($)
         })
     }
@@ -208,7 +209,8 @@ class DiskView extends ScreenView {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
-                onSelect: this.toggleChart
+                onSelect: this.toggleChart,
+                isDivergent: true
             })
             this.sparkTimeLines.render($)
         })
