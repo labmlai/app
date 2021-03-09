@@ -6,6 +6,7 @@ export class Loader {
 
     constructor(isScreenLoader?: boolean) {
         this.isScreenLoader = isScreenLoader
+        this.elem = null
     }
 
     render($: WeyaElementFunction) {
@@ -28,7 +29,11 @@ export class Loader {
     }
 
     remove() {
+        if (this.elem == null) {
+            return
+        }
         this.elem.remove()
+        this.elem = null
     }
 }
 
