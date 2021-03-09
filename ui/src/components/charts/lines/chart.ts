@@ -9,7 +9,6 @@ import {formatStep} from "../../../utils/value"
 import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 
-
 interface LineChartOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
@@ -145,7 +144,7 @@ export class LineChart {
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        this.stepElement = $('h6', '.text-center.selected-step', '')
+                        // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
@@ -154,11 +153,14 @@ export class LineChart {
                                 new DefaultLineGradient().render($)
                                 new DropShadow().render($)
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
+                                $('g', {}, $ => {
+                                    this.stepElement = $('text', '.selected-step',
+                                        {transform: `translate(${(2 * this.margin + this.axisSize + this.chartWidth) / 2},${this.margin})`})
+                                })
                                 $('g',
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        // this.stepElement = $('text', '')
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
                                                 new LineFill({

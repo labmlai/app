@@ -511,6 +511,7 @@ span.fas {
 
 .selected-step {
   font-size: .7rem;
+  text-anchor: middle;
 }
 
 svg#chart {
@@ -698,10 +699,6 @@ button.sparkline-list-item {
   top: 0;
   background: inherit;
   z-index: 1000;
-}
-
-.selected-step {
-  font-size: .7rem;
 }
 
 /*Settings*/
