@@ -92,6 +92,58 @@ class DataLoader {
     }
 }
 
+class AwesomeRefreshButton {
+    private _refresh: () => Promise<void>;
+    private refreshTimeout: Timeout
+    private lastVisibilityChange: number;
+    private isActive: boolean
+
+    constructor(refresh: () => Promise<void>) {
+        this._refresh = refresh
+        this.refreshTimeout = null
+        this.isActive = false
+    }
+
+    start() {
+        if (this.isActive) {
+            throw "oops"
+        }
+        this.isActive = true
+        this.refreshTimeout = setTimeout(this.refresh, AUTO_REFRESH_TIME)
+    }
+
+    private refresh = async () => {
+        await this._refresh()
+        this.refreshTimeout = setTimeout(this.refresh, AUTO_REFRESH_TIME)
+    }
+
+    _stop() {
+        if (this.refreshTimeout != null) {
+            clearTimeout(this.refreshTimeout)
+            this.refreshTimeout = null
+        }
+    }
+    stop() {
+        this.isActive = false
+    }
+
+    changeVisibility(isVisible: boolean) {
+        let currentTime = Date.now()
+        if (!isVisible) {
+            this.lastVisibilityChange = currentTime
+            this._stop()
+            return
+        }
+
+        if (!this.isActive) {
+            return
+        }
+
+        this.refreshTimeout = setTimeout(this.refresh,
+            Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+    }
+}
+
 
 class GradientsView extends ScreenView {
     elem: WeyaElement
@@ -113,10 +165,10 @@ class GradientsView extends ScreenView {
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
-    autoRefresh: Timeout
     metricsView: HTMLDivElement
     lastVisibilityChange: number
     private loader: DataLoader;
+    private refresh: AwesomeRefreshButton;
 
     constructor(uuid: string) {
         super()
@@ -135,6 +187,8 @@ class GradientsView extends ScreenView {
             this.status = await this.statusCache.get()
             this.preferenceData = await this.preferenceCache.get()
         })
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
 
@@ -164,8 +218,8 @@ class GradientsView extends ScreenView {
 
         try {
             await this.loader.load()
-            if (this.status && this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+            if (this.status.isRunning) {
+                this.refresh.start()
             }
 
             this.loadPreferences()
@@ -176,7 +230,7 @@ class GradientsView extends ScreenView {
     }
 
     render(): WeyaElement {
-        this.elem = $('div', '.page',)
+        this.elem = $('div', '.page')
 
         this._render()
 
@@ -184,9 +238,7 @@ class GradientsView extends ScreenView {
     }
 
     destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
-        }
+        this.refresh.stop()
         if (this.runHeaderCard) {
             this.runHeaderCard.clearCounter()
         }
@@ -196,8 +248,8 @@ class GradientsView extends ScreenView {
         try {
             await this.loader.load()
             if (!this.status.isRunning) {
+                this.refresh.stop()
                 this.refreshButton.remove()
-                clearInterval(this.autoRefresh)
             }
 
             this.renderSparkLines()
@@ -209,18 +261,7 @@ class GradientsView extends ScreenView {
     }
 
     onVisibilityChange() {
-        let currentTime = Date.now()
-        if (document.hidden) {
-            this.lastVisibilityChange = currentTime
-            clearInterval(this.autoRefresh)
-        } else {
-            if (this.status?.isRunning) {
-                setTimeout(args => {
-                    this.onRefresh().then()
-                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
-            }
-        }
+        this.refresh.changeVisibility(!document.hidden)
     }
 
     renderGradients() {
