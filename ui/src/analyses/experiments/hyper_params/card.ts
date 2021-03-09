@@ -99,3 +99,4 @@ export class HyperParamsCard extends Card {
         ROUTER.navigate(`/run/${this.uuid}/hyper_params`)
     }
 }
+
