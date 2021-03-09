@@ -1,4 +1,4 @@
-import {Weya, Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
+import {Weya, Weya as $, WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
@@ -92,11 +92,13 @@ class DataLoader {
     }
 }
 
+
 class AwesomeRefreshButton {
     private _refresh: () => Promise<void>;
     private refreshTimeout: Timeout
     private lastVisibilityChange: number;
     private isActive: boolean
+    private refreshButton: HTMLElement;
 
     constructor(refresh: () => Promise<void>) {
         this._refresh = refresh
@@ -104,10 +106,24 @@ class AwesomeRefreshButton {
         this.isActive = false
     }
 
+    render($: WeyaElementFunction) {
+        this.refreshButton = $('nav', `.nav-link.tab.float-right`,
+            {on: {click: this.onRefreshClick.bind(this)}, style: {display: 'none'}},
+            $ => {
+                $('span.fas.fa-sync', '')
+            })
+    }
+
+    async onRefreshClick() {
+        this._stop()
+        await this.refresh()
+    }
+
     start() {
         if (this.isActive) {
             throw "oops"
         }
+        this.refreshButton.style.display = null
         this.isActive = true
         this.refreshTimeout = setTimeout(this.refresh, AUTO_REFRESH_TIME)
     }
@@ -123,8 +139,10 @@ class AwesomeRefreshButton {
             this.refreshTimeout = null
         }
     }
+
     stop() {
         this.isActive = false
+        this.refreshButton.style.display = 'none'
     }
 
     changeVisibility(isVisible: boolean) {
@@ -156,7 +174,6 @@ class GradientsView extends ScreenView {
     preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
-    refreshButton: RefreshButton
     runHeaderCard: RunHeaderCard
     sparkLines: SparkLines
     lineChartContainer: WeyaElement
@@ -210,7 +227,29 @@ class GradientsView extends ScreenView {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
-                    this.metricsView = $('div', '')
+                    this.metricsView = $('div', $ => {
+                        $('div.nav-container', $ => {
+                            new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                            this.saveButtonContainer = $('div')
+                            this.refresh.render($)
+                        })
+                        this.runHeaderCard = new RunHeaderCard({
+                            uuid: this.uuid,
+                            width: this.actualWidth
+                        })
+                        this.runHeaderCard.render($).then()
+                        new ToggleButton({
+                            onButtonClick: this.onChangeScale,
+                            text: 'Log',
+                            isToggled: this.currentChart > 0,
+                            parent: this.constructor.name
+                        }).render($)
+                        $('h2.header.text-center', 'Gradients - L2 Norm')
+                        $('div.detail-card', $ => {
+                            this.lineChartContainer = $('div.fixed-chart')
+                            this.sparkLinesContainer = $('div')
+                        })
+                    })
                 })
         })
 
@@ -222,8 +261,11 @@ class GradientsView extends ScreenView {
                 this.refresh.start()
             }
 
-            this.loadPreferences()
-            this.renderGradients()
+            this.calcPreferences()
+
+            this.renderSparkLines()
+            this.renderLineChart()
+            this.renderSaveButton()
         } catch (e) {
 
         }
@@ -239,9 +281,6 @@ class GradientsView extends ScreenView {
 
     destroy() {
         this.refresh.stop()
-        if (this.runHeaderCard) {
-            this.runHeaderCard.clearCounter()
-        }
     }
 
     async onRefresh() {
@@ -249,7 +288,6 @@ class GradientsView extends ScreenView {
             await this.loader.load()
             if (!this.status.isRunning) {
                 this.refresh.stop()
-                this.refreshButton.remove()
             }
 
             this.renderSparkLines()
@@ -262,44 +300,6 @@ class GradientsView extends ScreenView {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
-    }
-
-    renderGradients() {
-        this.metricsView.innerHTML = ''
-
-        $(this.metricsView, $ => {
-            $('div.nav-container', $ => {
-                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                this.saveButtonContainer = $('div')
-                if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({
-                        onButtonClick: this.onRefresh.bind(this),
-                        parent: this.constructor.name
-                    })
-                    this.refreshButton.render($)
-                }
-            })
-            this.runHeaderCard = new RunHeaderCard({
-                uuid: this.uuid,
-                width: this.actualWidth
-            })
-            this.runHeaderCard.render($).then()
-            new ToggleButton({
-                onButtonClick: this.onChangeScale,
-                text: 'Log',
-                isToggled: this.currentChart > 0,
-                parent: this.constructor.name
-            }).render($)
-            $('h2.header.text-center', 'Gradients - L2 Norm')
-            $('div.detail-card', $ => {
-                this.lineChartContainer = $('div.fixed-chart')
-                this.sparkLinesContainer = $('div')
-            })
-        })
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderSaveButton()
     }
 
     renderSaveButton() {
@@ -356,7 +356,7 @@ class GradientsView extends ScreenView {
         this.renderSaveButton()
     }
 
-    loadPreferences() {
+    private calcPreferences() {
         this.currentChart = this.preferenceData.chart_type
 
         let analysisPreferences = this.preferenceData.series_preferences
