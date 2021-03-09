@@ -3,6 +3,7 @@ import ChartColors from "./chart_colors"
 
 interface LabelsOptions {
     labels: string[]
+    isDivergent?: boolean
     chartColors?: ChartColors
 }
 
@@ -12,7 +13,10 @@ export class Labels {
 
     constructor(opt: LabelsOptions) {
         this.labels = opt.labels
-        this.chartColors = opt.chartColors ? opt.chartColors : new ChartColors({nColors: this.labels.length})
+        this.chartColors = opt.chartColors ? opt.chartColors : new ChartColors({
+            nColors: this.labels.length,
+            isDivergent: opt.isDivergent
+        })
     }
 
     render($: WeyaElementFunction) {

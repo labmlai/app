@@ -41,14 +41,14 @@ export class GPUUtilCard extends Card {
         this.elem.appendChild(this.loader.render($))
         try {
             this.series = getSeriesData((await this.analysisCache.get()).series, 'utilization')
-        }  catch (e) {
+        } catch (e) {
             // Let the parent view handle network failures
         }
         this.loader.remove()
 
         Weya(this.elem, $ => {
             this.lineChartContainer = $('div', '')
-            new Labels({labels: Array.from(this.series, x => x['name'])}).render($)
+            new Labels({labels: Array.from(this.series, x => x['name']), isDivergent: true}).render($)
         })
 
         if (this.series.length > 0) {
@@ -81,7 +81,7 @@ export class GPUUtilCard extends Card {
     async refresh() {
         try {
             this.series = getSeriesData((await this.analysisCache.get(true)).series, 'utilization')
-        }  catch (e) {
+        } catch (e) {
             // Let the parent view handle network failures
         }
 

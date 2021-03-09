@@ -48,7 +48,7 @@ export class MemoryCard extends Card {
 
         Weya(this.elem, $ => {
             this.lineChartContainer = $('div', '')
-            new Labels({labels: Array.from(this.series, x => x['name'])}).render($)
+            new Labels({labels: Array.from(this.series, x => x['name']), isDivergent: true}).render($)
         })
 
         if (this.series.length > 0) {
