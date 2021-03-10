@@ -107,11 +107,15 @@ class ComputersListView extends ScreenView {
 
     onDelete = async () => {
         try {
-            await this.computerListCache.deleteSessions(this.computersDeleteSet)
+            this.computerListCache.deleteSessions(this.computersDeleteSet).then()
         } catch (e) {
             handleNetworkError(e)
             return
         }
+
+        this.computersDeleteSet.clear()
+        this.deleteButton.disabled = this.computersDeleteSet.size === 0
+
         await this.renderList()
     }
 
