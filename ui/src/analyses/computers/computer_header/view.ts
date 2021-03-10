@@ -147,12 +147,12 @@ class ComputerHeaderView extends ScreenView {
     onDelete = async () => {
         if (confirm("Are you sure?")) {
             try {
-                await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+                await CACHE.getComputersList().deleteSessions(new Set<string>([this.uuid]))
             } catch (e) {
                 handleNetworkError(e)
                 return
             }
-            ROUTER.navigate('/runs')
+            ROUTER.navigate('/computers')
         }
     }
 
