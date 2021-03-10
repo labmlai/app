@@ -10,6 +10,7 @@ import {SettingsHandler} from './views/settings_view'
 
 import {computerAnalyses, experimentAnalyses} from "./analyses/analyses"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
+import {ComputerHeaderHandler} from "./analyses/computers/computer_header/view"
 import {ComputerHandler} from './views/computer_view'
 import {SENTRY_DSN} from './env'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
@@ -30,6 +31,7 @@ new ComputersListHandler()
 new SettingsHandler()
 
 new RunHeaderHandler()
+new ComputerHeaderHandler()
 
 ROUTER.route('', [() => {
     ROUTER.navigate('/runs')
