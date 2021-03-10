@@ -6,7 +6,7 @@ import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Computer} from '../../../models/computer'
 import {Loader} from '../../../components/loader'
-import Timeout = NodeJS.Timeout;
+import Timeout = NodeJS.Timeout
 import {ROUTER} from "../../../app"
 
 
@@ -24,7 +24,6 @@ export class ComputerHeaderCard {
     lastRecordedContainer: WeyaElement
     lastUpdatedContainer: WeyaElement
     statusViewContainer: WeyaElement
-    hiddenContainer: HTMLDivElement
     autoRefresh: Timeout
     loader: Loader
     statusCache: ComputerStatusCache
@@ -65,13 +64,6 @@ export class ComputerHeaderCard {
                     $('h3', `${this.computer.name}`)
                     $('h5', `${this.computer.comment}`)
                     this.lastUpdatedContainer = $('div')
-                    this.hiddenContainer = $('div', '.hide', $ => {
-                        $('div', '.run-uuid', $ => {
-                            $('span', '.heading', '📌 Session UUID:', {role: 'img', 'aria-label': 'running'})
-                            $('span', '', this.computer.session_uuid)
-                        })
-                        $('div', '.start-time', `Started ${formatTime(this.computer.start_time)}`)
-                    })
                 })
             })
         })
