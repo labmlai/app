@@ -54,6 +54,11 @@ class Network {
         return this.sendHttpRequest('GET', `/computer/${computer_uuid}`)
     }
 
+    async setComputer(run_uuid: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/computer/${run_uuid}`, data)
+    }
+
+
     async getRunStatus(run_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/status/${run_uuid}`)
     }

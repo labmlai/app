@@ -215,6 +215,10 @@ export class ComputerCache extends CacheObject<Computer> {
             return new Computer(res)
         })
     }
+
+    async setComputer(computer: Computer): Promise<void> {
+        await NETWORK.setComputer(this.uuid, computer)
+    }
 }
 
 export abstract class StatusCache extends CacheObject<Status> {
