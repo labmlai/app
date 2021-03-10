@@ -106,7 +106,7 @@ class RunsListView extends ScreenView {
 
     onDelete = async () => {
         try {
-            await this.runListCache.deleteRuns(this.runsDeleteSet)
+            this.runListCache.deleteRuns(this.runsDeleteSet).then()
         } catch (e) {
             handleNetworkError(e)
             return
