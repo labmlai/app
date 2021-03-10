@@ -186,6 +186,21 @@ def get_computer(session_uuid: str) -> flask.Response:
     return response
 
 
+def edit_computer(session_uuid: str) -> flask.Response:
+    c = computer.get_computer(session_uuid)
+    errors = []
+
+    if c:
+        data = request.json
+        c.edit_run(data)
+
+        logger.debug(f'edit computer: {c.key}')
+    else:
+        errors.append({'edit_computer': 'invalid computer uuid'})
+
+    return utils.format_rv({'errors': errors})
+
+
 @auth.login_required
 @auth.check_labml_token_permission
 @mix_panel.MixPanelEvent.time_this(None)
@@ -469,6 +484,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_computer, 'computer/<session_uuid>')
+    _add_ui(app, 'POST', edit_computer, 'computer/<session_uuid>')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_computer_status, 'computer/status/<session_uuid>')
 
