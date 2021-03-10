@@ -111,6 +111,10 @@ class RunsListView extends ScreenView {
             handleNetworkError(e)
             return
         }
+
+        this.runsDeleteSet.clear()
+        this.deleteButton.disabled = this.runsDeleteSet.size === 0
+
         await this.renderList()
     }
 
