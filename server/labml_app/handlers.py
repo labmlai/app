@@ -192,7 +192,7 @@ def edit_computer(session_uuid: str) -> flask.Response:
 
     if c:
         data = request.json
-        c.edit_run(data)
+        c.edit_computer(data)
 
         logger.debug(f'edit computer: {c.key}')
     else:
