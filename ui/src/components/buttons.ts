@@ -151,7 +151,7 @@ export class DeleteButton extends Button {
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}},
+            {on: {click: this.onClick}, style: {'color': '#FF0000'}},
             $ => {
                 $('span.fas.fa-trash', '')
             })
