@@ -3,7 +3,7 @@ import PyTorchCode from '../components/codes/pytorch'
 import KerasCode from '../components/codes/keras'
 import PyTorchLightningCode from '../components/codes/pytorch_lightning'
 
-export class EmptyRunsList {
+export default class EmptyRunsList {
     currentTab: string
     codeContainer: WeyaElement
 

@@ -9,7 +9,8 @@ import {ComputerListItemModel} from '../models/computer_list'
 import {ComputersListItemView} from '../components/computers_list_item'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect';
+import {handleNetworkError} from '../utils/redirect'
+import EmptyComputersList from "./empty_computers_list"
 
 
 class ComputersListView extends ScreenView {
@@ -150,19 +151,28 @@ class ComputersListView extends ScreenView {
             return
         }
 
-        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))
-
         this.loader.remove()
-        this.renderButtons()
 
+        if (this.currentComputersList.length > 0) {
+            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+            this.currentComputersList = this.currentComputersList.filter(computer => this.computersFilter(computer, re))
 
-        this.computersListContainer.innerHTML = ''
-        $(this.computersListContainer, $ => {
-            for (let i = 0; i < this.currentComputersList.length; i++) {
-                new ComputersListItemView({item: this.currentComputersList[i], onClick: this.onItemClicked}).render($)
-            }
-        })
+            this.renderButtons()
+
+            this.computersListContainer.innerHTML = ''
+            $(this.computersListContainer, $ => {
+                for (let i = 0; i < this.currentComputersList.length; i++) {
+                    new ComputersListItemView({
+                        item: this.currentComputersList[i],
+                        onClick: this.onItemClicked
+                    }).render($)
+                }
+            })
+        } else {
+            $(this.computersListContainer, $ => {
+                new EmptyComputersList().render($)
+            })
+        }
     }
 
 }

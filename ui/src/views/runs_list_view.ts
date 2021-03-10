@@ -10,7 +10,7 @@ import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../componen
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
-import {EmptyRunsList} from './empty_runs'
+import EmptyRunsList from './empty_runs_list'
 
 
 class RunsListView extends ScreenView {

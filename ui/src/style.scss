@@ -962,6 +962,11 @@ $keyFontSize: 0.8rem;
   margin-left: 40px;
 }
 
+.code-container {
+  display: flex;
+  justify-content: center;
+}
+
 .code-sample {
   box-shadow: 3px 3px 6px #666, -3px -3px 6px #999;
 
