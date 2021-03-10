@@ -9,7 +9,8 @@ import {SearchView} from '../components/search'
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect';
+import {handleNetworkError} from '../utils/redirect'
+import EmptyRunsList from './empty_runs_list'
 
 
 class RunsListView extends ScreenView {
@@ -149,19 +150,25 @@ class RunsListView extends ScreenView {
             return
         }
 
-        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
-
         this.loader.remove()
-        this.renderButtons()
 
+        if (this.currentRunsList.length > 0) {
+            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+            this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
 
-        this.runsListContainer.innerHTML = ''
-        $(this.runsListContainer, $ => {
-            for (let i = 0; i < this.currentRunsList.length; i++) {
-                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
-            }
-        })
+            this.renderButtons()
+
+            this.runsListContainer.innerHTML = ''
+            $(this.runsListContainer, $ => {
+                for (let i = 0; i < this.currentRunsList.length; i++) {
+                    new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+                }
+            })
+        } else {
+            $(this.runsListContainer, $ => {
+                new EmptyRunsList().render($)
+            })
+        }
     }
 
 }
