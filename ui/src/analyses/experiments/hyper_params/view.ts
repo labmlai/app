@@ -40,11 +40,9 @@ class HyperParamsView extends ScreenView {
     sparkLines: SparkLines
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
-    ButtonContainer: WeyaElement
+    SaveButtonContainer: WeyaElement
     refreshButton: RefreshButton
     saveButton: SaveButton
-    editButton: EditButton
-    cancelButton: CancelButton
     isEditMode: boolean
     actualWidth: number
     autoRefresh: Timeout
@@ -61,10 +59,6 @@ class HyperParamsView extends ScreenView {
 
         this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.onSave, parent: this.constructor.name})
-        this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
-        this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
-
-        this.isEditMode = false
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -91,6 +85,7 @@ class HyperParamsView extends ScreenView {
             this.loader.remove()
 
             if (this.status && this.status.isRunning) {
+                this.isEditMode = true
                 this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
@@ -138,7 +133,7 @@ class HyperParamsView extends ScreenView {
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()
-            this.editButton.remove()
+            this.isEditMode = false
             clearInterval(this.autoRefresh)
         }
 
@@ -168,7 +163,7 @@ class HyperParamsView extends ScreenView {
         $(this.hyperParamsView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                this.ButtonContainer = $('div')
+                this.SaveButtonContainer = $('div')
                 if (this.status && this.status.isRunning) {
                     this.refreshButton = new RefreshButton({
                         onButtonClick: this.onRefresh.bind(this),
@@ -191,35 +186,16 @@ class HyperParamsView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
-        this.renderButtons()
+        this.renderSaveButtons()
     }
 
-    renderButtons() {
-        this.ButtonContainer.innerHTML = ''
-        $(this.ButtonContainer, $ => {
+    renderSaveButtons() {
+        this.SaveButtonContainer.innerHTML = ''
+        $(this.SaveButtonContainer, $ => {
             if (this.status.isRunning) {
-                if (this.isEditMode) {
-                    this.cancelButton.render($)
-                    this.saveButton.render($)
-                } else {
-                    this.editButton.render($)
-                }
+                this.saveButton.render($)
             }
         })
-    }
-
-    onEdit = () => {
-        this.isEditMode = true
-        this.renderButtons()
-        this.renderSparkLines()
-        this.renderLineChart()
-    }
-
-    onCancel = () => {
-        this.isEditMode = false
-        this.renderButtons()
-        this.renderSparkLines()
-        this.renderLineChart()
     }
 
     onSave = () => {
@@ -227,7 +203,7 @@ class HyperParamsView extends ScreenView {
         this.runCache.setRun(this.run).then()
 
         this.isEditMode = false
-        this.renderButtons()
+        this.renderSaveButtons()
         this.renderSparkLines()
         this.renderLineChart()
     }

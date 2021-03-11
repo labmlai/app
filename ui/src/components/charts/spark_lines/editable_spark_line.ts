@@ -13,7 +13,8 @@ export class EditableSparkLine {
     titleWidth: number
     chartWidth: number
     valueElem: HTMLSpanElement
-    inputElem: HTMLInputElement
+    inputRangeElem: HTMLInputElement
+    inputValueElem: HTMLInputElement
 
     constructor(opt: EditableSparkLineOptions) {
         this.series = opt.series
@@ -25,46 +26,57 @@ export class EditableSparkLine {
 
     renderValue(value?: string) {
         if (value) {
-            this.valueElem.textContent = formatFixed(parseFloat(value), 6)
+            this.inputValueElem.value = formatFixed(parseFloat(value), 6)
         } else {
             const last = this.series[this.series.length - 1]
-            this.valueElem.textContent = formatFixed(last.smoothed, 6)
+            this.inputValueElem.value = formatFixed(last.smoothed, 6)
         }
     }
 
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item`, $ => {
             $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                this.inputElem = $('input', '.form-range', {
-                    type: "range",
-                    style: {width: `${this.chartWidth}px`, color: this.color},
+                $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
+                    $('span.input-content.float-left', {style: {width: `${this.titleWidth / 1.5}px`}}, $ => {
+                        this.inputValueElem = $('input', {style: {height: '36px', color: this.color}})
+                    })
                 })
-                this.valueElem = $('span', '.value', {
-                    style: {
-                        width: `${this.titleWidth}px`,
-                        color: this.color
-                    }
+                this.inputRangeElem = $('input', '.form-range', {
+                    type: "range",
+                    style: {width: `${this.chartWidth}px`},
                 })
             })
         })
 
-        this.inputElem.addEventListener('input', this.onSliderChange.bind(this))
+        this.inputRangeElem.addEventListener('input', this.onSliderChange.bind(this))
+        this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
         const last = this.series[this.series.length - 1]
-        this.inputElem.setAttribute("max", `${last.smoothed * 10}`)
-        this.inputElem.setAttribute("step", `${last.smoothed / 10}`)
-        this.inputElem.setAttribute("min", `${last.smoothed / 10}`)
-        this.inputElem.setAttribute("value", `${last.smoothed}`)
+        this.updateSliderConfig(last.smoothed)
 
         this.renderValue()
     }
 
+    updateSliderConfig(value: number) {
+        this.inputRangeElem.setAttribute("max", `${value * 10}`)
+        this.inputRangeElem.setAttribute("step", `${value / 10}`)
+        this.inputRangeElem.setAttribute("min", `${value / 10}`)
+        this.inputRangeElem.setAttribute("value", `${value}`)
+    }
+
     onSliderChange() {
-        this.renderValue(this.inputElem.value)
+        this.renderValue(this.inputRangeElem.value)
+    }
+
+    onInputChange() {
+        let number = Number(this.inputValueElem.value)
+        if (number) {
+            this.inputRangeElem.setAttribute("value", `${number}`)
+            this.updateSliderConfig(number)
+        }
     }
 
     getInput() {
-        return this.inputElem.value
+        return this.inputRangeElem.value
     }
 }
