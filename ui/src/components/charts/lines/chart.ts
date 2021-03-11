@@ -8,6 +8,7 @@ import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
 import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
+import {getWindowDimensions} from '../../../utils/window_dimentions'
 
 const LABEL_HEIGHT = 10
 
@@ -51,9 +52,10 @@ export class LineChart {
 
         this.axisSize = 30
         let windowWidth = opt.width
+        let windowHeight = getWindowDimensions().height
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
-        this.chartHeight = Math.round(this.chartWidth / 2)
+        this.chartHeight = Math.round(Math.min(this.chartWidth / 2, windowHeight / 2))
 
         if (this.plotIdx.length === 0) {
             this.plotIdx = defaultSeriesToPlot(this.series)
