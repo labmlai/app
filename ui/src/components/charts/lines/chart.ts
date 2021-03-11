@@ -55,7 +55,7 @@ export class LineChart {
         let windowHeight = getWindowDimensions().height
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
-        this.chartHeight = Math.round(Math.min(this.chartWidth / 2, windowHeight / 2))
+        this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
         if (this.plotIdx.length === 0) {
             this.plotIdx = defaultSeriesToPlot(this.series)
