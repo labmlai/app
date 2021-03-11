@@ -291,14 +291,14 @@ span.fas {
 
 /* alert message */
 .alert {
-  padding: 15px;
-  background-color: #f0ad4e;
-  color: white;
+  padding: 8px;
+  background-color: #ffa600;
+  opacity: 0.75;
+  text-align: center;
 }
 
 .close-btn {
   margin-left: 15px;
-  color: white;
   font-weight: bold;
   float: right;
   font-size: 22px;

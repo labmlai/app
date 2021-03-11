@@ -11,6 +11,7 @@ import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
 import EmptyRunsList from './empty_runs_list'
+import {AlertMessage} from '../components/alert'
 
 
 class RunsListView extends ScreenView {
@@ -21,6 +22,7 @@ class RunsListView extends ScreenView {
     loader: Loader
     searchQuery: string
     buttonContainer: WeyaElement
+    alertContainer: HTMLDivElement
     deleteButton: DeleteButton
     editButton: EditButton
     refreshButton: RefreshButton
@@ -48,6 +50,7 @@ class RunsListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
+            this.alertContainer = $('div')
             new HamburgerMenuView({
                 title: 'Runs',
                 setButtonContainer: container => this.buttonContainer = container
@@ -80,6 +83,13 @@ class RunsListView extends ScreenView {
         })
     }
 
+    renderAlertMessage() {
+        this.alertContainer.innerHTML = ''
+        $(this.alertContainer, $ => {
+            new AlertMessage({message: 'An unexpected network error occurred. Please try again later'}).render($)
+        })
+    }
+
     runsFilter = (run: RunListItemModel, query: RegExp) => {
         let name = run.name.toLowerCase()
         let comment = run.comment.toLowerCase()
@@ -105,12 +115,9 @@ class RunsListView extends ScreenView {
     }
 
     onDelete = async () => {
-        try {
-            this.runListCache.deleteRuns(this.runsDeleteSet).then()
-        } catch (e) {
-            handleNetworkError(e)
-            return
-        }
+        this.runListCache.deleteRuns(this.runsDeleteSet).catch(error => {
+            this.renderAlertMessage()
+        })
 
         this.runsDeleteSet.clear()
         this.deleteButton.disabled = this.runsDeleteSet.size === 0
