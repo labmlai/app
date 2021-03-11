@@ -3,6 +3,10 @@
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 
 /* App.css */
@@ -146,6 +150,13 @@ body {
 
 .btn-container > .btn {
   margin: 4px;
+}
+
+input, .item-value {
+  -webkit-touch-callout: default;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  user-select: auto;
 }
 
 
@@ -515,10 +526,6 @@ span.fas {
 }
 
 svg#chart {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
 
   g.bottom-axis, g.right-axis {
     color: #7f8c8d;
