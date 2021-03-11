@@ -16,7 +16,7 @@ import {ViewHandler} from "../../types"
 import {Loader} from "../../../components/loader";
 import Timeout = NodeJS.Timeout
 
-const AUTO_REFRESH_TIME = 2 * 60 * 1000
+const AUTO_REFRESH_TIME = 2 * 60
 
 export class ErrorMessage {
     elem: HTMLDivElement
@@ -100,7 +100,11 @@ class AwesomeRefreshButton {
     private refreshTimeout: Timeout
     private lastVisibilityChange: number;
     private isActive: boolean
+    private isRefreshing: boolean
     private refreshButton: HTMLElement;
+    private refreshIcon: HTMLSpanElement
+    private remainingTimeElem: HTMLSpanElement
+    private remainingTime: number
 
     constructor(refresh: () => Promise<void>) {
         this._refresh = refresh
@@ -109,16 +113,16 @@ class AwesomeRefreshButton {
     }
 
     render($: WeyaElementFunction) {
-        this.refreshButton = $('nav', `.nav-link.tab.float-right`,
+        this.refreshButton = $('nav', `.nav-link.tab.float-right.btn-refresh`,
             {on: {click: this.onRefreshClick.bind(this)}, style: {display: 'none'}},
             $ => {
-                $('span.fas.fa-sync', '')
+                this.refreshIcon = $('span', '.fas.fa-sync', '')
+                this.remainingTimeElem = $('span', '.time-remaining', '')
             })
     }
 
     async onRefreshClick() {
-        this._stop()
-        await this.refresh()
+        this.remainingTime = 0
     }
 
     start() {
@@ -127,12 +131,29 @@ class AwesomeRefreshButton {
         }
         this.refreshButton.style.display = null
         this.isActive = true
-        this.refreshTimeout = setTimeout(this.refresh, AUTO_REFRESH_TIME)
+        this.remainingTime = AUTO_REFRESH_TIME
+        this.refreshTimeout = setTimeout(this.procTimerUpdate.bind(this), 1000)
+    }
+
+    private procTimerUpdate = async () => {
+        if (this.remainingTime > 0) {
+            this.remainingTimeElem.innerText = String(this.remainingTime--)
+        } else {
+            this.remainingTimeElem.innerText = ''
+            await this.refresh()
+            this.remainingTime = AUTO_REFRESH_TIME
+        }
+        this.refreshTimeout = setTimeout(this.procTimerUpdate.bind(this), 1000)
     }
 
     private refresh = async () => {
-        await this._refresh()
-        this.refreshTimeout = setTimeout(this.refresh, AUTO_REFRESH_TIME)
+        if (!this.isRefreshing) {
+            this.isRefreshing = true
+            this.refreshIcon.classList.add('spin')
+            await this._refresh()
+            this.isRefreshing = false
+            this.refreshIcon.classList.remove('spin')
+        }
     }
 
     _stop() {
@@ -145,6 +166,7 @@ class AwesomeRefreshButton {
     stop() {
         this.isActive = false
         this.refreshButton.style.display = 'none'
+        this._stop()
     }
 
     changeVisibility(isVisible: boolean) {
@@ -159,8 +181,9 @@ class AwesomeRefreshButton {
             return
         }
 
-        this.refreshTimeout = setTimeout(this.refresh,
-            Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
+        this.remainingTime = Math.floor(Math.max(0, (this.lastVisibilityChange + this.remainingTime * 1000) - currentTime) / 1000)
+        this.refreshTimeout = setTimeout(this.procTimerUpdate.bind(this), 1000)
+
     }
 }
 

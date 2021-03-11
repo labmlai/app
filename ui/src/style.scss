@@ -153,6 +153,19 @@ body {
   margin: 4px;
 }
 
+.btn-refresh {
+  position: relative;
+
+  & > .time-remaining {
+    font-size: 0.5em;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+}
+
 
 /* Loader */
 
@@ -199,6 +212,11 @@ body {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.spin {
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
 }
 
 /* Hamburger Menu */
