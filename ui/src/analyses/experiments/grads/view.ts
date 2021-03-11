@@ -3,7 +3,7 @@ import {Status} from "../../../models/status"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
-import {BackButton, RefreshButton, SaveButton, ToggleButton} from "../../../components/buttons"
+import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import gradientsCache from "./cache"
 import {LineChart} from "../../../components/charts/lines/chart"
@@ -14,8 +14,7 @@ import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {Loader} from "../../../components/loader";
-import Timeout = NodeJS.Timeout;
-
+import Timeout = NodeJS.Timeout
 
 const AUTO_REFRESH_TIME = 2 * 60 * 1000
 
@@ -44,7 +43,6 @@ export class ErrorMessage {
     }
 }
 
-
 async function waitForFrame() {
     return new Promise<void>((resolve) => {
         window.requestAnimationFrame(() => {
@@ -54,26 +52,28 @@ async function waitForFrame() {
 }
 
 class DataLoader {
-    private _load: () => Promise<void>;
+    private _load: (force: boolean) => Promise<void>;
     private loaded: boolean;
     private loader: Loader;
     private elem: HTMLDivElement;
+    private dataContainer: HTMLDivElement;
     private errorMessage: ErrorMessage;
 
-    constructor(load: () => Promise<void>) {
+    constructor(load: (force: boolean) => Promise<void>) {
         this._load = load
         this.loaded = false
         this.loader = new Loader()
         this.errorMessage = new ErrorMessage()
     }
 
-    render(parent: HTMLElement) {
+    render(parent: HTMLElement, dataContainer: HTMLDivElement) {
+        this.dataContainer = dataContainer
         Weya(parent, $ => {
             this.elem = $('div', '.data-loader')
         })
     }
 
-    async load() {
+    async load(force: boolean = false) {
         this.errorMessage.remove()
         if (!this.loaded) {
             this.elem.appendChild(this.loader.render(Weya))
@@ -81,17 +81,19 @@ class DataLoader {
         }
 
         try {
-            await this._load()
+            await this._load(force)
             this.loaded = true
+            this.dataContainer.classList.remove('hide')
         } catch (e) {
+            this.loaded = false
             this.errorMessage.render(this.elem)
+            this.dataContainer.classList.add('hide')
             throw e
         } finally {
             this.loader.remove()
         }
     }
 }
-
 
 class AwesomeRefreshButton {
     private _refresh: () => Promise<void>;
@@ -162,7 +164,6 @@ class AwesomeRefreshButton {
     }
 }
 
-
 class GradientsView extends ScreenView {
     elem: WeyaElement
     uuid: string
@@ -176,6 +177,7 @@ class GradientsView extends ScreenView {
     preferenceCache: AnalysisPreferenceCache
     runHeaderCard: RunHeaderCard
     sparkLines: SparkLines
+    dataContainer: HTMLDivElement
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
     saveButtonContainer: WeyaElement
@@ -199,10 +201,10 @@ class GradientsView extends ScreenView {
         this.isUpdateDisable = true
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
-        this.loader = new DataLoader(async () => {
-            this.series = toPointValues((await this.analysisCache.get()).series)
-            this.status = await this.statusCache.get()
-            this.preferenceData = await this.preferenceCache.get()
+        this.loader = new DataLoader(async (force) => {
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.status = await this.statusCache.get(force)
+            this.preferenceData = await this.preferenceCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -218,7 +220,9 @@ class GradientsView extends ScreenView {
 
         this.actualWidth = Math.min(800, width)
 
-        this._render()
+        if (this.elem) {
+            this._render()
+        }
     }
 
     async _render() {
@@ -238,22 +242,24 @@ class GradientsView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
-                        new ToggleButton({
-                            onButtonClick: this.onChangeScale,
-                            text: 'Log',
-                            isToggled: this.currentChart > 0,
-                            parent: this.constructor.name
-                        }).render($)
-                        $('h2.header.text-center', 'Gradients - L2 Norm')
-                        $('div.detail-card', $ => {
-                            this.lineChartContainer = $('div.fixed-chart')
-                            this.sparkLinesContainer = $('div')
+                        this.dataContainer = $('div', $ => {
+                            new ToggleButton({
+                                onButtonClick: this.onChangeScale,
+                                text: 'Log',
+                                isToggled: this.currentChart > 0,
+                                parent: this.constructor.name
+                            }).render($)
+                            $('h2.header.text-center', 'Gradients - L2 Norm')
+                            $('div.detail-card', $ => {
+                                this.lineChartContainer = $('div.fixed-chart')
+                                this.sparkLinesContainer = $('div')
+                            })
                         })
                     })
                 })
         })
 
-        this.loader.render(this.metricsView)
+        this.loader.render(this.metricsView, this.dataContainer)
 
         try {
             await this.loader.load()
@@ -285,11 +291,12 @@ class GradientsView extends ScreenView {
 
     async onRefresh() {
         try {
-            await this.loader.load()
+            await this.loader.load(true)
             if (!this.status.isRunning) {
                 this.refresh.stop()
             }
 
+            this.calcPreferences()
             this.renderSparkLines()
             this.renderLineChart()
             this.runHeaderCard.refresh().then()

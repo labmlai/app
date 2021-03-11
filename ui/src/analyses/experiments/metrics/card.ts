@@ -10,7 +10,6 @@ import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
 
-
 export class ErrorMessage {
     elem: HTMLDivElement
 
@@ -45,26 +44,28 @@ async function waitForFrame() {
 }
 
 class DataLoader {
-    private _load: () => Promise<void>;
+    private _load: (force: boolean) => Promise<void>;
     private loaded: boolean;
     private loader: Loader;
     private elem: HTMLDivElement;
+    private dataContainer: HTMLDivElement
     private errorMessage: ErrorMessage;
 
-    constructor(load: () => Promise<void>) {
+    constructor(load: (force: boolean) => Promise<void>) {
         this._load = load
         this.loaded = false
         this.loader = new Loader()
         this.errorMessage = new ErrorMessage()
     }
 
-    render(parent: HTMLElement) {
+    render(parent: HTMLElement, dataContainer: HTMLDivElement) {
         Weya(parent, $ => {
             this.elem = $('div', '.data-loader')
         })
+        this.dataContainer = dataContainer
     }
 
-    async load() {
+    async load(force: boolean = false) {
         this.errorMessage.remove()
         if (!this.loaded) {
             this.elem.appendChild(this.loader.render(Weya))
@@ -72,10 +73,13 @@ class DataLoader {
         }
 
         try {
-            await this._load()
+            await this._load(force)
             this.loaded = true
+            this.dataContainer.classList.remove('hide')
         } catch (e) {
+            this.loaded = false
             this.errorMessage.render(this.elem)
+            this.dataContainer.classList.add('hide')
             throw e
         } finally {
             this.loader.remove()
@@ -92,10 +96,10 @@ export class MetricsCard extends Card {
     elem: HTMLDivElement
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
+    dataContainer: HTMLDivElement
     preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
     loader: DataLoader
-
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -104,9 +108,9 @@ export class MetricsCard extends Card {
         this.width = opt.width
         this.analysisCache = metricsCache.getAnalysis(this.uuid)
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
-        this.loader = new DataLoader(async () => {
-            this.series = toPointValues((await this.analysisCache.get()).series)
-            this.preferenceData = await this.preferenceCache.get()
+        this.loader = new DataLoader(async (force) => {
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.preferenceData = await this.preferenceCache.get(force)
         })
     }
 
@@ -117,9 +121,13 @@ export class MetricsCard extends Card {
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Metrics')
+            this.dataContainer = $('div', $ => {
+                this.lineChartContainer = $('div', '')
+                this.sparkLinesContainer = $('div', '')
+            })
         })
 
-        this.loader.render(this.elem)
+        this.loader.render(this.elem, this.dataContainer)
 
         try {
             await this.loader.load()
@@ -128,11 +136,6 @@ export class MetricsCard extends Card {
             if (analysisPreferences.length > 0) {
                 this.plotIdx = [...analysisPreferences]
             }
-
-            Weya(this.elem, $ => {
-                this.lineChartContainer = $('div', '')
-                this.sparkLinesContainer = $('div', '')
-            })
 
             if (this.series.length > 0) {
                 this.renderLineChart()
@@ -173,7 +176,7 @@ export class MetricsCard extends Card {
 
     async refresh() {
         try {
-            await this.loader.load()
+            await this.loader.load(true)
             if (this.series.length > 0) {
                 this.renderLineChart()
                 this.renderSparkLines()
