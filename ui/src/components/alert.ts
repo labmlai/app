@@ -2,7 +2,7 @@ import {WeyaElement, WeyaElementFunction} from '../../../lib/weya/weya'
 
 interface AlertMessageOptions {
     message: string,
-    onClickMessage: () => void
+    onClickMessage?: () => void
 }
 
 export class AlertMessage {
@@ -13,7 +13,6 @@ export class AlertMessage {
     constructor(opt: AlertMessageOptions) {
         this.message = opt.message
         this.onClickMessage = opt.onClickMessage
-
     }
 
     render($: WeyaElementFunction) {

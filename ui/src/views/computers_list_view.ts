@@ -11,6 +11,7 @@ import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
 import EmptyComputersList from "./empty_computers_list"
+import {AlertMessage} from "../components/alert"
 
 
 class ComputersListView extends ScreenView {
@@ -22,6 +23,7 @@ class ComputersListView extends ScreenView {
     loader: Loader
     searchQuery: string
     buttonContainer: HTMLDivElement
+    alertContainer: HTMLDivElement
     deleteButton: DeleteButton
     editButton: EditButton
     refreshButton: RefreshButton
@@ -49,6 +51,7 @@ class ComputersListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
+            this.alertContainer = $('div')
             new HamburgerMenuView({
                 title: 'Computers',
                 setButtonContainer: container => this.buttonContainer = container
@@ -81,6 +84,13 @@ class ComputersListView extends ScreenView {
         })
     }
 
+    renderAlertMessage() {
+        this.alertContainer.innerHTML = ''
+        $(this.alertContainer, $ => {
+            new AlertMessage({message: 'An unexpected network error occurred. Please try again later'}).render($)
+        })
+    }
+
     computersFilter = (computer: ComputerListItemModel, query: RegExp) => {
         let name = computer.name.toLowerCase()
         let comment = computer.comment.toLowerCase()
@@ -106,12 +116,13 @@ class ComputersListView extends ScreenView {
     }
 
     onDelete = async () => {
-        try {
-            await this.computerListCache.deleteSessions(this.computersDeleteSet)
-        } catch (e) {
-            handleNetworkError(e)
-            return
-        }
+        this.computerListCache.deleteSessions(this.computersDeleteSet).catch(error => {
+            this.renderAlertMessage()
+        })
+
+        this.computersDeleteSet.clear()
+        this.deleteButton.disabled = this.computersDeleteSet.size === 0
+
         await this.renderList()
     }
 
