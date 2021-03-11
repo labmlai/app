@@ -36,13 +36,9 @@ export class EditableSparkLine {
         $(`div.sparkline-list-item.list-group-item`, $ => {
             $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                 $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
-                    $('span.input-content', $ => {
-                        this.inputElem = $('input', '.form-range', {
-                            type: "range",
-                            style: {width: `${this.chartWidth}px`, color: this.color},
-                        })
-                    })
+                this.inputElem = $('input', '.form-range', {
+                    type: "range",
+                    style: {width: `${this.chartWidth}px`, color: this.color},
                 })
                 this.valueElem = $('span', '.value', {
                     style: {
