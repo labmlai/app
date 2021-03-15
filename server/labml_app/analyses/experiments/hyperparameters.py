@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from flask import make_response, request
 from labml_db import Model, Index
@@ -17,7 +17,15 @@ from ..preferences import Preferences
 
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
-    pass
+    hp_values: Dict[str, any]
+    hp_steps: List[int]
+
+    @classmethod
+    def defaults(cls):
+        return dict(
+            hp_values={},
+            hp_steps=[],
+        )
 
 
 @Analysis.db_model(PickleSerializer, 'hyperparams_preferences')
@@ -97,6 +105,21 @@ class HyperParamsAnalysis(Analysis):
             HyperParamsPreferencesIndex.delete(run_uuid)
             gp.delete()
 
+    def set_hyper_params(self, data: Dict[str, any]) -> None:
+        for k, v in data.items():
+            try:
+                value = float(v)
+                self.hyper_params.hp_values[k] = value
+            except ValueError:
+                logger.error(f'not a number : {v}')
+
+        self.hyper_params.hp_steps.append(self.hyper_params.step)
+
+        self.hyper_params.save()
+
+    def get_hyper_params(self):
+        return self.hyper_params.hp_values
+
 
 @mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'hyper_params/<run_uuid>')
@@ -144,3 +167,18 @@ def set_hyper_params_preferences(run_uuid: str) -> Any:
     logger.debug(f'update hyper_params preferences: {hpp.key}')
 
     return format_rv({'errors': hpp.errors})
+
+
+@Analysis.route('POST', 'hyper_params/<run_uuid>')
+def set_hyper_params(run_uuid: str) -> Any:
+    status_code = 404
+    ans = HyperParamsAnalysis.get_or_create(run_uuid)
+
+    if ans:
+        ans.set_hyper_params(request.json)
+        status_code = 200
+
+    response = make_response(format_rv({'errors': []}))
+    response.status_code = status_code
+
+    return response

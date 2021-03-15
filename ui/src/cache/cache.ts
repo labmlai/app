@@ -314,6 +314,10 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
 
         return this.data
     }
+
+    async setAnalysis(data: {}): Promise<void> {
+        await NETWORK.setAnalysis(this.url, this.uuid, data)
+    }
 }
 
 export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {

@@ -38,7 +38,7 @@ export class EditableSparkLine {
             $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                 $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
                     $('span.input-content.float-left', {style: {width: `${this.titleWidth / 1.5}px`}}, $ => {
-                        this.inputValueElem = $('input', {style: {height: '36px', color: this.color}})
+                        this.inputValueElem = $('input', {style: {height: '36px'}})
                     })
                 })
                 this.inputRangeElem = $('input', '.form-range', {

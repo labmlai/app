@@ -1,8 +1,12 @@
-from typing import Dict, List
+from typing import Dict
 
 from . import analysis
 from .series import SeriesModel
 from ..analyses_settings import experiment_analyses, computer_analyses
+
+EXPERIMENT_ANALYSES = {}
+for ans in experiment_analyses:
+    EXPERIMENT_ANALYSES[ans.__name__] = ans
 
 
 class AnalysisManager:
@@ -37,3 +41,10 @@ class AnalysisManager:
     @staticmethod
     def get_db_models():
         return analysis.DB_MODELS
+
+    @staticmethod
+    def get_analysis(name: str, run_uuid: str):
+        if name in EXPERIMENT_ANALYSES:
+            return EXPERIMENT_ANALYSES[name].get_or_create(run_uuid)
+
+        return None

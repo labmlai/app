@@ -1,12 +1,10 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {RunCache, RunStatusCache, AnalysisDataCache} from "../../../cache/cache"
+import CACHE, {RunStatusCache, AnalysisDataCache} from "../../../cache/cache"
 import {Run, SeriesModel} from "../../../models/run"
 import {Loader} from "../../../components/loader"
 import {
     BackButton,
-    CancelButton,
-    EditButton,
     RefreshButton,
     SaveButton
 } from "../../../components/buttons"
@@ -32,7 +30,6 @@ class HyperParamsView extends ScreenView {
     run: Run
     series: SeriesModel[]
     statusCache: RunStatusCache
-    runCache: RunCache
     analysisCache: AnalysisDataCache
     plotIdx: number[] = []
     loader: Loader
@@ -54,7 +51,6 @@ class HyperParamsView extends ScreenView {
 
         this.uuid = uuid
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.runCache = CACHE.getRun(this.uuid)
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
         this.loader = new Loader(true)
@@ -100,7 +96,6 @@ class HyperParamsView extends ScreenView {
         try {
             this.series = toPointValues((await this.analysisCache.get()).series)
             this.status = await this.statusCache.get()
-            this.run = await this.runCache.get()
 
             for (let i = 0; i < this.series.length; i++) {
                 this.plotIdx.push(i)
@@ -199,8 +194,8 @@ class HyperParamsView extends ScreenView {
     }
 
     onSave = () => {
-        this.run.dynamic = this.sparkLines.getSparkLinesValues()
-        this.runCache.setRun(this.run).then()
+        let data = this.sparkLines.getSparkLinesValues()
+        this.analysisCache.setAnalysis(data).then()
 
         this.isEditMode = false
         this.renderSaveButtons()
@@ -217,7 +212,7 @@ class HyperParamsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 chartType: 'linear',
                 onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: !this.isEditMode,
+                isCursorMoveOpt: true,
                 isDivergent: true
             }).render($)
         })
