@@ -18,13 +18,13 @@ from ..preferences import Preferences
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
     hp_values: Dict[str, any]
-    hp_steps: List[int]
+    hp_series: List[float]
 
     @classmethod
     def defaults(cls):
         return dict(
             hp_values={},
-            hp_steps=[],
+            hp_series=[],
         )
 
 
@@ -113,7 +113,7 @@ class HyperParamsAnalysis(Analysis):
             except ValueError:
                 logger.error(f'not a number : {v}')
 
-        self.hyper_params.hp_steps.append(self.hyper_params.step)
+        # self.hyper_params.hp_steps.append(self.hyper_params.step)
 
         self.hyper_params.save()
 

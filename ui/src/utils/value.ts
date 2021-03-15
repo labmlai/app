@@ -1,5 +1,6 @@
 import d3 from "../d3"
 import {WeyaElementFunction} from "../../../lib/weya/weya"
+import {type} from "os";
 
 const FORMAT = d3.format(".3s")
 
@@ -54,6 +55,7 @@ export class FormattedValue {
 
     constructor(opt: { value: any }) {
         this.value = opt.value
+        console.log(this.value instanceof Array)
     }
 
     render($: WeyaElementFunction) {
@@ -76,6 +78,14 @@ export class FormattedValue {
                 new FormattedValue({value: this.value[i]}).render($)
             }
             $('span.subtle', ']')
+        } else if (typeof this.value === 'object') {
+            $('span', '{ ')
+            for (const k in this.value) {
+                $('span.object-key', `${k}` + ': ')
+                $('span.object-value', `${this.value[k]}`)
+                $('span', ' ')
+            }
+            $('span', '}')
         } else {
             $('span.unknown', this.value)
         }

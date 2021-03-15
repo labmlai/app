@@ -845,6 +845,14 @@ $keyFontSize: 0.8rem;
       @include mono();
     }
 
+    .object-key {
+      color: greenyellow;
+    }
+
+    .object-value {
+      color: dodgerblue;
+    }
+
     .option {
       margin-right: 5px;
       @include mono();
