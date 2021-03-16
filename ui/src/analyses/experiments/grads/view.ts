@@ -17,7 +17,7 @@ import {DataLoader} from "../../../components/loader";
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 
 class GradientsView extends ScreenView {
-    elem: WeyaElement
+    elem: HTMLDivElement
     uuid: string
     status: Status
     plotIdx: number[] = []
@@ -29,15 +29,12 @@ class GradientsView extends ScreenView {
     preferenceCache: AnalysisPreferenceCache
     runHeaderCard: RunHeaderCard
     sparkLines: SparkLines
-    dataContainer: HTMLDivElement
-    lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
-    saveButtonContainer: WeyaElement
+    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
+    saveButtonContainer: HTMLDivElement
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
-    metricsView: HTMLDivElement
-    lastVisibilityChange: number
     private loader: DataLoader;
     private refresh: AwesomeRefreshButton;
 
@@ -73,7 +70,7 @@ class GradientsView extends ScreenView {
         this.actualWidth = Math.min(800, width)
 
         if (this.elem) {
-            this._render()
+            this._render().then()
         }
     }
 
@@ -83,8 +80,8 @@ class GradientsView extends ScreenView {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
-                    this.metricsView = $('div', $ => {
-                        $('div.nav-container', $ => {
+                    $('div', $ => {
+                        $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
                             this.saveButtonContainer = $('div')
                             this.refresh.render($)
@@ -93,20 +90,18 @@ class GradientsView extends ScreenView {
                             uuid: this.uuid,
                             width: this.actualWidth
                         })
-                        this.loader.render($)
                         this.runHeaderCard.render($).then()
-                        this.dataContainer = $('div', $ => {
-                            new ToggleButton({
-                                onButtonClick: this.onChangeScale,
-                                text: 'Log',
-                                isToggled: this.currentChart > 0,
-                                parent: this.constructor.name
-                            }).render($)
-                            $('h2.header.text-center', 'Gradients - L2 Norm')
-                            $('div.detail-card', $ => {
-                                this.lineChartContainer = $('div.fixed-chart')
-                                this.sparkLinesContainer = $('div')
-                            })
+                        new ToggleButton({
+                            onButtonClick: this.onChangeScale,
+                            text: 'Log',
+                            isToggled: this.currentChart > 0,
+                            parent: this.constructor.name
+                        }).render($)
+                        $('h2', '.header.text-center', 'Gradients - L2 Norm')
+                        this.loader.render($)
+                        $('div', '.detail-card', $ => {
+                            this.lineChartContainer = $('div', '.fixed-chart')
+                            this.sparkLinesContainer = $('div')
                         })
                     })
                 })
@@ -130,9 +125,9 @@ class GradientsView extends ScreenView {
     }
 
     render(): WeyaElement {
-        this.elem = $('div', '.page')
+        this.elem = $('div')
 
-        this._render()
+        this._render().then()
 
         return this.elem
     }
