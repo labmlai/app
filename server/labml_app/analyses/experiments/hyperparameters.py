@@ -64,19 +64,17 @@ class HyperParamsAnalysis(Analysis):
             name = ind.split('.')
 
             s = Series().load(track)
-            series: Dict[str, Any] = s.detail
+            series: Dict[str, Any] = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
             name = ''.join(name[-1])
             series['name'] = name
-
             res.append(series)
 
             self.update_hp_series(name)
-
             s = Series().load(self.hyper_params.hp_series[name])
-            series = s.detail
-            series['name'] = '@input' + name
+            series = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
 
             if series['step']:
+                series['name'] = '@input' + name
                 res.append(series)
 
         res.sort(key=lambda s: s['name'])
