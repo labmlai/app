@@ -222,17 +222,6 @@ class Run(Model['Run']):
 
         self.save()
 
-    def edit_hyper_params(self, data: Dict[str, any]) -> None:
-        for k, v in data.items():
-            if k in self.dynamic and v:
-                try:
-                    value = float(v)
-                    self.dynamic[k] = value
-                except ValueError:
-                    logger.error(f'not a number : {v}, run_uuid: {self.run_uuid}')
-
-        self.save()
-
 
 class RunIndex(Index['Run']):
     pass
