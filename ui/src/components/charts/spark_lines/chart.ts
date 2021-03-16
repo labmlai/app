@@ -71,6 +71,12 @@ export class SparkLines {
         for (let sparkLine of this.sparkLines) {
             sparkLine.changeCursorValue(cursorStep)
         }
+
+        if (this.isEditable) {
+            for (let sparkLine of this.editableSparkLines) {
+                sparkLine.changeCursorValue(cursorStep)
+            }
+        }
     }
 
     getSparkLinesValues() {
@@ -89,22 +95,7 @@ export class SparkLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                let sparkLine = new SparkLine({
-                    name: s.name,
-                    series: s.series,
-                    selected: this.plotIdx[i],
-                    stepExtent: this.stepExtent,
-                    width: this.rowWidth,
-                    onClick: onClick,
-                    minLastValue: this.minLastValue,
-                    maxLastValue: this.maxLastValue,
-                    color: this.chartColors.getColor(this.colorIndices[i]),
-                    isMouseMoveOpt: this.isMouseMoveOpt
-                })
-                this.sparkLines.push(sparkLine)
-                sparkLine.render($)
-
-                if (this.isEditable && this.plotIdx[i] >= 0) {
+                if (this.isEditable) {
                     let editableSparkLine = new EditableSparkLine({
                         name: s.name,
                         series: s.series,
@@ -115,9 +106,25 @@ export class SparkLines {
                         minLastValue: this.minLastValue,
                         maxLastValue: this.maxLastValue,
                         color: this.chartColors.getColor(this.colorIndices[i]),
+                        isMouseMoveOpt: this.isMouseMoveOpt
                     })
                     this.editableSparkLines.push(editableSparkLine)
                     editableSparkLine.render($)
+                } else {
+                    let sparkLine = new SparkLine({
+                        name: s.name,
+                        series: s.series,
+                        selected: this.plotIdx[i],
+                        stepExtent: this.stepExtent,
+                        width: this.rowWidth,
+                        onClick: onClick,
+                        minLastValue: this.minLastValue,
+                        maxLastValue: this.maxLastValue,
+                        color: this.chartColors.getColor(this.colorIndices[i]),
+                        isMouseMoveOpt: this.isMouseMoveOpt
+                    })
+                    this.sparkLines.push(sparkLine)
+                    sparkLine.render($)
                 }
             })
         })

@@ -240,7 +240,6 @@ class HyperParamsView extends ScreenView {
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
                 onSelect: this.toggleChart,
-                isMouseMoveOpt: !this.isEditMode,
                 isDivergent: true
             })
             this.sparkLines.render($)
