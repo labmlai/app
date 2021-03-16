@@ -141,8 +141,8 @@ body {
 }
 
 .btn, .tab, .list-item, .labml-card {
-  transition: all 0.1s;
-  transition-delay: 150ms;
+  transition: all 10ms;
+  transition-delay: 10ms;
 
   &:active, &.selected {
     transition: none;

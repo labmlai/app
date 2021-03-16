@@ -1,4 +1,4 @@
-import {Weya, Weya as $, WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
+import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
@@ -13,179 +13,8 @@ import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
-import {Loader} from "../../../components/loader";
-import Timeout = NodeJS.Timeout
-
-const AUTO_REFRESH_TIME = 2 * 60
-
-export class ErrorMessage {
-    elem: HTMLDivElement
-
-    constructor() {
-        this.elem = null
-    }
-
-    render(parent: HTMLDivElement) {
-        Weya(parent, $ => {
-            this.elem = $('div', '.error.text-center.warning', $ => {
-                $('span', '.fas.fa-exclamation-triangle', '')
-                $('h4', '.text-uppercase', 'Network error')
-            })
-        })
-    }
-
-    remove() {
-        if (this.elem == null) {
-            return
-        }
-        this.elem.remove()
-        this.elem = null
-    }
-}
-
-async function waitForFrame() {
-    return new Promise<void>((resolve) => {
-        window.requestAnimationFrame(() => {
-            resolve()
-        })
-    })
-}
-
-class DataLoader {
-    private _load: (force: boolean) => Promise<void>;
-    private loaded: boolean;
-    private loader: Loader;
-    private elem: HTMLDivElement;
-    private dataContainer: HTMLDivElement;
-    private errorMessage: ErrorMessage;
-
-    constructor(load: (force: boolean) => Promise<void>) {
-        this._load = load
-        this.loaded = false
-        this.loader = new Loader()
-        this.errorMessage = new ErrorMessage()
-    }
-
-    render(parent: HTMLElement, dataContainer: HTMLDivElement) {
-        this.dataContainer = dataContainer
-        Weya(parent, $ => {
-            this.elem = $('div', '.data-loader')
-        })
-    }
-
-    async load(force: boolean = false) {
-        this.errorMessage.remove()
-        if (!this.loaded) {
-            this.elem.appendChild(this.loader.render(Weya))
-            await waitForFrame()
-        }
-
-        try {
-            await this._load(force)
-            this.loaded = true
-            this.dataContainer.classList.remove('hide')
-        } catch (e) {
-            this.loaded = false
-            this.errorMessage.render(this.elem)
-            this.dataContainer.classList.add('hide')
-            throw e
-        } finally {
-            this.loader.remove()
-        }
-    }
-}
-
-class AwesomeRefreshButton {
-    private _refresh: () => Promise<void>;
-    private refreshTimeout: Timeout
-    private lastVisibilityChange: number;
-    private isActive: boolean
-    private isRefreshing: boolean
-    private refreshButton: HTMLElement;
-    private refreshIcon: HTMLSpanElement
-    private remainingTimeElem: HTMLSpanElement
-    private remainingTime: number
-
-    constructor(refresh: () => Promise<void>) {
-        this._refresh = refresh
-        this.refreshTimeout = null
-        this.isActive = false
-    }
-
-    render($: WeyaElementFunction) {
-        this.refreshButton = $('nav', `.nav-link.tab.float-right.btn-refresh`,
-            {on: {click: this.onRefreshClick.bind(this)}, style: {display: 'none'}},
-            $ => {
-                this.refreshIcon = $('span', '.fas.fa-sync', '')
-                this.remainingTimeElem = $('span', '.time-remaining', '')
-            })
-    }
-
-    async onRefreshClick() {
-        this.remainingTime = 0
-    }
-
-    start() {
-        if (this.isActive) {
-            throw "oops"
-        }
-        this.refreshButton.style.display = null
-        this.isActive = true
-        this.remainingTime = AUTO_REFRESH_TIME
-        this.refreshTimeout = setTimeout(this.procTimerUpdate.bind(this), 1000)
-    }
-
-    private procTimerUpdate = async () => {
-        if (this.remainingTime > 0) {
-            this.remainingTimeElem.innerText = String(this.remainingTime--)
-        } else {
-            this.remainingTimeElem.innerText = ''
-            await this.refresh()
-            this.remainingTime = AUTO_REFRESH_TIME
-        }
-        this.refreshTimeout = setTimeout(this.procTimerUpdate.bind(this), 1000)
-    }
-
-    private refresh = async () => {
-        if (!this.isRefreshing) {
-            this.isRefreshing = true
-            this.refreshIcon.classList.add('spin')
-            await this._refresh()
-            this.isRefreshing = false
-            this.refreshIcon.classList.remove('spin')
-        }
-    }
-
-    _stop() {
-        if (this.refreshTimeout != null) {
-            clearTimeout(this.refreshTimeout)
-            this.refreshTimeout = null
-        }
-    }
-
-    stop() {
-        this.isActive = false
-        this.refreshButton.style.display = 'none'
-        this._stop()
-    }
-
-    changeVisibility(isVisible: boolean) {
-        let currentTime = Date.now()
-        if (!isVisible) {
-            this.lastVisibilityChange = currentTime
-            this._stop()
-            return
-        }
-
-        if (!this.isActive) {
-            return
-        }
-
-        this.remainingTime = Math.floor(Math.max(0, (this.lastVisibilityChange + this.remainingTime * 1000) - currentTime) / 1000)
-        this.refreshTimeout = setTimeout(this.procTimerUpdate.bind(this), 1000)
-
-    }
-}
+import {DataLoader} from "../../../components/loader";
+import {AwesomeRefreshButton} from '../../../components/refresh_button'
 
 class GradientsView extends ScreenView {
     elem: WeyaElement
@@ -225,8 +54,8 @@ class GradientsView extends ScreenView {
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.status = await this.statusCache.get(force)
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -264,6 +93,7 @@ class GradientsView extends ScreenView {
                             uuid: this.uuid,
                             width: this.actualWidth
                         })
+                        this.loader.render($)
                         this.runHeaderCard.render($).then()
                         this.dataContainer = $('div', $ => {
                             new ToggleButton({
@@ -282,13 +112,8 @@ class GradientsView extends ScreenView {
                 })
         })
 
-        this.loader.render(this.metricsView, this.dataContainer)
-
         try {
             await this.loader.load()
-            if (this.status.isRunning) {
-                this.refresh.start()
-            }
 
             this.calcPreferences()
 
@@ -297,6 +122,10 @@ class GradientsView extends ScreenView {
             this.renderSaveButton()
         } catch (e) {
 
+        } finally {
+            if (this.status.isRunning) {
+                this.refresh.start()
+            }
         }
     }
 
@@ -315,16 +144,17 @@ class GradientsView extends ScreenView {
     async onRefresh() {
         try {
             await this.loader.load(true)
-            if (!this.status.isRunning) {
-                this.refresh.stop()
-            }
 
             this.calcPreferences()
             this.renderSparkLines()
             this.renderLineChart()
-            this.runHeaderCard.refresh().then()
         } catch (e) {
 
+        } finally {
+            if (!this.status.isRunning) {
+                this.refresh.stop()
+            }
+            this.runHeaderCard.refresh().then()
         }
     }
 

@@ -7,85 +7,8 @@ import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
-
-export class ErrorMessage {
-    elem: HTMLDivElement
-
-    constructor() {
-        this.elem = null
-    }
-
-    render(parent: HTMLDivElement) {
-        Weya(parent, $ => {
-            this.elem = $('div', '.error.text-center.warning', $ => {
-                $('span', '.fas.fa-exclamation-triangle', '')
-                $('h4', '.text-uppercase', 'Failed to load data')
-            })
-        })
-    }
-
-    remove() {
-        if (this.elem == null) {
-            return
-        }
-        this.elem.remove()
-        this.elem = null
-    }
-}
-
-async function waitForFrame() {
-    return new Promise<void>((resolve) => {
-        window.requestAnimationFrame(() => {
-            resolve()
-        })
-    })
-}
-
-class DataLoader {
-    private _load: (force: boolean) => Promise<void>;
-    private loaded: boolean;
-    private loader: Loader;
-    private elem: HTMLDivElement;
-    private dataContainer: HTMLDivElement
-    private errorMessage: ErrorMessage;
-
-    constructor(load: (force: boolean) => Promise<void>) {
-        this._load = load
-        this.loaded = false
-        this.loader = new Loader()
-        this.errorMessage = new ErrorMessage()
-    }
-
-    render(parent: HTMLElement, dataContainer: HTMLDivElement) {
-        Weya(parent, $ => {
-            this.elem = $('div', '.data-loader')
-        })
-        this.dataContainer = dataContainer
-    }
-
-    async load(force: boolean = false) {
-        this.errorMessage.remove()
-        if (!this.loaded) {
-            this.elem.appendChild(this.loader.render(Weya))
-            await waitForFrame()
-        }
-
-        try {
-            await this._load(force)
-            this.loaded = true
-            this.dataContainer.classList.remove('hide')
-        } catch (e) {
-            this.loaded = false
-            this.errorMessage.render(this.elem)
-            this.dataContainer.classList.add('hide')
-            throw e
-        } finally {
-            this.loader.remove()
-        }
-    }
-}
+import {DataLoader} from '../../../components/loader'
 
 export class MetricsCard extends Card {
     uuid: string
@@ -96,7 +19,6 @@ export class MetricsCard extends Card {
     elem: HTMLDivElement
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
-    dataContainer: HTMLDivElement
     preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
     loader: DataLoader
@@ -121,13 +43,11 @@ export class MetricsCard extends Card {
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Metrics')
-            this.dataContainer = $('div', $ => {
-                this.lineChartContainer = $('div', '')
-                this.sparkLinesContainer = $('div', '')
-            })
-        })
+            this.loader.render($)
+            this.lineChartContainer = $('div', '')
+            this.sparkLinesContainer = $('div', '')
 
-        this.loader.render(this.elem, this.dataContainer)
+        })
 
         try {
             await this.loader.load()
