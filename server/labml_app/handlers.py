@@ -289,6 +289,7 @@ def update_run() -> flask.Response:
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     hp_values = AnalysisManager.get_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
+
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
 

@@ -10,7 +10,7 @@ import {
 } from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
-import {LineChart} from "../../../components/charts/lines/chart"
+import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
@@ -28,7 +28,8 @@ class HyperParamsView extends ScreenView {
     uuid: string
     status: Status
     run: Run
-    series: SeriesModel[]
+    primeSeries: SeriesModel[]
+    minorSeries: SeriesModel[]
     statusCache: RunStatusCache
     analysisCache: AnalysisDataCache
     plotIdx: number[] = []
@@ -94,10 +95,10 @@ class HyperParamsView extends ScreenView {
 
     async loadData() {
         try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
             this.status = await this.statusCache.get()
 
-            for (let i = 0; i < this.series.length; i++) {
+            for (let i = 0; i < this.primeSeries.length; i++) {
                 this.plotIdx.push(i)
             }
         } catch (e) {
@@ -105,6 +106,22 @@ class HyperParamsView extends ScreenView {
             handleNetworkError(e)
             return
         }
+    }
+
+    filterSeries(series: SeriesModel[]) {
+        let primeSeries: SeriesModel[] = []
+        let minorSeries: SeriesModel[] = []
+
+        for (let s of series) {
+            if (s.name.includes('@input')) {
+                minorSeries.push(s)
+            } else {
+                primeSeries.push(s)
+            }
+        }
+
+        this.minorSeries = minorSeries
+        this.primeSeries = primeSeries
     }
 
     destroy() {
@@ -118,7 +135,7 @@ class HyperParamsView extends ScreenView {
 
     async onRefresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
             this.status = await this.statusCache.get(true)
         } catch (e) {
             //TODO: redirect after multiple refresh failures
@@ -203,14 +220,13 @@ class HyperParamsView extends ScreenView {
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.series,
+            new CustomLineChart({
+                primeSeries: this.primeSeries,
+                minotSeries : this.minorSeries,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: 'linear',
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
-                isDivergent: true
             }).render($)
         })
     }
@@ -219,7 +235,7 @@ class HyperParamsView extends ScreenView {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
             this.sparkLines = new SparkLines({
-                series: this.series,
+                series: this.primeSeries,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
