@@ -55,7 +55,6 @@ export class FormattedValue {
 
     constructor(opt: { value: any }) {
         this.value = opt.value
-        console.log(this.value instanceof Array)
     }
 
     render($: WeyaElementFunction) {
