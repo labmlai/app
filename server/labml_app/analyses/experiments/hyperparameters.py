@@ -18,13 +18,13 @@ from ..preferences import Preferences
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
     hp_values: Dict[str, any]
-    hp_series: List[float]
+    hp_series: Dict[str, SeriesModel]
 
     @classmethod
     def defaults(cls):
         return dict(
             hp_values={},
-            hp_series=[],
+            hp_series={},
         )
 
 
@@ -65,7 +65,17 @@ class HyperParamsAnalysis(Analysis):
 
             s = Series().load(track)
             series: Dict[str, Any] = s.detail
-            series['name'] = ''.join(name[-1])
+            name = ''.join(name[-1])
+            series['name'] = name
+
+            res.append(series)
+
+            self.update_hp_series(name)
+            self.hyper_params.save()
+
+            s = Series().load(self.hyper_params.hp_series[name])
+            series = s.detail
+            series['name'] = 'test' + name
 
             res.append(series)
 
@@ -110,12 +120,42 @@ class HyperParamsAnalysis(Analysis):
             try:
                 value = float(v)
                 self.hyper_params.hp_values[k] = value
+                self.update_hp_series(k, {'step': [self.hyper_params.step], 'value': [value]})
             except ValueError:
                 logger.error(f'not a number : {v}')
 
-        # self.hyper_params.hp_steps.append(self.hyper_params.step)
-
         self.hyper_params.save()
+
+    @staticmethod
+    def get_series_gap(step: List[int], value: List[float], current_step: int):
+        steps, values = [], []
+        if step:
+            last_step = step[-1]
+            last_value = value[-1]
+
+            steps = list(range(int(last_step) + 1, int(current_step) + 1))
+            print(steps)
+            values = [last_value] * len(steps)
+            print(values)
+
+        return steps, values
+
+    def update_hp_series(self, ind: str, series: SeriesModel = None) -> None:
+        hp_series = self.hyper_params.hp_series
+        if ind not in hp_series:
+            hp_series[ind] = Series().to_data()
+
+        s = Series().load(hp_series[ind])
+
+        if series:
+            steps, values = self.get_series_gap(s.step, s.value, self.hyper_params.step - 1)
+            s.update(steps + series['step'], values + series['value'])
+        else:
+            steps, values = self.get_series_gap(s.step, s.value, self.hyper_params.step)
+            if steps:
+                s.update(steps, values)
+        print(len(s.to_data()['step']))
+        hp_series[ind] = s.to_data()
 
     def get_hyper_params(self):
         return self.hyper_params.hp_values
