@@ -64,7 +64,7 @@ class StdErrorView extends ScreenView {
                 $('div', $ => {
                     $('div', '.nav-container', $ => {
                         new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                        this.loader.render($)
+                        this.refresh.render($)
                     })
                     this.runHeaderCard = new RunHeaderCard({
                         uuid: this.uuid,
@@ -101,6 +101,9 @@ class StdErrorView extends ScreenView {
 
     destroy() {
         this.refresh.stop()
+        if (this.runHeaderCard) {
+            this.runHeaderCard.clearCounter()
+        }
     }
 
     async onRefresh() {

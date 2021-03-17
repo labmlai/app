@@ -1,4 +1,4 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
@@ -21,7 +21,7 @@ export class MetricsCard extends Card {
     sparkLinesContainer: WeyaElement
     preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
-    loader: DataLoader
+    private loader: DataLoader
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -69,7 +69,7 @@ export class MetricsCard extends Card {
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
-        Weya(this.lineChartContainer, $ => {
+        $(this.lineChartContainer, $ => {
             new LineChart({
                 series: this.series,
                 width: this.width,
@@ -83,7 +83,7 @@ export class MetricsCard extends Card {
 
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
-        Weya(this.sparkLinesContainer, $ => {
+        $(this.sparkLinesContainer, $ => {
             new SparkLines({
                 series: this.series,
                 plotIdx: this.plotIdx,

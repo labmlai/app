@@ -1,20 +1,19 @@
-import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import {Configs} from "./components"
 import {ROUTER} from '../../../app'
-
 
 export class ConfigsCard extends Card {
     run: Run
     uuid: string
     width: number
     runCache: RunCache
-    elem: WeyaElement
-    configsContainer: WeyaElement
-    loader: Loader
+    elem: HTMLDivElement
+    configsContainer: HTMLDivElement
+    private loader: DataLoader
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -22,7 +21,9 @@ export class ConfigsCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.runCache = CACHE.getRun(this.uuid)
-        this.loader = new Loader()
+        this.loader = new DataLoader(async (force) => {
+            this.run = await this.runCache.get(force)
+        })
     }
 
     getLastUpdated(): number {
@@ -30,45 +31,40 @@ export class ConfigsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Configurations')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.run = await this.runCache.get()
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        Weya(this.elem, $ => {
+        this.elem = $('div','.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3','.header', 'Configurations')
+            this.loader.render($)
             this.configsContainer = $('div')
         })
 
-        if (this.run.configs.length > 0) {
-            this.renderConfigs()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            if (this.run.configs.length > 0) {
+                this.renderConfigs()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
+
         }
     }
 
     async refresh() {
         try {
-            this.run = await this.runCache.get(true)
+            await this.loader.load(true)
+            if (this.run.configs.length > 0) {
+                this.renderConfigs()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
 
-        if (this.run.configs.length > 0) {
-            this.renderConfigs()
-            this.elem.classList.remove('hide')
         }
     }
 
     renderConfigs() {
         this.configsContainer.innerHTML = ''
-        Weya(this.configsContainer, $ => {
+        $(this.configsContainer, $ => {
             new Configs({configs: this.run.configs, width: this.width, isHyperParamOnly: true}).render($)
         })
     }

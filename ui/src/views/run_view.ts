@@ -4,8 +4,8 @@ import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
-import {Loader} from "../components/loader"
-import {BackButton, DeleteButton, RefreshButton} from "../components/buttons"
+import {DataLoader} from "../components/loader"
+import {BackButton, DeleteButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -13,10 +13,7 @@ import {Card} from "../analyses/types"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
-import Timeout = NodeJS.Timeout
-
-
-const AUTO_REFRESH_TIME = 2 * 60 * 1000
+import {AwesomeRefreshButton} from '../components/refresh_button'
 
 class RunView extends ScreenView {
     uuid: string
@@ -29,13 +26,13 @@ class RunView extends ScreenView {
     actualWidth: number
     elem: WeyaElement
     runHeaderCard: RunHeaderCard
-    runView: HTMLDivElement
-    autoRefresh: Timeout
-    loader: Loader
-    refreshButton: RefreshButton
     cards: Card[] = []
     lastUpdated: number
-    lastVisibilityChange: number
+    private cardContainer: HTMLDivElement
+    private deleteButton: DeleteButton
+    private alertMessage: AlertMessage
+    private loader: DataLoader;
+    private refresh: AwesomeRefreshButton;
 
     constructor(uuid: string) {
         super()
@@ -44,7 +41,18 @@ class RunView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
-        this.loader = new Loader(true)
+        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
+        this.alertMessage = new AlertMessage({
+            message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
+            onClickMessage: this.onMessageClick.bind(this)
+        })
+
+        this.loader = new DataLoader(async (force) => {
+            this.status = await this.statusCache.get(force)
+            this.run = await this.runCache.get(force)
+            this.isUserLogged = await this.isUserLoggedCache.get(force)
+        })
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Run View', {uuid: this.uuid})
     }
@@ -57,45 +65,75 @@ class RunView extends ScreenView {
         super.onResize(width)
 
         this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
     }
 
-    render() {
-        this.elem = <HTMLElement>$('div.run.page',
-            {style: {width: `${this.actualWidth}px`}}, $ => {
-                this.runView = <HTMLDivElement>$('div', '')
-                this.loader.render($)
-            })
-
-        this.loadData().then(() => {
-            if (this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-            }
-
-            this.renderRun().then()
-        }).catch(() => {
+    async _render() {
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', '.run.page',
+                {style: {width: `${this.actualWidth}px`}}, $ => {
+                    $('div', $ => {
+                        this.alertMessage.render($)
+                        this.alertMessage.hideMessage(true)
+                        $('div.nav-container', $ => {
+                            new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
+                            this.deleteButton.render($)
+                            this.deleteButton.hide(true)
+                            this.refresh.render($)
+                        })
+                        this.runHeaderCard = new RunHeaderCard({
+                            uuid: this.uuid,
+                            width: this.actualWidth,
+                            lastUpdated: this.lastUpdated
+                        })
+                        this.loader.render($)
+                        this.runHeaderCard.render($)
+                        this.cardContainer = $('div')
+                    })
+                })
         })
+
+        try {
+            await this.loader.load()
+
+            this.renderCards()
+        } catch (e) {
+
+        } finally {
+            if (this.status.isRunning) {
+                this.refresh.start()
+            }
+        }
+    }
+
+    private renderCards() {
+
+        $(this.cardContainer, $ => {
+            experimentAnalyses.map((analysis, i) => {
+                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
+                this.cards.push(card)
+                card.render($)
+            })
+        })
+
+        this.alertMessage.hideMessage(!(!this.isUserLogged.is_user_logged && !this.run.is_claimed))
+        this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
+    }
+
+    render(): WeyaElement {
+        this.elem = $('div')
+
+        this._render().then()
 
         return this.elem
     }
 
-    async loadData() {
-        try {
-            this.run = await this.runCache.get()
-            this.status = await this.statusCache.get()
-            this.isUserLogged = await this.isUserLoggedCache.get()
-        } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
-
-        this.loader.remove()
-    }
-
     destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
-        }
+        this.refresh.stop()
         if (this.runHeaderCard) {
             this.runHeaderCard.clearCounter()
         }
@@ -103,45 +141,31 @@ class RunView extends ScreenView {
 
     async onRefresh() {
         let oldest = (new Date()).getTime()
-
         try {
-            this.status = await this.statusCache.get(true)
+            await this.loader.load(true)
         } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
-        if (!this.status.isRunning) {
-            this.refreshButton.remove()
-            clearInterval(this.autoRefresh)
-        }
 
-        for (let card of this.cards) {
-            card.refresh()
-
-            let lastUpdated = card.getLastUpdated()
-            if (lastUpdated < oldest) {
-                oldest = lastUpdated
+        } finally {
+            if (!this.status.isRunning) {
+                this.refresh.stop()
             }
+            for (let card of this.cards) {
+                card.refresh()
+
+                let lastUpdated = card.getLastUpdated()
+                if (lastUpdated < oldest) {
+                    oldest = lastUpdated
+                }
+            }
+
+            this.lastUpdated = oldest
+            this.runHeaderCard.refresh(this.lastUpdated).then()
         }
 
-        this.lastUpdated = oldest
-        this.runHeaderCard.refresh(this.lastUpdated).then()
     }
 
     onVisibilityChange() {
-        let currentTime = Date.now()
-        if (document.hidden) {
-            this.lastVisibilityChange = currentTime
-            clearInterval(this.autoRefresh)
-        } else {
-            if (this.status?.isRunning) {
-                setTimeout(args => {
-                    this.onRefresh().then()
-                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
-            }
-        }
+        this.refresh.changeVisibility(!document.hidden)
     }
 
     onMessageClick() {
@@ -160,43 +184,6 @@ class RunView extends ScreenView {
             }
             ROUTER.navigate('/runs')
         }
-    }
-
-    private async renderRun() {
-        this.runView.innerHTML = ''
-
-        $(this.runView, $ => {
-            if (!this.isUserLogged.is_user_logged && !this.run.is_claimed) {
-                new AlertMessage({
-                    message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
-                    onClickMessage: this.onMessageClick.bind(this)
-                }).render($)
-            }
-            $('div.nav-container', $ => {
-                new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
-                if (this.isUserLogged.is_user_logged && this.run.is_claimed) {
-                    new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name}).render($)
-                }
-                if (this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({
-                        onButtonClick: this.onRefresh.bind(this),
-                        parent: this.constructor.name
-                    })
-                    this.refreshButton.render($)
-                }
-            })
-            this.runHeaderCard = new RunHeaderCard({
-                uuid: this.uuid,
-                width: this.actualWidth,
-                lastUpdated: this.lastUpdated
-            })
-            this.runHeaderCard.render($)
-            experimentAnalyses.map((analysis, i) => {
-                let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
-                this.cards.push(card)
-                card.render($)
-            })
-        })
     }
 }
 

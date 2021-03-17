@@ -26,10 +26,10 @@ class RunHeaderView extends ScreenView {
     uuid: string
     actualWidth: number
     fieldContainer: HTMLDivElement
-    deleteButton: DeleteButton
     nameField: EditableField
     commentField: EditableField
     noteField: EditableField
+    private deleteButton: DeleteButton
     private loader: DataLoader
 
     constructor(uuid: string) {
