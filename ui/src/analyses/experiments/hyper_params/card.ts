@@ -48,7 +48,7 @@ export class HyperParamsCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Dynamic Parameter Scheduling')
+            $('h3.header', 'Dynamic Hyperparameters')
             this.loader.render($)
             this.sparkLinesContainer = $('div', '')
         })

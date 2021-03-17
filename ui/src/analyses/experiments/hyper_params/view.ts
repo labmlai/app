@@ -89,7 +89,7 @@ class HyperParamsView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
-                        $('h2', '.header.text-center', 'Dynamic Parameter Scheduling')
+                        $('h2', '.header.text-center', 'Dynamic Hyperparameters')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
                             this.sparkLinesContainer = $('div')
