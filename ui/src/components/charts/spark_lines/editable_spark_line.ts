@@ -144,9 +144,9 @@ export class EditableSparkLine {
     }
 
     updateSliderConfig(value: number) {
-        this.inputRangeElem.setAttribute("max", `${value * 10}`)
+        this.inputRangeElem.setAttribute("max", `${value * (9 / 5)}`)
         this.inputRangeElem.setAttribute("step", `${value / 10}`)
-        this.inputRangeElem.setAttribute("min", `${value / 10}`)
+        this.inputRangeElem.setAttribute("min", `${value / 5}`)
         this.inputRangeElem.setAttribute("value", `${value}`)
     }
 
