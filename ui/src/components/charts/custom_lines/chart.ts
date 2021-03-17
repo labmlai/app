@@ -1,8 +1,7 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
+import {defaultSeriesToPlot, getExtent, getScale} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -12,21 +11,23 @@ import {getWindowDimensions} from '../../../utils/window_dimentions'
 
 const LABEL_HEIGHT = 10
 
-interface LineChartOptions extends ChartOptions {
+interface LineChartOptions {
+    width: number
+    primeSeries: SeriesModel[],
+    minotSeries: SeriesModel[],
     plotIdx: number[]
     onSelect?: (i: number) => void
-    chartType: string
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
-    isDivergent?: boolean
 }
 
-export class LineChart {
-    series: SeriesModel[]
+export class CustomLineChart {
+    primeSeries: SeriesModel[]
+    minotSeries: SeriesModel[]
     plotIdx: number[]
-    plot: SeriesModel[] = []
+    primePlots: SeriesModel[] = []
+    minorPlots: SeriesModel[] = []
     filteredPlotIdx: number[] = []
-    chartType: string
     chartWidth: number
     chartHeight: number
     margin: number
@@ -40,12 +41,11 @@ export class LineChart {
     onCursorMove?: ((cursorStep?: number | null) => void)[]
     isCursorMoveOpt?: boolean
     chartColors: ChartColors
-    isDivergent: boolean
     private svgBoundingClientRect: DOMRect
 
     constructor(opt: LineChartOptions) {
-        this.series = opt.series
-        this.chartType = opt.chartType
+        this.primeSeries = opt.primeSeries
+        this.minotSeries = opt.minotSeries
         this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
@@ -58,37 +58,37 @@ export class LineChart {
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
         if (this.plotIdx.length === 0) {
-            this.plotIdx = defaultSeriesToPlot(this.series)
+            this.plotIdx = defaultSeriesToPlot(this.primeSeries)
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {
             if (this.plotIdx[i] >= 0) {
                 this.filteredPlotIdx.push(i)
-                this.plot.push(this.series[i])
+                this.primePlots.push(this.primeSeries[i])
+
+                if (this.minotSeries[i]) {
+                    this.minorPlots.push(this.minotSeries[i])
+                }
             }
         }
         if (this.plotIdx.length > 0 && Math.max(...this.plotIdx) < 0) {
-            this.plot = [this.series[0]]
+            this.primePlots = [this.primeSeries[0]]
+            if (this.minotSeries[0]) {
+                this.minorPlots = [this.minotSeries[0]]
+            }
             this.filteredPlotIdx = [0]
         }
 
-        const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
-        this.xScale = getScale(stepExtent, this.chartWidth, false)
+        let plotSeries = this.primePlots.concat(this.minorPlots)
 
-        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
+        const stepExtent = getExtent(plotSeries.map(s => s.series), d => d.step)
+        this.xScale = getScale(stepExtent, this.chartWidth, false)
+        this.yScale = getScale(getExtent(plotSeries.map(s => s.series), d => d.value, false), -this.chartHeight)
+
+        this.chartColors = new ChartColors({nColors: plotSeries.length, isDivergent: true})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
-
-    changeScale() {
-        let plotSeries = this.plot.map(s => s.series)
-
-        if (this.chartType === 'log') {
-            this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
-        } else {
-            this.yScale = getScale(getExtent(plotSeries, d => d.value, false), -this.chartHeight)
-        }
-    }
 
     onTouchStart = (ev: TouchEvent) => {
         if (ev.touches.length !== 1) return
@@ -145,9 +145,7 @@ export class LineChart {
     }
 
     render($: WeyaElementFunction) {
-        this.changeScale()
-
-        if (this.series.length === 0) {
+        if (this.primeSeries.length === 0) {
             $('div', '')
         } else {
             $('div', $ => {
@@ -169,8 +167,8 @@ export class LineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
                                     }, $ => {
-                                        if (this.plot.length < 3) {
-                                            this.plot.map((s, i) => {
+                                        if (this.primePlots.length < 3) {
+                                            this.primePlots.map((s, i) => {
                                                 new LineFill({
                                                     series: s.series,
                                                     xScale: this.xScale,
@@ -181,7 +179,18 @@ export class LineChart {
                                                 }).render($)
                                             })
                                         }
-                                        this.plot.map((s, i) => {
+                                        this.primePlots.map((s, i) => {
+                                            let linePlot = new LinePlot({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                isPrime: true
+                                            })
+                                            this.linePlots.push(linePlot)
+                                            linePlot.render($)
+                                        })
+                                        this.minorPlots.map((s, i) => {
                                             let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,

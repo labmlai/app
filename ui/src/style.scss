@@ -3,6 +3,10 @@
 html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 
 /* App.css */
@@ -153,8 +157,15 @@ body {
   margin: 4px;
 }
 
+input, .item-value {
+  -webkit-touch-callout: default;
+  -webkit-user-select: auto;
+  -moz-user-select: auto;
+  user-select: auto;
+}
 .btn-refresh {
   position: relative;
+
 
   & > .time-remaining {
     font-size: 0.5em;
@@ -314,14 +325,14 @@ span.fas {
 
 /* alert message */
 .alert {
-  padding: 15px;
-  background-color: #f0ad4e;
-  color: white;
+  padding: 8px;
+  background-color: #ffa600;
+  opacity: 0.75;
+  text-align: center;
 }
 
 .close-btn {
   margin-left: 15px;
-  color: white;
   font-weight: bold;
   float: right;
   font-size: 22px;
@@ -538,10 +549,6 @@ span.fas {
 }
 
 svg#chart {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  user-select: none;
 
   g.bottom-axis, g.right-axis {
     color: #7f8c8d;
@@ -861,6 +868,14 @@ $keyFontSize: 0.8rem;
       @include mono();
     }
 
+    .object-key {
+      color: greenyellow;
+    }
+
+    .object-value {
+      color: dodgerblue;
+    }
+
     .option {
       margin-right: 5px;
       @include mono();
@@ -975,6 +990,59 @@ $keyFontSize: 0.8rem;
 
     &.value {
       background: mix($rowColor, $tableValue, 95%);
+    }
+  }
+}
+
+/* codes */
+.tab-space {
+  display: inline-block;
+  margin-left: 40px;
+}
+
+.code-container {
+  display: flex;
+  justify-content: center;
+}
+
+.code-sample {
+  box-shadow: 3px 3px 6px #666, -3px -3px 6px #999;
+
+  pre {
+    max-width: 400px;
+    margin: 0 auto;
+
+    div {
+      opacity: 0.5;
+
+      &.labml-api {
+        font-weight: bolder;
+        opacity: 1.0;
+      }
+    }
+
+    .key-word {
+      color: coral;
+    }
+
+    .param {
+      color: orangered;
+    }
+
+    .value {
+      color: dodgerblue;
+    }
+
+    .string {
+      color: greenyellow;
+    }
+
+    .built-ins {
+      color: mediumpurple;
+    }
+
+    .method {
+      color: yellow;
     }
   }
 }

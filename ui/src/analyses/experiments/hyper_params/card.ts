@@ -38,6 +38,16 @@ export class HyperParamsCard extends Card {
         return this.analysisCache.lastUpdated
     }
 
+    filterSeries(series: SeriesModel[]) {
+        this.series = []
+
+        for (let s of series) {
+            if (!s.name.includes('@input')) {
+                this.series.push(s)
+            }
+        }
+    }
+
     async render($: WeyaElementFunction) {
         this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Hyperparameters')
@@ -45,7 +55,7 @@ export class HyperParamsCard extends Card {
 
         this.elem.appendChild(this.loader.render($))
         try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
             this.preferenceData = await this.preferenceCache.get()
         } catch (e) {
             // Let the parent view handle network failures
@@ -77,14 +87,14 @@ export class HyperParamsCard extends Card {
                 plotIdx: this.plotIdx,
                 width: this.width,
                 isEditable: false,
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
 
     async refresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
         } catch (e) {
             // Let the parent view handle network failures
         }

@@ -6,7 +6,8 @@ import {StatusView} from "../../../components/status"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {Computer} from '../../../models/computer'
 import {Loader} from '../../../components/loader'
-import Timeout = NodeJS.Timeout;
+import Timeout = NodeJS.Timeout
+import {ROUTER} from "../../../app"
 
 
 interface ComputerHeaderOptions extends CardOptions {
@@ -23,7 +24,6 @@ export class ComputerHeaderCard {
     lastRecordedContainer: WeyaElement
     lastUpdatedContainer: WeyaElement
     statusViewContainer: WeyaElement
-    hiddenContainer: HTMLDivElement
     autoRefresh: Timeout
     loader: Loader
     statusCache: ComputerStatusCache
@@ -64,13 +64,6 @@ export class ComputerHeaderCard {
                     $('h3', `${this.computer.name}`)
                     $('h5', `${this.computer.comment}`)
                     this.lastUpdatedContainer = $('div')
-                    this.hiddenContainer = $('div', '.hide', $ => {
-                        $('div', '.run-uuid', $ => {
-                            $('span', '.heading', '📌 Session UUID:', {role: 'img', 'aria-label': 'running'})
-                            $('span', '', this.computer.session_uuid)
-                        })
-                        $('div', '.start-time', `Started ${formatTime(this.computer.start_time)}`)
-                    })
                 })
             })
         })
@@ -135,13 +128,6 @@ export class ComputerHeaderCard {
     }
 
     onClick = () => {
-        this.isToggled = !this.isToggled
-        if (this.isToggled) {
-            this.elem.classList.add('selected')
-            this.hiddenContainer.classList.remove('hide')
-        } else {
-            this.elem.classList.remove('selected')
-            this.hiddenContainer.classList.add('hide')
-        }
+        ROUTER.navigate(`/session/${this.uuid}/header`)
     }
 }

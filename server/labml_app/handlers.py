@@ -186,6 +186,21 @@ def get_computer(session_uuid: str) -> flask.Response:
     return response
 
 
+def edit_computer(session_uuid: str) -> flask.Response:
+    c = computer.get_computer(session_uuid)
+    errors = []
+
+    if c:
+        data = request.json
+        c.edit_computer(data)
+
+        logger.debug(f'edit computer: {c.key}')
+    else:
+        errors.append({'edit_computer': 'invalid computer uuid'})
+
+    return utils.format_rv({'errors': errors})
+
+
 @auth.login_required
 @auth.check_labml_token_permission
 @mix_panel.MixPanelEvent.time_this(None)
@@ -273,7 +288,9 @@ def update_run() -> flask.Response:
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return jsonify({'errors': errors, 'url': r.url, 'dynamic': r.dynamic})
+    hp_values = AnalysisManager.get_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
+
+    return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
 
 def claim_run(run_uuid: str, r: run.Run) -> None:
@@ -326,10 +343,7 @@ def edit_run(run_uuid: str) -> flask.Response:
 
     if r:
         data = request.json
-        if 'dynamic' in data:
-            r.edit_hyper_params(data['dynamic'])
-        else:
-            r.edit_run(data)
+        r.edit_run(data)
 
         logger.debug(f'edit run: {r.key}')
     else:
@@ -469,6 +483,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_computer, 'computer/<session_uuid>')
+    _add_ui(app, 'POST', edit_computer, 'computer/<session_uuid>')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_computer_status, 'computer/status/<session_uuid>')
 

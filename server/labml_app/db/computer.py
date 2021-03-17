@@ -70,6 +70,14 @@ class Computer(Model['Computer']):
             'start_time': self.start_time,
         }
 
+    def edit_computer(self, data: Dict[str, any]) -> None:
+        if 'name' in data:
+            self.name = data.get('name', self.name)
+        if 'comment' in data:
+            self.comment = data.get('comment', self.comment)
+
+        self.save()
+
 
 class ComputerIndex(Index['Computer']):
     pass

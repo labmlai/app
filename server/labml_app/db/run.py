@@ -102,10 +102,10 @@ class Run(Model['Run']):
             self.configs.update(configs)
 
             for k, v in configs.items():
-                value = v['value']
+                computed = v['computed']
                 name = v['name']
-                if value and type(value) == dict and value['type'] == 'DynamicSchedule':
-                    self.dynamic[name] = value['default']
+                if computed and type(computed) == dict and computed['type'] == 'DynamicSchedule':
+                    self.dynamic[name] = computed['default']
 
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
@@ -219,17 +219,6 @@ class Run(Model['Run']):
             self.comment = data.get('comment', self.comment)
         if 'note' in data:
             self.note = data.get('note', self.note)
-
-        self.save()
-
-    def edit_hyper_params(self, data: Dict[str, any]) -> None:
-        for k, v in data.items():
-            if k in self.dynamic and v:
-                try:
-                    value = float(v)
-                    self.dynamic[k] = value
-                except ValueError:
-                    logger.error(f'not a number : {v}, run_uuid: {self.run_uuid}')
 
         self.save()
 

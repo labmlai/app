@@ -8,7 +8,7 @@ import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
 import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
-
+import {getWindowDimensions} from '../../../utils/window_dimentions'
 
 export interface TimeSeriesOptions extends ChartOptions {
     plotIdx: number[]
@@ -59,9 +59,10 @@ export class TimeSeriesChart {
 
         this.axisSize = 30
         let windowWidth = opt.width
+        let windowHeight = getWindowDimensions().height
         this.margin = Math.floor(windowWidth / 64)
         this.chartWidth = windowWidth - 2 * this.margin - this.axisSize
-        this.chartHeight = Math.round(this.chartWidth / 2)
+        this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
         if (opt.chartHeightFraction) {
             this.chartHeight /= opt.chartHeightFraction
         }
@@ -80,7 +81,6 @@ export class TimeSeriesChart {
             this.plot = [this.series[0]]
             this.filteredPlotIdx = [0]
         }
-
 
         const stepExtent = opt.stepExtend ? opt.stepExtend : getExtent(this.series.map(s => s.series), d => d.step)
         this.xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], this.chartWidth)

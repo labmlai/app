@@ -71,6 +71,12 @@ export class SparkLines {
         for (let sparkLine of this.sparkLines) {
             sparkLine.changeCursorValue(cursorStep)
         }
+
+        if (this.isEditable) {
+            for (let sparkLine of this.editableSparkLines) {
+                sparkLine.changeCursorValue(cursorStep)
+            }
+        }
     }
 
     getSparkLinesValues() {
@@ -89,9 +95,8 @@ export class SparkLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                let sparkLine
                 if (this.isEditable) {
-                    sparkLine = new EditableSparkLine({
+                    let editableSparkLine = new EditableSparkLine({
                         name: s.name,
                         series: s.series,
                         selected: this.plotIdx[i],
@@ -101,10 +106,12 @@ export class SparkLines {
                         minLastValue: this.minLastValue,
                         maxLastValue: this.maxLastValue,
                         color: this.chartColors.getColor(this.colorIndices[i]),
+                        isMouseMoveOpt: this.isMouseMoveOpt
                     })
-                    this.editableSparkLines.push(sparkLine)
+                    this.editableSparkLines.push(editableSparkLine)
+                    editableSparkLine.render($)
                 } else {
-                    sparkLine = new SparkLine({
+                    let sparkLine = new SparkLine({
                         name: s.name,
                         series: s.series,
                         selected: this.plotIdx[i],
@@ -117,8 +124,8 @@ export class SparkLines {
                         isMouseMoveOpt: this.isMouseMoveOpt
                     })
                     this.sparkLines.push(sparkLine)
+                    sparkLine.render($)
                 }
-                sparkLine.render($)
             })
         })
     }

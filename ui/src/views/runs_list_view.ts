@@ -9,7 +9,9 @@ import {SearchView} from '../components/search'
 import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect';
+import {handleNetworkError} from '../utils/redirect'
+import EmptyRunsList from './empty_runs_list'
+import {AlertMessage} from '../components/alert'
 
 
 class RunsListView extends ScreenView {
@@ -20,6 +22,7 @@ class RunsListView extends ScreenView {
     loader: Loader
     searchQuery: string
     buttonContainer: WeyaElement
+    alertContainer: HTMLDivElement
     deleteButton: DeleteButton
     editButton: EditButton
     refreshButton: RefreshButton
@@ -47,6 +50,7 @@ class RunsListView extends ScreenView {
 
     render() {
         this.elem = $('div', $ => {
+            this.alertContainer = $('div')
             new HamburgerMenuView({
                 title: 'Runs',
                 setButtonContainer: container => this.buttonContainer = container
@@ -79,6 +83,13 @@ class RunsListView extends ScreenView {
         })
     }
 
+    renderAlertMessage() {
+        this.alertContainer.innerHTML = ''
+        $(this.alertContainer, $ => {
+            new AlertMessage({message: 'An unexpected network error occurred. Please try again later'}).render($)
+        })
+    }
+
     runsFilter = (run: RunListItemModel, query: RegExp) => {
         let name = run.name.toLowerCase()
         let comment = run.comment.toLowerCase()
@@ -104,12 +115,13 @@ class RunsListView extends ScreenView {
     }
 
     onDelete = async () => {
-        try {
-            await this.runListCache.deleteRuns(this.runsDeleteSet)
-        } catch (e) {
-            handleNetworkError(e)
-            return
-        }
+        this.runListCache.deleteRuns(this.runsDeleteSet).catch(error => {
+            this.renderAlertMessage()
+        })
+
+        this.runsDeleteSet.clear()
+        this.deleteButton.disabled = this.runsDeleteSet.size === 0
+
         await this.renderList()
     }
 
@@ -149,19 +161,25 @@ class RunsListView extends ScreenView {
             return
         }
 
-        let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
-        this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
-
         this.loader.remove()
-        this.renderButtons()
 
+        if (this.currentRunsList.length > 0) {
+            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+            this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
 
-        this.runsListContainer.innerHTML = ''
-        $(this.runsListContainer, $ => {
-            for (let i = 0; i < this.currentRunsList.length; i++) {
-                new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
-            }
-        })
+            this.renderButtons()
+
+            this.runsListContainer.innerHTML = ''
+            $(this.runsListContainer, $ => {
+                for (let i = 0; i < this.currentRunsList.length; i++) {
+                    new RunsListItemView({item: this.currentRunsList[i], onClick: this.onItemClicked}).render($)
+                }
+            })
+        } else {
+            $(this.runsListContainer, $ => {
+                new EmptyRunsList().render($)
+            })
+        }
     }
 
 }

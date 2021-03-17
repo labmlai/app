@@ -17,7 +17,15 @@ from ..preferences import Preferences
 
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
-    pass
+    hp_values: Dict[str, any]
+    hp_series: Dict[str, SeriesModel]
+
+    @classmethod
+    def defaults(cls):
+        return dict(
+            hp_values={},
+            hp_series={},
+        )
 
 
 @Analysis.db_model(PickleSerializer, 'hyperparams_preferences')
@@ -56,10 +64,18 @@ class HyperParamsAnalysis(Analysis):
             name = ind.split('.')
 
             s = Series().load(track)
-            series: Dict[str, Any] = s.detail
-            series['name'] = ''.join(name[-1])
-
+            series: Dict[str, Any] = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
+            name = ''.join(name[-1])
+            series['name'] = name
             res.append(series)
+
+            self.update_hp_series(name)
+            s = Series().load(self.hyper_params.hp_series[name])
+            series = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
+
+            if series['step']:
+                series['name'] = '@input' + name
+                res.append(series)
 
         res.sort(key=lambda s: s['name'])
 
@@ -96,6 +112,37 @@ class HyperParamsAnalysis(Analysis):
             gp: HyperParamsPreferencesModel = preferences_key.load()
             HyperParamsPreferencesIndex.delete(run_uuid)
             gp.delete()
+
+    def set_hyper_params(self, data: Dict[str, any]) -> None:
+        for k, v in data.items():
+            try:
+                value = float(v)
+                self.hyper_params.hp_values[k] = value
+                self.update_hp_series(k, value)
+            except ValueError:
+                logger.error(f'not a number : {v}')
+
+        self.hyper_params.save()
+
+    def update_hp_series(self, ind: str, value: float = None) -> None:
+        hp_series = self.hyper_params.hp_series
+        if ind not in hp_series:
+            hp_series[ind] = Series().to_data()
+
+        s = Series().load(hp_series[ind])
+
+        if not value and not s.value:
+            return
+
+        if not value and s.value:
+            value = s.value[-1]
+
+        s.update([self.hyper_params.step], [value])
+
+        hp_series[ind] = s.to_data()
+
+    def get_hyper_params(self):
+        return self.hyper_params.hp_values
 
 
 @mix_panel.MixPanelEvent.time_this(None)
@@ -144,3 +191,18 @@ def set_hyper_params_preferences(run_uuid: str) -> Any:
     logger.debug(f'update hyper_params preferences: {hpp.key}')
 
     return format_rv({'errors': hpp.errors})
+
+
+@Analysis.route('POST', 'hyper_params/<run_uuid>')
+def set_hyper_params(run_uuid: str) -> Any:
+    status_code = 404
+    ans = HyperParamsAnalysis.get_or_create(run_uuid)
+
+    if ans:
+        ans.set_hyper_params(request.json)
+        status_code = 200
+
+    response = make_response(format_rv({'errors': []}))
+    response.status_code = status_code
+
+    return response

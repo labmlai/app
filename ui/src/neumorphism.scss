@@ -299,6 +299,14 @@ body.light {
   .error-container {
     background-image: linear-gradient(125deg, $light-shadow2, $light-shadow1);
   }
+
+  .alert {
+    color: white;
+  }
+
+  .close-btn {
+    color: white;
+  }
 }
 
 body.dark {
@@ -546,5 +554,13 @@ body.dark {
 
   .error-container {
     background-image: linear-gradient(125deg, $dark-shadow2, $dark-shadow1);
+  }
+
+  .alert {
+    color: black;
+  }
+
+  .close-btn {
+    color: black;
   }
 }

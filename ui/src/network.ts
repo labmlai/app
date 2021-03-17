@@ -54,6 +54,10 @@ class Network {
         return this.sendHttpRequest('GET', `/computer/${computer_uuid}`)
     }
 
+    async setComputer(run_uuid: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/computer/${run_uuid}`, data)
+    }
+
     async getRunStatus(run_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/status/${run_uuid}`)
     }
@@ -110,6 +114,10 @@ class Network {
 
     async getAnalysis(url: string, run_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/${url}/${run_uuid}`, {})
+    }
+
+    async setAnalysis(url: string, run_uuid: string, data): Promise<any> {
+        return this.sendHttpRequest('POST', `/${url}/${run_uuid}`, data)
     }
 
     async getPreferences(url: string, run_uuid: string): Promise<any> {

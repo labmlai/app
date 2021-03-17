@@ -1,18 +1,16 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {RunCache, RunStatusCache, AnalysisDataCache} from "../../../cache/cache"
+import CACHE, {RunStatusCache, AnalysisDataCache} from "../../../cache/cache"
 import {Run, SeriesModel} from "../../../models/run"
 import {Loader} from "../../../components/loader"
 import {
     BackButton,
-    CancelButton,
-    EditButton,
     RefreshButton,
     SaveButton
 } from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
-import {LineChart} from "../../../components/charts/lines/chart"
+import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
@@ -30,9 +28,9 @@ class HyperParamsView extends ScreenView {
     uuid: string
     status: Status
     run: Run
-    series: SeriesModel[]
+    primeSeries: SeriesModel[]
+    minorSeries: SeriesModel[]
     statusCache: RunStatusCache
-    runCache: RunCache
     analysisCache: AnalysisDataCache
     plotIdx: number[] = []
     loader: Loader
@@ -40,11 +38,9 @@ class HyperParamsView extends ScreenView {
     sparkLines: SparkLines
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
-    ButtonContainer: WeyaElement
+    SaveButtonContainer: WeyaElement
     refreshButton: RefreshButton
     saveButton: SaveButton
-    editButton: EditButton
-    cancelButton: CancelButton
     isEditMode: boolean
     actualWidth: number
     autoRefresh: Timeout
@@ -56,15 +52,10 @@ class HyperParamsView extends ScreenView {
 
         this.uuid = uuid
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.runCache = CACHE.getRun(this.uuid)
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
         this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.onSave, parent: this.constructor.name})
-        this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
-        this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
-
-        this.isEditMode = false
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -91,6 +82,7 @@ class HyperParamsView extends ScreenView {
             this.loader.remove()
 
             if (this.status && this.status.isRunning) {
+                this.isEditMode = true
                 this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
             }
 
@@ -103,11 +95,10 @@ class HyperParamsView extends ScreenView {
 
     async loadData() {
         try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
             this.status = await this.statusCache.get()
-            this.run = await this.runCache.get()
 
-            for (let i = 0; i < this.series.length; i++) {
+            for (let i = 0; i < this.primeSeries.length; i++) {
                 this.plotIdx.push(i)
             }
         } catch (e) {
@@ -115,6 +106,22 @@ class HyperParamsView extends ScreenView {
             handleNetworkError(e)
             return
         }
+    }
+
+    filterSeries(series: SeriesModel[]) {
+        let primeSeries: SeriesModel[] = []
+        let minorSeries: SeriesModel[] = []
+
+        for (let s of series) {
+            if (s.name.includes('@input')) {
+                minorSeries.push(s)
+            } else {
+                primeSeries.push(s)
+            }
+        }
+
+        this.minorSeries = minorSeries
+        this.primeSeries = primeSeries
     }
 
     destroy() {
@@ -128,7 +135,7 @@ class HyperParamsView extends ScreenView {
 
     async onRefresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
             this.status = await this.statusCache.get(true)
         } catch (e) {
             //TODO: redirect after multiple refresh failures
@@ -138,7 +145,7 @@ class HyperParamsView extends ScreenView {
 
         if (!this.status.isRunning) {
             this.refreshButton.remove()
-            this.editButton.remove()
+            this.isEditMode = false
             clearInterval(this.autoRefresh)
         }
 
@@ -168,7 +175,7 @@ class HyperParamsView extends ScreenView {
         $(this.hyperParamsView, $ => {
             $('div.nav-container', $ => {
                 new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                this.ButtonContainer = $('div')
+                this.SaveButtonContainer = $('div')
                 if (this.status && this.status.isRunning) {
                     this.refreshButton = new RefreshButton({
                         onButtonClick: this.onRefresh.bind(this),
@@ -191,58 +198,35 @@ class HyperParamsView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
-        this.renderButtons()
+        this.renderSaveButtons()
     }
 
-    renderButtons() {
-        this.ButtonContainer.innerHTML = ''
-        $(this.ButtonContainer, $ => {
+    renderSaveButtons() {
+        this.SaveButtonContainer.innerHTML = ''
+        $(this.SaveButtonContainer, $ => {
             if (this.status.isRunning) {
-                if (this.isEditMode) {
-                    this.cancelButton.render($)
-                    this.saveButton.render($)
-                } else {
-                    this.editButton.render($)
-                }
+                this.saveButton.render($)
             }
         })
     }
 
-    onEdit = () => {
-        this.isEditMode = true
-        this.renderButtons()
-        this.renderSparkLines()
-        this.renderLineChart()
-    }
-
-    onCancel = () => {
-        this.isEditMode = false
-        this.renderButtons()
-        this.renderSparkLines()
-        this.renderLineChart()
-    }
-
     onSave = () => {
-        this.run.dynamic = this.sparkLines.getSparkLinesValues()
-        this.runCache.setRun(this.run).then()
+        let data = this.sparkLines.getSparkLinesValues()
+        this.analysisCache.setAnalysis(data).then()
 
-        this.isEditMode = false
-        this.renderButtons()
-        this.renderSparkLines()
-        this.renderLineChart()
+        this.renderSaveButtons()
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.series,
+            new CustomLineChart({
+                primeSeries: this.primeSeries,
+                minotSeries : this.minorSeries,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
-                chartType: 'linear',
                 onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: !this.isEditMode,
-                isDivergent: true
+                isCursorMoveOpt: true,
             }).render($)
         })
     }
@@ -251,12 +235,11 @@ class HyperParamsView extends ScreenView {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
             this.sparkLines = new SparkLines({
-                series: this.series,
+                series: this.primeSeries,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
                 onSelect: this.toggleChart,
-                isMouseMoveOpt: !this.isEditMode,
                 isDivergent: true
             })
             this.sparkLines.render($)

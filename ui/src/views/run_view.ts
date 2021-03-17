@@ -43,7 +43,7 @@ class RunView extends ScreenView {
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
         this.alertMessage = new AlertMessage({
-            message: 'This run will be deleted in 12 hours. Click here to add it to your experiments.',
+            message: 'This run will be deleted in 12 hours. Click here to add it to your runs.',
             onClickMessage: this.onMessageClick.bind(this)
         })
 
