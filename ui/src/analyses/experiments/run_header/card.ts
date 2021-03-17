@@ -28,14 +28,14 @@ export class RunHeaderCard {
 
     constructor(opt: RunHeaderOptions) {
         this.uuid = opt.uuid
-        this.lastUpdated = opt.lastUpdated
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.lastUpdated = opt.lastUpdated ? opt.lastUpdated : this.statusCache.lastUpdated
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
+
+            this.lastUpdated = opt.lastUpdated ? opt.lastUpdated : this.statusCache.lastUpdated
         })
     }
 
@@ -76,7 +76,7 @@ export class RunHeaderCard {
         this.lastRecordedContainer.innerHTML = ''
         Weya(this.lastRecordedContainer, $ => {
             $('div.last-updated.mb-2', `Last Recorded ${this.status.isRunning ?
-                    getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
+                getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
         })
     }
 
