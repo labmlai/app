@@ -1,28 +1,29 @@
-import {Weya, WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {Run} from "../../../models/run"
 import CACHE, {RunCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
 import Filter from "../../../utils/ansi_to_html"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
-
 
 export class LoggerCard extends Card {
     run: Run
     uuid: string
     runCache: RunCache
-    outputContainer: WeyaElement
-    elem: WeyaElement
-    loader: Loader
+    outputContainer: HTMLPreElement
+    elem: HTMLDivElement
     filter: Filter
+    private loader: DataLoader
 
     constructor(opt: CardOptions) {
         super(opt)
 
         this.uuid = opt.uuid
         this.runCache = CACHE.getRun(this.uuid)
-        this.loader = new Loader()
         this.filter = new Filter({})
+        this.loader = new DataLoader(async (force) => {
+            this.run = await this.runCache.get(force)
+        })
     }
 
     getLastTenLines(inputStr: string) {
@@ -43,34 +44,30 @@ export class LoggerCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Standard Logger')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.run = await this.runCache.get()
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        Weya(this.elem, $ => {
-            $('div.terminal-card.no-scroll', $ => {
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'Standard Logger')
+            this.loader.render($)
+            $('div', '.terminal-card.no-scroll', $ => {
                 this.outputContainer = $('pre', '')
             })
         })
 
-        if (this.run.logger) {
-            this.renderOutput()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            if (this.run.logger) {
+                this.renderOutput()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
+
         }
     }
 
     renderOutput() {
         this.outputContainer.innerHTML = ''
-        Weya(this.outputContainer, $ => {
+        $(this.outputContainer, $ => {
             let output = $('div', '')
             output.innerHTML = this.filter.toHtml(this.getLastTenLines(this.run.logger))
         })
@@ -78,14 +75,13 @@ export class LoggerCard extends Card {
 
     async refresh() {
         try {
-            this.run = await this.runCache.get(true)
+            await this.loader.load(true)
+            if (this.run.logger) {
+                this.renderOutput()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
 
-        if (this.run.logger) {
-            this.renderOutput()
-            this.elem.classList.remove('hide')
         }
     }
 

@@ -1,4 +1,4 @@
-import {WeyaElement, WeyaElementFunction} from '../../../lib/weya/weya'
+import {WeyaElementFunction} from '../../../lib/weya/weya'
 
 interface AlertMessageOptions {
     message: string,
@@ -7,7 +7,7 @@ interface AlertMessageOptions {
 
 export class AlertMessage {
     message: string
-    elem: WeyaElement
+    elem: HTMLDivElement
     onClickMessage: () => void
 
     constructor(opt: AlertMessageOptions) {
@@ -16,19 +16,23 @@ export class AlertMessage {
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('div.alert.pointer-cursor.mt-1',
+        this.elem = $('div', '.alert.pointer-cursor.mt-1',
             {on: {click: this.onClickMessage}},
             $ => {
                 $('span', this.message)
-                $('span.close-btn',
+                $('span', '.close-btn',
                     String.fromCharCode(215),
-                    {on: {click: this.hideMessage.bind(this)}}
+                    {on: {click: this.hideMessage.bind(this, true)}}
                 )
             })
     }
 
-    hideMessage() {
-        this.elem.remove()
+    hideMessage(isHidden: boolean) {
+        if (isHidden) {
+            this.elem.classList.add('hide')
+        } else {
+            this.elem.classList.remove('hide')
+        }
     }
 }
 

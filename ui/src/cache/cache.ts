@@ -74,7 +74,7 @@ class BroadcastPromise<T> {
 }
 
 abstract class CacheObject<T> {
-    protected data!: T | any
+    protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number
     public lastUpdated: number
@@ -123,10 +123,10 @@ export class RunsListCache extends CacheObject<RunsList> {
     }
 
     async deleteRuns(runUUIDS: Set<string>): Promise<void> {
-        let runs: RunListItemModel[] = []
+        let runs = []
         // Only updating the cache manually, if the cache exists
         if (this.data) {
-            let currentRuns = <RunListItemModel[]>this.data.runs
+            let currentRuns = this.data.runs
             for (let run of currentRuns) {
                 if (!runUUIDS.has(run.run_uuid)) {
                     runs.push(run)
@@ -148,10 +148,10 @@ export class ComputersListCache extends CacheObject<ComputersList> {
     }
 
     async deleteSessions(sessionUUIDS: Set<string>): Promise<void> {
-        let computers: ComputerListItemModel[] = []
+        let computers = []
         // Only updating the cache manually, if the cache exists
         if (this.data) {
-            let currentComputers = <ComputerListItemModel[]>this.data.computers
+            let currentComputers = this.data.computers
             for (let computer of currentComputers) {
                 if (!sessionUUIDS.has(computer.session_uuid)) {
                     computers.push(computer)

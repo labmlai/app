@@ -1,4 +1,4 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
@@ -7,9 +7,8 @@ import {getChartType, toPointValues} from "../../../components/charts/utils"
 import {LineChart} from "../../../components/charts/lines/chart"
 import metricsCache from "./cache"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import {Loader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
-
+import {DataLoader} from '../../../components/loader'
 
 export class MetricsCard extends Card {
     uuid: string
@@ -17,13 +16,12 @@ export class MetricsCard extends Card {
     series: SeriesModel[]
     preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
-    elem: WeyaElement
+    elem: HTMLDivElement
     lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
     preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
-    loader: Loader
-
+    private loader: DataLoader
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -32,7 +30,10 @@ export class MetricsCard extends Card {
         this.width = opt.width
         this.analysisCache = metricsCache.getAnalysis(this.uuid)
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
-        this.loader = new Loader()
+        this.loader = new DataLoader(async (force) => {
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.preferenceData = await this.preferenceCache.get(force)
+        })
     }
 
     getLastUpdated(): number {
@@ -40,76 +41,68 @@ export class MetricsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
             $('h3.header', 'Metrics')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
-            this.preferenceData = await this.preferenceCache.get()
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        let analysisPreferences = this.preferenceData.series_preferences
-        if (analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
-        }
-
-
-        Weya(this.elem, $ => {
+            this.loader.render($)
             this.lineChartContainer = $('div', '')
             this.sparkLinesContainer = $('div', '')
+
         })
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-            this.renderSparkLines()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            let analysisPreferences = this.preferenceData.series_preferences
+            if (analysisPreferences.length > 0) {
+                this.plotIdx = [...analysisPreferences]
+            }
+
+            if (this.series.length > 0) {
+                this.renderLineChart()
+                this.renderSparkLines()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
         }
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
-        Weya(this.lineChartContainer, $ => {
+        $(this.lineChartContainer, $ => {
             new LineChart({
                 series: this.series,
                 width: this.width,
                 plotIdx: this.plotIdx,
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
                     getChartType(this.preferenceData.chart_type) : 'linear',
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
 
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
-        Weya(this.sparkLinesContainer, $ => {
+        $(this.sparkLinesContainer, $ => {
             new SparkLines({
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width,
                 isEditable: false,
-                isDivergent : true
+                isDivergent: true
             }).render($)
         })
     }
 
     async refresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            await this.loader.load(true)
+            if (this.series.length > 0) {
+                this.renderLineChart()
+                this.renderSparkLines()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
-
-        if (this.series.length > 0) {
-            this.renderLineChart()
-            this.renderSparkLines()
-            this.elem.classList.remove('hide')
         }
     }
 

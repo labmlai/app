@@ -134,14 +134,19 @@ body {
   margin: auto;
 }
 
+.data-loader > .error > .fas {
+  font-size: 2em;
+  margin: 0.2em;
+}
+
 /* Buttons*/
 .toggle-button {
   font-size: .8rem;
 }
 
 .btn, .tab, .list-item, .labml-card {
-  transition: all 0.1s;
-  transition-delay: 150ms;
+  transition: all 10ms;
+  transition-delay: 10ms;
 
   &:active, &.selected {
     transition: none;
@@ -157,6 +162,19 @@ input, .item-value {
   -webkit-user-select: auto;
   -moz-user-select: auto;
   user-select: auto;
+}
+.btn-refresh {
+  position: relative;
+
+
+  & > .time-remaining {
+    font-size: 0.5em;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
 }
 
 
@@ -205,6 +223,11 @@ input, .item-value {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.spin {
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
 }
 
 /* Hamburger Menu */

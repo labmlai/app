@@ -5,32 +5,26 @@ import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import Filter from "../../../utils/ansi_to_html"
 import {Status} from "../../../models/status"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, RefreshButton} from "../../../components/buttons"
+import {BackButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
 import {ViewHandler} from "../../types"
-
-
-const AUTO_REFRESH_TIME = 2 * 60 * 1000
+import {AwesomeRefreshButton} from '../../../components/refresh_button'
 
 class StdOutView extends ScreenView {
-    elem: WeyaElement
+    elem: HTMLDivElement
     uuid: string
     run: Run
     status: Status
     statusCache: RunStatusCache
     runCache: RunCache
     actualWidth: number
-    stdOutView: WeyaElement
-    outputContainer: WeyaElement
-    autoRefresh: Timeout
-    loader: Loader
-    refreshButton: RefreshButton
+    outputContainer: HTMLDivElement
     runHeaderCard: RunHeaderCard
     filter: Filter
-    lastVisibilityChange: number
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
 
     constructor(uuid: string) {
         super()
@@ -38,8 +32,13 @@ class StdOutView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.loader = new Loader(true)
         this.filter = new Filter({})
+
+        this.loader = new DataLoader(async (force) => {
+            this.status = await this.statusCache.get(force)
+            this.run = await this.runCache.get(force)
+        })
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -52,99 +51,78 @@ class StdOutView extends ScreenView {
         super.onResize(width)
 
         this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
     }
 
-    render() {
-        this.elem = <HTMLElement>$('div.page', $ => {
-            this.stdOutView = $('div', '')
+    async _render() {
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', '.page', $ => {
+                $('div', $ => {
+                    $('div', '.nav-container', $ => {
+                        new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                        this.refresh.render($)
+                    })
+                    this.runHeaderCard = new RunHeaderCard({
+                        uuid: this.uuid,
+                        width: this.actualWidth
+                    })
+                    this.runHeaderCard.render($).then()
+                    $('h2', '.header.text-center', 'Standard Out')
+                    this.loader.render($)
+                    this.outputContainer = $('div', '.terminal-card')
+                })
+            })
         })
 
-        this.elem.appendChild(this.loader.render($))
+        try {
+            await this.loader.load()
 
-        this.loadData().then(() => {
-            this.loader.remove()
+            this.renderOutput()
+        } catch (e) {
 
+        } finally {
             if (this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
+                this.refresh.start()
             }
+        }
+    }
 
-            this.renderStdOut()
-        }).catch(() => {
-        })
+    render(): WeyaElement {
+        this.elem = $('div')
+
+        this._render().then()
 
         return this.elem
     }
 
-    async loadData() {
-        try {
-            this.run = await this.runCache.get()
-            this.status = await this.statusCache.get()
-        } catch (e) {
-            ROUTER.navigate('/404')
-        }
-    }
-
     destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
-        }
+        this.refresh.stop()
         if (this.runHeaderCard) {
             this.runHeaderCard.clearCounter()
         }
     }
 
     async onRefresh() {
-        this.run = await this.runCache.get(true)
-        this.status = await this.statusCache.get(true)
+        try {
+            await this.loader.load(true)
 
-        if (!this.status.isRunning) {
-            this.refreshButton.remove()
-            clearInterval(this.autoRefresh)
+            this.renderOutput()
+        } catch (e) {
+
+        } finally {
+            if (!this.status.isRunning) {
+                this.refresh.stop()
+            }
+            this.runHeaderCard.refresh().then()
         }
-
-        this.renderOutput()
-        this.runHeaderCard.refresh().then()
     }
 
     onVisibilityChange() {
-        let currentTime = Date.now()
-        if (document.hidden) {
-            this.lastVisibilityChange = currentTime
-            clearInterval(this.autoRefresh)
-        } else {
-            if (this.status?.isRunning) {
-                setTimeout(args => {
-                    this.onRefresh().then()
-                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
-            }
-        }
-    }
-
-    renderStdOut() {
-        this.stdOutView.innerHTML = ''
-
-        $(this.stdOutView, $ => {
-            $('div.nav-container', $ => {
-                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({
-                        onButtonClick: this.onRefresh.bind(this),
-                        parent: this.constructor.name
-                    })
-                    this.refreshButton.render($)
-                }
-            })
-            this.runHeaderCard = new RunHeaderCard({
-                uuid: this.uuid,
-                width: this.actualWidth
-            })
-            this.runHeaderCard.render($).then()
-            $('h2.header.text-center', 'Standard Out')
-            this.outputContainer = $('div.terminal-card')
-        })
-
-        this.renderOutput()
+        this.refresh.changeVisibility(!document.hidden)
     }
 
     renderOutput() {
@@ -156,7 +134,7 @@ class StdOutView extends ScreenView {
     }
 }
 
-export class StdOutHandler extends ViewHandler{
+export class StdOutHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('run/:uuid/stdout', [this.handleStdOut])

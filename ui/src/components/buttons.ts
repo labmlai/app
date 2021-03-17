@@ -3,7 +3,6 @@ import {ROUTER} from '../app'
 import runHeaderAnalysis from '../analyses/experiments/run_header'
 import mix_panel from "../mix_panel"
 
-
 interface buttonOptions {
     onButtonClick?: () => void
     isDisabled?: boolean
@@ -39,6 +38,14 @@ abstract class Button {
         e.preventDefault()
         if (!this.isDisabled) {
             this.onButtonClick()
+        }
+    }
+
+    hide = (isHidden: boolean) => {
+        if (isHidden) {
+            this.elem.classList.add('hide')
+        } else {
+            this.elem.classList.remove('hide')
         }
     }
 
