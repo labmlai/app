@@ -69,7 +69,7 @@ export class EditableSparkLine {
 
     changeCursorValue(cursorStep?: number | null) {
         if (this.selected >= 0) {
-            this.linePlot.renderCursorCircle(cursorStep)
+            // this.linePlot.renderCursorCircle(cursorStep)
             this.renderStepValue(cursorStep)
         }
     }
@@ -103,7 +103,7 @@ export class EditableSparkLine {
                 //         this.linePlot.render($)
                 //     })
                 // })
-                this.inputRangeElem = $('input', '.form-range', {
+                this.inputRangeElem = $('input', '.slider', {
                     type: "range",
                     style: {width: `${this.chartWidth}px`},
 

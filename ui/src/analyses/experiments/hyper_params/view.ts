@@ -55,7 +55,7 @@ class HyperParamsView extends ScreenView {
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
         this.loader = new Loader(true)
-        this.saveButton = new SaveButton({onButtonClick: this.onSave, parent: this.constructor.name})
+        this.saveButton = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name})
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -210,11 +210,9 @@ class HyperParamsView extends ScreenView {
         })
     }
 
-    onSave = () => {
+    onSave() {
         let data = this.sparkLines.getSparkLinesValues()
         this.analysisCache.setAnalysis(data).then()
-
-        this.renderSaveButtons()
     }
 
     renderLineChart() {
@@ -222,7 +220,7 @@ class HyperParamsView extends ScreenView {
         $(this.lineChartContainer, $ => {
             new CustomLineChart({
                 primeSeries: this.primeSeries,
-                minotSeries : this.minorSeries,
+                minotSeries: this.minorSeries,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
                 onCursorMove: [this.sparkLines.changeCursorValues],
