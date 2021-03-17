@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from flask import make_response, request
 from labml_db import Model, Index
@@ -72,6 +72,7 @@ class HyperParamsAnalysis(Analysis):
             self.update_hp_series(name)
             s = Series().load(self.hyper_params.hp_series[name])
             series = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
+            self.hyper_params.save()
 
             if series['step']:
                 series['name'] = '@input' + name
@@ -124,6 +125,18 @@ class HyperParamsAnalysis(Analysis):
 
         self.hyper_params.save()
 
+    @staticmethod
+    def get_series_gap(step: List[int], value: List[float], current_step: int):
+        steps, values = [], []
+        if step:
+            last_step = step[-1]
+            last_value = value[-1]
+
+            steps = list(range(int(last_step) + 1, int(current_step) + 1))
+            values = [last_value] * len(steps)
+
+        return steps, values
+
     def update_hp_series(self, ind: str, value: float = None) -> None:
         hp_series = self.hyper_params.hp_series
         if ind not in hp_series:
@@ -133,11 +146,16 @@ class HyperParamsAnalysis(Analysis):
 
         if not value and not s.value:
             return
-
         if not value and s.value:
             value = s.value[-1]
 
-        s.update([self.hyper_params.step], [value])
+        current_step = self.hyper_params.step
+        steps, values = self.get_series_gap(s.step, s.value, current_step - 1)
+
+        steps.append(self.hyper_params.step)
+        values.append(value)
+
+        s.update(steps, values)
 
         hp_series[ind] = s.to_data()
 
