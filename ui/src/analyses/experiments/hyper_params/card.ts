@@ -1,11 +1,10 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import {AnalysisDataCache,} from "../../../cache/cache"
 import hyperParamsCache from "./cache"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
-import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 
@@ -14,14 +13,11 @@ export class HyperParamsCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
     elem: WeyaElement
-    lineChartContainer: WeyaElement
     sparkLinesContainer: WeyaElement
-    preferenceCache: AnalysisPreferenceCache
     plotIdx: number[] = []
-    loader: Loader
+    private loader: DataLoader
 
 
     constructor(opt: CardOptions) {
@@ -30,8 +26,10 @@ export class HyperParamsCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
-        this.preferenceCache = hyperParamsCache.getPreferences(this.uuid)
-        this.loader = new Loader()
+
+        this.loader = new DataLoader(async (force) => {
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
+        })
     }
 
     getLastUpdated(): number {
@@ -49,33 +47,21 @@ export class HyperParamsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Hyperparameters')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
-            this.preferenceData = await this.preferenceCache.get()
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        let analysisPreferences = this.preferenceData.series_preferences
-        if (analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
-        }
-
-        Weya(this.elem, $ => {
-            this.lineChartContainer = $('div', '')
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3.header', 'Dynamic Parameter Scheduling')
+            this.loader.render($)
             this.sparkLinesContainer = $('div', '')
         })
 
-        if (this.series.length > 0) {
-            this.renderSparkLines()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            if (this.series.length > 0) {
+                this.renderSparkLines()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
         }
     }
 
@@ -94,14 +80,12 @@ export class HyperParamsCard extends Card {
 
     async refresh() {
         try {
-            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
+            await this.loader.load(true)
+            if (this.series.length > 0) {
+                this.renderSparkLines()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
-
-        if (this.series.length > 0) {
-            this.renderSparkLines()
-            this.elem.classList.remove('hide')
         }
     }
 
