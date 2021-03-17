@@ -1,51 +1,40 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {RunStatusCache, AnalysisDataCache} from "../../../cache/cache"
-import {Run, SeriesModel} from "../../../models/run"
-import {Loader} from "../../../components/loader"
-import {
-    BackButton,
-    RefreshButton,
-    SaveButton
-} from "../../../components/buttons"
+import CACHE, {AnalysisDataCache, RunStatusCache} from "../../../cache/cache"
+import {SeriesModel} from "../../../models/run"
+import {BackButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
-import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
-import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
-
-
-const AUTO_REFRESH_TIME = 2 * 60 * 1000
+import {DataLoader} from "../../../components/loader"
+import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 
 class HyperParamsView extends ScreenView {
-    elem: WeyaElement
+    elem: HTMLDivElement
     uuid: string
     status: Status
-    run: Run
+    plotIdx: number[] = []
     primeSeries: SeriesModel[]
     minorSeries: SeriesModel[]
-    statusCache: RunStatusCache
     analysisCache: AnalysisDataCache
-    plotIdx: number[] = []
-    loader: Loader
+    statusCache: RunStatusCache
     runHeaderCard: RunHeaderCard
     sparkLines: SparkLines
-    lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
-    SaveButtonContainer: WeyaElement
-    refreshButton: RefreshButton
+    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
+    saveButtonContainer: HTMLDivElement
     saveButton: SaveButton
-    isEditMode: boolean
+    isUpdateDisable: boolean
     actualWidth: number
-    autoRefresh: Timeout
-    hyperParamsView: HTMLDivElement
-    lastVisibilityChange: number
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
+    isEditMode: boolean
 
     constructor(uuid: string) {
         super()
@@ -54,8 +43,17 @@ class HyperParamsView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
-        this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name})
+
+        this.loader = new DataLoader(async (force) => {
+            this.status = await this.statusCache.get(force)
+            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
+
+            if (this.status && this.status.isRunning) {
+                this.isEditMode = true
+            }
+        })
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -68,66 +66,66 @@ class HyperParamsView extends ScreenView {
         super.onResize(width)
 
         this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
+    }
+
+    async _render() {
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', '.page',
+                {style: {width: `${this.actualWidth}px`}},
+                $ => {
+                    $('div', $ => {
+                        $('div', '.nav-container', $ => {
+                            new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                            this.saveButtonContainer = $('div')
+                            this.refresh.render($)
+                        })
+                        this.runHeaderCard = new RunHeaderCard({
+                            uuid: this.uuid,
+                            width: this.actualWidth
+                        })
+                        this.runHeaderCard.render($).then()
+                        $('h2', '.header.text-center', 'Dynamic Parameter Scheduling')
+                        this.loader.render($)
+                        $('div', '.detail-card', $ => {
+                            this.sparkLinesContainer = $('div')
+                            this.lineChartContainer = $('div')
+                        })
+                    })
+                })
+        })
+
+        try {
+            await this.loader.load()
+
+            this.calcPreferences()
+
+            this.renderSparkLines()
+            this.renderLineChart()
+            this.renderSaveButton()
+        } catch (e) {
+
+        } finally {
+            if (this.status.isRunning) {
+                this.refresh.start()
+            }
+        }
     }
 
     render(): WeyaElement {
-        this.elem = <HTMLElement>$('div.page',
-            {style: {width: `${this.actualWidth}px`}},
-            $ => {
-                this.hyperParamsView = <HTMLDivElement>$('div', '')
-                this.loader.render($)
-            })
+        this.elem = $('div')
 
-        this.loadData().then(() => {
-            this.loader.remove()
-
-            if (this.status && this.status.isRunning) {
-                this.isEditMode = true
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-            }
-
-            this.renderGradients()
-        }).catch(() => {
-        })
+        this._render().then()
 
         return this.elem
     }
 
-    async loadData() {
-        try {
-            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
-            this.status = await this.statusCache.get()
-
-            for (let i = 0; i < this.primeSeries.length; i++) {
-                this.plotIdx.push(i)
-            }
-        } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
-    }
-
-    filterSeries(series: SeriesModel[]) {
-        let primeSeries: SeriesModel[] = []
-        let minorSeries: SeriesModel[] = []
-
-        for (let s of series) {
-            if (s.name.includes('@input')) {
-                minorSeries.push(s)
-            } else {
-                primeSeries.push(s)
-            }
-        }
-
-        this.minorSeries = minorSeries
-        this.primeSeries = primeSeries
-    }
-
     destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
-        }
+        this.refresh.stop()
         if (this.runHeaderCard) {
             this.runHeaderCard.clearCounter()
         }
@@ -135,84 +133,32 @@ class HyperParamsView extends ScreenView {
 
     async onRefresh() {
         try {
-            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
-            this.status = await this.statusCache.get(true)
+            await this.loader.load(true)
+            this.calcPreferences()
         } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
 
-        if (!this.status.isRunning) {
-            this.refreshButton.remove()
-            this.isEditMode = false
-            clearInterval(this.autoRefresh)
+        } finally {
+            if (!this.status.isRunning) {
+                this.refresh.stop()
+                this.isEditMode = false
+            }
+            this.runHeaderCard.refresh().then()
+            this.renderSparkLines()
+            this.renderLineChart()
         }
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.runHeaderCard.refresh().then()
     }
 
     onVisibilityChange() {
-        let currentTime = Date.now()
-        if (document.hidden) {
-            this.lastVisibilityChange = currentTime
-            clearInterval(this.autoRefresh)
-        } else {
-            if (this.status?.isRunning) {
-                setTimeout(args => {
-                    this.onRefresh().then()
-                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
-            }
-        }
+        this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderGradients() {
-        this.hyperParamsView.innerHTML = ''
-
-        $(this.hyperParamsView, $ => {
-            $('div.nav-container', $ => {
-                new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                this.SaveButtonContainer = $('div')
-                if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({
-                        onButtonClick: this.onRefresh.bind(this),
-                        parent: this.constructor.name
-                    })
-                    this.refreshButton.render($)
-                }
-            })
-            this.runHeaderCard = new RunHeaderCard({
-                uuid: this.uuid,
-                width: this.actualWidth
-            })
-            this.runHeaderCard.render($).then()
-            $('h2.header.text-center', 'Hyperparameters')
-            $('div.detail-card', $ => {
-                this.sparkLinesContainer = $('div')
-                this.lineChartContainer = $('div')
-            })
-        })
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderSaveButtons()
-    }
-
-    renderSaveButtons() {
-        this.SaveButtonContainer.innerHTML = ''
-        $(this.SaveButtonContainer, $ => {
+    renderSaveButton() {
+        this.saveButtonContainer.innerHTML = ''
+        $(this.saveButtonContainer, $ => {
             if (this.status.isRunning) {
                 this.saveButton.render($)
             }
         })
-    }
-
-    onSave() {
-        let data = this.sparkLines.getSparkLinesValues()
-        this.analysisCache.setAnalysis(data).then()
     }
 
     renderLineChart() {
@@ -258,6 +204,35 @@ class HyperParamsView extends ScreenView {
         this.renderSparkLines()
         this.renderLineChart()
     }
+
+    private calcPreferences() {
+        this.plotIdx = []
+        for (let i = 0; i < this.primeSeries.length; i++) {
+            this.plotIdx.push(i)
+        }
+    }
+
+    filterSeries(series: SeriesModel[]) {
+        let primeSeries: SeriesModel[] = []
+        let minorSeries: SeriesModel[] = []
+
+        for (let s of series) {
+            if (s.name.includes('@input')) {
+                minorSeries.push(s)
+            } else {
+                primeSeries.push(s)
+            }
+        }
+
+        this.minorSeries = minorSeries
+        this.primeSeries = primeSeries
+    }
+
+    onSave() {
+        let data = this.sparkLines.getSparkLinesValues()
+        this.analysisCache.setAnalysis(data).then()
+    }
+
 }
 
 export class HyperParamsHandler extends ViewHandler {
