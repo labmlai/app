@@ -88,7 +88,8 @@ class RunView extends ScreenView {
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
                             width: this.actualWidth,
-                            lastUpdated: this.lastUpdated
+                            lastUpdated: this.lastUpdated,
+                            clickable: true
                         })
                         this.loader.render($)
                         this.runHeaderCard.render($)
@@ -134,9 +135,6 @@ class RunView extends ScreenView {
 
     destroy() {
         this.refresh.stop()
-        if (this.runHeaderCard) {
-            this.runHeaderCard.clearCounter()
-        }
     }
 
     async onRefresh() {

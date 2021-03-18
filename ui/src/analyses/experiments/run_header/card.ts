@@ -5,11 +5,12 @@ import {CardOptions} from "../../types"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
-import {formatTime, getTimeDiff} from "../../../utils/time"
+import {formatTime} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 
 interface RunHeaderOptions extends CardOptions {
     lastUpdated?: number
+    clickable?: boolean
 }
 
 export class RunHeaderCard {
@@ -20,14 +21,14 @@ export class RunHeaderCard {
     runCache: RunCache
     elem: HTMLDivElement
     lastRecordedContainer: HTMLDivElement
-    lastUpdatedContainer: HTMLDivElement
     statusViewContainer: HTMLDivElement
-    autoRefresh: number
     statusCache: RunStatusCache
+    private clickable: boolean
     private loader: DataLoader
 
     constructor(opt: RunHeaderOptions) {
         this.uuid = opt.uuid
+        this.clickable = opt.clickable ?? false
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
 
@@ -40,16 +41,17 @@ export class RunHeaderCard {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        this.elem = $('div', '.labml-card.labml-card-action.disabled', $ => {
             this.loader.render($)
         })
 
+        if (this.clickable) {
+            this.elem.classList.remove('disabled')
+            this.elem.addEventListener('click', this.onClick)
+        }
+
         try {
             await this.loader.load()
-
-            if (this.status.isRunning) {
-                this.autoRefresh = window.setInterval(this.setCounter.bind(this), 1000)
-            }
 
             Weya(this.elem, $ => {
                 $('div', $ => {
@@ -58,7 +60,6 @@ export class RunHeaderCard {
                         this.statusViewContainer = $('div')
                         $('h3', `${this.run.name}`)
                         $('h5', `${this.run.comment}`)
-                        this.lastUpdatedContainer = $('div')
                     })
                 })
             })
@@ -75,17 +76,7 @@ export class RunHeaderCard {
 
         this.lastRecordedContainer.innerHTML = ''
         Weya(this.lastRecordedContainer, $ => {
-            $('div.last-updated.mb-2', `Last Recorded ${this.status.isRunning ?
-                getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
-        })
-    }
-
-    renderLastUpdated() {
-        this.lastUpdatedContainer.innerHTML = ''
-        Weya(this.lastUpdatedContainer, $ => {
-            if (this.status.isRunning) {
-                $('div.last-updated.text-info', `${getTimeDiff(this.lastUpdated)}`)
-            }
+            $('div.last-updated.mb-2', `Last Recorded on ${formatTime(lastRecorded)}`)
         })
     }
 
@@ -96,17 +87,6 @@ export class RunHeaderCard {
         })
     }
 
-    clearCounter() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
-        }
-    }
-
-    setCounter() {
-        this.renderLastRecorded()
-        this.renderLastUpdated()
-    }
-
     async refresh(lastUpdated?: number) {
         try {
             await this.loader.load(true)
@@ -115,11 +95,7 @@ export class RunHeaderCard {
 
             this.renderStatusView()
             this.renderLastRecorded()
-            this.renderLastUpdated()
 
-            if (!this.status.isRunning) {
-                this.clearCounter()
-            }
         } catch (e) {
         }
     }

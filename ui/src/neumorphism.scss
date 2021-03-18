@@ -86,7 +86,7 @@ body.light {
       box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
     }
 
-    &.selected, &:active {
+    &.selected, &:not(disabled):not(.disabled):active {
       box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
     }
   }
@@ -338,7 +338,7 @@ body.dark {
       box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
     }
 
-    &.selected, &:active {
+    &.selected, &:not(disabled):not(.disabled):active {
       box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
     }
   }

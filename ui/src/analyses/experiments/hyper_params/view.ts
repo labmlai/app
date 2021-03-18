@@ -126,9 +126,6 @@ class HyperParamsView extends ScreenView {
 
     destroy() {
         this.refresh.stop()
-        if (this.runHeaderCard) {
-            this.runHeaderCard.clearCounter()
-        }
     }
 
     async onRefresh() {
