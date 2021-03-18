@@ -17,12 +17,12 @@ export class Loader {
                 $('div', '.text-center.mt-5', $ => {
                     $('img', '.logo-style', {src: '/images/lab_logo.png'})
                 })
-                $('div', '.center', $ => {
+                $('div', '.text-center', $ => {
                     $('div.loader', '')
                 })
             })
         } else {
-            this.elem = $('div', '.center', $ => {
+            this.elem = $('div', '.text-center', $ => {
                 $('div', '.loader', '')
             })
         }

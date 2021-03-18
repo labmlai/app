@@ -75,23 +75,18 @@ class HyperParamsAnalysis(Analysis):
 
             if name in self.hyper_params.hp_series:
                 s = Series().load(self.hyper_params.hp_series[name])
-                steps, values = self.get_input_series(s, self.hyper_params.step)
+                steps, values = self.get_input_series(s, self.hyper_params.step, dynamic[name])
 
-                series = {'step': steps,
-                          'value': values,
-                          'smoothed': values}
-
-                if series['step']:
-                    series['name'] = '@input' + name
-                    res.append(series)
+                series = {'step': steps, 'value': values, 'smoothed': values, 'name': '@input' + name}
+                res.append(series)
 
         res.sort(key=lambda s: s['name'])
 
         return res
 
     @staticmethod
-    def get_input_series(series: Series, current_step):
-        steps, values = [], []
+    def get_input_series(series: Series, current_step, default: float):
+        steps, values = [0, series.step[0] - 1], [default, default]
 
         for i in range(len(series.step)):
             v = series.value[i]

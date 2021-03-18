@@ -64,19 +64,14 @@ export class CustomLineChart {
         for (let i = 0; i < this.plotIdx.length; i++) {
             if (this.plotIdx[i] >= 0) {
                 this.filteredPlotIdx.push(i)
-                this.primePlots.push(this.primeSeries[i])
-
-                if (this.minotSeries[i]) {
-                    this.minorPlots.push(this.minotSeries[i])
+                let p = this.primeSeries[i]
+                this.primePlots.push(p)
+                for (let m of this.minotSeries) {
+                    if (m.name === `@input${p.name}`) {
+                        this.minorPlots.push(m)
+                    }
                 }
             }
-        }
-        if (this.plotIdx.length > 0 && Math.max(...this.plotIdx) < 0) {
-            this.primePlots = [this.primeSeries[0]]
-            if (this.minotSeries[0]) {
-                this.minorPlots = [this.minotSeries[0]]
-            }
-            this.filteredPlotIdx = [0]
         }
 
         let plotSeries = this.primePlots.concat(this.minorPlots)
@@ -179,11 +174,10 @@ export class CustomLineChart {
                                                 }).render($)
                                             })
                                         }
-                                        let lineColor = ''
-                                        this.primePlots.map((s, i) => {
-                                            lineColor = this.chartColors.getColor(this.filteredPlotIdx[i])
+                                        this.primePlots.map((p, i) => {
+                                            let lineColor = this.chartColors.getColor(this.filteredPlotIdx[i])
                                             let linePlot = new LinePlot({
-                                                series: s.series,
+                                                series: p.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
                                                 color: lineColor,
@@ -191,16 +185,17 @@ export class CustomLineChart {
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
-                                        })
-                                        this.minorPlots.map((s, i) => {
-                                            let linePlot = new LinePlot({
-                                                series: s.series,
-                                                xScale: this.xScale,
-                                                yScale: this.yScale,
-                                                color: lineColor
-                                            })
-                                            this.linePlots.push(linePlot)
-                                            linePlot.render($)
+
+                                            for (let m of this.minorPlots) {
+                                                if (m.name === `@input${p.name}`) {
+                                                    new LinePlot({
+                                                        series: m.series,
+                                                        xScale: this.xScale,
+                                                        yScale: this.yScale,
+                                                        color: lineColor
+                                                    }).render($)
+                                                }
+                                            }
                                         })
                                     })
                                 $('g.bottom-axis',
