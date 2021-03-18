@@ -39,6 +39,7 @@ export class EditableSparkLine {
     inputValueElem: HTMLInputElement
     inputElements: HTMLDivElement
     primaryElem: SVGTextElement
+    lastChanged: number
 
     constructor(opt: SparkLineOptions) {
         this.series = opt.series
@@ -126,7 +127,7 @@ export class EditableSparkLine {
                             this.inputValueElem = $('input', '.text-end', {
                                 style: {
                                     height: '36px',
-                                    width: `${this.titleWidth/2}px`,
+                                    width: `${this.titleWidth / 2}px`,
                                     padding: '0px'
                                 }
                             })
@@ -142,6 +143,7 @@ export class EditableSparkLine {
         this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
         const last = this.series[this.series.length - 1]
+        this.lastChanged = last.smoothed
         this.updateSliderConfig(last.smoothed)
 
         this.renderInputValue()
@@ -160,15 +162,19 @@ export class EditableSparkLine {
     }
 
     onSliderChange() {
-        let value = this.inputRangeElem.value
-        this.inputValueElem.value = formatFixed(parseFloat(value), 3)
+        let number = Number(this.inputRangeElem.value)
+        if (number) {
+            this.inputValueElem.value = formatFixed(number, 3)
+            this.lastChanged = number
+        }
     }
 
     onInputChange() {
         let number = Number(this.inputValueElem.value)
         if (number) {
             this.inputRangeElem.setAttribute("value", `${number}`)
-            this.updateSliderConfig(number)
+            this.lastChanged = number
+            // this.updateSliderConfig(number)
         }
     }
 
@@ -180,6 +186,6 @@ export class EditableSparkLine {
     }
 
     getInput() {
-        return this.inputRangeElem.value
+        return this.lastChanged
     }
 }
