@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from flask import make_response, request
 from labml_db import Model, Index
@@ -69,18 +69,39 @@ class HyperParamsAnalysis(Analysis):
             series['name'] = name
             res.append(series)
 
-            self.update_hp_series(name)
-            s = Series().load(self.hyper_params.hp_series[name])
-            series = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
-            self.hyper_params.save()
+            if name in self.hyper_params.hp_series:
+                s = Series().load(self.hyper_params.hp_series[name])
+                steps, values = self.get_input_series(s, self.hyper_params.step)
+                series = {'step': steps, 'value': values, 'smoothed': values}
 
-            if series['step']:
-                series['name'] = '@input' + name
-                res.append(series)
+                if series['step']:
+                    series['name'] = '@input' + name
+                    res.append(series)
 
         res.sort(key=lambda s: s['name'])
 
         return res
+
+    @staticmethod
+    def get_input_series(series: Series, current_step):
+        steps, values = [], []
+
+        for i in range(len(series.step)):
+            v = series.value[i]
+
+            if i + 1 > len(series.step) - 1:
+                ns = current_step - 1
+            else:
+                ns = series.step[i + 1] - 1
+
+            steps += [series.step[i], ns]
+            values += [v, v]
+
+        if values:
+            steps.append(current_step)
+            values.append(values[-1])
+
+        return steps, values
 
     @staticmethod
     def get_or_create(run_uuid: str):
@@ -125,37 +146,15 @@ class HyperParamsAnalysis(Analysis):
 
         self.hyper_params.save()
 
-    @staticmethod
-    def get_series_gap(step: List[int], value: List[float], current_step: int):
-        steps, values = [], []
-        if step:
-            last_step = step[-1]
-            last_value = value[-1]
-
-            steps = list(range(int(last_step) + 1, int(current_step) + 1))
-            values = [last_value] * len(steps)
-
-        return steps, values
-
-    def update_hp_series(self, ind: str, value: float = None) -> None:
+    def update_hp_series(self, ind: str, value: float) -> None:
         hp_series = self.hyper_params.hp_series
         if ind not in hp_series:
             hp_series[ind] = Series().to_data()
 
         s = Series().load(hp_series[ind])
 
-        if not value and not s.value:
-            return
-        if not value and s.value:
-            value = s.value[-1]
-
-        current_step = self.hyper_params.step
-        steps, values = self.get_series_gap(s.step, s.value, current_step - 1)
-
-        steps.append(self.hyper_params.step)
-        values.append(value)
-
-        s.update(steps, values)
+        s.step.append(self.hyper_params.step)
+        s.value.append(value)
 
         hp_series[ind] = s.to_data()
 
