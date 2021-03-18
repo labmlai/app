@@ -86,15 +86,9 @@ export class EditableSparkLine {
         this.inputValueElem.value = formatFixed(last.smoothed, 3)
     }
 
-    onSparkLineClick(e: Event) {
-        this.onClick()
-        e.preventDefault()
-        e.stopPropagation()
-    }
-
     render($: WeyaElementFunction) {
         $(`div`, `.sparkline-list-item.list-group-item.${this.className}`,
-            {on: {click: this.onSparkLineClick.bind(this)}}, $ => {
+            {on: {click: this.onClick}}, $ => {
                 $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                     $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
                     $('svg.sparkline', {style: {width: `${this.chartWidth * 2}px`}, height: 25}, $ => {
@@ -139,6 +133,8 @@ export class EditableSparkLine {
                 })
             })
 
+        this.inputRangeElem.addEventListener('click', this.onInputElemClick.bind(this))
+        this.inputValueElem.addEventListener('click', this.onInputElemClick.bind(this))
         this.inputRangeElem.addEventListener('input', this.onSliderChange.bind(this))
         this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
@@ -149,11 +145,8 @@ export class EditableSparkLine {
         this.renderTextValue()
     }
 
-    updateSliderConfig(value: number) {
-        this.inputRangeElem.setAttribute("max", `${value * (9 / 5)}`)
-        this.inputRangeElem.setAttribute("step", `${value / 10}`)
-        this.inputRangeElem.setAttribute("min", `${value / 5}`)
-        this.inputRangeElem.setAttribute("value", `${value}`)
+    onInputElemClick(e: Event) {
+        e.stopPropagation()
     }
 
     onSliderChange() {
@@ -167,6 +160,13 @@ export class EditableSparkLine {
             this.inputRangeElem.setAttribute("value", `${number}`)
             this.updateSliderConfig(number)
         }
+    }
+
+    updateSliderConfig(value: number) {
+        this.inputRangeElem.setAttribute("max", `${value * (9 / 5)}`)
+        this.inputRangeElem.setAttribute("step", `${value / 10}`)
+        this.inputRangeElem.setAttribute("min", `${value / 5}`)
+        this.inputRangeElem.setAttribute("value", `${value}`)
     }
 
     getInput() {
