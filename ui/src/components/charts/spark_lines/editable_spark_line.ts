@@ -92,8 +92,8 @@ export class EditableSparkLine {
             {on: {click: this.onClick}}, $ => {
                 $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                     $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                    $('svg.sparkline', {style: {width: `${this.chartWidth * 2}px`}, height: 25}, $ => {
-                        $('g', {transform: `translate(${0}, 25)`}, $ => {
+                    $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth}px`}, height: 36}, $ => {
+                        $('g', {transform: `translate(${0}, 30)`}, $ => {
                             new LineFill({
                                 series: this.series,
                                 xScale: this.xScale,
@@ -109,7 +109,7 @@ export class EditableSparkLine {
                             })
                             this.linePlot.render($)
                         })
-                        $('g', {transform: `translate(${(this.titleWidth / 4) * 3}, ${0})`}, $ => {
+                        $('g', {transform: `translate(${this.titleWidth}, ${0})`}, $ => {
                             this.primaryElem = $('text', '.value-primary', {
                                 style: {fill: this.color},
                                 transform: `translate(${this.chartWidth - 24},${15})`

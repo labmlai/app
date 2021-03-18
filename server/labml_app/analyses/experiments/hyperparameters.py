@@ -8,6 +8,7 @@ from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
+from labml_app.db import run
 from ..series import Series
 from ..analysis import Analysis
 from ..series import SeriesModel
@@ -58,21 +59,27 @@ class HyperParamsAnalysis(Analysis):
 
         self.hyper_params.track(res)
 
-    def get_tracking(self):
+    def get_tracking(self, dynamic: {}):
         res = []
         for ind, track in self.hyper_params.tracking.items():
             name = ind.split('.')
+            name = ''.join(name[-1])
 
             s = Series().load(track)
-            series: Dict[str, Any] = {'step': s.last_step, 'value': s.value, 'smoothed': s.value}
-            name = ''.join(name[-1])
-            series['name'] = name
+            series: Dict[str, Any] = {'step': s.last_step,
+                                      'value': s.value,
+                                      'smoothed': s.value,
+                                      'is_editable': name in dynamic,
+                                      'name': name}
             res.append(series)
 
             if name in self.hyper_params.hp_series:
                 s = Series().load(self.hyper_params.hp_series[name])
                 steps, values = self.get_input_series(s, self.hyper_params.step)
-                series = {'step': steps, 'value': values, 'smoothed': values}
+
+                series = {'step': steps,
+                          'value': values,
+                          'smoothed': values}
 
                 if series['step']:
                     series['name'] = '@input' + name
@@ -170,7 +177,8 @@ def get_hyper_params_tracking(run_uuid: str) -> Any:
 
     ans = HyperParamsAnalysis.get_or_create(run_uuid)
     if ans:
-        track_data = ans.get_tracking()
+        r = run.get_run(run_uuid)
+        track_data = ans.get_tracking(r.dynamic)
         status_code = 200
 
     response = make_response(format_rv({'series': track_data, 'insights': []}))

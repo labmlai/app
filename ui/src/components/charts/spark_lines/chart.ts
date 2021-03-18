@@ -95,7 +95,7 @@ export class SparkLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                if (this.isEditable) {
+                if (this.isEditable && s.is_editable) {
                     let editableSparkLine = new EditableSparkLine({
                         name: s.name,
                         series: s.series,
