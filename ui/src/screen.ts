@@ -30,6 +30,7 @@ class ScreenContainer {
     private isUserLogged: boolean
     private userCache: UserCache
     private loader: Loader
+    private windowWidth: number
 
     constructor() {
         this.view = null
@@ -46,7 +47,9 @@ class ScreenContainer {
 
     onResize = () => {
         let windowWidth = getWindowDimensions().width
-        if (this.view) {
+        // Prevent mobile browser addressBar visibility from triggering a resize event
+        if (this.windowWidth !== windowWidth && this.view) {
+            this.windowWidth = windowWidth
             this.view.onResize(windowWidth)
         }
     }

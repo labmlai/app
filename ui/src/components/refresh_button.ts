@@ -35,13 +35,13 @@ export class AwesomeRefreshButton {
     }
 
     start() {
-        if (this.isActive) {
-            return //ignore start since it's a screensize change
+        // Only reinitialize the timer if it's not a resize re-render
+        if (!this.isActive) {
+            this.remainingTime = AUTO_REFRESH_TIME
+            this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
         }
         this.refreshButton.style.display = null
         this.isActive = true
-        this.remainingTime = AUTO_REFRESH_TIME
-        this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
     }
 
     private procTimerUpdate = async () => {
