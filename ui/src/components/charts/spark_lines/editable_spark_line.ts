@@ -126,6 +126,7 @@ export class EditableSparkLine {
                             this.inputValueElem = $('input', '.text-end', {
                                 style: {
                                     height: '36px',
+                                    width: `${this.titleWidth/2}px`,
                                     padding: '0px'
                                 }
                             })
