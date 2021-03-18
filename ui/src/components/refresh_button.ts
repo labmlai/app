@@ -36,7 +36,7 @@ export class AwesomeRefreshButton {
 
     start() {
         if (this.isActive) {
-            throw "oops"
+            return //ignore start since it's a screensize change
         }
         this.refreshButton.style.display = null
         this.isActive = true
