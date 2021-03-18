@@ -120,11 +120,15 @@ export class EditableSparkLine {
                     this.inputRangeElem = $('input', '.slider', {
                         type: "range",
                         style: {width: `${this.chartWidth}px`},
-
                     })
                     $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
-                        $('span.input-content.float-right', {style: {width: `${this.titleWidth / 2}px`}}, $ => {
-                            this.inputValueElem = $('input', {style: {height: '36px'}})
+                        $('span.input-content.float-right', $ => {
+                            this.inputValueElem = $('input', '.text-end', {
+                                style: {
+                                    height: '36px',
+                                    padding: '0px'
+                                }
+                            })
                         })
                     })
                 })

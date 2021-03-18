@@ -31,6 +31,10 @@ html, body {
   text-align: center;
 }
 
+.text-end {
+  text-align: end;
+}
+
 .flex-container {
   display: flex;
   justify-content: space-between;
@@ -191,14 +195,6 @@ input, .item-value {
   animation: spin 0.5s linear infinite;
   margin-top: 50px;
   display: inline-block;
-}
-
-.center {
-  text-align: center;
-}
-
-.text-end {
-  text-align: end;
 }
 
 .loader-container {
