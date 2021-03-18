@@ -45,7 +45,7 @@ export class SparkLine {
         this.onClick = opt.onClick
         this.isMouseMoveOpt = opt.isMouseMoveOpt
         this.color = this.selected >= 0 ? opt.color : BASE_COLOR
-        this.titleWidth = Math.min(150, Math.round(opt.width * .375))
+        this.titleWidth = Math.min(150, Math.round(opt.width * .35))
         this.chartWidth = opt.width - this.titleWidth * 2
         this.minLastValue = opt.minLastValue
         this.maxLastValue = opt.maxLastValue
