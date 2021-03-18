@@ -111,6 +111,8 @@ class ActivationsView extends ScreenView {
         try {
             await this.loader.load()
 
+            this.calcPreferences()
+
             this.renderSparkLines()
             this.renderLineChart()
             this.renderSaveButton()
@@ -214,7 +216,7 @@ class ActivationsView extends ScreenView {
         this.renderSaveButton()
     }
 
-    loadPreferences() {
+    private calcPreferences() {
         this.currentChart = this.preferenceData.chart_type
 
         let analysisPreferences = this.preferenceData.series_preferences
