@@ -172,7 +172,6 @@ export class EditableSparkLine {
     onInputChange() {
         let number = Number(this.inputValueElem.value)
         if (number) {
-            this.inputRangeElem.setAttribute("value", `${number}`)
             this.lastChanged = number
             // this.updateSliderConfig(number)
         }
