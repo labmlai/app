@@ -47,7 +47,7 @@ class HyperParamsView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
+            this.filterSeries(toPointValues((await this.analysisCache.get(force)).series))
 
             if (this.status && this.status.isRunning) {
                 this.isEditMode = true

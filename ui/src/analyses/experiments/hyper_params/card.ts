@@ -28,7 +28,7 @@ export class HyperParamsCard extends Card {
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
         this.loader = new DataLoader(async (force) => {
-            this.filterSeries(toPointValues((await this.analysisCache.get(true)).series))
+            this.filterSeries(toPointValues((await this.analysisCache.get(force)).series))
         })
     }
 

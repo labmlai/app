@@ -31,6 +31,7 @@ export interface SeriesModel {
     value: number[]
     smoothed: number[]
     mean: number
+    is_editable: boolean
     series: PointValue[]
 }
 
