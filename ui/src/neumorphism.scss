@@ -76,19 +76,23 @@ body.light {
 
   .labml-card {
     background-color: $light-background;
-    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
 
     h3 {
       color: #7f8c8d;
     }
 
-    &.labml-card-action {
-      box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+    &:not(disabled):not(.disabled) {
+      box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
+
+      &.labml-card-action {
+        box-shadow: 3px 3px 6px $light-shadow1, -3px -3px 6px $light-shadow2;
+      }
+
+      &.selected, &:active {
+        box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
+      }
     }
 
-    &.selected, &:not(disabled):not(.disabled):active {
-      box-shadow: inset 2px 2px 5px $light-shadow1, inset -3px -3px 7px $light-shadow2;
-    }
   }
 
   .nav-link {
@@ -328,19 +332,23 @@ body.dark {
 
   .labml-card {
     background-color: $dark-background;
-    box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
 
     h3 {
       color: #7f8c8d;
     }
 
-    &.labml-card-action {
-      box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+    &:not(disabled):not(.disabled) {
+      box-shadow: 0px 4px 5px 0px rgba(0, 0, 0, 0.10), 0px 1px 20px 0px rgba(0, 0, 0, 0.10);
+
+      &.labml-card-action {
+        box-shadow: 3px 3px 6px $dark-shadow1, -3px -3px 6px $dark-shadow2;
+      }
+
+      &.selected, &:active {
+        box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
+      }
     }
 
-    &.selected, &:not(disabled):not(.disabled):active {
-      box-shadow: inset 2px 2px 5px $dark-shadow1, inset -3px -3px 7px $dark-shadow2;
-    }
   }
 
   .nav-link {

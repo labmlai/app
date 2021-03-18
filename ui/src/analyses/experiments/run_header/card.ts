@@ -41,12 +41,13 @@ export class RunHeaderCard {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div', '.labml-card.labml-card-action.disabled', $ => {
+        this.elem = $('div', '.labml-card.disabled', $ => {
             this.loader.render($)
         })
 
         if (this.clickable) {
             this.elem.classList.remove('disabled')
+            this.elem.classList.add('labml-card-action')
             this.elem.addEventListener('click', this.onClick)
         }
 
