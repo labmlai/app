@@ -1,5 +1,5 @@
 import d3 from "../../../d3"
-import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
+import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
 import {BASE_COLOR} from "../constants"
 import {getExtent, getScale, getSelectedIdx, getTimeScale, toDate} from "../utils"
@@ -28,8 +28,8 @@ export class SparkTimeLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
-    primaryElem: WeyaElement
-    secondaryElem: WeyaElement
+    primaryElem: SVGTextElement
+    secondaryElem: SVGTextElement
     className: string = 'empty'
     xScale: d3.ScaleTime<number, number>
     yScale: d3.ScaleLinear<number, number>
@@ -86,8 +86,8 @@ export class SparkTimeLine {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
             $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                 $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                $('svg.sparkline', {style: {width: `${this.chartWidth}px`}, height: 25}, $ => {
-                    $('g', {transform: `translate(${0}, 25)`}, $ => {
+                $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth}px`}, height: 36}, $ => {
+                    $('g', {transform: `translate(${0}, 30)`}, $ => {
                         new TimeSeriesFill({
                             series: this.series,
                             xScale: this.xScale,
@@ -103,10 +103,16 @@ export class SparkTimeLine {
                         })
                         this.timeSeriesPlot.render($)
                     })
-                })
-                $('span.value', {style: {width: `${this.titleWidth}px`}}, $ => {
-                    this.secondaryElem = $('span.value-secondary', {style: {color: this.color}})
-                    this.primaryElem = $('span.value-primary', {style: {color: this.color}})
+                    $('g', {transform: `translate(${this.titleWidth}, ${0})`}, $ => {
+                        this.secondaryElem = $('text', '.value-secondary', {
+                            style: {fill: this.color},
+                            transform: `translate(${this.chartWidth},${12})`
+                        })
+                        this.primaryElem = $('text', '.value-primary', {
+                            style: {fill: this.color},
+                            transform: `translate(${this.chartWidth},${29})`
+                        })
+                    })
                 })
             })
         })
