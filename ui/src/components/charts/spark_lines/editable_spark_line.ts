@@ -88,50 +88,48 @@ export class EditableSparkLine {
     }
 
     render($: WeyaElementFunction) {
-        $(`div`, `.sparkline-list-item.list-group-item.${this.className}`,
-            {on: {click: this.onClick}}, $ => {
-                $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                    $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                    $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth}px`}, height: 36}, $ => {
-                        $('g', {transform: `translate(${0}, 30)`}, $ => {
-                            new LineFill({
-                                series: this.series,
-                                xScale: this.xScale,
-                                yScale: this.yScale,
-                                color: '#7f8c8d',
-                                colorIdx: 9
-                            }).render($)
-                            this.linePlot = new LinePlot({
-                                series: this.series,
-                                xScale: this.xScale,
-                                yScale: this.yScale,
-                                color: '#7f8c8d'
-                            })
-                            this.linePlot.render($)
+        $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
+            $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
+                $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
+                $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth}px`}, height: 36}, $ => {
+                    $('g', {transform: `translate(${0}, 30)`}, $ => {
+                        new LineFill({
+                            series: this.series,
+                            xScale: this.xScale,
+                            yScale: this.yScale,
+                            color: '#7f8c8d',
+                            colorIdx: 9
+                        }).render($)
+                        this.linePlot = new LinePlot({
+                            series: this.series,
+                            xScale: this.xScale,
+                            yScale: this.yScale,
+                            color: '#7f8c8d'
                         })
-                        $('g', {transform: `translate(${this.titleWidth}, ${0})`}, $ => {
-                            this.primaryElem = $('text', '.value-primary', {
-                                style: {fill: this.color},
-                                transform: `translate(${this.chartWidth - 24},${15})`
-                            })
+                        this.linePlot.render($)
+                    })
+                    $('g', {transform: `translate(${this.titleWidth}, ${0})`}, $ => {
+                        this.primaryElem = $('text', '.value-primary', {
+                            style: {fill: this.color},
+                            transform: `translate(${this.chartWidth},${29})`
                         })
                     })
+                })
+                this.inputElements = $('div', '.mt-1', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
+                    $('span', '', {style: {width: `${this.titleWidth}px`, color: this.color}})
+                    this.inputRangeElem = $('input', '.slider', {
+                        type: "range",
+                        style: {width: `${this.chartWidth}px`},
 
-                    this.inputElements = $('div', '.mt-1', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                        $('span', '', {style: {width: `${this.titleWidth}px`, color: this.color}})
-                        this.inputRangeElem = $('input', '.slider', {
-                            type: "range",
-                            style: {width: `${this.chartWidth}px`},
-
-                        })
-                        $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
-                            $('span.input-content.float-right', {style: {width: `${this.titleWidth / 2}px`}}, $ => {
-                                this.inputValueElem = $('input', {style: {height: '36px'}})
-                            })
+                    })
+                    $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
+                        $('span.input-content.float-right', {style: {width: `${this.titleWidth / 2}px`}}, $ => {
+                            this.inputValueElem = $('input', {style: {height: '36px'}})
                         })
                     })
                 })
             })
+        })
 
         this.inputRangeElem.addEventListener('click', this.onInputElemClick.bind(this))
         this.inputValueElem.addEventListener('click', this.onInputElemClick.bind(this))
