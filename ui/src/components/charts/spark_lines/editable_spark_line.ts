@@ -37,6 +37,7 @@ export class EditableSparkLine {
     linePlot: LinePlot
     inputRangeElem: HTMLInputElement
     inputValueElem: HTMLInputElement
+    inputElements: HTMLDivElement
     primaryElem: SVGTextElement
 
     constructor(opt: SparkLineOptions) {
@@ -116,16 +117,15 @@ export class EditableSparkLine {
                         })
                     })
 
-                    $('div.mt-1', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
+                    this.inputElements = $('div', '.mt-1', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
                         $('span', '', {style: {width: `${this.titleWidth}px`, color: this.color}})
-
                         this.inputRangeElem = $('input', '.slider', {
                             type: "range",
                             style: {width: `${this.chartWidth}px`},
 
                         })
                         $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
-                            $('span.input-content.float-right', {style: {width: `${this.titleWidth / 1.5}px`}}, $ => {
+                            $('span.input-content.float-right', {style: {width: `${this.titleWidth / 2}px`}}, $ => {
                                 this.inputValueElem = $('input', {style: {height: '36px'}})
                             })
                         })
@@ -143,9 +143,16 @@ export class EditableSparkLine {
 
         this.renderInputValue()
         this.renderTextValue()
+
+        if (this.className.includes('selected')) {
+            this.inputElements.style.display = 'block'
+        } else {
+            this.inputElements.style.display = 'none'
+        }
     }
 
     onInputElemClick(e: Event) {
+        e.preventDefault()
         e.stopPropagation()
     }
 

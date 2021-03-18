@@ -285,15 +285,15 @@ body.light {
   }
 
   .danger {
-      color: $light-danger;
+    color: $light-danger;
   }
 
   .warning {
-      color: $light-warning;
+    color: $light-warning;
   }
 
   .success {
-      color: $light-success;
+    color: $light-success;
   }
 
   .error-container {
@@ -306,6 +306,16 @@ body.light {
 
   .close-btn {
     color: white;
+  }
+
+  .slider {
+    &::-webkit-slider-thumb {
+      background: $light-text;
+    }
+
+    &::-moz-range-thumb {
+      background: $light-text;
+    }
   }
 }
 
@@ -541,15 +551,15 @@ body.dark {
   }
 
   .danger {
-      color: $dark-danger;
+    color: $dark-danger;
   }
 
   .warning {
-      color: $dark-warning;
+    color: $dark-warning;
   }
 
   .success {
-      color: $dark-success;
+    color: $dark-success;
   }
 
   .error-container {
@@ -562,5 +572,15 @@ body.dark {
 
   .close-btn {
     color: black;
+  }
+
+  .slider {
+    &::-webkit-slider-thumb {
+      background: $dark-text;
+    }
+
+    &::-moz-range-thumb {
+      background: $dark-text;
+    }
   }
 }

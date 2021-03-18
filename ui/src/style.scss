@@ -163,6 +163,7 @@ input, .item-value {
   -moz-user-select: auto;
   user-select: auto;
 }
+
 .btn-refresh {
   position: relative;
 
@@ -194,6 +195,10 @@ input, .item-value {
 
 .center {
   text-align: center;
+}
+
+.text-end {
+  text-align: end;
 }
 
 .loader-container {
@@ -1055,29 +1060,31 @@ $keyFontSize: 0.8rem;
   border-radius: 3px;
   background: #d3d3d3;
   outline: none;
-  opacity: 0.3;
+  opacity: 0.5;
   -webkit-transition: .2s;
   transition: opacity .2s;
-}
 
-.slider:hover {
-  opacity: 0.7;
-}
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: orangered;
+    cursor: pointer;
+    box-shadow: 0px 0px 4px;
+  }
 
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: orangered;
-  cursor: pointer;
-}
+  &::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: orangered;
+    cursor: pointer;
+    box-shadow: 0px 0px 4px;
+  }
 
-.slider::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background: orangered;
-  cursor: pointer;
+  &:hover {
+    opacity: 1;
+  }
 }
