@@ -87,6 +87,7 @@ class ScreenContainer {
                 return
             }
             document.body.innerHTML = ''
+            this.windowWidth = null
             this.onResize()
             document.body.append(this.view.render())
         })
