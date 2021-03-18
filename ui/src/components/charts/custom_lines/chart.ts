@@ -179,12 +179,14 @@ export class CustomLineChart {
                                                 }).render($)
                                             })
                                         }
+                                        let lineColor = ''
                                         this.primePlots.map((s, i) => {
+                                            lineColor = this.chartColors.getColor(this.filteredPlotIdx[i])
                                             let linePlot = new LinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i]),
+                                                color: lineColor,
                                                 isPrime: true
                                             })
                                             this.linePlots.push(linePlot)
@@ -195,7 +197,7 @@ export class CustomLineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
+                                                color: lineColor
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
