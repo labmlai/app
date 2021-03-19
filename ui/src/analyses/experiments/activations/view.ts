@@ -34,6 +34,7 @@ class ActivationsView extends ScreenView {
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: HTMLDivElement
+    toggleButtonContainer: HTMLDivElement
     saveButton: SaveButton
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -92,12 +93,7 @@ class ActivationsView extends ScreenView {
                         })
 
                         this.runHeaderCard.render($).then()
-                        new ToggleButton({
-                            onButtonClick: this.onChangeScale,
-                            text: 'Log',
-                            isToggled: this.currentChart > 0,
-                            parent: this.constructor.name
-                        }).render($)
+                        this.toggleButtonContainer = $('div')
                         $('h2', '.header.text-center', 'Activations - Variance')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
@@ -116,7 +112,7 @@ class ActivationsView extends ScreenView {
             this.renderSparkLines()
             this.renderLineChart()
             this.renderSaveButton()
-
+            this.renderToggleButton()
         } catch (e) {
 
         } finally {
@@ -164,6 +160,18 @@ class ActivationsView extends ScreenView {
         this.saveButtonContainer.innerHTML = ''
         $(this.saveButtonContainer, $ => {
             this.saveButton.render($)
+        })
+    }
+
+    renderToggleButton() {
+        this.toggleButtonContainer.innerHTML = ''
+        $(this.toggleButtonContainer, $ => {
+            new ToggleButton({
+                onButtonClick: this.onChangeScale,
+                text: 'Log',
+                isToggled: this.currentChart > 0,
+                parent: this.constructor.name
+            }).render($)
         })
     }
 
