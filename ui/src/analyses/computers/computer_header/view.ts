@@ -155,6 +155,7 @@ class ComputerHeaderView extends ScreenView {
                 }).render($)
             })
         })
+        this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.computer.is_claimed))
     }
 
     onToggleEdit = () => {
