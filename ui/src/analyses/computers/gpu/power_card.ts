@@ -1,7 +1,7 @@
 import {SeriesModel} from "../../../models/run"
 import {AnalysisDataCache} from "../../../cache/cache"
-import {Weya, WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
-import {Loader} from "../../../components/loader"
+import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
+import {DataLoader} from "../../../components/loader"
 import {Card, CardOptions} from "../../types"
 import gpuCache from "./cache"
 import {getSeriesData} from "./utils"
@@ -9,15 +9,15 @@ import {Labels} from "../../../components/charts/labels"
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {ROUTER} from "../../../app"
 
-
 export class GPUPowerCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
     analysisCache: AnalysisDataCache
-    lineChartContainer: WeyaElement
-    elem: WeyaElement
-    loader: Loader
+    lineChartContainer: HTMLDivElement
+    elem: HTMLDivElement
+    private loader: DataLoader
+    private labelsContainer: HTMLDivElement
     plotIdx: number[] = []
 
     constructor(opt: CardOptions) {
@@ -26,7 +26,9 @@ export class GPUPowerCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.analysisCache = gpuCache.getAnalysis(this.uuid)
-        this.loader = new Loader()
+        this.loader = new DataLoader(async (force) => {
+            this.series = getSeriesData((await this.analysisCache.get(force)).series, 'power')
+        })
     }
 
     getLastUpdated(): number {
@@ -34,27 +36,23 @@ export class GPUPowerCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'GPU - Power')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.series = getSeriesData((await this.analysisCache.get()).series, 'power')
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        Weya(this.elem, $ => {
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'GPU - Power')
+            this.loader.render($)
             this.lineChartContainer = $('div', '')
-            new Labels({labels: Array.from(this.series, x => x['name']), isDivergent: true}).render($)
+            this.labelsContainer = $('div', '')
         })
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            if (this.series.length > 0) {
+                this.renderLineChart()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
+
         }
     }
 
@@ -66,7 +64,7 @@ export class GPUPowerCard extends Card {
         this.plotIdx = res
 
         this.lineChartContainer.innerHTML = ''
-        Weya(this.lineChartContainer, $ => {
+        $(this.lineChartContainer, $ => {
             new TimeSeriesChart({
                 series: this.series,
                 width: this.width,
@@ -75,18 +73,22 @@ export class GPUPowerCard extends Card {
                 isDivergent: true
             }).render($)
         })
+
+        this.labelsContainer.innerHTML = ''
+        $(this.labelsContainer, $ => {
+            new Labels({labels: Array.from(this.series, x => x['name']), isDivergent: true}).render($)
+        })
     }
 
     async refresh() {
         try {
-            this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power')
+            await this.loader.load(true)
+            if (this.series.length > 0) {
+                this.renderLineChart()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-            this.elem.classList.remove('hide')
         }
     }
 

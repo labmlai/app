@@ -96,9 +96,6 @@ class ComputerView extends ScreenView {
         if (this.autoRefresh !== undefined) {
             clearInterval(this.autoRefresh)
         }
-        if (this.computerHeaderCard) {
-            this.computerHeaderCard.clearCounter()
-        }
     }
 
     async onRefresh() {
