@@ -10,6 +10,7 @@ import ChartColors from "../chart_colors"
 interface SparkLinesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
+    onEdit: () => void
     isEditable: boolean
     isMouseMoveOpt?: boolean
     isDivergent?: boolean
@@ -26,6 +27,7 @@ export class EditableSparkLines {
     stepExtent: [number, number]
     colorIndices: number[] = []
     onSelect?: (i: number) => void
+    onEdit: () => void
     sparkLines: SparkLine[] = []
     editableSparkLines: EditableSparkLine[] = []
     chartColors: ChartColors
@@ -36,6 +38,7 @@ export class EditableSparkLines {
         this.series = opt.series
         this.plotIdx = opt.plotIdx
         this.onSelect = opt.onSelect
+        this.onEdit = opt.onEdit
         this.isEditable = opt.isEditable
         this.isMouseMoveOpt = opt.isMouseMoveOpt
 
@@ -115,7 +118,8 @@ export class EditableSparkLines {
                         minLastValue: this.minLastValue,
                         maxLastValue: this.maxLastValue,
                         color: this.chartColors.getColor(this.colorIndices[i]),
-                        isMouseMoveOpt: this.isMouseMoveOpt
+                        isMouseMoveOpt: this.isMouseMoveOpt,
+                        onEdit: this.onEdit
                     })
                     this.editableSparkLines.push(editableSparkLine)
                     editableSparkLine.render($)
