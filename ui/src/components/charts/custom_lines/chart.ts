@@ -1,7 +1,7 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getScale} from "../utils"
+import {defaultSeriesToPlot, getExtent, getScale, toPointValues} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -13,8 +13,7 @@ const LABEL_HEIGHT = 10
 
 interface LineChartOptions {
     width: number
-    primeSeries: SeriesModel[],
-    minotSeries: SeriesModel[],
+    series: SeriesModel[],
     plotIdx: number[]
     onSelect?: (i: number) => void
     onCursorMove?: ((cursorStep?: number | null) => void)[]
@@ -22,11 +21,10 @@ interface LineChartOptions {
 }
 
 export class CustomLineChart {
-    primeSeries: SeriesModel[]
-    minotSeries: SeriesModel[]
+    series: SeriesModel[]
     plotIdx: number[]
-    primePlots: SeriesModel[] = []
-    minorPlots: SeriesModel[] = []
+    filteredPlots: SeriesModel[] = []
+    subPlots: SeriesModel[] = []
     filteredPlotIdx: number[] = []
     chartWidth: number
     chartHeight: number
@@ -44,8 +42,7 @@ export class CustomLineChart {
     private svgBoundingClientRect: DOMRect
 
     constructor(opt: LineChartOptions) {
-        this.primeSeries = opt.primeSeries
-        this.minotSeries = opt.minotSeries
+        this.series = opt.series
         this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
@@ -58,29 +55,28 @@ export class CustomLineChart {
         this.chartHeight = Math.round(Math.min(this.chartWidth, windowHeight) / 2)
 
         if (this.plotIdx.length === 0) {
-            this.plotIdx = defaultSeriesToPlot(this.primeSeries)
+            this.plotIdx = defaultSeriesToPlot(this.series)
         }
 
         for (let i = 0; i < this.plotIdx.length; i++) {
             if (this.plotIdx[i] >= 0) {
+                let s = this.series[i]
                 this.filteredPlotIdx.push(i)
-                let p = this.primeSeries[i]
-                this.primePlots.push(p)
-                for (let m of this.minotSeries) {
-                    if (m.name === `@input${p.name}`) {
-                        this.minorPlots.push(m)
-                    }
+                this.filteredPlots.push(s)
+                if (s.sub) {
+                    this.subPlots.push(s.sub)
                 }
             }
         }
 
-        let plotSeries = this.primePlots.concat(this.minorPlots)
+        this.subPlots = toPointValues(this.subPlots)
+        let plots: SeriesModel[] = this.filteredPlots.concat(this.subPlots)
 
-        const stepExtent = getExtent(plotSeries.map(s => s.series), d => d.step)
+        const stepExtent = getExtent(plots.map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
-        this.yScale = getScale(getExtent(plotSeries.map(s => s.series), d => d.value, false), -this.chartHeight)
+        this.yScale = getScale(getExtent(plots.map(s => s.series), d => d.value, false), -this.chartHeight)
 
-        this.chartColors = new ChartColors({nColors: plotSeries.length, isDivergent: true})
+        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: true})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -140,12 +136,11 @@ export class CustomLineChart {
     }
 
     render($: WeyaElementFunction) {
-        if (this.primeSeries.length === 0) {
+        if (this.series.length === 0) {
             $('div', '')
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
@@ -162,8 +157,8 @@ export class CustomLineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
                                     }, $ => {
-                                        if (this.primePlots.length < 3) {
-                                            this.primePlots.map((s, i) => {
+                                        if (this.filteredPlots.length < 3) {
+                                            this.filteredPlots.map((s, i) => {
                                                 new LineFill({
                                                     series: s.series,
                                                     xScale: this.xScale,
@@ -174,10 +169,11 @@ export class CustomLineChart {
                                                 }).render($)
                                             })
                                         }
-                                        this.primePlots.map((p, i) => {
+                                        let subPlotIdx = 0
+                                        this.filteredPlots.map((s, i) => {
                                             let lineColor = this.chartColors.getColor(this.filteredPlotIdx[i])
                                             let linePlot = new LinePlot({
-                                                series: p.series,
+                                                series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
                                                 color: lineColor,
@@ -186,15 +182,14 @@ export class CustomLineChart {
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
 
-                                            for (let m of this.minorPlots) {
-                                                if (m.name === `@input${p.name}`) {
-                                                    new LinePlot({
-                                                        series: m.series,
-                                                        xScale: this.xScale,
-                                                        yScale: this.yScale,
-                                                        color: lineColor
-                                                    }).render($)
-                                                }
+                                            if (s.sub) {
+                                                new LinePlot({
+                                                    series: this.subPlots[subPlotIdx].series,
+                                                    xScale: this.xScale,
+                                                    yScale: this.yScale,
+                                                    color: lineColor,
+                                                }).render($)
+                                                subPlotIdx++
                                             }
                                         })
                                     })

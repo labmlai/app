@@ -88,7 +88,6 @@ export class MetricsCard extends Card {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.width,
-                isEditable: false,
                 isDivergent: true
             }).render($)
         })

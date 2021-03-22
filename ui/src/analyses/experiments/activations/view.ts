@@ -191,8 +191,7 @@ class ActivationsView extends ScreenView {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
-                onSelect: this.toggleChart,
-                isEditable: false
+                onSelect: this.toggleChart
             })
             this.sparkLines.render($)
         })

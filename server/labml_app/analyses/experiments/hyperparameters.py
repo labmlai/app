@@ -71,14 +71,14 @@ class HyperParamsAnalysis(Analysis):
                                       'smoothed': s.value,
                                       'is_editable': name in dynamic,
                                       'name': name}
-            res.append(series)
 
             if name in self.hyper_params.hp_series:
                 s = Series().load(self.hyper_params.hp_series[name])
                 steps, values = self.get_input_series(s, self.hyper_params.step, dynamic[name])
 
-                series = {'step': steps, 'value': values, 'smoothed': values, 'name': '@input' + name}
-                res.append(series)
+                series['sub'] = {'step': steps, 'value': values, 'smoothed': values}
+
+            res.append(series)
 
         res.sort(key=lambda s: s['name'])
 

@@ -133,7 +133,7 @@ class ComputerHeaderView extends ScreenView {
                 $(`li`, $ => {
                     $('span.item-key', 'Run Status')
                     $('span.item-value', $ => {
-                        new StatusView({status: this.status.run_status}).render($)
+                        new StatusView({status: this.status.run_status, type: 'computer'}).render($)
                     })
                 })
                 new EditableField({
