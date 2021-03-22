@@ -80,12 +80,12 @@ export class EditableSparkLine {
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
-        this.primaryElem.textContent = formatFixed(last.smoothed, 3)
+        this.primaryElem.textContent = formatFixed(last.value, 3)
     }
 
     renderInputValue() {
         const last = this.series[this.series.length - 1]
-        this.inputValueElem.value = formatFixed(last.smoothed, 3)
+        this.inputValueElem.value = formatFixed(last.value, 3)
     }
 
     render($: WeyaElementFunction) {
@@ -143,8 +143,8 @@ export class EditableSparkLine {
         this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
         const last = this.series[this.series.length - 1]
-        this.lastChanged = last.smoothed
-        this.updateSliderConfig(last.smoothed)
+        this.lastChanged = last.value
+        this.updateSliderConfig(last.value)
 
         this.renderInputValue()
         this.renderTextValue()
@@ -173,7 +173,6 @@ export class EditableSparkLine {
         let number = Number(this.inputValueElem.value)
         if (number) {
             this.lastChanged = number
-            // this.updateSliderConfig(number)
         }
     }
 

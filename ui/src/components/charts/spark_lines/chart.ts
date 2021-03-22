@@ -3,14 +3,12 @@ import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
-import {EditableSparkLine} from "./editable_spark_line"
 import ChartColors from "../chart_colors"
 
 
 interface SparkLinesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
-    isEditable: boolean
     isMouseMoveOpt?: boolean
     isDivergent?: boolean
 }
@@ -27,7 +25,6 @@ export class SparkLines {
     colorIndices: number[] = []
     onSelect?: (i: number) => void
     sparkLines: SparkLine[] = []
-    editableSparkLines: EditableSparkLine[] = []
     chartColors: ChartColors
     isDivergent?: boolean
 
@@ -35,7 +32,6 @@ export class SparkLines {
         this.series = opt.series
         this.plotIdx = opt.plotIdx
         this.onSelect = opt.onSelect
-        this.isEditable = opt.isEditable
         this.isMouseMoveOpt = opt.isMouseMoveOpt
 
         const margin = Math.floor(opt.width / 64)
@@ -71,21 +67,6 @@ export class SparkLines {
         for (let sparkLine of this.sparkLines) {
             sparkLine.changeCursorValue(cursorStep)
         }
-
-        if (this.isEditable) {
-            for (let sparkLine of this.editableSparkLines) {
-                sparkLine.changeCursorValue(cursorStep)
-            }
-        }
-    }
-
-    getSparkLinesValues() {
-        let res = {}
-        for (let sparkLine of this.editableSparkLines) {
-            res[sparkLine.name] = sparkLine.getInput()
-        }
-
-        return res
     }
 
     render($: WeyaElementFunction) {
@@ -95,37 +76,20 @@ export class SparkLines {
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
-                if (this.isEditable && s.is_editable) {
-                    let editableSparkLine = new EditableSparkLine({
-                        name: s.name,
-                        series: s.series,
-                        selected: this.plotIdx[i],
-                        stepExtent: this.stepExtent,
-                        width: this.rowWidth,
-                        onClick: onClick,
-                        minLastValue: this.minLastValue,
-                        maxLastValue: this.maxLastValue,
-                        color: this.chartColors.getColor(this.colorIndices[i]),
-                        isMouseMoveOpt: this.isMouseMoveOpt
-                    })
-                    this.editableSparkLines.push(editableSparkLine)
-                    editableSparkLine.render($)
-                } else {
-                    let sparkLine = new SparkLine({
-                        name: s.name,
-                        series: s.series,
-                        selected: this.plotIdx[i],
-                        stepExtent: this.stepExtent,
-                        width: this.rowWidth,
-                        onClick: onClick,
-                        minLastValue: this.minLastValue,
-                        maxLastValue: this.maxLastValue,
-                        color: this.chartColors.getColor(this.colorIndices[i]),
-                        isMouseMoveOpt: this.isMouseMoveOpt
-                    })
-                    this.sparkLines.push(sparkLine)
-                    sparkLine.render($)
-                }
+                let sparkLine = new SparkLine({
+                    name: s.name,
+                    series: s.series,
+                    selected: this.plotIdx[i],
+                    stepExtent: this.stepExtent,
+                    width: this.rowWidth,
+                    onClick: onClick,
+                    minLastValue: this.minLastValue,
+                    maxLastValue: this.maxLastValue,
+                    color: this.chartColors.getColor(this.colorIndices[i]),
+                    isMouseMoveOpt: this.isMouseMoveOpt
+                })
+                this.sparkLines.push(sparkLine)
+                sparkLine.render($)
             })
         })
     }

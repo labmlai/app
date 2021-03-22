@@ -6,7 +6,7 @@ import {BackButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
 import {toPointValues} from "../../../components/charts/utils"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
+import {EditableSparkLines} from "../../../components/charts/editable_spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
@@ -24,7 +24,7 @@ class HyperParamsView extends ScreenView {
     analysisCache: AnalysisDataCache
     statusCache: RunStatusCache
     runHeaderCard: RunHeaderCard
-    sparkLines: SparkLines
+    sparkLines: EditableSparkLines
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: HTMLDivElement
@@ -173,7 +173,7 @@ class HyperParamsView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            this.sparkLines = new SparkLines({
+            this.sparkLines = new EditableSparkLines({
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
@@ -207,9 +207,19 @@ class HyperParamsView extends ScreenView {
         }
     }
 
-    onSave() {
+    async onSave() {
         let data = this.sparkLines.getSparkLinesValues()
-        this.analysisCache.setAnalysis(data).then()
+        console.log(data)
+        await this.analysisCache.setAnalysis(data)
+
+        this.saveButton.disabled = true
+        this.renderSaveButton()
+
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.renderLineChart()
+
+        this.saveButton.disabled = false
+        this.renderSaveButton()
     }
 }
 
