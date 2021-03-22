@@ -122,7 +122,7 @@ class HyperParamsView extends ScreenView {
             this.renderSparkLines()
             this.renderLineChart()
             this.renderPrefsSaveButton(true)
-            this.renderParamsSaveButton(false)
+            this.renderParamsSaveButton(true)
         } catch (e) {
 
         } finally {
@@ -205,7 +205,8 @@ class HyperParamsView extends ScreenView {
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
                 onSelect: this.toggleChart,
-                isDivergent: true
+                isDivergent: true,
+                onEdit: this.onInputChange.bind(this)
             })
             this.sparkLines.render($)
         })
@@ -246,6 +247,7 @@ class HyperParamsView extends ScreenView {
 
         this.series = toPointValues((await this.analysisCache.get(true)).series)
         this.renderLineChart()
+        this.renderParamsSaveButton(true)
     }
 
     updatePreferences = () => {
@@ -253,6 +255,10 @@ class HyperParamsView extends ScreenView {
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.renderPrefsSaveButton(true)
+    }
+
+    onInputChange() {
+        this.renderParamsSaveButton(false)
     }
 }
 

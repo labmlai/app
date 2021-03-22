@@ -15,6 +15,7 @@ export interface SparkLineOptions {
     minLastValue: number
     maxLastValue: number
     onClick?: () => void
+    onEdit: () => void
     isMouseMoveOpt?: boolean
     color: string
 }
@@ -29,6 +30,7 @@ export class EditableSparkLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
+    onEdit: () => void
     isMouseMoveOpt?: boolean
     className: string = 'empty'
     xScale: d3.ScaleLinear<number, number>
@@ -46,6 +48,7 @@ export class EditableSparkLine {
         this.name = opt.name
         this.selected = opt.selected
         this.onClick = opt.onClick
+        this.onEdit = opt.onEdit
         this.isMouseMoveOpt = opt.isMouseMoveOpt
         this.color = this.selected >= 0 ? opt.color : getBaseColor()
         this.titleWidth = Math.min(150, Math.round(opt.width * .35))
@@ -167,6 +170,7 @@ export class EditableSparkLine {
             this.inputValueElem.value = formatFixed(number, 3)
             this.lastChanged = number
         }
+        this.onEdit()
     }
 
     onInputChange() {
@@ -174,6 +178,7 @@ export class EditableSparkLine {
         if (number) {
             this.lastChanged = number
         }
+        this.onEdit()
     }
 
     updateSliderConfig(value: number) {
