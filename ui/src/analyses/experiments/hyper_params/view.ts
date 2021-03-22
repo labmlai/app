@@ -209,7 +209,6 @@ class HyperParamsView extends ScreenView {
 
     async onSave() {
         let data = this.sparkLines.getSparkLinesValues()
-        console.log(data)
         await this.analysisCache.setAnalysis(data)
 
         this.saveButton.disabled = true
