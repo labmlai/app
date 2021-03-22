@@ -282,3 +282,25 @@ export class ToggleButton extends Button {
         })
     }
 }
+
+interface CustomButtonOptions extends buttonOptions {
+    text: string
+}
+
+export class CustomButton extends Button {
+    text: string
+
+    constructor(opt: CustomButtonOptions) {
+        super(opt)
+
+        this.text = opt.text
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}, style: {display: 'inline-block'}},
+            $ => {
+                $('span', this.text)
+            })
+    }
+}

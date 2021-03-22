@@ -1,7 +1,7 @@
 import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {PointValue} from "../../../models/run"
-import {BASE_COLOR} from "../constants"
+import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
 import {formatFixed} from "../../../utils/value"
@@ -15,6 +15,7 @@ export interface SparkLineOptions {
     minLastValue: number
     maxLastValue: number
     onClick?: () => void
+    onEdit: () => void
     isMouseMoveOpt?: boolean
     color: string
 }
@@ -29,6 +30,7 @@ export class EditableSparkLine {
     titleWidth: number
     chartWidth: number
     onClick?: () => void
+    onEdit: () => void
     isMouseMoveOpt?: boolean
     className: string = 'empty'
     xScale: d3.ScaleLinear<number, number>
@@ -46,8 +48,9 @@ export class EditableSparkLine {
         this.name = opt.name
         this.selected = opt.selected
         this.onClick = opt.onClick
+        this.onEdit = opt.onEdit
         this.isMouseMoveOpt = opt.isMouseMoveOpt
-        this.color = this.selected >= 0 ? opt.color : BASE_COLOR
+        this.color = this.selected >= 0 ? opt.color : getBaseColor()
         this.titleWidth = Math.min(150, Math.round(opt.width * .35))
         this.chartWidth = opt.width - this.titleWidth * 2
         this.minLastValue = opt.minLastValue
@@ -80,12 +83,12 @@ export class EditableSparkLine {
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
-        this.primaryElem.textContent = formatFixed(last.smoothed, 3)
+        this.primaryElem.textContent = formatFixed(last.value, 3)
     }
 
     renderInputValue() {
         const last = this.series[this.series.length - 1]
-        this.inputValueElem.value = formatFixed(last.smoothed, 3)
+        this.inputValueElem.value = formatFixed(last.value, 3)
     }
 
     render($: WeyaElementFunction) {
@@ -143,8 +146,8 @@ export class EditableSparkLine {
         this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
         const last = this.series[this.series.length - 1]
-        this.lastChanged = last.smoothed
-        this.updateSliderConfig(last.smoothed)
+        this.lastChanged = last.value
+        this.updateSliderConfig(last.value)
 
         this.renderInputValue()
         this.renderTextValue()
@@ -167,14 +170,15 @@ export class EditableSparkLine {
             this.inputValueElem.value = formatFixed(number, 3)
             this.lastChanged = number
         }
+        this.onEdit()
     }
 
     onInputChange() {
         let number = Number(this.inputValueElem.value)
         if (number) {
             this.lastChanged = number
-            // this.updateSliderConfig(number)
         }
+        this.onEdit()
     }
 
     updateSliderConfig(value: number) {

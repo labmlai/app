@@ -1,45 +1,47 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
-import {Loader} from "../components/loader"
+import {DataLoader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton, RefreshButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect'
 import EmptyRunsList from './empty_runs_list'
 import {AlertMessage} from '../components/alert'
-
+import {AwesomeRefreshButton} from '../components/refresh_button'
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
     currentRunsList: RunListItemModel[]
-    elem: WeyaElement
+    elem: HTMLDivElement
     runsListContainer: HTMLDivElement
-    loader: Loader
     searchQuery: string
-    buttonContainer: WeyaElement
+    buttonContainer: HTMLDivElement
     alertContainer: HTMLDivElement
     deleteButton: DeleteButton
     editButton: EditButton
-    refreshButton: RefreshButton
     cancelButton: CancelButton
     isEditMode: boolean
     runsDeleteSet: Set<string>
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
 
     constructor() {
         super()
 
         this.runListCache = CACHE.getRunsList()
 
-        this.loader = new Loader(true)
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
-        this.refreshButton = new RefreshButton({onButtonClick: this.onRefresh, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
+
+        this.loader = new DataLoader(async (force) => {
+            this.currentRunsList = (await this.runListCache.get(force)).runs
+        })
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         this.searchQuery = ''
         this.isEditMode = false
@@ -48,39 +50,64 @@ class RunsListView extends ScreenView {
         mix_panel.track('Runs List View')
     }
 
-    render() {
-        this.elem = $('div', $ => {
-            this.alertContainer = $('div')
-            new HamburgerMenuView({
-                title: 'Runs',
-                setButtonContainer: container => this.buttonContainer = container
-            }).render($)
+    async _render() {
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', $ => {
+                this.alertContainer = $('div')
+                new HamburgerMenuView({
+                    title: 'Runs',
+                    setButtonContainer: container => this.buttonContainer = container
+                }).render($)
 
-            $('div', '.runs-list', $ => {
-                new SearchView({onSearch: this.onSearch}).render($)
-                this.runsListContainer = $('div', '.list.runs-list.list-group', '')
+                $('div', '.runs-list', $ => {
+                    new SearchView({onSearch: this.onSearch}).render($)
+                    this.loader.render($)
+                    this.runsListContainer = $('div', '.list.runs-list.list-group', '')
+                })
             })
-            this.loader.render($)
+        })
+        $(this.buttonContainer, $ => {
+            this.deleteButton.render($)
+            this.cancelButton.render($)
+            this.editButton.render($)
+            this.refresh.render($)
+            this.deleteButton.hide(true)
+            this.cancelButton.hide(true)
+            this.editButton.hide(true)
         })
 
-        this.renderList().then()
+        try {
+            await this.loader.load()
+
+            this.renderList().then()
+        } catch (e) {
+
+        }
+    }
+
+    render(): WeyaElement {
+        this.elem = $('div')
+
+        this._render().then()
 
         return this.elem
     }
 
-    renderButtons() {
-        this.buttonContainer.innerHTML = ''
-        $(this.buttonContainer, $ => {
-            if (this.currentRunsList.length) {
-                if (this.isEditMode) {
-                    this.deleteButton.render($)
-                    this.cancelButton.render($)
-                } else {
-                    this.editButton.render($)
-                    this.refreshButton.render($)
-                }
-            }
-        })
+    destroy() {
+        this.refresh.stop()
+    }
+
+    updateButtons() {
+        let noRuns = this.currentRunsList.length == 0
+        this.deleteButton.hide(noRuns || !this.isEditMode)
+        this.cancelButton.hide(noRuns || !this.isEditMode)
+        this.editButton.hide(noRuns || this.isEditMode)
+        if (!noRuns && !this.isEditMode) {
+            this.refresh.start()
+        } else {
+            this.refresh.stop()
+        }
     }
 
     renderAlertMessage() {
@@ -98,20 +125,22 @@ class RunsListView extends ScreenView {
     }
 
     onRefresh = async () => {
+        this.editButton.disabled = true
         try {
-            this.currentRunsList = (await this.runListCache.get(true)).runs
+            await this.loader.load(true)
+
+            await this.renderList()
         } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
+
+        } finally {
+            this.editButton.disabled = false
         }
-        await this.renderList()
     }
 
     onEdit = () => {
         this.isEditMode = true
         this.deleteButton.disabled = this.runsDeleteSet.size === 0
-        this.renderButtons()
+        this.updateButtons()
     }
 
     onDelete = async () => {
@@ -119,6 +148,7 @@ class RunsListView extends ScreenView {
             this.renderAlertMessage()
         })
 
+        this.isEditMode = false
         this.runsDeleteSet.clear()
         this.deleteButton.disabled = this.runsDeleteSet.size === 0
 
@@ -154,20 +184,9 @@ class RunsListView extends ScreenView {
     }
 
     private async renderList() {
-        try {
-            this.currentRunsList = (await this.runListCache.get()).runs
-        } catch (e) {
-            handleNetworkError(e)
-            return
-        }
-
-        this.loader.remove()
-
         if (this.currentRunsList.length > 0) {
             let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
             this.currentRunsList = this.currentRunsList.filter(run => this.runsFilter(run, re))
-
-            this.renderButtons()
 
             this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
@@ -180,8 +199,8 @@ class RunsListView extends ScreenView {
                 new EmptyRunsList().render($)
             })
         }
+        this.updateButtons()
     }
-
 }
 
 export class RunsListHandler {

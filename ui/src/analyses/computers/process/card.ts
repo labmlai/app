@@ -1,23 +1,21 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
 import {AnalysisDataCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import processCache from './cache'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {ROUTER} from '../../../app'
-
 
 export class ProcessCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
     analysisCache: AnalysisDataCache
-    lineChartContainer: WeyaElement
-    elem: WeyaElement
-    loader: Loader
-
+    lineChartContainer: HTMLDivElement
+    elem: HTMLDivElement
+    private loader: DataLoader
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -25,7 +23,9 @@ export class ProcessCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.analysisCache = processCache.getAnalysis(this.uuid)
-        this.loader = new Loader()
+        this.loader = new DataLoader(async (force) => {
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+        })
     }
 
     getLastUpdated(): number {
@@ -33,26 +33,22 @@ export class ProcessCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Process')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        Weya(this.elem, $ => {
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'Process')
+            this.loader.render($)
             this.lineChartContainer = $('div', '')
         })
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            if (this.series.length > 0) {
+                this.renderLineChart()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
+
         }
     }
 
@@ -70,14 +66,13 @@ export class ProcessCard extends Card {
 
     async refresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            await this.loader.load(true)
+            if (this.series.length > 0) {
+                this.renderLineChart()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-            this.elem.classList.remove('hide')
         }
     }
 

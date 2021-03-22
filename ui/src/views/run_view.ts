@@ -24,15 +24,15 @@ class RunView extends ScreenView {
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
-    elem: WeyaElement
+    elem: HTMLDivElement
     runHeaderCard: RunHeaderCard
     cards: Card[] = []
     lastUpdated: number
     private cardContainer: HTMLDivElement
     private deleteButton: DeleteButton
     private alertMessage: AlertMessage
-    private loader: DataLoader;
-    private refresh: AwesomeRefreshButton;
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
 
     constructor(uuid: string) {
         super()

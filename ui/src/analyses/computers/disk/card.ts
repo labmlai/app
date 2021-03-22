@@ -1,24 +1,23 @@
-import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
 import {AnalysisDataCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import diskCache from './cache'
 import {TimeSeriesChart} from "../../../components/charts/timeseries/chart"
 import {Labels} from "../../../components/charts/labels"
 import {ROUTER} from '../../../app'
-
 
 export class DiskCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
     analysisCache: AnalysisDataCache
-    lineChartContainer: WeyaElement
-    elem: WeyaElement
-    loader: Loader
-
+    lineChartContainer: HTMLDivElement
+    elem: HTMLDivElement
+    private loader: DataLoader
+    private labelsContainer: HTMLDivElement
 
     constructor(opt: CardOptions) {
         super(opt)
@@ -26,7 +25,9 @@ export class DiskCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.analysisCache = diskCache.getAnalysis(this.uuid)
-        this.loader = new Loader()
+        this.loader = new DataLoader(async (force) => {
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+        })
     }
 
     getLastUpdated(): number {
@@ -34,33 +35,29 @@ export class DiskCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3.header', 'Disk')
-        })
-
-        this.elem.appendChild(this.loader.render($))
-        try {
-            this.series = toPointValues((await this.analysisCache.get()).series)
-        } catch (e) {
-            // Let the parent view handle network failures
-        }
-        this.loader.remove()
-
-        Weya(this.elem, $ => {
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'Disk')
+            this.loader.render($)
             this.lineChartContainer = $('div', '')
-            new Labels({labels: Array.from(this.series, x => x['name']), isDivergent: true}).render($)
+            this.labelsContainer = $('div', '')
         })
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-        } else {
-            this.elem.classList.add('hide')
+        try {
+            await this.loader.load()
+
+            if (this.series.length > 0) {
+                this.renderLineChart()
+            } else {
+                this.elem.classList.add('hide')
+            }
+        } catch (e) {
+
         }
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
-        Weya(this.lineChartContainer, $ => {
+        $(this.lineChartContainer, $ => {
             new TimeSeriesChart({
                 series: this.series,
                 width: this.width,
@@ -69,18 +66,22 @@ export class DiskCard extends Card {
                 isDivergent: true
             }).render($)
         })
+
+        this.labelsContainer.innerHTML = ''
+        $(this.labelsContainer, $ => {
+            new Labels({labels: Array.from(this.series, x => x['name']), isDivergent: true}).render($)
+        })
     }
 
     async refresh() {
         try {
-            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            await this.loader.load(true)
+            if (this.series.length > 0) {
+                this.renderLineChart()
+                this.elem.classList.remove('hide')
+            }
         } catch (e) {
-            // Let the parent view handle network failures
-        }
 
-        if (this.series.length > 0) {
-            this.renderLineChart()
-            this.elem.classList.remove('hide')
         }
     }
 

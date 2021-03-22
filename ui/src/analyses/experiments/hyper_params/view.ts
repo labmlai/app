@@ -1,12 +1,12 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {AnalysisDataCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
-import {BackButton, SaveButton} from "../../../components/buttons"
+import {BackButton, SaveButton, CustomButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
 import {toPointValues} from "../../../components/charts/utils"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
+import {EditableSparkLines} from "../../../components/charts/editable_spark_lines/chart"
 import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
@@ -14,22 +14,26 @@ import {ViewHandler} from "../../types"
 import {DataLoader} from "../../../components/loader"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
+import {AnalysisPreferenceModel} from "../../../models/preferences"
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
     status: Status
     plotIdx: number[] = []
-    primeSeries: SeriesModel[]
-    minorSeries: SeriesModel[]
+    series: SeriesModel[]
+    preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
+    preferenceCache: AnalysisPreferenceCache
     statusCache: RunStatusCache
     runHeaderCard: RunHeaderCard
-    sparkLines: SparkLines
+    sparkLines: EditableSparkLines
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
-    saveButtonContainer: HTMLDivElement
-    saveButton: SaveButton
+    prefsSaveButtonContainer: HTMLDivElement
+    paramsSaveButtonContainer: HTMLSpanElement
+    prefsSaveButton: SaveButton
+    paramsSaveButton: CustomButton
     isUpdateDisable: boolean
     actualWidth: number
     private loader: DataLoader
@@ -42,12 +46,22 @@ class HyperParamsView extends ScreenView {
         this.uuid = uuid
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
+        this.preferenceCache = hyperParamsCache.getPreferences(this.uuid)
 
-        this.saveButton = new SaveButton({onButtonClick: this.onSave.bind(this), parent: this.constructor.name})
+        this.prefsSaveButton = new SaveButton({
+            onButtonClick: this.updatePreferences.bind(this),
+            parent: this.constructor.name
+        })
+        this.paramsSaveButton = new CustomButton({
+            onButtonClick: this.onHyperPramsSave.bind(this),
+            parent: this.constructor.name,
+            text: 'change'
+        })
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.filterSeries(toPointValues((await this.analysisCache.get(force)).series))
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.preferenceData = await this.preferenceCache.get(force)
 
             if (this.status && this.status.isRunning) {
                 this.isEditMode = true
@@ -81,7 +95,7 @@ class HyperParamsView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.saveButtonContainer = $('div')
+                            this.prefsSaveButtonContainer = $('div')
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -90,6 +104,7 @@ class HyperParamsView extends ScreenView {
                         })
                         this.runHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Dynamic Hyperparameters')
+                        this.paramsSaveButtonContainer = $('div', '.text-center')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
                             this.sparkLinesContainer = $('div')
@@ -106,7 +121,8 @@ class HyperParamsView extends ScreenView {
 
             this.renderSparkLines()
             this.renderLineChart()
-            this.renderSaveButton()
+            this.renderPrefsSaveButton(true)
+            this.renderParamsSaveButton(true)
         } catch (e) {
 
         } finally {
@@ -149,11 +165,20 @@ class HyperParamsView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderSaveButton() {
-        this.saveButtonContainer.innerHTML = ''
-        $(this.saveButtonContainer, $ => {
+    renderPrefsSaveButton(isDisabled: boolean = false) {
+        this.prefsSaveButton.disabled = isDisabled
+        this.prefsSaveButtonContainer.innerHTML = ''
+        $(this.prefsSaveButtonContainer, $ => {
+            this.prefsSaveButton.render($)
+        })
+    }
+
+    renderParamsSaveButton(isDisabled: boolean = false) {
+        this.paramsSaveButton.disabled = isDisabled
+        this.paramsSaveButtonContainer.innerHTML = ''
+        $(this.paramsSaveButtonContainer, $ => {
             if (this.status.isRunning) {
-                this.saveButton.render($)
+                this.paramsSaveButton.render($)
             }
         })
     }
@@ -162,8 +187,7 @@ class HyperParamsView extends ScreenView {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new CustomLineChart({
-                primeSeries: this.primeSeries,
-                minotSeries: this.minorSeries,
+                series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
                 onCursorMove: [this.sparkLines.changeCursorValues],
@@ -175,13 +199,14 @@ class HyperParamsView extends ScreenView {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            this.sparkLines = new SparkLines({
-                series: this.primeSeries,
+            this.sparkLines = new EditableSparkLines({
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
                 onSelect: this.toggleChart,
-                isDivergent: true
+                isDivergent: true,
+                onEdit: this.onInputChange.bind(this)
             })
             this.sparkLines.render($)
         })
@@ -200,36 +225,41 @@ class HyperParamsView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
+        this.renderPrefsSaveButton()
     }
 
     private calcPreferences() {
-        this.plotIdx = []
-        for (let i = 0; i < this.primeSeries.length; i++) {
-            this.plotIdx.push(i)
-        }
-    }
-
-    filterSeries(series: SeriesModel[]) {
-        let primeSeries: SeriesModel[] = []
-        let minorSeries: SeriesModel[] = []
-
-        for (let s of series) {
-            if (s.name.includes('@input')) {
-                minorSeries.push(s)
-            } else {
-                primeSeries.push(s)
+        let analysisPreferences = this.preferenceData.series_preferences
+        if (analysisPreferences && analysisPreferences.length > 0) {
+            this.plotIdx = [...analysisPreferences]
+        } else if (this.series) {
+            let res: number[] = []
+            for (let i = 0; i < this.series.length; i++) {
+                res.push(i)
             }
+            this.plotIdx = res
         }
-
-        this.minorSeries = minorSeries
-        this.primeSeries = primeSeries
     }
 
-    onSave() {
+    async onHyperPramsSave() {
         let data = this.sparkLines.getSparkLinesValues()
-        this.analysisCache.setAnalysis(data).then()
+        await this.analysisCache.setAnalysis(data)
+
+        this.renderParamsSaveButton(true)
+        this.series = toPointValues((await this.analysisCache.get(true)).series)
+        this.renderLineChart()
     }
 
+    updatePreferences = () => {
+        this.preferenceData.series_preferences = this.plotIdx
+        this.preferenceCache.setPreference(this.preferenceData).then()
+
+        this.renderPrefsSaveButton(true)
+    }
+
+    onInputChange() {
+        this.renderParamsSaveButton(false)
+    }
 }
 
 export class HyperParamsHandler extends ViewHandler {

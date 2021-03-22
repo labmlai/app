@@ -212,9 +212,9 @@ export class Configs {
     }
 
     render($: WeyaElementFunction) {
-        $('div.configs.block.collapsed', {style: {width: `${this.width}px`}}, $ => {
+        $('div','.configs.block.collapsed', {style: {width: `${this.width}px`}}, $ => {
             if (this.count === 0 && this.isHyperParamOnly) {
-                $('div.info', 'Default configurations')
+                $('div','.info', 'Default configurations')
                 return
             }
 

@@ -197,7 +197,6 @@ class MetricsView extends ScreenView {
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 onSelect: this.toggleChart,
-                isEditable: false,
                 isDivergent: true
             })
             this.sparkLines.render($)

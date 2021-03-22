@@ -1086,3 +1086,24 @@ $keyFontSize: 0.8rem;
     opacity: 1;
   }
 }
+
+/* insights */
+.insight-container {
+  margin-top: 5px;
+  margin-left: 10px;
+  margin-bottom: 5px;
+  font-size: small;
+  opacity: 0.5;
+
+  .time-left {
+    display: flex;
+    float: right;
+    color: #999;
+  }
+
+  .icon {
+    margin-right: 6px;
+    font-size: 1.2em;
+    vertical-align: middle;
+  }
+}
