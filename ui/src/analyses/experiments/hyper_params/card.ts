@@ -19,7 +19,6 @@ export class HyperParamsCard extends Card {
     plotIdx: number[] = []
     private loader: DataLoader
 
-
     constructor(opt: CardOptions) {
         super(opt)
 
@@ -28,22 +27,18 @@ export class HyperParamsCard extends Card {
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
 
         this.loader = new DataLoader(async (force) => {
-            this.filterSeries(toPointValues((await this.analysisCache.get(force)).series))
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+
+            let res: number[] = []
+            for (let i = 0; i < this.series.length; i++) {
+                res.push(i)
+            }
+            this.plotIdx = res
         })
     }
 
     getLastUpdated(): number {
         return this.analysisCache.lastUpdated
-    }
-
-    filterSeries(series: SeriesModel[]) {
-        this.series = []
-
-        for (let s of series) {
-            if (!s.name.includes('@input')) {
-                this.series.push(s)
-            }
-        }
     }
 
     async render($: WeyaElementFunction) {

@@ -20,8 +20,7 @@ class HyperParamsView extends ScreenView {
     uuid: string
     status: Status
     plotIdx: number[] = []
-    primeSeries: SeriesModel[]
-    minorSeries: SeriesModel[]
+    series: SeriesModel[]
     analysisCache: AnalysisDataCache
     statusCache: RunStatusCache
     runHeaderCard: RunHeaderCard
@@ -47,7 +46,7 @@ class HyperParamsView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.filterSeries(toPointValues((await this.analysisCache.get(force)).series))
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
 
             if (this.status && this.status.isRunning) {
                 this.isEditMode = true
@@ -162,8 +161,7 @@ class HyperParamsView extends ScreenView {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
             new CustomLineChart({
-                primeSeries: this.primeSeries,
-                minotSeries: this.minorSeries,
+                series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
                 onCursorMove: [this.sparkLines.changeCursorValues],
@@ -176,7 +174,7 @@ class HyperParamsView extends ScreenView {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
             this.sparkLines = new SparkLines({
-                series: this.primeSeries,
+                series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
                 isEditable: this.isEditMode,
@@ -204,32 +202,15 @@ class HyperParamsView extends ScreenView {
 
     private calcPreferences() {
         this.plotIdx = []
-        for (let i = 0; i < this.primeSeries.length; i++) {
+        for (let i = 0; i < this.series.length; i++) {
             this.plotIdx.push(i)
         }
-    }
-
-    filterSeries(series: SeriesModel[]) {
-        let primeSeries: SeriesModel[] = []
-        let minorSeries: SeriesModel[] = []
-
-        for (let s of series) {
-            if (s.name.includes('@input')) {
-                minorSeries.push(s)
-            } else {
-                primeSeries.push(s)
-            }
-        }
-
-        this.minorSeries = minorSeries
-        this.primeSeries = primeSeries
     }
 
     onSave() {
         let data = this.sparkLines.getSparkLinesValues()
         this.analysisCache.setAnalysis(data).then()
     }
-
 }
 
 export class HyperParamsHandler extends ViewHandler {
