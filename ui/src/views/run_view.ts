@@ -24,7 +24,7 @@ class RunView extends ScreenView {
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
-    elem: WeyaElement
+    elem: HTMLDivElement
     runHeaderCard: RunHeaderCard
     cards: Card[] = []
     lastUpdated: number

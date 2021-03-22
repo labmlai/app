@@ -143,8 +143,11 @@ class ActivationsView extends ScreenView {
         try {
             await this.loader.load(true)
 
+            this.calcPreferences()
+
             this.renderSparkLines()
             this.renderLineChart()
+            this.renderSaveButton()
         } catch (e) {
 
         } finally {

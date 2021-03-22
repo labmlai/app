@@ -1,27 +1,23 @@
 import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
-import CACHE, {ComputerStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import {Loader} from "../../../components/loader"
+import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, RefreshButton, SaveButton} from "../../../components/buttons"
+import {BackButton, SaveButton} from "../../../components/buttons"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import gpuCache from "./cache"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
-import Timeout = NodeJS.Timeout
 import {getSeriesData} from "./utils"
-import {handleNetworkError} from '../../../utils/redirect'
 import {ViewHandler} from "../../types"
-
-
-const AUTO_REFRESH_TIME = 2 * 60 * 1000
+import {AwesomeRefreshButton} from '../../../components/refresh_button'
 
 class GPUPowerView extends ScreenView {
-    elem: WeyaElement
+    elem: HTMLDivElement
     uuid: string
     status: Status
     plotIdx: number[] = []
@@ -30,19 +26,16 @@ class GPUPowerView extends ScreenView {
     preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
-    loader: Loader
-    refreshButton: RefreshButton
     computerHeaderCard: ComputerHeaderCard
     sparkTimeLines: SparkTimeLines
-    lineChartContainer: WeyaElement
-    sparkLinesContainer: WeyaElement
-    saveButtonContainer: WeyaElement
+    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
+    saveButtonContainer: HTMLDivElement
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
-    autoRefresh: Timeout
-    GPUView: HTMLDivElement
-    lastVisibilityChange: number
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
 
     constructor(uuid: string) {
         super()
@@ -53,8 +46,14 @@ class GPUPowerView extends ScreenView {
         this.preferenceCache = gpuCache.getPreferences(this.uuid)
 
         this.isUpdateDisable = true
-        this.loader = new Loader(true)
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
+
+        this.loader = new DataLoader(async (force) => {
+            this.status = await this.statusCache.get(force)
+            this.series = getSeriesData((await this.analysisCache.get(force)).series, 'power')
+            this.preferenceData = await this.preferenceCache.get(force)
+        })
+        this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
@@ -67,117 +66,89 @@ class GPUPowerView extends ScreenView {
         super.onResize(width)
 
         this.actualWidth = Math.min(800, width)
+
+        if (this.elem) {
+            this._render().then()
+        }
+    }
+
+    async _render() {
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', '.page',
+                {style: {width: `${this.actualWidth}px`}},
+                $ => {
+                    $('div', $ => {
+                        $('div', '.nav-container', $ => {
+                            new BackButton({text: 'Session', parent: this.constructor.name}).render($)
+                            this.saveButtonContainer = $('div')
+                            this.refresh.render($)
+                        })
+                        this.computerHeaderCard = new ComputerHeaderCard({
+                            uuid: this.uuid,
+                            width: this.actualWidth
+                        })
+                        this.computerHeaderCard.render($).then()
+                        $('h2', '.header.text-center', 'GPU - Power')
+                        this.loader.render($)
+                        $('div', '.detail-card', $ => {
+                            this.lineChartContainer = $('div', '.fixed-chart')
+                            this.sparkLinesContainer = $('div')
+                        })
+                    })
+                })
+        })
+
+        try {
+            await this.loader.load()
+
+            this.calcPreferences()
+
+            this.renderSparkLines()
+            this.renderLineChart()
+            this.renderSaveButton()
+
+        } catch (e) {
+
+        } finally {
+            if (this.status.isRunning) {
+                this.refresh.start()
+            }
+        }
     }
 
     render(): WeyaElement {
-        this.elem = <HTMLElement>$('div.page',
-            {style: {width: `${this.actualWidth}px`}},
-            $ => {
-                this.GPUView = <HTMLDivElement>$('div', '')
-                this.loader.render($)
-            })
+        this.elem = $('div')
 
-        this.loadData().then(() => {
-            this.loader.remove()
-
-            if (this.status && this.status.isRunning) {
-                this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-            }
-
-            this.loadPreferences()
-
-            this.renderGpu()
-        }).catch(() => {
-        })
+        this._render().then()
 
         return this.elem
     }
 
-    async loadData() {
-        try {
-            this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power')
-            this.status = await this.statusCache.get()
-            this.preferenceData = await this.preferenceCache.get()
-        }  catch (e) {
-            handleNetworkError(e)
-            return
-        }
-    }
-
     destroy() {
-        if (this.autoRefresh !== undefined) {
-            clearInterval(this.autoRefresh)
-        }
-        if (this.computerHeaderCard) {
-            this.computerHeaderCard.clearCounter()
-        }
+        this.refresh.stop()
     }
 
     async onRefresh() {
         try {
-            this.series = getSeriesData((await this.analysisCache.get(true)).series, 'power')
-            this.status = await this.statusCache.get(true)
+            await this.loader.load(true)
+
+            this.calcPreferences()
+            this.renderSparkLines()
+            this.renderLineChart()
         } catch (e) {
-            //TODO: redirect after multiple refresh failures
-            handleNetworkError(e)
-            return
-        }
 
-        if (!this.status.isRunning) {
-            this.refreshButton.remove()
-            clearInterval(this.autoRefresh)
-        }
+        } finally {
+            if (!this.status.isRunning) {
+                this.refresh.stop()
+            }
 
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.computerHeaderCard.refresh().then()
+            this.computerHeaderCard.refresh().then()
+        }
     }
 
     onVisibilityChange() {
-        let currentTime = Date.now()
-        if (document.hidden) {
-            this.lastVisibilityChange = currentTime
-            clearInterval(this.autoRefresh)
-        } else {
-            if (this.status?.isRunning) {
-                setTimeout(args => {
-                    this.onRefresh().then()
-                    this.autoRefresh = setInterval(this.onRefresh.bind(this), AUTO_REFRESH_TIME)
-                }, Math.max(0, (this.lastVisibilityChange + AUTO_REFRESH_TIME) - currentTime))
-            }
-        }
-    }
-
-    renderGpu() {
-        this.GPUView.innerHTML = ''
-
-        $(this.GPUView, $ => {
-            $('div.nav-container', $ => {
-                new BackButton({text: 'Session', parent: this.constructor.name}).render($)
-                this.saveButtonContainer = $('div')
-                if (this.status && this.status.isRunning) {
-                    this.refreshButton = new RefreshButton({
-                        onButtonClick: this.onRefresh.bind(this),
-                        parent: this.constructor.name
-                    })
-                    this.refreshButton.render($)
-                }
-            })
-            this.computerHeaderCard = new ComputerHeaderCard({
-                uuid: this.uuid,
-                width: this.actualWidth
-            })
-            this.computerHeaderCard.render($).then()
-            $('h2.header.text-center', 'GPU - Power')
-            $('div.detail-card', $ => {
-                this.lineChartContainer = $('div.fixed-chart')
-                this.sparkLinesContainer = $('div')
-            })
-        })
-
-        this.renderSparkLines()
-        this.renderLineChart()
-        this.renderSaveButton()
+        this.refresh.changeVisibility(!document.hidden)
     }
 
     renderSaveButton() {
@@ -234,7 +205,7 @@ class GPUPowerView extends ScreenView {
         this.renderSaveButton()
     }
 
-    loadPreferences() {
+    calcPreferences() {
         let analysisPreferences = this.preferenceData.sub_series_preferences['power']
         if (analysisPreferences && analysisPreferences.length > 0) {
             this.plotIdx = [...analysisPreferences]
@@ -256,8 +227,7 @@ class GPUPowerView extends ScreenView {
     }
 }
 
-
-export class GPUPowerHandler extends ViewHandler{
+export class GPUPowerHandler extends ViewHandler {
     constructor() {
         super()
         ROUTER.route('session/:uuid/gpu_power', [this.handleGPU])

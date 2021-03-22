@@ -57,7 +57,7 @@ export class RunHeaderCard {
             Weya(this.elem, $ => {
                 $('div', $ => {
                     this.lastRecordedContainer = $('div')
-                    $('div.run-info', $ => {
+                    $('div','.run-info', $ => {
                         this.statusViewContainer = $('div')
                         $('h3', `${this.run.name}`)
                         $('h5', `${this.run.comment}`)
@@ -77,7 +77,7 @@ export class RunHeaderCard {
 
         this.lastRecordedContainer.innerHTML = ''
         Weya(this.lastRecordedContainer, $ => {
-            $('div.last-updated.mb-2', `Last Recorded on ${formatTime(lastRecorded)}`)
+            $('div','.last-updated.mb-2', `Last Recorded on ${formatTime(lastRecorded)}`)
         })
     }
 
