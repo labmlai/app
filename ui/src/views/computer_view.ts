@@ -89,7 +89,8 @@ class ComputerView extends ScreenView {
                     this.computerHeaderCard = new ComputerHeaderCard({
                         uuid: this.uuid,
                         width: this.actualWidth,
-                        lastUpdated: this.lastUpdated
+                        lastUpdated: this.lastUpdated,
+                        clickable: true
                     })
                     this.loader.render($)
                     this.computerHeaderCard.render($)
