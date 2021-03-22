@@ -69,6 +69,11 @@ export class CustomLineChart {
             }
         }
 
+        if (this.plotIdx.length > 0 && Math.max(...this.plotIdx) < 0) {
+            this.filteredPlots = [this.series[0]]
+            this.filteredPlotIdx = [0]
+        }
+
         this.subPlots = toPointValues(this.subPlots)
         let plots: SeriesModel[] = this.filteredPlots.concat(this.subPlots)
 

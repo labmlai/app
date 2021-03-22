@@ -1,19 +1,22 @@
 import {Weya, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
-import {AnalysisDataCache,} from "../../../cache/cache"
+import {AnalysisDataCache, AnalysisPreferenceCache,} from "../../../cache/cache"
 import hyperParamsCache from "./cache"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER} from '../../../app'
 import {toPointValues} from "../../../components/charts/utils"
 import {SparkLines} from "../../../components/charts/spark_lines/chart"
+import {AnalysisPreferenceModel} from "../../../models/preferences"
 
 
 export class HyperParamsCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
+    preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
+    preferenceCache: AnalysisPreferenceCache
     elem: WeyaElement
     sparkLinesContainer: WeyaElement
     plotIdx: number[] = []
@@ -25,9 +28,11 @@ export class HyperParamsCard extends Card {
         this.uuid = opt.uuid
         this.width = opt.width
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
+        this.preferenceCache = hyperParamsCache.getPreferences(this.uuid)
 
         this.loader = new DataLoader(async (force) => {
             this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.preferenceData = await this.preferenceCache.get(force)
 
             let res: number[] = []
             for (let i = 0; i < this.series.length; i++) {
@@ -50,6 +55,11 @@ export class HyperParamsCard extends Card {
 
         try {
             await this.loader.load()
+
+            let analysisPreferences = this.preferenceData.series_preferences
+            if (analysisPreferences.length > 0) {
+                this.plotIdx = [...analysisPreferences]
+            }
 
             if (this.series.length > 0) {
                 this.renderSparkLines()
