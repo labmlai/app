@@ -245,9 +245,9 @@ class HyperParamsView extends ScreenView {
         let data = this.sparkLines.getSparkLinesValues()
         await this.analysisCache.setAnalysis(data)
 
+        this.renderParamsSaveButton(true)
         this.series = toPointValues((await this.analysisCache.get(true)).series)
         this.renderLineChart()
-        this.renderParamsSaveButton(true)
     }
 
     updatePreferences = () => {
