@@ -104,7 +104,7 @@ export class EditableSparkLines {
                     onClick = this.onSelect.bind(null, i)
                 }
                 if (this.isEditable && s.is_editable) {
-                    let editable = this.editablePlots[editablePlotIdx]
+                    let editable = this.editablePlots[editablePlotIdx] ? this.editablePlots[editablePlotIdx] : s
                     let editableSparkLine = new EditableSparkLine({
                         name: s.name,
                         series: editable.series,
