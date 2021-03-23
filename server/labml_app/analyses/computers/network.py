@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response, request
+from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer

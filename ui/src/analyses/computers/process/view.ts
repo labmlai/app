@@ -1,16 +1,14 @@
 import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
+import CACHE, {AnalysisDataCache, ComputerStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, SaveButton} from "../../../components/buttons"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {BackButton} from "../../../components/buttons"
 import processCache from "./cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
-import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
@@ -22,14 +20,10 @@ class ProcessView extends ScreenView {
     plotIdx: number[] = []
     statusCache: ComputerStatusCache
     series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
-    preferenceCache: AnalysisPreferenceCache
     computerHeaderCard: ComputerHeaderCard
     sparkTimeLines: SparkTimeLines
-    lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
-    isUpdateDisable: boolean
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -40,14 +34,10 @@ class ProcessView extends ScreenView {
         this.uuid = uuid
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.analysisCache = processCache.getAnalysis(this.uuid)
-        this.preferenceCache = processCache.getPreferences(this.uuid)
-
-        this.isUpdateDisable = false
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.series = toPointValues((await this.analysisCache.get(force)).series)
-            this.preferenceData = await this.preferenceCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -77,11 +67,6 @@ class ProcessView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Session', parent: this.constructor.name}).render($)
-                            new SaveButton({
-                                onButtonClick: this.updatePreferences,
-                                isDisabled: this.isUpdateDisable,
-                                parent: this.constructor.name
-                            }).render($)
                             this.refresh.render($)
                         })
                         this.computerHeaderCard = new ComputerHeaderCard({
@@ -89,10 +74,9 @@ class ProcessView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.computerHeaderCard.render($).then()
-                        $('h2', '.header.text-center', 'Metrics')
+                        $('h2', '.header.text-center', 'Processes')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
-                            this.lineChartContainer = $('div', '.fixed-chart')
                             this.sparkLinesContainer = $('div')
                         })
                     })
@@ -105,8 +89,6 @@ class ProcessView extends ScreenView {
             this.calcPreferences()
 
             this.renderSparkLines()
-            this.renderLineChart()
-
         } catch (e) {
 
         } finally {
@@ -134,7 +116,6 @@ class ProcessView extends ScreenView {
 
             this.calcPreferences()
             this.renderSparkLines()
-            this.renderLineChart()
         } catch (e) {
 
         } finally {
@@ -150,19 +131,6 @@ class ProcessView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderLineChart() {
-        this.lineChartContainer.innerHTML = ''
-        $(this.lineChartContainer, $ => {
-            new TimeSeriesChart({
-                series: this.series,
-                width: this.actualWidth,
-                plotIdx: this.plotIdx,
-                onCursorMove: [this.sparkTimeLines.changeCursorValues],
-                isCursorMoveOpt: true
-            }).render($)
-        })
-    }
-
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
@@ -170,47 +138,19 @@ class ProcessView extends ScreenView {
                 series: this.series,
                 plotIdx: this.plotIdx,
                 width: this.actualWidth,
-                onSelect: this.toggleChart
             })
             this.sparkTimeLines.render($)
         })
     }
 
-    toggleChart = (idx: number) => {
-        this.isUpdateDisable = false
-
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
-        } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
-        }
-
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
-        }
-
-        this.renderSparkLines()
-        this.renderLineChart()
-    }
-
     calcPreferences() {
-        let analysisPreferences = this.preferenceData.series_preferences
-        if (analysisPreferences && analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
-        } else if (this.series) {
+        if (this.series) {
             let res: number[] = []
             for (let i = 0; i < this.series.length; i++) {
                 res.push(i)
             }
             this.plotIdx = res
         }
-    }
-
-    updatePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
-        this.preferenceCache.setPreference(this.preferenceData).then()
-
-        this.isUpdateDisable = true
     }
 }
 

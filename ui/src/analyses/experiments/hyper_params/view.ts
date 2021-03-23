@@ -55,7 +55,7 @@ class HyperParamsView extends ScreenView {
         this.paramsSaveButton = new CustomButton({
             onButtonClick: this.onHyperPramsSave.bind(this),
             parent: this.constructor.name,
-            text: 'change'
+            text: 'save'
         })
 
         this.loader = new DataLoader(async (force) => {

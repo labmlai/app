@@ -1,19 +1,20 @@
-import {Weya, WeyaElementFunction,} from '../../../../../lib/weya/weya'
+import {Weya as $, WeyaElementFunction,} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
 import {Card, CardOptions} from "../../types"
 import {AnalysisDataCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {DataLoader} from "../../../components/loader"
 import processCache from './cache'
-import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
 import {ROUTER} from '../../../app'
+import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
 
 export class ProcessCard extends Card {
     uuid: string
     width: number
     series: SeriesModel[]
     analysisCache: AnalysisDataCache
-    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
+    sparkTimeLines: SparkTimeLines
     elem: HTMLDivElement
     private loader: DataLoader
 
@@ -24,7 +25,7 @@ export class ProcessCard extends Card {
         this.width = opt.width
         this.analysisCache = processCache.getAnalysis(this.uuid)
         this.loader = new DataLoader(async (force) => {
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.series = toPointValues((await this.analysisCache.get(force)).summary)
         })
     }
 
@@ -34,16 +35,16 @@ export class ProcessCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3', '.header', 'Process')
+            $('h3', '.header', 'Processes')
             this.loader.render($)
-            this.lineChartContainer = $('div', '')
+            this.sparkLinesContainer = $('div', '')
         })
 
         try {
             await this.loader.load()
 
             if (this.series.length > 0) {
-                this.renderLineChart()
+                this.renderSparkLines()
             } else {
                 this.elem.classList.add('hide')
             }
@@ -52,15 +53,15 @@ export class ProcessCard extends Card {
         }
     }
 
-    renderLineChart() {
-        this.lineChartContainer.innerHTML = ''
-        Weya(this.lineChartContainer, $ => {
-            new TimeSeriesChart({
+    renderSparkLines() {
+        this.sparkLinesContainer.innerHTML = ''
+        $(this.sparkLinesContainer, $ => {
+            this.sparkTimeLines = new SparkTimeLines({
                 series: this.series,
+                plotIdx: [1, 2, 3, 4, 5],
                 width: this.width,
-                plotIdx: [],
-                chartHeightFraction: 4
-            }).render($)
+            })
+            this.sparkTimeLines.render($)
         })
     }
 
@@ -68,7 +69,7 @@ export class ProcessCard extends Card {
         try {
             await this.loader.load(true)
             if (this.series.length > 0) {
-                this.renderLineChart()
+                this.renderSparkLines()
                 this.elem.classList.remove('hide')
             }
         } catch (e) {

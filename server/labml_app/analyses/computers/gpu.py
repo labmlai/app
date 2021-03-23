@@ -11,7 +11,6 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..preferences import Preferences
 from ..series_collection import SeriesCollection
-from ..utils import get_mean_series
 
 
 @Analysis.db_model(PickleSerializer, 'GPU')

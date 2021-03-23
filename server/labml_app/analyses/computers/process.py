@@ -1,9 +1,8 @@
 from typing import Dict, Any
 
-from flask import jsonify, make_response, request
+from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
-from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.utils import format_rv
 from labml_app.logger import logger
@@ -16,7 +15,13 @@ from ..preferences import Preferences
 
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
-    pass
+    names: Dict[str, str]
+
+    @classmethod
+    def defaults(cls):
+        return dict(
+            names={},
+        )
 
 
 @Analysis.db_index(PickleSerializer, 'process_index')
@@ -41,10 +46,14 @@ class ProcessAnalysis(Analysis):
         self.process = data
 
     def track(self, data: Dict[str, SeriesModel]):
+        # name, pid, rss, vms, mem, cpu, threads
         res: Dict[str, SeriesModel] = {}
         for ind, s in data.items():
             ind_type = ind.split('.')[0]
             if ind_type == COMPUTEREnums.PROCESS:
+                if 'name' in ind:
+                    self.process.names[ind] = s['value'][0]
+                    continue
                 res[ind] = s
 
         self.process.track(res)
@@ -53,14 +62,19 @@ class ProcessAnalysis(Analysis):
         res = []
         for ind, track in self.process.tracking.items():
             name = ind.split('.')
+            if 'cpu' not in name:
+                continue
+
             series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = '.'.join(name)
+            series['name'] = self.process.names['.'.join(name[:-1]) + '.name']
 
             res.append(series)
 
-        res.sort(key=lambda s: s['name'])
+        res.sort(key=lambda s: s['smoothed'], reverse=True)
 
-        return res
+        summary = res[:5]
+
+        return res, summary
 
     @staticmethod
     def get_or_create(session_uuid: str):
@@ -102,10 +116,10 @@ def get_process_tracking(session_uuid: str) -> Any:
 
     ans = ProcessAnalysis.get_or_create(session_uuid)
     if ans:
-        track_data = ans.get_tracking()
+        track_data, summary_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response

@@ -30,6 +30,7 @@ let experimentAnalyses: Analysis[] = [
 
 let computerAnalyses: Analysis[] = [
     cpuAnalysis,
+    processAnalysis,
     memoryAnalysis,
     diskAnalysis,
     gpuUtilAnalysis,
@@ -37,7 +38,6 @@ let computerAnalyses: Analysis[] = [
     gpuMemoryAnalysis,
     gpuPowerAnalysis,
     networkAnalysis,
-    processAnalysis
 ]
 
 export {
