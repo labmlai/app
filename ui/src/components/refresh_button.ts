@@ -76,7 +76,10 @@ export class AwesomeRefreshButton {
 
     stop() {
         this.isActive = false
-        this.refreshButton.style.display = 'none'
+        if (this.refreshButton != null) {
+            this.refreshButton.style.display = 'none'
+            this.remainingTimeElem.innerText = ''
+        }
         this._stop()
     }
 

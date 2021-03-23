@@ -28,6 +28,7 @@ export class ComputerHeaderCard {
 
     constructor(opt: ComputerHeaderOptions) {
         this.uuid = opt.uuid
+        this.clickable = opt.clickable ?? false
         this.lastUpdated = opt.lastUpdated
         this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
@@ -41,7 +42,7 @@ export class ComputerHeaderCard {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+        this.elem = $('div', '.labml-card.disabled', {on: {click: this.onClick}}, $ => {
             this.loader.render($)
         })
 

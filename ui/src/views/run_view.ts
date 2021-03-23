@@ -31,8 +31,8 @@ class RunView extends ScreenView {
     private cardContainer: HTMLDivElement
     private deleteButton: DeleteButton
     private alertMessage: AlertMessage
-    private loader: DataLoader;
-    private refresh: AwesomeRefreshButton;
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
 
     constructor(uuid: string) {
         super()

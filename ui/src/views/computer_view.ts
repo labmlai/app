@@ -31,8 +31,8 @@ class ComputerView extends ScreenView {
     private cardContainer: HTMLDivElement
     private deleteButton: DeleteButton
     private alertMessage: AlertMessage
-    private loader: DataLoader;
-    private refresh: AwesomeRefreshButton;
+    private loader: DataLoader
+    private refresh: AwesomeRefreshButton
 
     constructor(uuid: string) {
         super()
@@ -89,7 +89,8 @@ class ComputerView extends ScreenView {
                     this.computerHeaderCard = new ComputerHeaderCard({
                         uuid: this.uuid,
                         width: this.actualWidth,
-                        lastUpdated: this.lastUpdated
+                        lastUpdated: this.lastUpdated,
+                        clickable: true
                     })
                     this.loader.render($)
                     this.computerHeaderCard.render($)
