@@ -17,6 +17,10 @@ import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
 import {NetworkErrorHandler} from './views/errors/network_error_view'
 
+ROUTER.route(/^(.*)$/g, [() => {
+    ROUTER.navigate('/404')
+}])
+
 new LoginHandler()
 
 new PageNotFoundHandler()
