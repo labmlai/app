@@ -5,7 +5,7 @@ import {CardOptions} from "../../types"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
 import {StatusView} from "../../../components/status"
-import {formatTime} from "../../../utils/time"
+import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 
 interface RunHeaderOptions extends CardOptions {
@@ -77,7 +77,8 @@ export class RunHeaderCard {
 
         this.lastRecordedContainer.innerHTML = ''
         Weya(this.lastRecordedContainer, $ => {
-            $('div','.last-updated.mb-2', `Last Recorded on ${formatTime(lastRecorded)}`)
+            $('div', '.last-updated.mb-2', `Last Recorded ${this.status.isRunning ?
+                    getTimeDiff(lastRecorded * 1000) : 'on ' + formatTime(lastRecorded)}`)
         })
     }
 
