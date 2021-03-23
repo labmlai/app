@@ -111,7 +111,7 @@ class GPUPowerView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (this.status.isRunning) {
+            if (this.status && this.status.isRunning) {
                 this.refresh.start()
             }
         }
@@ -139,7 +139,7 @@ class GPUPowerView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (!this.status.isRunning) {
+            if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
 
