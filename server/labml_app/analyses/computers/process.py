@@ -112,6 +112,7 @@ class ProcessAnalysis(Analysis):
 @Analysis.route('GET', 'process/<session_uuid>')
 def get_process_tracking(session_uuid: str) -> Any:
     track_data = []
+    summary_data = []
     status_code = 404
 
     ans = ProcessAnalysis.get_or_create(session_uuid)

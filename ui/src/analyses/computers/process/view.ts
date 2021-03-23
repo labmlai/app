@@ -12,6 +12,7 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {ProcessList} from "./process_list"
 
 class ProcessView extends ScreenView {
     elem: HTMLDivElement
@@ -24,6 +25,7 @@ class ProcessView extends ScreenView {
     computerHeaderCard: ComputerHeaderCard
     sparkTimeLines: SparkTimeLines
     sparkLinesContainer: HTMLDivElement
+    processListContainer: HTMLDivElement
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -79,6 +81,8 @@ class ProcessView extends ScreenView {
                         $('div', '.detail-card', $ => {
                             this.sparkLinesContainer = $('div')
                         })
+
+                        this.processListContainer = $('div')
                     })
                 })
         })
@@ -89,6 +93,7 @@ class ProcessView extends ScreenView {
             this.calcPreferences()
 
             this.renderSparkLines()
+            this.renderProcessList()
         } catch (e) {
 
         } finally {
@@ -132,14 +137,21 @@ class ProcessView extends ScreenView {
     }
 
     renderSparkLines() {
-        this.sparkLinesContainer.innerHTML = ''
-        $(this.sparkLinesContainer, $ => {
-            this.sparkTimeLines = new SparkTimeLines({
-                series: this.series,
-                plotIdx: this.plotIdx,
-                width: this.actualWidth,
-            })
-            this.sparkTimeLines.render($)
+        // this.sparkLinesContainer.innerHTML = ''
+        // $(this.sparkLinesContainer, $ => {
+        //     this.sparkTimeLines = new SparkTimeLines({
+        //         series: this.series,
+        //         plotIdx: this.plotIdx,
+        //         width: this.actualWidth,
+        //     })
+        //     this.sparkTimeLines.render($)
+        // })
+    }
+
+    renderProcessList() {
+        this.processListContainer.innerHTML = ''
+        $(this.processListContainer, $ => {
+            new ProcessList({items: this.series, width: this.actualWidth}).render($)
         })
     }
 
