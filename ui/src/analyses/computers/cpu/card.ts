@@ -26,7 +26,7 @@ export class CPUCard extends Card {
         this.width = opt.width
         this.analysisCache = cpuCache.getAnalysis(this.uuid)
         this.loader = new DataLoader(async (force) => {
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.series = toPointValues((await this.analysisCache.get(force)).summary)
         })
     }
 
