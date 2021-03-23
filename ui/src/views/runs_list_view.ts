@@ -144,15 +144,18 @@ class RunsListView extends ScreenView {
     }
 
     onDelete = async () => {
-        this.runListCache.deleteRuns(this.runsDeleteSet).catch(error => {
+        try {
+            await this.runListCache.deleteRuns(this.runsDeleteSet)
+
+            this.isEditMode = false
+            this.runsDeleteSet.clear()
+            this.deleteButton.disabled = this.runsDeleteSet.size === 0
+
+            await this.loader.load()
+            await this.renderList()
+        } catch (e) {
             this.renderAlertMessage()
-        })
-
-        this.isEditMode = false
-        this.runsDeleteSet.clear()
-        this.deleteButton.disabled = this.runsDeleteSet.size === 0
-
-        await this.renderList()
+        }
     }
 
     onCancel = () => {
