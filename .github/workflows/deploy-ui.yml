@@ -56,3 +56,4 @@ jobs:
         with:
           environment: production
           sourcemaps: './static/js'
+          set_commits: skip
