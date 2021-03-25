@@ -91,10 +91,10 @@ class AuthErrorView extends ScreenView {
 
 export class AuthErrorHandler {
     constructor() {
-        ROUTER.route('401', [this.handleAuthError])
+        ROUTER.route('401', [AuthErrorHandler.handleAuthError])
     }
 
-    handleAuthError = () => {
+    static handleAuthError = () => {
         SCREEN.setView(new AuthErrorView())
     }
 }

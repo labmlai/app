@@ -27,7 +27,7 @@ class Network {
             xhr.onload = () => {
                 if (xhr.status >= 400) {
                     if (xhr.status != 403) {
-                        reject(new NetworkError(xhr.status, url, xhr.response))
+                        reject(new NetworkError(xhr.status, url, String(xhr.response)))
                     }
                 } else {
                     resolve(xhr.response.data)
