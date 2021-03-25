@@ -213,7 +213,7 @@ def set_hyper_params_preferences(run_uuid: str) -> Any:
     return format_rv({'errors': hpp.errors})
 
 
-@Analysis.route('POST', 'hyper_params/<run_uuid>')
+@Analysis.route('POST', 'hyper_params/<run_uuid>', True)
 def set_hyper_params(run_uuid: str) -> Any:
     status_code = 404
     ans = HyperParamsAnalysis.get_or_create(run_uuid)

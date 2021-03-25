@@ -1,7 +1,12 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
-import {SeriesModel} from "../../../models/run"
+import CACHE, {
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    RunCache,
+    RunStatusCache
+} from "../../../cache/cache"
+import {Run, SeriesModel} from "../../../models/run"
 import {BackButton, SaveButton, CustomButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
@@ -22,6 +27,8 @@ class HyperParamsView extends ScreenView {
     status: Status
     plotIdx: number[] = []
     series: SeriesModel[]
+    run: Run
+    runCache: RunCache
     preferenceData: AnalysisPreferenceModel
     analysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
@@ -47,6 +54,7 @@ class HyperParamsView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = hyperParamsCache.getAnalysis(this.uuid)
         this.preferenceCache = hyperParamsCache.getPreferences(this.uuid)
+        this.runCache = CACHE.getRun(this.uuid)
 
         this.prefsSaveButton = new SaveButton({
             onButtonClick: this.updatePreferences.bind(this),
@@ -60,6 +68,7 @@ class HyperParamsView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.run = await this.runCache.get(force)
             this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
 
@@ -175,7 +184,7 @@ class HyperParamsView extends ScreenView {
     }
 
     renderParamsSaveButton(isDisabled: boolean = false) {
-        this.paramsSaveButton.disabled = isDisabled
+        this.paramsSaveButton.disabled = !this.run.is_project_run || isDisabled
         this.paramsSaveButtonContainer.innerHTML = ''
         $(this.paramsSaveButtonContainer, $ => {
             if (this.status.isRunning) {

@@ -319,12 +319,18 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
 @mix_panel.MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
+    is_project_run = False
     status_code = 404
 
     r = run.get_run(run_uuid)
     if r:
         run_data = r.get_data()
         status_code = 200
+
+        u = auth.get_auth_user()
+        if u:
+            is_project_run = u.default_project.is_project_run(r.run_uuid)
+        run_data['is_project_run'] = is_project_run
 
         if not r.is_claimed:
             claim_run(run_uuid, r)
@@ -337,6 +343,7 @@ def get_run(run_uuid: str) -> flask.Response:
     return response
 
 
+@auth.login_required
 def edit_run(run_uuid: str) -> flask.Response:
     r = run.get_run(run_uuid)
     errors = []
@@ -491,5 +498,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
-    for method, func, url in AnalysisManager.get_handlers():
+    for method, func, url, login_required in AnalysisManager.get_handlers():
+        if login_required:
+            func = auth.login_required(func)
         _add_ui(app, method, func, url)

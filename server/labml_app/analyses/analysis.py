@@ -20,9 +20,9 @@ class Analysis:
         raise NotImplementedError
 
     @staticmethod
-    def route(method: str, url: str):
+    def route(method: str, url: str, login_required: bool = False):
         def decorator(f):
-            URLS.append((method, f, url))
+            URLS.append((method, f, url, login_required))
             return f
 
         return decorator
