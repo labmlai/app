@@ -21,12 +21,14 @@ from ..preferences import Preferences
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
     hp_values: Dict[str, any]
     hp_series: Dict[str, SeriesModel]
+    has_hp_updated: bool
 
     @classmethod
     def defaults(cls):
         return dict(
             hp_values={},
             hp_series={},
+            has_hp_updated=False
         )
 
 
@@ -147,6 +149,8 @@ class HyperParamsAnalysis(Analysis):
             except ValueError:
                 logger.error(f'not a number : {v}')
 
+        self.hyper_params.has_hp_updated = True
+
         self.hyper_params.save()
 
     def update_hp_series(self, ind: str, value: float) -> None:
@@ -162,7 +166,13 @@ class HyperParamsAnalysis(Analysis):
         hp_series[ind] = s.to_data()
 
     def get_hyper_params(self):
-        return self.hyper_params.hp_values
+        if self.hyper_params.has_hp_updated:
+            self.hyper_params.has_hp_updated = False
+            self.hyper_params.save()
+
+            return self.hyper_params.hp_values
+        else:
+            return {}
 
 
 @mix_panel.MixPanelEvent.time_this(None)
@@ -227,7 +237,6 @@ def set_hyper_params(run_uuid: str) -> Any:
         return response
 
     ans = HyperParamsAnalysis.get_or_create(run_uuid)
-
     if ans:
         ans.set_hyper_params(request.json)
         status_code = 200
