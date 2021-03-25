@@ -34,7 +34,6 @@ class Run(Model['Run']):
     is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
-    dynamic: Dict[str, any]
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -63,7 +62,6 @@ class Run(Model['Run']):
                     is_claimed=True,
                     status=None,
                     configs={},
-                    dynamic={},
                     stdout='',
                     stdout_unmerged='',
                     logger='',
@@ -101,11 +99,15 @@ class Run(Model['Run']):
             configs = data.get('configs', {})
             self.configs.update(configs)
 
+            defaults = {}
             for k, v in configs.items():
                 computed = v['computed']
                 name = v['name']
                 if computed and type(computed) == dict and computed['type'] == 'DynamicSchedule':
-                    self.dynamic[name] = computed['default']
+                    defaults[name] = computed
+
+            if defaults:
+                AnalysisManager.get_analysis('HyperParamsAnalysis', self.run_uuid).set_default_values(defaults)
 
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])

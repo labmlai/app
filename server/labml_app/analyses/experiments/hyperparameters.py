@@ -9,7 +9,6 @@ from labml_app.enums import SeriesEnums
 from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
 from labml_app import auth
-from labml_app.db import run
 from ..series import Series
 from ..analysis import Analysis
 from ..series import SeriesModel
@@ -19,16 +18,18 @@ from ..preferences import Preferences
 
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
+    default_values: Dict[str, any]
     hp_values: Dict[str, any]
     hp_series: Dict[str, SeriesModel]
-    has_hp_updated: bool
+    has_hp_updated: Dict[str, bool]
 
     @classmethod
     def defaults(cls):
         return dict(
+            default_values={},
             hp_values={},
             hp_series={},
-            has_hp_updated=False
+            has_hp_updated={},
         )
 
 
@@ -62,8 +63,9 @@ class HyperParamsAnalysis(Analysis):
 
         self.hyper_params.track(res)
 
-    def get_tracking(self, dynamic: {}):
+    def get_tracking(self):
         res = []
+        default_values = self.hyper_params.default_values
         for ind, track in self.hyper_params.tracking.items():
             name = ind.split('.')
             name = ''.join(name[-1])
@@ -72,12 +74,12 @@ class HyperParamsAnalysis(Analysis):
             series: Dict[str, Any] = {'step': s.last_step,
                                       'value': s.value,
                                       'smoothed': s.value,
-                                      'is_editable': name in dynamic,
+                                      'is_editable': name in default_values,
                                       'name': name}
 
             if name in self.hyper_params.hp_series:
                 s = Series().load(self.hyper_params.hp_series[name])
-                steps, values = self.get_input_series(s, self.hyper_params.step, dynamic[name])
+                steps, values = self.get_input_series(s, self.hyper_params.step, default_values[name]['default'])
 
                 series['sub'] = {'step': steps, 'value': values, 'smoothed': values}
 
@@ -141,15 +143,23 @@ class HyperParamsAnalysis(Analysis):
             gp.delete()
 
     def set_hyper_params(self, data: Dict[str, any]) -> None:
+        hp_values = self.hyper_params.hp_values
         for k, v in data.items():
+            if k not in hp_values:
+                continue
+
             try:
-                value = float(v)
-                self.hyper_params.hp_values[k] = value
-                self.update_hp_series(k, value)
+                new_value = float(v)
+                current_value = hp_values[k]
+
+                if current_value and current_value == new_value:
+                    continue
+
+                hp_values[k] = new_value
+                self.update_hp_series(k, new_value)
+                self.hyper_params.has_hp_updated[k] = True
             except ValueError:
                 logger.error(f'not a number : {v}')
-
-        self.hyper_params.has_hp_updated = True
 
         self.hyper_params.save()
 
@@ -165,14 +175,31 @@ class HyperParamsAnalysis(Analysis):
 
         hp_series[ind] = s.to_data()
 
+    def set_default_values(self, data: Dict[str, any]):
+        default_values = {}
+        hp_values = {}
+        for k, v in data.items():
+            default_values[k] = v
+            hp_values[k] = v['default']
+
+        self.hyper_params.default_values = default_values
+        self.hyper_params.hp_values = hp_values
+        self.hyper_params.save()
+
     def get_hyper_params(self):
-        if self.hyper_params.has_hp_updated:
-            self.hyper_params.has_hp_updated = False
+        res = {}
+        is_saving = False
+        has_hp_updated = self.hyper_params.has_hp_updated
+        for k, v in self.hyper_params.hp_values.items():
+            if has_hp_updated.get(k, False):
+                res[k] = v
+                is_saving = True
+                has_hp_updated[k] = False
+
+        if is_saving:
             self.hyper_params.save()
 
-            return self.hyper_params.hp_values
-        else:
-            return {}
+        return res
 
 
 @mix_panel.MixPanelEvent.time_this(None)
@@ -183,8 +210,7 @@ def get_hyper_params_tracking(run_uuid: str) -> Any:
 
     ans = HyperParamsAnalysis.get_or_create(run_uuid)
     if ans:
-        r = run.get_run(run_uuid)
-        track_data = ans.get_tracking(r.dynamic)
+        track_data = ans.get_tracking()
         status_code = 200
 
     response = make_response(format_rv({'series': track_data, 'insights': []}))
