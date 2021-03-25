@@ -5,9 +5,8 @@ import {PageNotFoundHandler} from '../views/errors/page_not_found_view'
 import {AuthErrorHandler} from '../views/errors/auth_error_view'
 import {OtherErrorHandler} from '../views/errors/other_error_view'
 
-export function handleNetworkError(e: Error) {
-    let error = <NetworkError>e
-    if(error) {
+export function handleNetworkError(error: Error | NetworkError) {
+    if (error instanceof NetworkError) {
         if (error.statusCode === 404 || error.statusCode === 400) {
             ROUTER.navigate('/404')
         } else if (error.statusCode === 401 || error.statusCode === 403) {
@@ -22,9 +21,8 @@ export function handleNetworkError(e: Error) {
     Sentry.captureException(error)
 }
 
-export function handleNetworkErrorInplace(e: Error) {
-    let error = <NetworkError>e
-    if(error.statusCode) {
+export function handleNetworkErrorInplace(error: Error | NetworkError) {
+    if (error instanceof NetworkError) {
         if (error.statusCode === 404 || error.statusCode === 400) {
             PageNotFoundHandler.handlePageNotFound()
         } else if (error.statusCode === 401 || error.statusCode === 403) {

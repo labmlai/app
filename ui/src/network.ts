@@ -27,7 +27,7 @@ class Network {
             xhr.onload = () => {
                 if (xhr.status >= 400) {
                     if (xhr.status != 403) {
-                        reject(new NetworkError(xhr.status, url, String(xhr.response)))
+                        reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response)))
                     }
                 } else {
                     resolve(xhr.response.data)
@@ -129,15 +129,15 @@ class Network {
     }
 }
 
-export class NetworkError extends Error {
+export class NetworkError {
     statusCode: number
     url: string
+    message?: string
 
     constructor(statusCode: number, url: string, message?: string) {
-        super(message || '');
-        this.name = "NetworkError"
         this.statusCode = statusCode
         this.url = url
+        this.message = message
     }
 }
 
