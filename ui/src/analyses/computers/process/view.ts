@@ -8,7 +8,6 @@ import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import processCache from "./cache"
 import {ComputerHeaderCard} from '../computer_header/card'
-import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {ProcessList} from "./process_list"
@@ -22,8 +21,6 @@ class ProcessView extends ScreenView {
     series: ProcessModel[]
     analysisCache: AnalysisDataCache
     computerHeaderCard: ComputerHeaderCard
-    sparkTimeLines: SparkTimeLines
-    sparkLinesContainer: HTMLDivElement
     processListContainer: HTMLDivElement
     actualWidth: number
     private loader: DataLoader
@@ -77,10 +74,6 @@ class ProcessView extends ScreenView {
                         this.computerHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Processes')
                         this.loader.render($)
-                        $('div', '.detail-card', $ => {
-                            this.sparkLinesContainer = $('div')
-                        })
-
                         this.processListContainer = $('div')
                     })
                 })
@@ -90,8 +83,6 @@ class ProcessView extends ScreenView {
             await this.loader.load()
 
             this.calcPreferences()
-
-            this.renderSparkLines()
             this.renderProcessList()
         } catch (e) {
 
@@ -119,7 +110,7 @@ class ProcessView extends ScreenView {
             await this.loader.load(true)
 
             this.calcPreferences()
-            this.renderSparkLines()
+            this.renderProcessList()
         } catch (e) {
 
         } finally {
@@ -133,18 +124,6 @@ class ProcessView extends ScreenView {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
-    }
-
-    renderSparkLines() {
-        // this.sparkLinesContainer.innerHTML = ''
-        // $(this.sparkLinesContainer, $ => {
-        //     this.sparkTimeLines = new SparkTimeLines({
-        //         series: this.series,
-        //         plotIdx: this.plotIdx,
-        //         width: this.actualWidth,
-        //     })
-        //     this.sparkTimeLines.render($)
-        // })
     }
 
     renderProcessList() {

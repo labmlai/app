@@ -83,7 +83,10 @@ class ProcessAnalysis(Analysis):
                 continue
             ret.append(v)
 
-        summary = ret[:5]
+        summary = []
+        for v in ret[:5]:
+            v['cpu']['name'] = v['name']
+            summary.append(v['cpu'])
 
         return ret, summary
 
