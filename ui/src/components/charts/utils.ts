@@ -101,14 +101,19 @@ export function defaultSeriesToPlot(series: SeriesModel[]) {
     return plotIdx
 }
 
+export function toPointValue(s: SeriesModel) {
+    let res: PointValue[] = []
+    for (let i = 0; i < s.step.length; ++i) {
+        res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
+    }
+
+    return res
+}
+
 export function toPointValues(track: SeriesModel[]) {
     let series: SeriesModel[] = [...track]
     for (let s of series) {
-        let res: PointValue[] = []
-        for (let i = 0; i < s.step.length; ++i) {
-            res.push({step: s.step[i], value: s.value[i], smoothed: s.smoothed[i]})
-        }
-        s.series = res
+        s.series = toPointValue(s)
     }
 
     return series

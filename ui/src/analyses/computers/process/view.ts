@@ -1,5 +1,5 @@
 import {ScreenView} from "../../../screen"
-import {SeriesModel} from "../../../models/run"
+import {ProcessModel} from "./types"
 import CACHE, {AnalysisDataCache, ComputerStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -7,7 +7,6 @@ import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import processCache from "./cache"
-import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
 import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
@@ -20,7 +19,7 @@ class ProcessView extends ScreenView {
     status: Status
     plotIdx: number[] = []
     statusCache: ComputerStatusCache
-    series: SeriesModel[]
+    series: ProcessModel[]
     analysisCache: AnalysisDataCache
     computerHeaderCard: ComputerHeaderCard
     sparkTimeLines: SparkTimeLines
@@ -39,7 +38,7 @@ class ProcessView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.series = (await this.analysisCache.get(force)).series
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 

@@ -49,32 +49,43 @@ class ProcessAnalysis(Analysis):
         # name, pid, rss, vms, mem, cpu, threads
         res: Dict[str, SeriesModel] = {}
         for ind, s in data.items():
-            ind_type = ind.split('.')[0]
+            ind_split = ind.split('.')
+            ind_type = ind_split[0]
             if ind_type == COMPUTEREnums.PROCESS:
-                if 'name' in ind:
-                    self.process.names[ind] = s['value'][0]
+                name = '.'.join(ind_split[:-1])
+                if 'name' in ind and name not in self.process.names:
+                    self.process.names[name] = s['value'][0]
                     continue
+
                 res[ind] = s
 
         self.process.track(res)
 
     def get_tracking(self):
-        res = []
+        res = {}
         for ind, track in self.process.tracking.items():
-            name = ind.split('.')
-            if 'cpu' not in name:
+            ind_split = ind.split('.')
+            name = '.'.join(ind_split[:-1])
+
+            if name not in res:
+                res[name] = {'name': self.process.names[name]}
+
+            if 'cpu' == ind_split[-1]:
+                series: Dict[str, Any] = Series().load(track).detail
+                res[name]['cpu'] = series
+            elif 'mem' == ind_split[-1]:
+                series: Dict[str, Any] = Series().load(track).detail
+                res[name]['mem'] = series
+
+        ret = []
+        for k, v in res.items():
+            if 'cpu' not in v or 'mem' not in v:
                 continue
+            ret.append(v)
 
-            series: Dict[str, Any] = Series().load(track).detail
-            series['name'] = self.process.names['.'.join(name[:-1]) + '.name']
+        summary = ret[:5]
 
-            res.append(series)
-
-        res.sort(key=lambda s: s['smoothed'], reverse=True)
-
-        summary = res[:5]
-
-        return res, summary
+        return ret, summary
 
     @staticmethod
     def get_or_create(session_uuid: str):
