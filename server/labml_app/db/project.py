@@ -109,6 +109,7 @@ def clean_project(labml_token: str):
                 delete_list.append(run_uuid)
         except TypeError:
             logger.error(f'error while deleting the run {run_uuid}')
+            delete_list.append(run_uuid)
 
     for run_uuid in delete_list:
         p.runs.pop(run_uuid)
