@@ -43,7 +43,7 @@ export interface InsightModel {
 }
 
 export interface AnalysisDataModel {
-    series: SeriesModel[]
+    series: any[]
     insights: InsightModel[]
     summary: any[]
 }
