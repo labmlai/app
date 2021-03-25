@@ -66,10 +66,10 @@ class PageNotFoundView extends ScreenView {
 
 export class PageNotFoundHandler {
     constructor() {
-        ROUTER.route('404', [this.handlePageNotFound])
+        ROUTER.route('404', [PageNotFoundHandler.handlePageNotFound])
     }
 
-    handlePageNotFound = () => {
+    static handlePageNotFound = () => {
         SCREEN.setView(new PageNotFoundView())
     }
 }

@@ -12,6 +12,7 @@ import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
 import {AlertMessage} from '../components/alert'
 import {AwesomeRefreshButton} from '../components/refresh_button'
+import {handleNetworkErrorInplace} from '../utils/redirect'
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -82,7 +83,7 @@ class RunsListView extends ScreenView {
 
             this.renderList().then()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         }
     }
 

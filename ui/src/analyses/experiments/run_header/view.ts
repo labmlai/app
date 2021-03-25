@@ -12,7 +12,7 @@ import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
-import {handleNetworkError} from '../../../utils/redirect'
+import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -101,7 +101,7 @@ class RunHeaderView extends ScreenView {
 
             this.renderFields()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
 
         }

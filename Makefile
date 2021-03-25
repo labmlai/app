@@ -31,6 +31,7 @@ compile-prod: compile
 	sed -i 's/bundle.min.js/$(JS_CHECKSUM).min.js/g' static/index.html
 	sed -i 's/bundle.min.js.map/$(JS_CHECKSUM).min.js.map/g' static/js/bundle.min.js
 	sed -i 's/style.css/$(CSS_CHECKSUM).css/g' static/index.html
+	sed -i 's/style.css.map/$(CSS_CHECKSUM).css.map/g' static/css/style.css
 	mv static/js/bundle.min.js static/js/$(JS_CHECKSUM).min.js
 	mv static/js/bundle.min.js.map static/js/$(JS_CHECKSUM).min.js.map
 	mv static/css/style.css static/css/$(CSS_CHECKSUM).css

@@ -82,10 +82,10 @@ class OtherErrorView extends ScreenView {
 
 export class OtherErrorHandler {
     constructor() {
-        ROUTER.route('500', [this.handleOtherError])
+        ROUTER.route('500', [OtherErrorHandler.handleOtherError])
     }
 
-    handleOtherError = () => {
+    static handleOtherError = () => {
         SCREEN.setView(new OtherErrorView())
     }
 }

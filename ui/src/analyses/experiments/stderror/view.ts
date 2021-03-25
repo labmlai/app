@@ -11,6 +11,7 @@ import {DataLoader} from "../../../components/loader"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class StdErrorView extends ScreenView {
     elem: HTMLDivElement
@@ -83,7 +84,7 @@ class StdErrorView extends ScreenView {
 
             this.renderOutput()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
