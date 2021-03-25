@@ -12,7 +12,7 @@ import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect'
+import {handleNetworkError, handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 
 class RunView extends ScreenView {
@@ -103,7 +103,7 @@ class RunView extends ScreenView {
 
             this.renderCards()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))

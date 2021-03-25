@@ -15,6 +15,7 @@ import mix_panel from "../../../mix_panel"
 import {getSeriesData} from "./utils"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class GPUUtilView extends ScreenView {
     elem: HTMLDivElement
@@ -109,7 +110,7 @@ class GPUUtilView extends ScreenView {
             this.renderSaveButton()
 
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.computerHeaderCard.renderLastRecorded.bind(this.computerHeaderCard))

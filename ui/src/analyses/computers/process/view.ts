@@ -11,6 +11,7 @@ import {ComputerHeaderCard} from '../computer_header/card'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {ProcessList} from "./process_list"
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class ProcessView extends ScreenView {
     elem: HTMLDivElement
@@ -85,7 +86,7 @@ class ProcessView extends ScreenView {
             this.calcPreferences()
             this.renderProcessList()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.computerHeaderCard.renderLastRecorded.bind(this.computerHeaderCard))

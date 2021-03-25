@@ -20,6 +20,7 @@ import {DataLoader} from "../../../components/loader"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement
@@ -133,7 +134,7 @@ class HyperParamsView extends ScreenView {
             this.renderPrefsSaveButton(true)
             this.renderParamsSaveButton(true)
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))

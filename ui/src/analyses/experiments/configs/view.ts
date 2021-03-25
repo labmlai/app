@@ -11,6 +11,7 @@ import {Configs} from "./components"
 import mix_panel from "../../../mix_panel";
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class ConfigsView extends ScreenView {
     elem: HTMLDivElement
@@ -82,7 +83,7 @@ class ConfigsView extends ScreenView {
 
             this.renderConfigsView()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
