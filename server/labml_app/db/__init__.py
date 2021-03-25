@@ -45,7 +45,7 @@ else:
 create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
 
-#clean_project(settings.FLOAT_PROJECT_TOKEN)
+clean_project(settings.FLOAT_PROJECT_TOKEN)
 # # TODO schedule this event to run every 12 hours later
 delete_unclaimed_runs()
 # remove_corrupted_runs()

@@ -101,11 +101,12 @@ def clean_project(labml_token: str):
 
     delete_list = []
     for run_uuid, run_key in p.runs.items():
-        r = run_key.load()
-        s = r.status.load()
+        if run_key:
+            r = run_key.load()
+            s = r.status.load()
 
-        if (time.time() - 86400) > s.last_updated_time:
-            delete_list.append(run_uuid)
+            if (time.time() - 86400) > s.last_updated_time:
+                delete_list.append(run_uuid)
 
     for run_uuid in delete_list:
         p.runs.pop(run_uuid)
