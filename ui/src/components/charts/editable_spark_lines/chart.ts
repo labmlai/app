@@ -1,7 +1,7 @@
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, toPointValues} from "../utils"
+import {defaultSeriesToPlot, getExtent, toPointValue} from "../utils"
 import {SparkLine} from "../spark_lines/spark_line"
 import {EditableSparkLine} from "./editable_spark_line"
 import ChartColors from "../chart_colors"
@@ -32,7 +32,6 @@ export class EditableSparkLines {
     editableSparkLines: EditableSparkLine[] = []
     chartColors: ChartColors
     isDivergent?: boolean
-    editablePlots: SeriesModel[] = []
 
     constructor(opt: SparkLinesOptions) {
         this.series = opt.series
@@ -66,14 +65,13 @@ export class EditableSparkLines {
 
                 let s = this.series[i]
                 if (s.sub) {
-                    this.editablePlots.push(s.sub)
+                    s.sub.series = toPointValue(s.sub)
                 }
             } else {
                 this.colorIndices.push(-1)
             }
         }
 
-        this.editablePlots = toPointValues(this.editablePlots)
         this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
@@ -100,17 +98,18 @@ export class EditableSparkLines {
 
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
-            let editablePlotIdx = 0
             this.series.map((s, i) => {
                 let onClick
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
                 }
                 if (this.isEditable && s.is_editable) {
-                    let editable = this.editablePlots[editablePlotIdx] ? this.editablePlots[editablePlotIdx] : s
                     let editableSparkLine = new EditableSparkLine({
                         name: s.name,
-                        series: editable.series,
+                        dynamic_type: s.dynamic_type,
+                        range: s.range,
+                        series: s.series,
+                        sub: s.sub,
                         selected: this.plotIdx[i],
                         stepExtent: this.stepExtent,
                         width: this.rowWidth,
@@ -123,8 +122,6 @@ export class EditableSparkLines {
                     })
                     this.editableSparkLines.push(editableSparkLine)
                     editableSparkLine.render($)
-
-                    editablePlotIdx++
                 } else {
                     let sparkLine = new SparkLine({
                         name: s.name,

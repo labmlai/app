@@ -1,7 +1,7 @@
 import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getScale, toPointValues} from "../utils"
+import {defaultSeriesToPlot, getExtent, getScale, toPointValue} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
@@ -64,6 +64,7 @@ export class CustomLineChart {
                 this.filteredPlotIdx.push(i)
                 this.filteredPlots.push(s)
                 if (s.sub) {
+                    s.sub.series = toPointValue(s.sub)
                     this.subPlots.push(s.sub)
                 }
             }
@@ -74,7 +75,6 @@ export class CustomLineChart {
             this.filteredPlotIdx = [0]
         }
 
-        this.subPlots = toPointValues(this.subPlots)
         let plots: SeriesModel[] = this.filteredPlots.concat(this.subPlots)
 
         const stepExtent = getExtent(plots.map(s => s.series), d => d.step)
@@ -174,7 +174,6 @@ export class CustomLineChart {
                                                 }).render($)
                                             })
                                         }
-                                        let subPlotIdx = 0
                                         this.filteredPlots.map((s, i) => {
                                             let lineColor = this.chartColors.getColor(this.filteredPlotIdx[i])
                                             let linePlot = new LinePlot({
@@ -189,12 +188,11 @@ export class CustomLineChart {
 
                                             if (s.sub) {
                                                 new LinePlot({
-                                                    series: this.subPlots[subPlotIdx].series,
+                                                    series: s.sub.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
                                                     color: lineColor,
                                                 }).render($)
-                                                subPlotIdx++
                                             }
                                         })
                                     })

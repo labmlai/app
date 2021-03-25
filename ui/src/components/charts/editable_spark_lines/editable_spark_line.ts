@@ -1,6 +1,6 @@
 import d3 from "../../../d3"
 import {WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {PointValue} from "../../../models/run"
+import {PointValue, SeriesModel} from "../../../models/run"
 import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
@@ -8,7 +8,10 @@ import {formatFixed} from "../../../utils/value"
 
 export interface SparkLineOptions {
     name: string
+    dynamic_type: string
+    range: [number, number]
     series: PointValue[]
+    sub: SeriesModel
     width: number
     stepExtent: [number, number]
     selected: number
@@ -21,8 +24,11 @@ export interface SparkLineOptions {
 }
 
 export class EditableSparkLine {
-    series: PointValue[]
     name: string
+    dynamic_type: string
+    range: [number, number]
+    series: PointValue[]
+    sub: SeriesModel
     minLastValue: number
     maxLastValue: number
     color: string
@@ -44,8 +50,11 @@ export class EditableSparkLine {
     lastChanged: number
 
     constructor(opt: SparkLineOptions) {
-        this.series = opt.series
         this.name = opt.name
+        this.dynamic_type = opt.dynamic_type
+        this.range = opt.range
+        this.series = opt.series
+        this.sub = opt.sub
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.onEdit = opt.onEdit
@@ -87,7 +96,8 @@ export class EditableSparkLine {
     }
 
     renderInputValue() {
-        const last = this.series[this.series.length - 1]
+        let s = this.sub ? this.sub.series : this.series
+        const last = s[s.length - 1]
         this.inputValueElem.value = formatFixed(last.value, 3)
     }
 
@@ -120,7 +130,7 @@ export class EditableSparkLine {
                     })
                 })
                 this.inputElements = $('div', '.mt-1', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                    $('span', '', {style: {width: `${this.titleWidth}px`, color: this.color}})
+                    $('span', `${this.dynamic_type}, range: [${this.range.toString()}]`, {style: {width: `${this.titleWidth}px`}})
                     this.inputRangeElem = $('input', '.slider', {
                         type: "range",
                         style: {width: `${this.chartWidth}px`},
@@ -145,8 +155,8 @@ export class EditableSparkLine {
         this.inputRangeElem.addEventListener('input', this.onSliderChange.bind(this))
         this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
-        const last = this.series[this.series.length - 1]
-        this.lastChanged = last.value
+        let s = this.sub ? this.sub.series : this.series
+        const last = s[s.length - 1]
         this.updateSliderConfig(last.value)
 
         this.renderInputValue()
