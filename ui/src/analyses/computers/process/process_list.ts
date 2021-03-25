@@ -55,7 +55,8 @@ class ProcessSparkLine {
                     })
                 })
                 const last = this.series[this.series.length - 1]
-                $('span', {style: {color: this.color}}, `${this.name} : ${formatFixed(last.smoothed, 3)}`)
+                $('span', `${this.name}:`)
+                $('span', {style: {color: this.color}}, `${formatFixed(last.smoothed, 3)}`)
             })
         })
     }
@@ -101,7 +102,7 @@ class ProcessListItem {
                     width: this.width / 2.2,
                     series: this.item.mem.series,
                     stepExtent: this.stepExtent,
-                    color:  "#bc5090",
+                    color: "#bc5090",
                     name: 'memory'
                 }).render($)
             })
