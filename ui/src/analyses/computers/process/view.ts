@@ -93,6 +93,7 @@ class ProcessView extends ScreenView {
 
         } finally {
             if (this.status && this.status.isRunning) {
+                this.refresh.attachHandler(this.computerHeaderCard.renderLastRecorded.bind(this.computerHeaderCard))
                 this.refresh.start()
             }
         }

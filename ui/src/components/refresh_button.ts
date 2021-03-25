@@ -3,7 +3,8 @@ import {WeyaElementFunction} from "../../../lib/weya/weya"
 const AUTO_REFRESH_TIME = 2 * 60
 
 export class AwesomeRefreshButton {
-    private _refresh: () => Promise<void>;
+    private readonly _refresh: () => Promise<void>
+    private handler?: () => void
     private refreshTimeout: number
     private lastVisibilityChange: number;
     private isActive: boolean
@@ -56,6 +57,9 @@ export class AwesomeRefreshButton {
                 this.isRefreshing = false
             }
         }
+        if (this.handler) {
+            this.handler()
+        }
         this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
     }
 
@@ -80,6 +84,7 @@ export class AwesomeRefreshButton {
             this.refreshButton.style.display = 'none'
             this.remainingTimeElem.innerText = ''
         }
+        this.handler = null
         this._stop()
     }
 
@@ -97,6 +102,9 @@ export class AwesomeRefreshButton {
 
         this.remainingTime = Math.floor(Math.max(0, (this.lastVisibilityChange + this.remainingTime * 1000) - currentTime) / 1000)
         this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
+    }
 
+    attachHandler(handler?: () => void) {
+        this.handler = handler
     }
 }
