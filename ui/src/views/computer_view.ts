@@ -105,7 +105,7 @@ class ComputerView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (this.status.isRunning) {
+            if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.computerHeaderCard.renderLastRecorded.bind(this.computerHeaderCard))
                 this.refresh.start()
             }
@@ -113,7 +113,6 @@ class ComputerView extends ScreenView {
     }
 
     private renderCards() {
-
         $(this.cardContainer, $ => {
             computerAnalyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
@@ -145,7 +144,7 @@ class ComputerView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (!this.status.isRunning) {
+            if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
 

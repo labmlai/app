@@ -115,7 +115,7 @@ class ParametersView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (this.status.isRunning) {
+            if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
                 this.refresh.start()
             }
@@ -144,7 +144,7 @@ class ParametersView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (!this.status.isRunning) {
+            if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
             this.runHeaderCard.refresh().then()

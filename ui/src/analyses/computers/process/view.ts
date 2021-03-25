@@ -92,7 +92,7 @@ class ProcessView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (this.status.isRunning) {
+            if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.computerHeaderCard.renderLastRecorded.bind(this.computerHeaderCard))
                 this.refresh.start()
             }
@@ -120,7 +120,7 @@ class ProcessView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (!this.status.isRunning) {
+            if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
 

@@ -105,7 +105,7 @@ class RunView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (this.status.isRunning) {
+            if (this.status && this.status.isRunning) {
                 this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
                 this.refresh.start()
             }
@@ -113,7 +113,6 @@ class RunView extends ScreenView {
     }
 
     private renderCards() {
-
         $(this.cardContainer, $ => {
             experimentAnalyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
@@ -145,7 +144,7 @@ class RunView extends ScreenView {
         } catch (e) {
 
         } finally {
-            if (!this.status.isRunning) {
+            if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
             for (let card of this.cards) {

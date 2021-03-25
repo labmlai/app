@@ -117,9 +117,9 @@ def after_request(response):
         return response
 
     if request_time > time_limit:
-        logger.error(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')
+        logger.error(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
     else:
-        logger.info(f'method:{request.method} uri: {request.full_path} request_time: {"%.5fs" % request_time}')
+        logger.info(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
 
     return response
 
