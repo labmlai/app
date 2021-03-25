@@ -1,5 +1,5 @@
 import {ScreenView} from "../../../screen"
-import {SeriesModel} from "../../../models/run"
+import {ProcessModel} from "./types"
 import CACHE, {AnalysisDataCache, ComputerStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
@@ -7,11 +7,10 @@ import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
 import processCache from "./cache"
-import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
-import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {ProcessList} from "./process_list"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class ProcessView extends ScreenView {
@@ -20,11 +19,10 @@ class ProcessView extends ScreenView {
     status: Status
     plotIdx: number[] = []
     statusCache: ComputerStatusCache
-    series: SeriesModel[]
+    series: ProcessModel[]
     analysisCache: AnalysisDataCache
     computerHeaderCard: ComputerHeaderCard
-    sparkTimeLines: SparkTimeLines
-    sparkLinesContainer: HTMLDivElement
+    processListContainer: HTMLDivElement
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -38,7 +36,7 @@ class ProcessView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.series = (await this.analysisCache.get(force)).series
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -77,9 +75,7 @@ class ProcessView extends ScreenView {
                         this.computerHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Processes')
                         this.loader.render($)
-                        $('div', '.detail-card', $ => {
-                            this.sparkLinesContainer = $('div')
-                        })
+                        this.processListContainer = $('div')
                     })
                 })
         })
@@ -88,12 +84,12 @@ class ProcessView extends ScreenView {
             await this.loader.load()
 
             this.calcPreferences()
-
-            this.renderSparkLines()
+            this.renderProcessList()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
+                this.refresh.attachHandler(this.computerHeaderCard.renderLastRecorded.bind(this.computerHeaderCard))
                 this.refresh.start()
             }
         }
@@ -116,7 +112,7 @@ class ProcessView extends ScreenView {
             await this.loader.load(true)
 
             this.calcPreferences()
-            this.renderSparkLines()
+            this.renderProcessList()
         } catch (e) {
 
         } finally {
@@ -132,15 +128,10 @@ class ProcessView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderSparkLines() {
-        this.sparkLinesContainer.innerHTML = ''
-        $(this.sparkLinesContainer, $ => {
-            this.sparkTimeLines = new SparkTimeLines({
-                series: this.series,
-                plotIdx: this.plotIdx,
-                width: this.actualWidth,
-            })
-            this.sparkTimeLines.render($)
+    renderProcessList() {
+        this.processListContainer.innerHTML = ''
+        $(this.processListContainer, $ => {
+            new ProcessList({items: this.series, width: this.actualWidth}).render($)
         })
     }
 

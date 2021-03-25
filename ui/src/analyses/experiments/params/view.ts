@@ -117,6 +117,7 @@ class ParametersView extends ScreenView {
             handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
+                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
                 this.refresh.start()
             }
         }

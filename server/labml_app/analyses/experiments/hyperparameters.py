@@ -8,6 +8,7 @@ from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
+from labml_app import auth
 from labml_app.db import run
 from ..series import Series
 from ..analysis import Analysis
@@ -20,12 +21,14 @@ from ..preferences import Preferences
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
     hp_values: Dict[str, any]
     hp_series: Dict[str, SeriesModel]
+    has_hp_updated: bool
 
     @classmethod
     def defaults(cls):
         return dict(
             hp_values={},
             hp_series={},
+            has_hp_updated=False
         )
 
 
@@ -146,6 +149,8 @@ class HyperParamsAnalysis(Analysis):
             except ValueError:
                 logger.error(f'not a number : {v}')
 
+        self.hyper_params.has_hp_updated = True
+
         self.hyper_params.save()
 
     def update_hp_series(self, ind: str, value: float) -> None:
@@ -161,7 +166,13 @@ class HyperParamsAnalysis(Analysis):
         hp_series[ind] = s.to_data()
 
     def get_hyper_params(self):
-        return self.hyper_params.hp_values
+        if self.hyper_params.has_hp_updated:
+            self.hyper_params.has_hp_updated = False
+            self.hyper_params.save()
+
+            return self.hyper_params.hp_values
+        else:
+            return {}
 
 
 @mix_panel.MixPanelEvent.time_this(None)
@@ -213,11 +224,19 @@ def set_hyper_params_preferences(run_uuid: str) -> Any:
     return format_rv({'errors': hpp.errors})
 
 
-@Analysis.route('POST', 'hyper_params/<run_uuid>')
+@Analysis.route('POST', 'hyper_params/<run_uuid>', True)
 def set_hyper_params(run_uuid: str) -> Any:
     status_code = 404
-    ans = HyperParamsAnalysis.get_or_create(run_uuid)
 
+    p = auth.get_auth_user().default_project
+    if not p.is_project_run(run_uuid):
+        status_code = 403
+        response = make_response(format_rv({'errors': []}))
+        response.status_code = status_code
+
+        return response
+
+    ans = HyperParamsAnalysis.get_or_create(run_uuid)
     if ans:
         ans.set_hyper_params(request.json)
         status_code = 200

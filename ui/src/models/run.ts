@@ -13,6 +13,7 @@ export interface RunModel {
     commit_message: string
     start_step: number
     is_claimed: boolean
+    is_project_run: boolean
     configs: ConfigModel[]
     stdout: string
     logger: string
@@ -43,7 +44,7 @@ export interface InsightModel {
 }
 
 export interface AnalysisDataModel {
-    series: SeriesModel[]
+    series: any[]
     insights: InsightModel[]
     summary: any[]
 }
@@ -61,6 +62,7 @@ export class Run {
     commit_message: string
     start_step: number
     is_claimed: boolean
+    is_project_run: boolean
     configs: Config[]
     dynamic: object
     stdout: string
@@ -80,6 +82,7 @@ export class Run {
         this.commit_message = run.commit_message
         this.start_step = run.start_step
         this.is_claimed = run.is_claimed
+        this.is_project_run = run.is_project_run
         this.configs = []
         for (let c of run.configs) {
             this.configs.push(new Config(c))

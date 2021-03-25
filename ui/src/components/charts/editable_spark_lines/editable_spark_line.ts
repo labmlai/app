@@ -166,19 +166,19 @@ export class EditableSparkLine {
 
     onSliderChange() {
         let number = Number(this.inputRangeElem.value)
-        if (number) {
+        if (!isNaN(number)) {
             this.inputValueElem.value = formatFixed(number, 3)
             this.lastChanged = number
+            this.onEdit()
         }
-        this.onEdit()
     }
 
     onInputChange() {
         let number = Number(this.inputValueElem.value)
-        if (number) {
+        if (!isNaN(number)) {
             this.lastChanged = number
+            this.onEdit()
         }
-        this.onEdit()
     }
 
     updateSliderConfig(value: number) {
