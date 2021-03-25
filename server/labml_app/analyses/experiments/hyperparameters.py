@@ -8,6 +8,7 @@ from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
+from labml_app import auth
 from labml_app.db import run
 from ..series import Series
 from ..analysis import Analysis
@@ -216,6 +217,15 @@ def set_hyper_params_preferences(run_uuid: str) -> Any:
 @Analysis.route('POST', 'hyper_params/<run_uuid>', True)
 def set_hyper_params(run_uuid: str) -> Any:
     status_code = 404
+
+    p = auth.get_auth_user().default_project
+    if not p.is_project_run(run_uuid):
+        status_code = 403
+        response = make_response(format_rv({'errors': []}))
+        response.status_code = status_code
+
+        return response
+
     ans = HyperParamsAnalysis.get_or_create(run_uuid)
 
     if ans:
