@@ -117,10 +117,10 @@ class ActivationsView extends ScreenView {
 
         } finally {
             if (this.status.isRunning) {
+                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
                 this.refresh.start()
             }
         }
-
     }
 
     render(): WeyaElement {
