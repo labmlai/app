@@ -12,7 +12,7 @@ import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
 import {AlertMessage} from "../components/alert"
 import mix_panel from "../mix_panel"
-import {handleNetworkError} from '../utils/redirect'
+import {handleNetworkError, handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 
 class ComputerView extends ScreenView {
@@ -103,7 +103,7 @@ class ComputerView extends ScreenView {
 
             this.renderCards()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.start()

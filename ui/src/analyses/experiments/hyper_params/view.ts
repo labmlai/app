@@ -2,7 +2,7 @@ import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
 import {SeriesModel} from "../../../models/run"
-import {BackButton, SaveButton, CustomButton} from "../../../components/buttons"
+import {BackButton, CustomButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
 import {toPointValues} from "../../../components/charts/utils"
@@ -15,6 +15,7 @@ import {DataLoader} from "../../../components/loader"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement
@@ -124,7 +125,7 @@ class HyperParamsView extends ScreenView {
             this.renderPrefsSaveButton(true)
             this.renderParamsSaveButton(true)
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.start()

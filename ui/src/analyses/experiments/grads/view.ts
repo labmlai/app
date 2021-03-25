@@ -15,6 +15,7 @@ import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {DataLoader} from "../../../components/loader";
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class GradientsView extends ScreenView {
     elem: HTMLDivElement
@@ -113,7 +114,7 @@ class GradientsView extends ScreenView {
             this.renderSaveButton()
             this.renderToggleButton()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.start()

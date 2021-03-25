@@ -11,7 +11,7 @@ import {DataLoader} from "../../../components/loader"
 import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
-import {handleNetworkError} from '../../../utils/redirect'
+import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Computer} from "../../../models/computer"
 
 class ComputerHeaderView extends ScreenView {
@@ -100,7 +100,7 @@ class ComputerHeaderView extends ScreenView {
 
             this.renderFields()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
 
         }

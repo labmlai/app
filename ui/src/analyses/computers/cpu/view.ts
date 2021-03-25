@@ -15,6 +15,7 @@ import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
+import {handleNetworkErrorInplace} from '../../../utils/redirect'
 
 class CPUView extends ScreenView {
     elem: HTMLDivElement
@@ -109,7 +110,7 @@ class CPUView extends ScreenView {
             this.renderSaveButton()
 
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
                 this.refresh.start()

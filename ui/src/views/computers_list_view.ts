@@ -12,6 +12,7 @@ import mix_panel from "../mix_panel"
 import EmptyComputersList from "./empty_computers_list"
 import {AlertMessage} from "../components/alert"
 import {AwesomeRefreshButton} from '../components/refresh_button'
+import {handleNetworkErrorInplace} from '../utils/redirect'
 
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
@@ -82,7 +83,7 @@ class ComputersListView extends ScreenView {
 
             this.renderList().then()
         } catch (e) {
-
+            handleNetworkErrorInplace(e)
         }
     }
 
