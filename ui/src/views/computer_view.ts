@@ -135,7 +135,6 @@ class ComputerView extends ScreenView {
     }
 
     destroy() {
-        this.refresh.attachHandler(null)
         this.refresh.stop()
     }
 
@@ -147,7 +146,6 @@ class ComputerView extends ScreenView {
 
         } finally {
             if (!this.status.isRunning) {
-                this.refresh.attachHandler(null)
                 this.refresh.stop()
             }
 

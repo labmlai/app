@@ -84,6 +84,7 @@ export class AwesomeRefreshButton {
             this.refreshButton.style.display = 'none'
             this.remainingTimeElem.innerText = ''
         }
+        this.handler = null
         this._stop()
     }
 
@@ -101,7 +102,6 @@ export class AwesomeRefreshButton {
 
         this.remainingTime = Math.floor(Math.max(0, (this.lastVisibilityChange + this.remainingTime * 1000) - currentTime) / 1000)
         this.refreshTimeout = window.setTimeout(this.procTimerUpdate.bind(this), 1000)
-
     }
 
     attachHandler(handler?: () => void) {
