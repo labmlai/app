@@ -144,15 +144,19 @@ class ComputersListView extends ScreenView {
     }
 
     onDelete = async () => {
-        this.computerListCache.deleteSessions(this.computersDeleteSet).catch(error => {
+        try {
+            await this.computerListCache.deleteSessions(this.computersDeleteSet)
+
+            this.isEditMode = false
+            this.computersDeleteSet.clear()
+            this.deleteButton.disabled = this.computersDeleteSet.size === 0
+
+            await this.loader.load()
+            await this.renderList()
+        } catch (e) {
             this.renderAlertMessage()
-        })
+        }
 
-        this.isEditMode = false
-        this.computersDeleteSet.clear()
-        this.deleteButton.disabled = this.computersDeleteSet.size === 0
-
-        await this.renderList()
     }
 
     onCancel = () => {
