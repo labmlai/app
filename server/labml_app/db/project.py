@@ -124,4 +124,4 @@ def delete_unclaimed_runs():
                 if not r.is_claimed and (time.time() - 86400) > s.last_updated_time:
                     run.delete(r.run_uuid)
             except TypeError:
-                print(f'error while deleting the run {run_key}')
+                logger.error(f'error while deleting the run {run_key}')
