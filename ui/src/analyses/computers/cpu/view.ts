@@ -1,6 +1,11 @@
 import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
+import CACHE, {
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    ComputerCache,
+    ComputerStatusCache
+} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -16,6 +21,8 @@ import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
+import {Computer} from '../../../models/computer'
 
 class CPUView extends ScreenView {
     elem: HTMLDivElement
@@ -37,11 +44,14 @@ class CPUView extends ScreenView {
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private computerCache: ComputerCache
+    private computer: Computer
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
+        this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.analysisCache = cpuCache.getAnalysis(this.uuid)
         this.preferenceCache = cpuCache.getPreferences(this.uuid)
@@ -50,8 +60,9 @@ class CPUView extends ScreenView {
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.status = await this.statusCache.get(force)
+            this.computer = await this.computerCache.get()
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -74,6 +85,7 @@ class CPUView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'CPU'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -103,6 +115,7 @@ class CPUView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'CPU', item: this.computer.name})
             this.calcPreferences()
 
             this.renderSparkLines()
