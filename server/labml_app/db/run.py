@@ -34,6 +34,7 @@ class Run(Model['Run']):
     is_claimed: bool
     status: Key[Status]
     configs: Dict[str, any]
+    dynamic: Dict[str, any]
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -62,6 +63,7 @@ class Run(Model['Run']):
                     is_claimed=True,
                     status=None,
                     configs={},
+                    dynamic={},
                     stdout='',
                     stdout_unmerged='',
                     logger='',
