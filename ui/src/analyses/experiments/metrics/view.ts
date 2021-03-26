@@ -1,6 +1,6 @@
 import {ScreenView} from "../../../screen"
-import {SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
+import {Run, SeriesModel} from "../../../models/run"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -16,6 +16,7 @@ import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class MetricsView extends ScreenView {
     elem: HTMLDivElement
@@ -37,6 +38,8 @@ class MetricsView extends ScreenView {
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
+    private runCache: RunCache
+    private run: Run
     private loader: DataLoader;
     private refresh: AwesomeRefreshButton;
 
@@ -45,6 +48,7 @@ class MetricsView extends ScreenView {
 
         this.uuid = uuid
         this.currentChart = 0
+        this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = metricsCache.getAnalysis(this.uuid)
         this.preferenceCache = metricsCache.getPreferences(this.uuid)
@@ -54,6 +58,7 @@ class MetricsView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.run = await this.runCache.get()
             this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
         })
@@ -77,6 +82,7 @@ class MetricsView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Metrics'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -107,6 +113,7 @@ class MetricsView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Metrics', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()

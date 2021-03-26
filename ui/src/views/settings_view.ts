@@ -8,7 +8,7 @@ import {User} from '../models/user'
 import EditableField from '../components/editable_field'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
-
+import {setTitle} from '../utils/document'
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 const LIGHT = 'light'
@@ -50,6 +50,7 @@ class SettingsView extends ScreenView {
     }
 
     private async renderContent() {
+        setTitle({section: 'Settings'})
         try {
             this.user = await this.userCache.get()
         }  catch (e) {

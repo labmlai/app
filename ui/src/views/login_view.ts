@@ -6,6 +6,7 @@ import {Loader} from "../components/loader"
 import CACHE, {IsUserLoggedCache} from "../cache/cache"
 import NETWORK from '../network'
 import {handleNetworkError} from '../utils/redirect';
+import {setTitle} from '../utils/document'
 
 class LoginView extends ScreenView {
     isUserLogged: IsUserLogged
@@ -34,6 +35,7 @@ class LoginView extends ScreenView {
         })
 
         this.handleLogin().then()
+        setTitle({section: 'Login'})
 
         return this.elem
     }

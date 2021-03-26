@@ -14,6 +14,7 @@ import {AlertMessage} from "../components/alert"
 import mix_panel from "../mix_panel"
 import {handleNetworkError, handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
+import {setTitle} from '../utils/document'
 
 class ComputerView extends ScreenView {
     uuid: string
@@ -72,6 +73,7 @@ class ComputerView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Computer'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.run.page',
@@ -101,6 +103,7 @@ class ComputerView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Computer', item: this.computer.name})
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)

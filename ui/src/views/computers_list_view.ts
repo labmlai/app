@@ -13,6 +13,7 @@ import EmptyComputersList from "./empty_computers_list"
 import {AlertMessage} from "../components/alert"
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
+import {setTitle} from '../utils/document'
 
 class ComputersListView extends ScreenView {
     computerListCache: ComputersListCache
@@ -52,6 +53,7 @@ class ComputersListView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Computers'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {

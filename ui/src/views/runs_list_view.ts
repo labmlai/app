@@ -13,6 +13,7 @@ import EmptyRunsList from './empty_runs_list'
 import {AlertMessage} from '../components/alert'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
+import {setTitle} from '../utils/document'
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -52,6 +53,7 @@ class RunsListView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Runs'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {

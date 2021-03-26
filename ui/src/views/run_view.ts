@@ -14,6 +14,7 @@ import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache
 import mix_panel from "../mix_panel"
 import {handleNetworkError, handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
+import {setTitle} from '../utils/document'
 
 class RunView extends ScreenView {
     uuid: string
@@ -72,6 +73,7 @@ class RunView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Run'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.run.page',
@@ -101,6 +103,7 @@ class RunView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Run', item: this.run.name})
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)
