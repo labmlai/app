@@ -12,6 +12,7 @@ import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class LoggerView extends ScreenView {
     elem: HTMLDivElement
@@ -59,6 +60,7 @@ class LoggerView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Logger'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page', $ => {
@@ -82,6 +84,7 @@ class LoggerView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Logger', item: this.run.name})
             this.renderOutput()
         } catch (e) {
             handleNetworkErrorInplace(e)

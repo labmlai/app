@@ -12,6 +12,7 @@ import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class StdOutView extends ScreenView {
     elem: HTMLDivElement
@@ -59,6 +60,7 @@ class StdOutView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Standard Out'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page', $ => {
@@ -82,6 +84,7 @@ class StdOutView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Standard Out', item: this.run.name})
             this.renderOutput()
         } catch (e) {
             handleNetworkErrorInplace(e)

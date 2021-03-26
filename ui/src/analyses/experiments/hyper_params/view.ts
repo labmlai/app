@@ -1,13 +1,8 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {
-    AnalysisDataCache,
-    AnalysisPreferenceCache,
-    RunCache,
-    RunStatusCache
-} from "../../../cache/cache"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
 import {Run, SeriesModel} from "../../../models/run"
-import {BackButton, SaveButton, CustomButton} from "../../../components/buttons"
+import {BackButton, CustomButton, SaveButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
 import {toPointValues} from "../../../components/charts/utils"
@@ -21,6 +16,7 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement
@@ -97,6 +93,7 @@ class HyperParamsView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Dynamic Hyperparameters'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -127,6 +124,7 @@ class HyperParamsView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Dynamic Hyperparameters', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()

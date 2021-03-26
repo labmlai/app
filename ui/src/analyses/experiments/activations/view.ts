@@ -1,8 +1,8 @@
 import {ROUTER, SCREEN} from "../../../app"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
-import {SeriesModel} from "../../../models/run"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
+import {Run, SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {DataLoader} from "../../../components/loader"
 import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
@@ -16,6 +16,7 @@ import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class ActivationsView extends ScreenView {
     elem: HTMLDivElement
@@ -39,12 +40,15 @@ class ActivationsView extends ScreenView {
     saveButton: SaveButton
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private runCache: RunCache
+    private run: Run
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
         this.currentChart = 0
+        this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = activationsCache.getAnalysis(this.uuid)
         this.preferenceCache = activationsCache.getPreferences(this.uuid)
@@ -54,6 +58,7 @@ class ActivationsView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.run = await this.runCache.get()
             this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
         })
@@ -77,6 +82,7 @@ class ActivationsView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Activations'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -108,6 +114,7 @@ class ActivationsView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Activations', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()
