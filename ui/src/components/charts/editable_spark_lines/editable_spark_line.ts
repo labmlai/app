@@ -4,7 +4,8 @@ import {PointValue, SeriesModel} from "../../../models/run"
 import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
-import {formatFixed} from "../../../utils/value"
+import {numberWithCommas, scientificFormat} from "../../../utils/value"
+import Timeout = NodeJS.Timeout
 
 export interface SparkLineOptions {
     name: string
@@ -47,7 +48,8 @@ export class EditableSparkLine {
     inputValueElem: HTMLInputElement
     inputElements: HTMLDivElement
     primaryElem: SVGTextElement
-    lastChanged: string
+    lastChanged: number
+    inputTimeout: Timeout
 
     constructor(opt: SparkLineOptions) {
         this.name = opt.name
@@ -64,6 +66,7 @@ export class EditableSparkLine {
         this.chartWidth = opt.width - this.titleWidth * 2
         this.minLastValue = opt.minLastValue
         this.maxLastValue = opt.maxLastValue
+        this.inputTimeout = null
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -89,6 +92,10 @@ export class EditableSparkLine {
     }
 
     formatNumber(value: number) {
+        if (value >= 10000 || value < 0.001) {
+            return scientificFormat(value)
+        }
+
         let decimals
         if (this.dynamic_type === 'float') {
             decimals = 3
@@ -96,7 +103,9 @@ export class EditableSparkLine {
             decimals = 0
         }
 
-        return formatFixed(value, decimals)
+        let str = value.toFixed(decimals)
+
+        return numberWithCommas(str)
     }
 
     renderTextValue(cursorStep?: number | null) {
@@ -164,7 +173,7 @@ export class EditableSparkLine {
         this.inputRangeElem.addEventListener('click', this.onInputElemClick.bind(this))
         this.inputValueElem.addEventListener('click', this.onInputElemClick.bind(this))
         this.inputRangeElem.addEventListener('input', this.onSliderChange.bind(this))
-        this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
+        this.inputValueElem.addEventListener('keyup', this.debounceHandler.bind(this))
 
         this.updateSliderConfig()
         this.renderInputValue()
@@ -185,20 +194,26 @@ export class EditableSparkLine {
     onSliderChange() {
         let number = Number(this.inputRangeElem.value)
         if (!isNaN(number)) {
-            let strNumber = this.formatNumber(number)
-            this.inputValueElem.value = strNumber
-            this.lastChanged = strNumber
+            this.inputValueElem.value = this.formatNumber(number)
+            this.lastChanged = number
             this.onEdit()
         }
     }
 
+    debounceHandler() {
+        clearTimeout(this.inputTimeout)
+        this.inputTimeout = setTimeout(this.onInputChange.bind(this), 1000)
+    }
+
     onInputChange() {
-        let number = Number(this.inputValueElem.value)
+        let strNumber = this.inputValueElem.value
+
+        let number = Number(strNumber)
         if (!isNaN(number)) {
-            this.lastChanged = this.formatNumber(number)
+            this.lastChanged = number
             this.onEdit()
         } else {
-            confirm(`${this.inputValueElem.value} is not a number`)
+            confirm(`${strNumber} is not a number`)
             this.renderInputValue()
         }
     }
@@ -216,12 +231,6 @@ export class EditableSparkLine {
     }
 
     getInput() {
-        let strNumber = this.lastChanged
-
-        if (strNumber && this.dynamic_type !== 'int') {
-            this.inputValueElem.value = strNumber
-        }
-
-        return strNumber
+        return this.lastChanged
     }
 }

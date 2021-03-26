@@ -1,10 +1,9 @@
 import d3 from "../d3"
 import {WeyaElementFunction} from "../../../lib/weya/weya"
-import {type} from "os";
 
 const FORMAT = d3.format(".3s")
 
-function numberWithCommas(x: string) {
+export function numberWithCommas(x: string) {
     const parts = x.split('.')
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     return parts.join('.')
@@ -19,6 +18,12 @@ export function formatScalar(value: number) {
     return numberWithCommas(str)
 }
 
+export function scientificFormat(value: number) {
+    let format = d3.format(".0e")
+
+    return format(value)
+}
+
 export function formatStep(step: number) {
     return FORMAT(step)
 }
@@ -26,6 +31,10 @@ export function formatStep(step: number) {
 export function formatFixed(value: number, decimals: number) {
     if (Math.abs(value) > 10000) {
         return FORMAT(value)
+    }
+
+    if (Math.abs(value) > 1) {
+        decimals = 3
     }
 
     let str = value.toFixed(decimals)
