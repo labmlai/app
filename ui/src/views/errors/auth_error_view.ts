@@ -1,7 +1,8 @@
 import {ROUTER, SCREEN} from '../../app'
-import {Weya as $, WeyaElement} from '../../../../lib/weya/weya'
+import {Weya as $} from '../../../../lib/weya/weya'
 import {ScreenView} from "../../screen"
 import mix_panel from "../../mix_panel"
+import {setTitle} from '../../utils/document'
 
 function wrapEvent(eventName: string, func: Function) {
     function wrapper() {
@@ -18,7 +19,7 @@ function wrapEvent(eventName: string, func: Function) {
 }
 
 class AuthErrorView extends ScreenView {
-    elem: WeyaElement
+    elem: HTMLDivElement
     private events = {
         back: () => {
             if (ROUTER.canBack()) {
@@ -55,27 +56,28 @@ class AuthErrorView extends ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.error-container', $ => {
-            $('h2.mt-5', 'Ooops! Authentication Failure.' + '')
+        setTitle({section: '401'})
+        this.elem = $('div', '.error-container', $ => {
+            $('h2', '.mt-5', 'Ooops! Authentication Failure.' + '')
             $('h1', '401')
             $('p', 'We are having trouble authenticating your request' + '')
             $('div', '.btn-container.mt-3', $ => {
-                $('button.btn.btn-success',
+                $('button', '.btn.btn-success',
                     {on: {click: this.events.back}},
                     $ => {
-                        $('span.mt-3', 'Retry' + '')
+                        $('span', '.mt-3', 'Retry' + '')
                     }
                 )
-                $('button.btn.btn-warning',
+                $('button', '.btn.btn-warning',
                     {on: {click: this.events.login}},
                     $ => {
-                        $('span.mt-3', 'Login Again' + '')
+                        $('span', '.mt-3', 'Login Again' + '')
                     }
                 )
-                $('button.btn.btn-info',
+                $('button', '.btn.btn-info',
                     {on: {click: this.events.slack}},
                     $ => {
-                        $('span.mt-3', 'Reach us on Slack' + '')
+                        $('span', '.mt-3', 'Reach us on Slack' + '')
                     }
                 )
             })

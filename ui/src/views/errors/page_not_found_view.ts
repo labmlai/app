@@ -1,7 +1,8 @@
 import {ROUTER, SCREEN} from '../../app'
-import {Weya as $, WeyaElement} from '../../../../lib/weya/weya'
+import {Weya as $} from '../../../../lib/weya/weya'
 import {ScreenView} from "../../screen"
 import mix_panel from "../../mix_panel"
+import {setTitle} from '../../utils/document'
 
 function wrapEvent(eventName: string, func: Function) {
     function wrapper() {
@@ -18,7 +19,7 @@ function wrapEvent(eventName: string, func: Function) {
 }
 
 class PageNotFoundView extends ScreenView {
-    elem: WeyaElement
+    elem: HTMLDivElement
     private events = {
         home: () => {
             ROUTER.navigate(`/`)
@@ -45,14 +46,15 @@ class PageNotFoundView extends ScreenView {
     }
 
     render() {
-        this.elem = <HTMLElement>$('div.error-container', $ => {
-            $('h2.mt-5', 'Ooops! Page not found.' + '')
+        setTitle({section: '404'})
+        this.elem = $('div', '.error-container', $ => {
+            $('h2', '.mt-5', 'Ooops! Page not found.' + '')
             $('h1', '404')
             $('p', 'We can\'t find the page.' + '')
-            $('button.btn.btn-danger',
+            $('button', '.btn.btn-danger',
                 {on: {click: this.events.home}},
                 $ => {
-                    $('span.mt-3', 'Go Back to Home' + '')
+                    $('span', '.mt-3', 'Go Back to Home' + '')
                 }
             )
         })
