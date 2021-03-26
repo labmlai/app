@@ -59,18 +59,18 @@ class OtherErrorView extends ScreenView {
             $('h1', '500')
             $('p', 'Seems like we are having issues right now' + '')
             $('div', '.btn-container.mt-3', $ => {
-                $('button', '.btn.btn-success',
+                $('button', '.btn.nav-link',
                     {on: {click: this.events.back}},
                     $ => {
-                        $('span', '.mt-3', 'Retry' + '')
-                    }
-                )
-                $('button', '.btn.btn-info',
+                        $('span', '.fas.fa-redo', '')
+                        $('span', '.m-1', 'Retry')
+                    })
+                $('button', '.btn.nav-link',
                     {on: {click: this.events.slack}},
                     $ => {
-                        $('span', '.mt-3', 'Reach us on Slack' + '')
-                    }
-                )
+                        $('span', '.fas.fa-comments', '')
+                        $('span', '.m-1', 'Reach us on Slack')
+                    })
             })
 
         })

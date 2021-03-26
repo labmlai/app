@@ -62,24 +62,24 @@ class AuthErrorView extends ScreenView {
             $('h1', '401')
             $('p', 'We are having trouble authenticating your request' + '')
             $('div', '.btn-container.mt-3', $ => {
-                $('button', '.btn.btn-success',
+                $('button', '.btn.nav-link',
                     {on: {click: this.events.back}},
                     $ => {
-                        $('span', '.mt-3', 'Retry' + '')
-                    }
-                )
-                $('button', '.btn.btn-warning',
+                        $('span', '.fas.fa-redo', '')
+                        $('span', '.m-1', 'Retry')
+                    })
+                $('button', '.btn.nav-link',
                     {on: {click: this.events.login}},
                     $ => {
-                        $('span', '.mt-3', 'Login Again' + '')
-                    }
-                )
-                $('button', '.btn.btn-info',
+                        $('span', '.fas.fa-user', '')
+                        $('span', '.m-1', 'Login Again')
+                    })
+                $('button', '.btn.nav-link',
                     {on: {click: this.events.slack}},
                     $ => {
-                        $('span', '.mt-3', 'Reach us on Slack' + '')
-                    }
-                )
+                        $('span', '.fas.fa-comments', '')
+                        $('span', '.m-1', 'Reach us on Slack')
+                    })
             })
 
         })
