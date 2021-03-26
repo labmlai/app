@@ -1,6 +1,11 @@
 import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, ComputerStatusCache} from "../../../cache/cache"
+import CACHE, {
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    ComputerCache,
+    ComputerStatusCache
+} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -16,6 +21,8 @@ import {getSeriesData} from "./utils"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
+import {Computer} from '../../../models/computer'
 
 class GPUMemoryView extends ScreenView {
     elem: HTMLDivElement
@@ -37,11 +44,14 @@ class GPUMemoryView extends ScreenView {
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private computerCache: ComputerCache
+    private computer: Computer
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
+        this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.analysisCache = gpuCache.getAnalysis(this.uuid)
         this.preferenceCache = gpuCache.getPreferences(this.uuid)
@@ -51,6 +61,7 @@ class GPUMemoryView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.computer = await this.computerCache.get()
             this.series = getSeriesData((await this.analysisCache.get(force)).series, 'memory')
             this.preferenceData = await this.preferenceCache.get(force)
         })
@@ -74,6 +85,7 @@ class GPUMemoryView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'GPU Memory'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -103,6 +115,7 @@ class GPUMemoryView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'GPU Memory', item: this.computer.name})
             this.calcPreferences()
 
             this.renderSparkLines()

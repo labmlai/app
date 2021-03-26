@@ -38,10 +38,10 @@ class MetricsView extends ScreenView {
     saveButton: SaveButton
     isUpdateDisable: boolean
     actualWidth: number
-    private runCache: RunCache
-    private run: Run
     private loader: DataLoader;
     private refresh: AwesomeRefreshButton;
+    private runCache: RunCache
+    private run: Run
 
     constructor(uuid: string) {
         super()

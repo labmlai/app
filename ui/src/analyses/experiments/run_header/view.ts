@@ -13,6 +13,7 @@ import {StatusView} from "../../../components/status"
 import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -66,6 +67,7 @@ class RunHeaderView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Run Details'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -99,6 +101,7 @@ class RunHeaderView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Run Details', item: this.run.name})
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)

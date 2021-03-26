@@ -1,7 +1,7 @@
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
-import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache} from "../../../cache/cache"
-import {SeriesModel} from "../../../models/run"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
+import {Run, SeriesModel} from "../../../models/run"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
@@ -16,6 +16,7 @@ import {ViewHandler} from "../../types"
 import {DataLoader} from "../../../components/loader";
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class GradientsView extends ScreenView {
     elem: HTMLDivElement
@@ -39,12 +40,15 @@ class GradientsView extends ScreenView {
     actualWidth: number
     private loader: DataLoader;
     private refresh: AwesomeRefreshButton;
+    private runCache: RunCache
+    private run: Run
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
         this.currentChart = 0
+        this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.analysisCache = gradientsCache.getAnalysis(this.uuid)
         this.preferenceCache = gradientsCache.getPreferences(this.uuid)
@@ -54,6 +58,7 @@ class GradientsView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.run = await this.runCache.get()
             this.series = toPointValues((await this.analysisCache.get(force)).series)
             this.preferenceData = await this.preferenceCache.get(force)
         })
@@ -77,6 +82,7 @@ class GradientsView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Gradients'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -107,6 +113,7 @@ class GradientsView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Gradients', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()

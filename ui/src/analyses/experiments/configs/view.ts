@@ -12,6 +12,7 @@ import mix_panel from "../../../mix_panel";
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {setTitle} from '../../../utils/document'
 
 class ConfigsView extends ScreenView {
     elem: HTMLDivElement
@@ -57,6 +58,7 @@ class ConfigsView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Configurations'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -81,6 +83,7 @@ class ConfigsView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Configurations', item: this.run.name})
             this.renderConfigsView()
         } catch (e) {
             handleNetworkErrorInplace(e)

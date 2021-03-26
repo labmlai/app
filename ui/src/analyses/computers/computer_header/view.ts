@@ -13,6 +13,7 @@ import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Computer} from "../../../models/computer"
+import {setTitle} from '../../../utils/document'
 
 class ComputerHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -65,6 +66,7 @@ class ComputerHeaderView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Computer Details'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -88,7 +90,7 @@ class ComputerHeaderView extends ScreenView {
                                 }).render($)
                             }
                         })
-                        $('h2', '.header.text-center', 'Run Details')
+                        $('h2', '.header.text-center', 'Computer Details')
                         this.loader.render($)
                         this.fieldContainer = $('div', '.input-list-container')
                     })
@@ -98,6 +100,7 @@ class ComputerHeaderView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Computer Details', item: this.computer.name})
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)

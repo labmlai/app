@@ -1,6 +1,6 @@
 import {ScreenView} from "../../../screen"
 import {ProcessModel} from "./types"
-import CACHE, {AnalysisDataCache, ComputerStatusCache} from "../../../cache/cache"
+import CACHE, {AnalysisDataCache, ComputerCache, ComputerStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
@@ -12,6 +12,8 @@ import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {ProcessList} from "./process_list"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
+import {Computer} from '../../../models/computer'
+import {setTitle} from '../../../utils/document'
 
 class ProcessView extends ScreenView {
     elem: HTMLDivElement
@@ -26,16 +28,20 @@ class ProcessView extends ScreenView {
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private computerCache: ComputerCache
+    private computer: Computer
 
     constructor(uuid: string) {
         super()
 
         this.uuid = uuid
+        this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.analysisCache = processCache.getAnalysis(this.uuid)
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
+            this.computer = await this.computerCache.get()
             this.series = (await this.analysisCache.get(force)).series
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
@@ -58,6 +64,7 @@ class ProcessView extends ScreenView {
     }
 
     async _render() {
+        setTitle({section: 'Processes'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -83,6 +90,7 @@ class ProcessView extends ScreenView {
         try {
             await this.loader.load()
 
+            setTitle({section: 'Processes', item: this.computer.name})
             this.calcPreferences()
             this.renderProcessList()
         } catch (e) {
