@@ -101,6 +101,11 @@ body.light {
 
     &.disabled {
       box-shadow: inset 0 0 0 $light-shadow1, inset 0 0 0 2px $light-shadow2;
+
+      & > * {
+        filter: opacity(70%);
+      }
+
       //color: $light-list-item-bg;
     }
   }
@@ -357,6 +362,11 @@ body.dark {
 
     &.disabled {
       box-shadow: inset 0 0 0 $dark-shadow1, inset 0 0 0 2px $dark-shadow2;
+
+      & > * {
+        filter: brightness(70%);
+      }
+
       //color: $dark-list-item-bg;
     }
   }
