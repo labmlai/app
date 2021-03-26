@@ -47,7 +47,7 @@ export class EditableSparkLine {
     inputValueElem: HTMLInputElement
     inputElements: HTMLDivElement
     primaryElem: SVGTextElement
-    lastChanged: number
+    lastChanged: string
 
     constructor(opt: SparkLineOptions) {
         this.name = opt.name
@@ -88,17 +88,28 @@ export class EditableSparkLine {
         }
     }
 
+    formatNumber(value: number) {
+        let decimals
+        if (this.dynamic_type === 'float') {
+            decimals = 3
+        } else {
+            decimals = 0
+        }
+
+        return formatFixed(value, decimals)
+    }
+
     renderTextValue(cursorStep?: number | null) {
         const last = this.series[this.selected >= 0 || this.isMouseMoveOpt ?
             getSelectedIdx(this.series, this.bisect, cursorStep) : this.series.length - 1]
 
-        this.primaryElem.textContent = formatFixed(last.value, 3)
+        this.primaryElem.textContent = this.formatNumber(last.value)
     }
 
     renderInputValue() {
         let s = this.sub ? this.sub.series : this.series
         const last = s[s.length - 1]
-        this.inputValueElem.value = formatFixed(last.value, 3)
+        this.inputValueElem.value = this.formatNumber(last.value)
     }
 
     render($: WeyaElementFunction) {
@@ -155,10 +166,7 @@ export class EditableSparkLine {
         this.inputRangeElem.addEventListener('input', this.onSliderChange.bind(this))
         this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
-        let s = this.sub ? this.sub.series : this.series
-        const last = s[s.length - 1]
-        this.updateSliderConfig(last.value)
-
+        this.updateSliderConfig()
         this.renderInputValue()
         this.renderTextValue()
 
@@ -177,8 +185,9 @@ export class EditableSparkLine {
     onSliderChange() {
         let number = Number(this.inputRangeElem.value)
         if (!isNaN(number)) {
-            this.inputValueElem.value = formatFixed(number, 3)
-            this.lastChanged = number
+            let strNumber = this.formatNumber(number)
+            this.inputValueElem.value = strNumber
+            this.lastChanged = strNumber
             this.onEdit()
         }
     }
@@ -186,12 +195,17 @@ export class EditableSparkLine {
     onInputChange() {
         let number = Number(this.inputValueElem.value)
         if (!isNaN(number)) {
-            this.lastChanged = number
+            this.lastChanged = this.formatNumber(number)
             this.onEdit()
         }
     }
 
-    updateSliderConfig(value: number) {
+    updateSliderConfig(value?: number) {
+        if (value === undefined) {
+            let s = this.sub ? this.sub.series : this.series
+            value = s[s.length - 1].value
+        }
+
         this.inputRangeElem.setAttribute("max", `${value * (9 / 5)}`)
         this.inputRangeElem.setAttribute("step", `${value / 10}`)
         this.inputRangeElem.setAttribute("min", `${value / 5}`)
@@ -199,6 +213,12 @@ export class EditableSparkLine {
     }
 
     getInput() {
-        return this.lastChanged
+        let strNumber = this.lastChanged
+
+        if (strNumber && this.dynamic_type !== 'int') {
+            this.inputValueElem.value = strNumber
+        }
+
+        return strNumber
     }
 }

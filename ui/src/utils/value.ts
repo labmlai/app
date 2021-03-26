@@ -28,10 +28,6 @@ export function formatFixed(value: number, decimals: number) {
         return FORMAT(value)
     }
 
-    if (Math.abs(value) > 1) {
-        decimals = 3
-    }
-
     let str = value.toFixed(decimals)
 
     return numberWithCommas(str)
