@@ -197,6 +197,9 @@ export class EditableSparkLine {
         if (!isNaN(number)) {
             this.lastChanged = this.formatNumber(number)
             this.onEdit()
+        } else {
+            confirm(`${this.inputValueElem.value} is not a number`)
+            this.renderInputValue()
         }
     }
 
