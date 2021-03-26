@@ -94,8 +94,8 @@ export class BackButton extends Button {
         this.elem = $('nav', `.nav-link.tab.float-left${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-chevron-left', '')
-                $('span.ms-1', this.text)
+                $('span', '.fas.fa-chevron-left', '')
+                $('span', '.ms-1', this.text)
             })
     }
 }
@@ -110,7 +110,7 @@ export class RefreshButton extends Button {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-sync', '')
+                $('span', '.fas.fa-sync', '')
             })
     }
 
@@ -128,7 +128,7 @@ export class SaveButton extends Button {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-save', '')
+                $('span', '.fas.fa-save', '')
             })
     }
 }
@@ -142,7 +142,7 @@ export class EditButton extends Button {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-edit', '')
+                $('span', '.fas.fa-edit', '')
             })
     }
 
@@ -157,10 +157,10 @@ export class DeleteButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}, style: {'color': '#FF0000'}},
+        this.elem = $('nav', `.nav-link.tab.float-right.danger${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-trash', '')
+                $('span', '.fas.fa-trash', '')
             })
     }
 }
@@ -174,7 +174,7 @@ export class CancelButton extends Button {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-times', '')
+                $('span', '.fas.fa-times', '')
             })
     }
 }
@@ -188,7 +188,7 @@ export class MenuButton extends Button {
         this.elem = $('nav', `.burger.nav-link.tab.float-left${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span.fas.fa-bars', '')
+                $('span', '.fas.fa-bars', '')
             })
     }
 }
@@ -263,7 +263,7 @@ export class ToggleButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $(`div.d-flex`,
+        this.elem = $('div', '.d-flex',
             {on: {click: this.onClick}}
         )
 
@@ -274,7 +274,7 @@ export class ToggleButton extends Button {
         this.elem.innerHTML = ''
 
         $(this.elem, $ => {
-            $(`nav.nav-link.float-left.tab.toggle-button.${this.defaultClass}`,
+            $('nav', `.nav-link.float-left.tab.toggle-button.${this.defaultClass}`,
                 $ => {
                     $('span', this.text)
                 }

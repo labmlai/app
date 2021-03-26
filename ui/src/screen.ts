@@ -3,6 +3,7 @@ import {getWindowDimensions} from "./utils/window_dimentions"
 import CACHE, {IsUserLoggedCache, UserCache} from './cache/cache'
 import {Loader} from './components/loader'
 import {ROUTER} from './app'
+import {setTitle} from './utils/document'
 
 abstract class ScreenView {
     abstract render(): WeyaElement
@@ -76,6 +77,7 @@ class ScreenContainer {
     setView(view: ScreenView) {
         if (this.view) {
             this.view.destroy()
+            setTitle({})
         }
         this.view = view
         document.body.innerHTML = ''

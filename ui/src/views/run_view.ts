@@ -5,14 +5,14 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {BackButton, DeleteButton} from "../components/buttons"
+import {BackButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
 import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
-import {handleNetworkError, handleNetworkErrorInplace} from '../utils/redirect'
+import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 
@@ -30,7 +30,6 @@ class RunView extends ScreenView {
     cards: Card[] = []
     lastUpdated: number
     private cardContainer: HTMLDivElement
-    private deleteButton: DeleteButton
     private alertMessage: AlertMessage
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -42,7 +41,6 @@ class RunView extends ScreenView {
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
 
-        this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
         this.alertMessage = new AlertMessage({
             message: 'This run will be deleted in 12 hours. Click here to add it to your runs.',
             onClickMessage: this.onMessageClick.bind(this)
@@ -83,8 +81,6 @@ class RunView extends ScreenView {
                         this.alertMessage.hideMessage(true)
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
-                            this.deleteButton.render($)
-                            this.deleteButton.hide(true)
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -125,7 +121,6 @@ class RunView extends ScreenView {
         })
 
         this.alertMessage.hideMessage(!(!this.isUserLogged.is_user_logged && !this.run.is_claimed))
-        this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
 
     render(): WeyaElement {
@@ -173,18 +168,6 @@ class RunView extends ScreenView {
         mix_panel.track('Unclaimed Warning Clicked', {uuid: this.uuid, analysis: this.constructor.name})
 
         ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
-    }
-
-    onDelete = async () => {
-        if (confirm("Are you sure?")) {
-            try {
-                await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
-            } catch (e) {
-                handleNetworkError(e)
-                return
-            }
-            ROUTER.navigate('/runs')
-        }
     }
 }
 
