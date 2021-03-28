@@ -19,7 +19,7 @@ export function formatScalar(value: number) {
 }
 
 export function scientificFormat(value: number) {
-    let format = d3.format(".0e")
+    let format = d3.format(".3e")
 
     return format(value)
 }
