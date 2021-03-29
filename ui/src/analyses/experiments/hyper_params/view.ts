@@ -279,20 +279,21 @@ class HyperParamsView extends ScreenView {
             if (number === undefined) {
                 continue
             }
-
             res[sparkLine.name] = number
 
-            if (isNaN(number)) {
-                invalids += `${sparkLine.name}`
+            let validation = sparkLine.getInputValidation()
+            if (validation) {
+                invalids += `${sparkLine.name} : ${validation}\n`
             }
         }
 
         if (invalids) {
-            confirm(`following inputs are not valid \n ${invalids}`)
+            confirm(`following inputs are not valid\n${invalids}`)
             this.onHyperPramsReset()
         } else {
             await this.analysisCache.setAnalysis(res)
             this.series = toPointValues((await this.analysisCache.get(true)).series)
+
             this.renderLineChart()
             this.renderParamsSaveButton(true)
             this.renderParamsResetButton(true)

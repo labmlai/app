@@ -84,6 +84,10 @@ export class EditableSparkLine {
         }
     }
 
+    isIntegerType() {
+        return this.dynamic_type === 'int'
+    }
+
     changeCursorValue(cursorStep?: number | null) {
         if (this.selected >= 0) {
             this.linePlot.renderCursorCircle(cursorStep)
@@ -120,6 +124,8 @@ export class EditableSparkLine {
         const last = s[s.length - 1]
         this.inputValueElem.value = this.formatNumber(last.value)
         this.updateSliderConfig(last.value)
+
+        this.lastChanged = undefined
     }
 
     render($: WeyaElementFunction) {
@@ -192,7 +198,8 @@ export class EditableSparkLine {
     }
 
     onSliderChange() {
-        this.lastChanged = Number(this.inputRangeElem.value)
+        let strNumber = this.inputRangeElem.value
+        this.lastChanged = Number(strNumber)
         this.inputValueElem.value = this.formatNumber(this.lastChanged)
         this.onEdit()
     }
@@ -203,14 +210,40 @@ export class EditableSparkLine {
     }
 
     updateSliderConfig(value) {
-        this.inputRangeElem.setAttribute("max", `${value * (9 / 5)}`)
-        this.inputRangeElem.setAttribute("step", `${value / 10}`)
-        this.inputRangeElem.setAttribute("min", `${value / 5}`)
+        let min: number = value / 5
+        let max: number = value * (9 / 5)
+        let step: number = value / 10
 
-        this.inputRangeElem.value = value
+        if (this.range) {
+            min = this.range[0]
+            max = this.range[1]
+            value = (min + max) / 2
+        }
+        if (this.isIntegerType()) {
+            min = Math.round(min)
+            max = Math.round(max)
+            step = Math.round(step)
+        }
+
+        this.inputRangeElem.setAttribute("min", `${min}`)
+        this.inputRangeElem.setAttribute("max", `${max}`)
+        this.inputRangeElem.setAttribute("step", `${step}`)
+        this.inputRangeElem.setAttribute("value", `${value}`)
     }
 
     getInput() {
         return this.lastChanged
+    }
+
+    getInputValidation() {
+        let res = ''
+
+        if (isNaN(this.lastChanged)) {
+            res = 'not a number'
+        } else if (this.isIntegerType() && !Number.isInteger(this.lastChanged)) {
+            res = 'should be an integer'
+        }
+
+        return res
     }
 }
