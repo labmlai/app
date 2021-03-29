@@ -87,13 +87,8 @@ export class EditableSparkLines {
         }
     }
 
-    getSparkLinesValues() {
-        let res = {}
-        for (let sparkLine of this.editableSparkLines) {
-            res[sparkLine.name] = sparkLine.getInput()
-        }
-
-        return res
+    getEditableSparkLines() {
+        return this.editableSparkLines
     }
 
     render($: WeyaElementFunction) {

@@ -115,10 +115,11 @@ export class EditableSparkLine {
         this.primaryElem.textContent = this.formatNumber(last.value)
     }
 
-    renderInputValue() {
+    renderInputValues() {
         let s = this.sub ? this.sub.series : this.series
         const last = s[s.length - 1]
         this.inputValueElem.value = this.formatNumber(last.value)
+        this.updateSliderConfig(last.value)
     }
 
     render($: WeyaElementFunction) {
@@ -150,7 +151,7 @@ export class EditableSparkLine {
                     })
                 })
                 this.inputElements = $('div', '.mt-1', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                    $('span', `${this.dynamic_type}, range: [${this.range.toString()}]`, {style: {width: `${this.titleWidth}px`}})
+                    $('span', ' ', {style: {width: `${this.titleWidth}px`}})
                     this.inputRangeElem = $('input', '.slider', {
                         type: "range",
                         style: {width: `${this.chartWidth}px`},
@@ -173,10 +174,9 @@ export class EditableSparkLine {
         this.inputRangeElem.addEventListener('click', this.onInputElemClick.bind(this))
         this.inputValueElem.addEventListener('click', this.onInputElemClick.bind(this))
         this.inputRangeElem.addEventListener('input', this.onSliderChange.bind(this))
-        this.inputValueElem.addEventListener('keyup', this.debounceHandler.bind(this))
+        this.inputValueElem.addEventListener('input', this.onInputChange.bind(this))
 
-        this.updateSliderConfig()
-        this.renderInputValue()
+        this.renderInputValues()
         this.renderTextValue()
 
         if (this.className.includes('selected')) {
@@ -192,42 +192,22 @@ export class EditableSparkLine {
     }
 
     onSliderChange() {
-        let number = Number(this.inputRangeElem.value)
-        if (!isNaN(number)) {
-            this.inputValueElem.value = this.formatNumber(number)
-            this.lastChanged = number
-            this.onEdit()
-        }
-    }
-
-    debounceHandler() {
-        clearTimeout(this.inputTimeout)
-        this.inputTimeout = setTimeout(this.onInputChange.bind(this), 1000)
+        this.lastChanged = Number(this.inputRangeElem.value)
+        this.inputValueElem.value = this.formatNumber(this.lastChanged)
+        this.onEdit()
     }
 
     onInputChange() {
-        let strNumber = this.inputValueElem.value
-
-        let number = Number(strNumber)
-        if (!isNaN(number)) {
-            this.lastChanged = number
-            this.onEdit()
-        } else {
-            confirm(`${strNumber} is not a number`)
-            this.renderInputValue()
-        }
+        this.lastChanged = Number(this.inputValueElem.value)
+        this.onEdit()
     }
 
-    updateSliderConfig(value?: number) {
-        if (value === undefined) {
-            let s = this.sub ? this.sub.series : this.series
-            value = s[s.length - 1].value
-        }
-
+    updateSliderConfig(value) {
         this.inputRangeElem.setAttribute("max", `${value * (9 / 5)}`)
         this.inputRangeElem.setAttribute("step", `${value / 10}`)
         this.inputRangeElem.setAttribute("min", `${value / 5}`)
-        this.inputRangeElem.setAttribute("value", `${value}`)
+
+        this.inputRangeElem.value = value
     }
 
     getInput() {

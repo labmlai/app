@@ -36,8 +36,10 @@ class HyperParamsView extends ScreenView {
     sparkLinesContainer: HTMLDivElement
     prefsSaveButtonContainer: HTMLDivElement
     paramsSaveButtonContainer: HTMLSpanElement
+    paramsResetButtonContainer: HTMLSpanElement
     prefsSaveButton: SaveButton
     paramsSaveButton: CustomButton
+    paramsResetButton: CustomButton
     isUpdateDisable: boolean
     actualWidth: number
     private loader: DataLoader
@@ -61,6 +63,11 @@ class HyperParamsView extends ScreenView {
             onButtonClick: this.onHyperPramsSave.bind(this),
             parent: this.constructor.name,
             text: 'save'
+        })
+        this.paramsResetButton = new CustomButton({
+            onButtonClick: this.onHyperPramsReset.bind(this),
+            parent: this.constructor.name,
+            text: 'reset'
         })
 
         this.loader = new DataLoader(async (force) => {
@@ -111,7 +118,10 @@ class HyperParamsView extends ScreenView {
                         })
                         this.runHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Dynamic Hyperparameters')
-                        this.paramsSaveButtonContainer = $('div', '.text-center')
+                        $('div', '.text-center', $ => {
+                            this.paramsResetButtonContainer = $('span')
+                            this.paramsSaveButtonContainer = $('span')
+                        })
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
                             this.sparkLinesContainer = $('div')
@@ -131,6 +141,7 @@ class HyperParamsView extends ScreenView {
             this.renderLineChart()
             this.renderPrefsSaveButton(true)
             this.renderParamsSaveButton(true)
+            this.renderParamsResetButton(true)
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -188,6 +199,16 @@ class HyperParamsView extends ScreenView {
         $(this.paramsSaveButtonContainer, $ => {
             if (this.status.isRunning) {
                 this.paramsSaveButton.render($)
+            }
+        })
+    }
+
+    renderParamsResetButton(isDisabled: boolean = false) {
+        this.paramsResetButton.disabled = !this.run.is_project_run || isDisabled
+        this.paramsResetButtonContainer.innerHTML = ''
+        $(this.paramsResetButtonContainer, $ => {
+            if (this.status.isRunning) {
+                this.paramsResetButton.render($)
             }
         })
     }
@@ -251,12 +272,38 @@ class HyperParamsView extends ScreenView {
     }
 
     async onHyperPramsSave() {
-        let data = this.sparkLines.getSparkLinesValues()
-        await this.analysisCache.setAnalysis(data)
+        let res = {}
+        let invalids = ''
+        for (let sparkLine of this.sparkLines.getEditableSparkLines()) {
+            let number = sparkLine.getInput()
+            if (number === undefined) {
+                continue
+            }
+
+            res[sparkLine.name] = number
+
+            if (isNaN(number)) {
+                invalids += `${sparkLine.name}`
+            }
+        }
+
+        if (invalids) {
+            confirm(`following inputs are not valid \n ${invalids}`)
+        } else {
+            await this.analysisCache.setAnalysis(res)
+            this.renderParamsSaveButton(true)
+            this.series = toPointValues((await this.analysisCache.get(true)).series)
+            this.renderLineChart()
+        }
+    }
+
+    onHyperPramsReset() {
+        for (let sparkLine of this.sparkLines.getEditableSparkLines()) {
+            sparkLine.renderInputValues()
+        }
 
         this.renderParamsSaveButton(true)
-        this.series = toPointValues((await this.analysisCache.get(true)).series)
-        this.renderLineChart()
+        this.renderParamsResetButton(true)
     }
 
     updatePreferences = () => {
@@ -268,6 +315,7 @@ class HyperParamsView extends ScreenView {
 
     onInputChange() {
         this.renderParamsSaveButton(false)
+        this.renderParamsResetButton(false)
     }
 }
 
