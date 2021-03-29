@@ -37,6 +37,10 @@ export function formatFixed(value: number, decimals: number) {
         decimals = 3
     }
 
+    if (Number.isInteger(value)) {
+        decimals = 0
+    }
+
     let str = value.toFixed(decimals)
 
     return numberWithCommas(str)
