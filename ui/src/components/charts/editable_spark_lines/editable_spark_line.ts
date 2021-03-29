@@ -212,17 +212,20 @@ export class EditableSparkLine {
     updateSliderConfig(value) {
         let min: number = value / 5
         let max: number = value * (9 / 5)
-        let step: number = value / 10
 
         if (this.range) {
             min = this.range[0]
             max = this.range[1]
             value = (min + max) / 2
         }
+
+        let step: number = (min + max) / 20
+
         if (this.isIntegerType()) {
             min = Math.round(min)
             max = Math.round(max)
-            step = Math.round(step)
+            value = Math.round(value)
+            step = Math.max(1, Math.round(step))
         }
 
         this.inputRangeElem.setAttribute("min", `${min}`)
