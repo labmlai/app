@@ -289,11 +289,13 @@ class HyperParamsView extends ScreenView {
 
         if (invalids) {
             confirm(`following inputs are not valid \n ${invalids}`)
+            this.onHyperPramsReset()
         } else {
             await this.analysisCache.setAnalysis(res)
-            this.renderParamsSaveButton(true)
             this.series = toPointValues((await this.analysisCache.get(true)).series)
             this.renderLineChart()
+            this.renderParamsSaveButton(true)
+            this.renderParamsResetButton(true)
         }
     }
 
