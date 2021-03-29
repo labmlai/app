@@ -288,7 +288,7 @@ class HyperParamsView extends ScreenView {
         }
 
         if (invalids) {
-            confirm(`following inputs are not valid\n${invalids}`)
+            confirm(`${invalids}`)
             this.onHyperPramsReset()
         } else {
             await this.analysisCache.setAnalysis(res)
