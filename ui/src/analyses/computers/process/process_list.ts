@@ -96,14 +96,14 @@ class ProcessListItem {
                     series: this.item.cpu.series,
                     stepExtent: this.stepExtent,
                     color: "#ffa600",
-                    name: 'cpu'
+                    name: 'CPU'
                 }).render($)
                 new ProcessSparkLine({
                     width: this.width / 2.2,
-                    series: this.item.mem.series,
+                    series: this.item.rss.series,
                     stepExtent: this.stepExtent,
                     color: "#bc5090",
-                    name: 'memory'
+                    name: 'RSS'
                 }).render($)
             })
         })
@@ -129,9 +129,9 @@ export class ProcessList {
         let series: SeriesModel[] = []
         for (let item of this.items) {
             item.cpu.series = toPointValue(item.cpu)
-            item.mem.series = toPointValue(item.mem)
+            item.rss.series = toPointValue(item.rss)
             series.push(item.cpu)
-            series.push(item.mem)
+            series.push(item.rss)
         }
 
         this.stepExtent = getExtent(series.map(s => s.series), d => d.step)

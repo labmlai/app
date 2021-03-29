@@ -16,11 +16,15 @@ from ..preferences import Preferences
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
     names: Dict[str, str]
+    exes: Dict[str, str]
+    cmdlines: Dict[str, str]
 
     @classmethod
     def defaults(cls):
         return dict(
             names={},
+            exes={},
+            cmdlines={},
         )
 
 
@@ -51,35 +55,44 @@ class ProcessAnalysis(Analysis):
         for ind, s in data.items():
             ind_split = ind.split('.')
             ind_type = ind_split[0]
+            suffix = ind_split[-1]
             if ind_type == COMPUTEREnums.PROCESS:
                 name = '.'.join(ind_split[:-1])
-                if 'name' in ind and name not in self.process.names:
+                if 'name' == suffix and name not in self.process.names:
                     self.process.names[name] = s['value'][0]
                     continue
 
-                res[ind] = s
+                if 'exe' == suffix and name not in self.process.exes:
+                    self.process.exes[name] = s['value'][0]
+                    continue
 
+                if 'cmdline' == suffix and name not in self.process.cmdlines:
+                    self.process.cmdlines[name] = s['value'][0]
+                    continue
+
+                res[ind] = s
         self.process.track(res)
 
     def get_tracking(self):
         res = {}
         for ind, track in self.process.tracking.items():
             ind_split = ind.split('.')
+            suffix = ind_split[-1]
             name = '.'.join(ind_split[:-1])
 
             if name not in res:
-                res[name] = {'name': self.process.names[name]}
+                res[name] = {'name': self.process.names[name],
+                             'cmdline': self.process.cmdlines.get(name, ''),
+                             'exe': self.process.exes.get(name, ''),
+                             }
 
-            if 'cpu' == ind_split[-1]:
+            if suffix in ['cpu', 'rss']:
                 series: Dict[str, Any] = Series().load(track).detail
-                res[name]['cpu'] = series
-            elif 'mem' == ind_split[-1]:
-                series: Dict[str, Any] = Series().load(track).detail
-                res[name]['mem'] = series
+                res[name][suffix] = series
 
         ret = []
         for k, v in res.items():
-            if 'cpu' not in v or 'mem' not in v:
+            if 'cpu' not in v or 'rss' not in v:
                 continue
             ret.append(v)
 
