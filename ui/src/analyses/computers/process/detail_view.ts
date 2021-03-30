@@ -167,7 +167,7 @@ class ProcessDetailView extends ScreenView {
 
 export class ProcessDetailsHandler {
     constructor() {
-        ROUTER.route('session/:uuid/process/details/:processId', [this.handleProcessDetails])
+        ROUTER.route('session/:uuid/process/:processId', [this.handleProcessDetails])
     }
 
     handleProcessDetails = (uuid: string, processId: string) => {

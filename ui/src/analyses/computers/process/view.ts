@@ -19,13 +19,12 @@ class ProcessView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
     status: Status
-    plotIdx: number[] = []
+    actualWidth: number
     statusCache: ComputerStatusCache
     series: ProcessModel[]
     analysisCache: AnalysisDataCache
     computerHeaderCard: ComputerHeaderCard
     processListContainer: HTMLDivElement
-    actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private computerCache: ComputerCache
@@ -91,7 +90,6 @@ class ProcessView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Processes', item: this.computer.name})
-            this.calcPreferences()
             this.renderProcessList()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -118,8 +116,6 @@ class ProcessView extends ScreenView {
     async onRefresh() {
         try {
             await this.loader.load(true)
-
-            this.calcPreferences()
             this.renderProcessList()
         } catch (e) {
 
@@ -140,16 +136,6 @@ class ProcessView extends ScreenView {
         $(this.processListContainer, $ => {
             new ProcessList({items: this.series, width: this.actualWidth, uuid: this.uuid}).render($)
         })
-    }
-
-    calcPreferences() {
-        if (this.series) {
-            let res: number[] = []
-            for (let i = 0; i < this.series.length; i++) {
-                res.push(i)
-            }
-            this.plotIdx = res
-        }
     }
 }
 

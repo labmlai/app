@@ -144,7 +144,7 @@ export class ProcessList {
     }
 
     onclick(elem: ProcessListItem) {
-        ROUTER.navigate(`session/${this.uuid}/process/details/${elem.item.process_id}`)
+        ROUTER.navigate(`session/${this.uuid}/process/${elem.item.process_id}`)
     }
 
     render($: WeyaElementFunction) {
