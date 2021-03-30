@@ -7,9 +7,8 @@ export interface ProcessModel {
     rss: SeriesModel
 }
 
-
 export interface ProcessDetailsModel extends ProcessModel {
-    create_time: string,
+    create_time: number,
     cmdline: string,
     exe: string
     pid: number

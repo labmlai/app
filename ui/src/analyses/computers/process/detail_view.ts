@@ -14,6 +14,8 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Computer} from '../../../models/computer'
 import {setTitle} from '../../../utils/document'
 import {DetailsDataCache} from "./cache_helper"
+import EditableField from "../../../components/editable_field"
+import {formatTime} from "../../../utils/time"
 
 class ProcessDetailView extends ScreenView {
     elem: HTMLDivElement
@@ -26,6 +28,7 @@ class ProcessDetailView extends ScreenView {
     analysisCache: DetailsDataCache
     computerHeaderCard: ComputerHeaderCard
     actualWidth: number
+    private fieldContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private computerCache: ComputerCache
@@ -44,8 +47,6 @@ class ProcessDetailView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.computer = await this.computerCache.get()
             this.series = (await this.analysisCache.get(force))
-
-            console.log(this.series)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -85,6 +86,7 @@ class ProcessDetailView extends ScreenView {
                         this.computerHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Processes Details')
                         this.loader.render($)
+                        this.fieldContainer = $('div', '.input-list-container')
                     })
                 })
         })
@@ -93,6 +95,7 @@ class ProcessDetailView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Processes Details', item: this.computer.name})
+            this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -131,6 +134,34 @@ class ProcessDetailView extends ScreenView {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
+    }
+
+    renderFields() {
+        this.fieldContainer.innerHTML = ''
+        $(this.fieldContainer, $ => {
+            $('ul', $ => {
+                new EditableField({
+                    name: 'Name',
+                    value: this.series.name,
+                }).render($)
+                new EditableField({
+                    name: 'Created Time',
+                    value: formatTime(this.series.create_time),
+                }).render($)
+                new EditableField({
+                    name: 'PID',
+                    value: this.series.pid.toString(),
+                }).render($)
+                new EditableField({
+                    name: 'CMDLINE',
+                    value: this.series.cmdline,
+                }).render($)
+                new EditableField({
+                    name: 'EXE',
+                    value: this.series.exe,
+                }).render($)
+            })
+        })
     }
 }
 
