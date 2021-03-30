@@ -116,6 +116,10 @@ class Network {
         return this.sendHttpRequest('GET', `/${url}/${run_uuid}`, {})
     }
 
+    async getCustomAnalysis(url: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/${url}`, {})
+    }
+
     async setAnalysis(url: string, run_uuid: string, data): Promise<any> {
         return this.sendHttpRequest('POST', `/${url}/${run_uuid}`, data)
     }

@@ -1,5 +1,6 @@
 import {ComputerStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {AnalysisCache} from "../../helpers"
+import {DetailsCache, DetailsDataCache} from "./cache_helper"
 
 class ProcessAnalysisCache extends AnalysisDataCache {
     constructor(uuid: string, statusCache: ComputerStatusCache) {
@@ -15,4 +16,16 @@ class ProcessPreferenceCache extends AnalysisPreferenceCache {
 
 let processCache = new AnalysisCache('computer', ProcessAnalysisCache, ProcessPreferenceCache)
 
-export default processCache
+
+class ProcessDetailsCache extends DetailsDataCache {
+    constructor(uuid: string, processId: string, statusCache: ComputerStatusCache) {
+        super(uuid, processId, statusCache)
+    }
+}
+
+let processDetailsCache = new DetailsCache(ProcessDetailsCache)
+
+export {
+    processCache,
+    processDetailsCache
+}

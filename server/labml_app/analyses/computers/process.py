@@ -109,7 +109,7 @@ class ProcessAnalysis(Analysis):
             name = '.'.join(ind_split[:-1])
 
             if name not in res:
-                res[name] = {'id': name,
+                res[name] = {'process_id': name,
                              'name': self.process.names[name],
                              }
 
@@ -131,7 +131,7 @@ class ProcessAnalysis(Analysis):
         return ret, summary
 
     def get_process(self, process_id: str):
-        res = {'id': process_id,
+        res = {'process_id': process_id,
                'name': self.process.names[process_id],
                'create_time': self.process.create_times.get(process_id, 0),
                'cmdline': self.process.cmdlines.get(process_id, ''),
@@ -201,18 +201,17 @@ def get_process_tracking(session_uuid: str) -> Any:
     return response
 
 
-@Analysis.route('GET', 'process/<session_uuid>/details')
-def get_process_detail(session_uuid: str, ) -> Any:
+@Analysis.route('GET', 'process/<session_uuid>/details/<process_id>')
+def get_process_detail(session_uuid: str, process_id: str) -> Any:
     data = {}
     status_code = 404
 
     ans = ProcessAnalysis.get_or_create(session_uuid)
     if ans:
-        process_id = request.args.get('process_id')
         data = ans.get_process(process_id)
         status_code = 200
 
-    response = make_response(format_rv({'series': data}))
+    response = make_response(format_rv(data))
     response.status_code = status_code
 
     return response

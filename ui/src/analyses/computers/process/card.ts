@@ -4,7 +4,7 @@ import {Card, CardOptions} from "../../types"
 import {AnalysisDataCache} from "../../../cache/cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {DataLoader} from "../../../components/loader"
-import processCache from './cache'
+import {processCache} from './cache'
 import {ROUTER} from '../../../app'
 import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
 

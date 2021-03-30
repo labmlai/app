@@ -1,48 +1,51 @@
 import {ScreenView} from "../../../screen"
-import {ProcessModel} from "./types"
-import CACHE, {AnalysisDataCache, ComputerCache, ComputerStatusCache} from "../../../cache/cache"
+import {ProcessDetailsModel} from "./types"
+import CACHE, {ComputerCache, ComputerStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton} from "../../../components/buttons"
-import {processCache} from "./cache"
+import {processDetailsCache} from "./cache"
 import {ComputerHeaderCard} from '../computer_header/card'
 import mix_panel from "../../../mix_panel"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
-import {ProcessList} from "./process_list"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Computer} from '../../../models/computer'
 import {setTitle} from '../../../utils/document'
+import {DetailsDataCache} from "./cache_helper"
 
-class ProcessView extends ScreenView {
+class ProcessDetailView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
+    processId: string
     status: Status
     plotIdx: number[] = []
     statusCache: ComputerStatusCache
-    series: ProcessModel[]
-    analysisCache: AnalysisDataCache
+    series: ProcessDetailsModel
+    analysisCache: DetailsDataCache
     computerHeaderCard: ComputerHeaderCard
-    processListContainer: HTMLDivElement
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private computerCache: ComputerCache
     private computer: Computer
 
-    constructor(uuid: string) {
+    constructor(uuid: string, processId: string) {
         super()
 
         this.uuid = uuid
+        this.processId = processId
         this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
-        this.analysisCache = processCache.getAnalysis(this.uuid)
+        this.analysisCache = processDetailsCache.getAnalysis(this.uuid, this.processId)
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.computer = await this.computerCache.get()
-            this.series = (await this.analysisCache.get(force)).series
+            this.series = (await this.analysisCache.get(force))
+
+            console.log(this.series)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -64,7 +67,7 @@ class ProcessView extends ScreenView {
     }
 
     async _render() {
-        setTitle({section: 'Processes'})
+        setTitle({section: 'Processes Details'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -80,9 +83,8 @@ class ProcessView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.computerHeaderCard.render($).then()
-                        $('h2', '.header.text-center', 'Processes')
+                        $('h2', '.header.text-center', 'Processes Details')
                         this.loader.render($)
-                        this.processListContainer = $('div')
                     })
                 })
         })
@@ -90,9 +92,7 @@ class ProcessView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Processes', item: this.computer.name})
-            this.calcPreferences()
-            this.renderProcessList()
+            setTitle({section: 'Processes Details', item: this.computer.name})
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -118,15 +118,13 @@ class ProcessView extends ScreenView {
     async onRefresh() {
         try {
             await this.loader.load(true)
-
-            this.calcPreferences()
-            this.renderProcessList()
         } catch (e) {
 
         } finally {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
+
             this.computerHeaderCard.refresh().then()
         }
     }
@@ -134,31 +132,14 @@ class ProcessView extends ScreenView {
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
     }
-
-    renderProcessList() {
-        this.processListContainer.innerHTML = ''
-        $(this.processListContainer, $ => {
-            new ProcessList({items: this.series, width: this.actualWidth, uuid: this.uuid}).render($)
-        })
-    }
-
-    calcPreferences() {
-        if (this.series) {
-            let res: number[] = []
-            for (let i = 0; i < this.series.length; i++) {
-                res.push(i)
-            }
-            this.plotIdx = res
-        }
-    }
 }
 
-export class ProcessHandler {
+export class ProcessDetailsHandler {
     constructor() {
-        ROUTER.route('session/:uuid/process', [this.handleProcess])
+        ROUTER.route('session/:uuid/process/details/:processId', [this.handleProcessDetails])
     }
 
-    handleProcess = (uuid: string) => {
-        SCREEN.setView(new ProcessView(uuid))
+    handleProcessDetails = (uuid: string, processId: string) => {
+        SCREEN.setView(new ProcessDetailView(uuid, processId))
     }
 }

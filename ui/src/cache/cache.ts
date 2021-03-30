@@ -2,15 +2,15 @@ import {AnalysisDataModel, Run} from "../models/run"
 import {Status} from "../models/status"
 import NETWORK from "../network"
 import {IsUserLogged, User} from "../models/user"
-import {RunListItemModel, RunsList} from '../models/run_list'
+import {RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
-import {ComputerListItemModel, ComputersList} from '../models/computer_list'
-import {Computer} from '../models/computer';
+import {ComputersList} from '../models/computer_list'
+import {Computer} from '../models/computer'
 
 
 const RELOAD_TIMEOUT = 60 * 1000
 
-function isReloadTimeout(lastUpdated: number): boolean {
+export function isReloadTimeout(lastUpdated: number): boolean {
     return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
 }
 
@@ -73,7 +73,7 @@ class BroadcastPromise<T> {
     }
 }
 
-abstract class CacheObject<T> {
+export abstract class CacheObject<T> {
     protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number

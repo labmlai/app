@@ -6,6 +6,8 @@ import {getExtent, getScale, toPointValue} from "../../../components/charts/util
 import d3 from "../../../d3"
 import {DefaultLineGradient} from "../../../components/charts/chart_gradients"
 import {formatFixed} from "../../../utils/value"
+import {ROUTER} from "../../../app"
+
 
 interface ProcessSparkLineOptions {
     width: number
@@ -67,7 +69,7 @@ export interface ProcessListItemOptions {
     item: ProcessModel
     stepExtent: [number, number]
     width: number
-    onClick?: () => void
+    onClick: (elem: ProcessListItem) => void
 }
 
 class ProcessListItem {
@@ -83,46 +85,50 @@ class ProcessListItem {
         this.stepExtent = opt.stepExtent
         this.onClick = (e: Event) => {
             e.preventDefault()
-            opt.onClick()
+            opt.onClick(this)
         }
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('a', '.list-item.list-group-item.list-group-item-action', $ => {
-            $('div', $ => {
-                $('p', this.item.name)
-                new ProcessSparkLine({
-                    width: this.width / 2.2,
-                    series: this.item.cpu.series,
-                    stepExtent: this.stepExtent,
-                    color: "#ffa600",
-                    name: 'CPU'
-                }).render($)
-                new ProcessSparkLine({
-                    width: this.width / 2.2,
-                    series: this.item.rss.series,
-                    stepExtent: this.stepExtent,
-                    color: "#bc5090",
-                    name: 'RSS'
-                }).render($)
+        this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
+            {href: `/details/${this.item.process_id}`, on: {click: this.onClick}},
+            $ => {
+                $('div', $ => {
+                    $('p', this.item.name)
+                    new ProcessSparkLine({
+                        width: this.width / 2.2,
+                        series: this.item.cpu.series,
+                        stepExtent: this.stepExtent,
+                        color: "#ffa600",
+                        name: 'CPU'
+                    }).render($)
+                    new ProcessSparkLine({
+                        width: this.width / 2.2,
+                        series: this.item.rss.series,
+                        stepExtent: this.stepExtent,
+                        color: "#bc5090",
+                        name: 'RSS'
+                    }).render($)
+                })
             })
-        })
     }
 }
 
 
 export interface ProcessListOptions {
+    uuid: string
     items: ProcessModel[]
     width: number
 }
 
-
 export class ProcessList {
+    uuid: string
     items: ProcessModel[]
     width: number
     stepExtent: [number, number]
 
     constructor(opt: ProcessListOptions) {
+        this.uuid = opt.uuid
         this.items = opt.items
         this.width = opt.width
 
@@ -137,11 +143,20 @@ export class ProcessList {
         this.stepExtent = getExtent(series.map(s => s.series), d => d.step)
     }
 
+    onclick(elem: ProcessListItem) {
+        ROUTER.navigate(`session/${this.uuid}/process/details/${elem.item.process_id}`)
+    }
+
     render($: WeyaElementFunction) {
         $('div', '.runs-list', $ => {
             $('div', '.list.runs-list.list-group', $ => {
                 this.items.map((s, i) => {
-                    new ProcessListItem({item: s, width: this.width, stepExtent: this.stepExtent}).render($)
+                    new ProcessListItem({
+                        item: s,
+                        width: this.width,
+                        stepExtent: this.stepExtent,
+                        onClick: this.onclick.bind(this)
+                    }).render($)
                 })
             })
         })
