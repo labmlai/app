@@ -45,6 +45,11 @@ ROUTER.route('', [() => {
     ROUTER.navigate('/runs')
 }])
 
+ROUTER.route('cordova', [() => {
+    window.localStorage.setItem('platform', 'cordova')
+    ROUTER.navigate('/runs')
+}])
+
 experimentAnalyses.map((analysis, i) => {
     new analysis.viewHandler()
 })
@@ -77,4 +82,8 @@ if (SENTRY_DSN) {
         ],
         tracesSampleRate: 1.0,
     })
+
+(window as any).handleOpenURL = function (url) {
+    window.location.hash = `#${url.split('#')[1]}`
+    window.location.reload()
 }

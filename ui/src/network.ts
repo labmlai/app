@@ -1,4 +1,4 @@
-import {API_BASE_URL, APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN} from './env'
+import {API_BASE_URL, APP_BASE_URL, AUTH0_CLIENT_ID, AUTH0_DOMAIN, MOBILE_APP_NAMESPACE} from './env'
 import {User} from './models/user'
 
 class Network {
@@ -101,11 +101,15 @@ class Network {
     }
 
     redirectLogin() {
-        window.location.href = `${AUTH0_DOMAIN}/authorize?response_type=token&client_id=${AUTH0_CLIENT_ID}&redirect_uri=${APP_BASE_URL}/login&scope=openid%20profile%20email`
+        let redirectURI = `${APP_BASE_URL}/login`
+        if (window.localStorage.getItem('platform') === 'cordova') {
+            redirectURI = `${MOBILE_APP_NAMESPACE}://${AUTH0_DOMAIN}/cordova/${MOBILE_APP_NAMESPACE}/callback`
+        }
+        window.location.href = `https://${AUTH0_DOMAIN}/authorize?response_type=token&client_id=${AUTH0_CLIENT_ID}&redirect_uri=${redirectURI}&scope=openid%20profile%20email`
     }
 
     redirectLogout() {
-        window.location.href = `${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${APP_BASE_URL}`
+        window.location.href = `https://${AUTH0_DOMAIN}/v2/logout?client_id=${AUTH0_CLIENT_ID}&returnTo=${APP_BASE_URL}`
     }
 
     async getIsUserLogged(): Promise<any> {
