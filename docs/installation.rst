@@ -17,16 +17,16 @@ Running Your Own Server Instructions
 
 4. Create ``app/server/app/setting.py`` similar to ``app/server/app/setting.example.py`` and ``app/ui/src/.env`` similar to ``app/ui/src/.env.example`` files and change the parameters accordingly.
 
-5. For server and UI dev
+5. For UI and server dev
 
 .. code-block:: console
 
-     make server-dev
      make watch-ui
+     make server-dev
 
-6. For server and UI prod
+6. For UI and server prod
 
 .. code-block:: console
 
-     make server-prod
      make build-ui
+     make server-prod
