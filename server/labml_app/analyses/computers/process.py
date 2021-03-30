@@ -12,12 +12,19 @@ from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 
+SERIES_NAMES = ['rss', 'vms', 'cpu', 'threads', 'user', 'system']
+STATIC_NAMEs = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
+
 
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
     names: Dict[str, str]
     exes: Dict[str, str]
     cmdlines: Dict[str, str]
+    create_times: Dict[str, float]
+    pids: Dict[str, float]
+    ppids: Dict[str, float]
+    dead: Dict[str, bool]
 
     @classmethod
     def defaults(cls):
@@ -25,6 +32,10 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
             names={},
             exes={},
             cmdlines={},
+            create_times={},
+            pids={},
+            ppids={},
+            dead={},
         )
 
 
@@ -50,7 +61,6 @@ class ProcessAnalysis(Analysis):
         self.process = data
 
     def track(self, data: Dict[str, SeriesModel]):
-        # name, pid, rss, vms, mem, cpu, threads
         res: Dict[str, SeriesModel] = {}
         for ind, s in data.items():
             ind_split = ind.split('.')
@@ -58,19 +68,37 @@ class ProcessAnalysis(Analysis):
             suffix = ind_split[-1]
             if ind_type == COMPUTEREnums.PROCESS:
                 name = '.'.join(ind_split[:-1])
-                if 'name' == suffix and name not in self.process.names:
-                    self.process.names[name] = s['value'][0]
+                if 'name' == suffix:
+                    if name not in self.process.names:
+                        self.process.names[name] = s['value'][0]
                     continue
-
-                if 'exe' == suffix and name not in self.process.exes:
-                    self.process.exes[name] = s['value'][0]
+                elif 'exe' == suffix:
+                    if name not in self.process.exes:
+                        self.process.exes[name] = s['value'][0]
                     continue
-
-                if 'cmdline' == suffix and name not in self.process.cmdlines:
-                    self.process.cmdlines[name] = s['value'][0]
+                elif 'cmdline' == suffix:
+                    if name not in self.process.cmdlines:
+                        self.process.cmdlines[name] = s['value'][0]
+                    continue
+                elif 'create_time' == suffix:
+                    if name not in self.process.create_times:
+                        self.process.create_times[name] = s['value'][0]
+                    continue
+                elif 'pid' == suffix:
+                    if name not in self.process.pids:
+                        self.process.pids[name] = s['value'][0]
+                    continue
+                elif 'ppids' == suffix:
+                    if name not in self.process.ppids:
+                        self.process.ppids[name] = s['value'][0]
+                    continue
+                elif 'dead' == suffix:
+                    if name not in self.process.dead:
+                        self.process.dead[name] = s['value'][0]
                     continue
 
                 res[ind] = s
+
         self.process.track(res)
 
     def get_tracking(self):
@@ -81,9 +109,8 @@ class ProcessAnalysis(Analysis):
             name = '.'.join(ind_split[:-1])
 
             if name not in res:
-                res[name] = {'name': self.process.names[name],
-                             'cmdline': self.process.cmdlines.get(name, ''),
-                             'exe': self.process.exes.get(name, ''),
+                res[name] = {'id': name,
+                             'name': self.process.names[name],
                              }
 
             if suffix in ['cpu', 'rss']:
@@ -102,6 +129,27 @@ class ProcessAnalysis(Analysis):
             summary.append(v['cpu'])
 
         return ret, summary
+
+    def get_process(self, process_id: str):
+        res = {'id': process_id,
+               'name': self.process.names[process_id],
+               'create_time': self.process.create_times.get(process_id, 0),
+               'cmdline': self.process.cmdlines.get(process_id, ''),
+               'exe': self.process.exes.get(process_id, ''),
+               'pid': self.process.pids.get(process_id, 0),
+               'ppid': self.process.ppids.get(process_id, 0),
+               'dead': self.process.dead.get(process_id, 0),
+               }
+
+        for s_name in SERIES_NAMES:
+            ind = process_id + f'.{s_name}'
+
+            track = self.process.tracking.get(ind, {})
+            if track:
+                series: Dict[str, Any] = Series().load(track).detail
+                res[s_name] = series
+
+        return res
 
     @staticmethod
     def get_or_create(session_uuid: str):
@@ -148,6 +196,23 @@ def get_process_tracking(session_uuid: str) -> Any:
         status_code = 200
 
     response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response.status_code = status_code
+
+    return response
+
+
+@Analysis.route('GET', 'process/<session_uuid>/details')
+def get_process_detail(session_uuid: str, ) -> Any:
+    data = {}
+    status_code = 404
+
+    ans = ProcessAnalysis.get_or_create(session_uuid)
+    if ans:
+        process_id = request.args.get('process_id')
+        data = ans.get_process(process_id)
+        status_code = 200
+
+    response = make_response(format_rv({'series': data}))
     response.status_code = status_code
 
     return response
