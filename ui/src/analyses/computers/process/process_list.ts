@@ -206,8 +206,9 @@ export class ProcessList {
 
     processFilter = (process: ProcessModel, query: RegExp) => {
         let name = process.name.toLowerCase()
+        let pid = process.pid.toString()
 
-        return name.search(query) !== -1
+        return (name.search(query) !== -1 || pid.search(query) !== -1)
     }
 
     private renderList() {
