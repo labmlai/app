@@ -1,4 +1,4 @@
-import {WeyaElementFunction} from "../../../../../lib/weya/weya"
+import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {PointValue, SeriesModel} from "../../../models/run"
 import {ProcessModel} from "./types"
 import {getExtent, getScale, getTimeScale, toDate, toPointValue} from "../../../components/charts/utils"
@@ -8,6 +8,7 @@ import {formatFixed} from "../../../utils/value"
 import {ROUTER} from "../../../app"
 import {TimeSeriesFill, TimeSeriesPlot} from "../../../components/charts/timeseries/plot"
 import {BadgeView} from "../../../components/badge"
+import {SearchView} from "../../../components/search"
 
 
 interface ProcessSparkLineOptions {
@@ -150,11 +151,14 @@ export interface ProcessListOptions {
 
 export class ProcessList {
     uuid: string
-    items: ProcessModel[]
     width: number
     stepExtent: [number, number]
     cpuBarExtent: [number, number]
     rssBarExtent: [number, number]
+    searchQuery: string
+    processListContainer: HTMLDivElement
+    items: ProcessModel[]
+    currentProcessList: ProcessModel[]
 
     constructor(opt: ProcessListOptions) {
         this.uuid = opt.uuid
@@ -175,6 +179,8 @@ export class ProcessList {
 
         this.cpuBarExtent = getExtent(cpu.map(s => s.series), d => d.value, true)
         this.rssBarExtent = getExtent(rss.map(s => s.series), d => d.value, true)
+
+        this.searchQuery = ''
     }
 
     onclick(elem: ProcessListItem) {
@@ -183,21 +189,45 @@ export class ProcessList {
 
     render($: WeyaElementFunction) {
         $('div', '.runs-list', $ => {
-            $('div', '.list.runs-list.list-group', $ => {
-                $('svg', {style: {height: `${1}px`}}, $ => {
-                    new DefaultLineGradient().render($)
-                })
-                this.items.map((s, i) => {
+            new SearchView({onSearch: this.onSearch}).render($)
+            $('svg', {style: {height: `${1}px`}}, $ => {
+                new DefaultLineGradient().render($)
+            })
+            this.processListContainer = $('div', '.list.runs-list.list-group')
+        })
+
+        this.renderList()
+    }
+
+    onSearch = (query: string) => {
+        this.searchQuery = query
+        this.renderList()
+    }
+
+    processFilter = (process: ProcessModel, query: RegExp) => {
+        let name = process.name.toLowerCase()
+
+        return name.search(query) !== -1
+    }
+
+    private renderList() {
+        if (this.items.length > 0) {
+            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+            this.currentProcessList = this.items.filter(process => this.processFilter(process, re))
+
+            this.processListContainer.innerHTML = ''
+            $(this.processListContainer, $ => {
+                for (let i = 0; i < this.currentProcessList.length; i++) {
                     new ProcessListItem({
-                        item: s,
+                        item: this.currentProcessList[i],
                         width: this.width,
                         stepExtent: [toDate(this.stepExtent[0]), toDate(this.stepExtent[1])],
                         cpuBarExtent: this.cpuBarExtent,
                         rssBarExtent: this.rssBarExtent,
                         onClick: this.onclick.bind(this)
                     }).render($)
-                })
+                }
             })
-        })
+        }
     }
 }
