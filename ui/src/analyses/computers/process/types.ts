@@ -6,13 +6,13 @@ export interface ProcessModel {
     cpu: SeriesModel
     rss: SeriesModel
     dead: number
+    pid: number
 }
 
 export interface ProcessDetailsModel extends ProcessModel {
     create_time: number,
     cmdline: string,
     exe: string
-    pid: number
     ppid: number
     vms: SeriesModel
     threads: SeriesModel

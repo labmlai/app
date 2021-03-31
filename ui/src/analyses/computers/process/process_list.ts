@@ -96,7 +96,8 @@ class ProcessListItem {
             $ => {
                 $('div', $ => {
                     $('div', $ => {
-                        $('span', this.item.name)
+                        $('span', this.item.name )
+                        $('span', ` PID: ${this.item.pid}`)
                         if (this.item.dead) {
                             new BadgeView({text: 'dead'}).render($)
                         }

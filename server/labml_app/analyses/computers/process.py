@@ -111,6 +111,7 @@ class ProcessAnalysis(Analysis):
             if name not in res:
                 res[name] = {'process_id': name,
                              'dead': self.process.dead.get(name, 0),
+                             'pid': self.process.pids.get(name, 0),
                              'name': self.process.names[name],
                              }
 
