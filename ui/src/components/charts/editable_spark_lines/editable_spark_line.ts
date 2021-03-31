@@ -165,6 +165,7 @@ export class EditableSparkLine {
                     $('span.input-container', {style: {width: `${this.titleWidth}px`}}, $ => {
                         $('span.input-content.float-right', $ => {
                             this.inputValueElem = $('input', '.text-end', {
+                                inputmode: "numeric",
                                 style: {
                                     height: '36px',
                                     width: `${this.titleWidth / 2}px`,
