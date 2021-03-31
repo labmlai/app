@@ -194,8 +194,6 @@ class ProcessDetailView extends ScreenView {
     }
 
     toggleChart = (idx: number) => {
-        // this.isUpdateDisable = false
-
         if (this.plotIdx[idx] >= 0) {
             this.plotIdx[idx] = -1
         } else {
@@ -208,7 +206,6 @@ class ProcessDetailView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
-        // this.renderSaveButton()
     }
 
     renderLineChart() {
