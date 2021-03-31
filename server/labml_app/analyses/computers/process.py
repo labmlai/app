@@ -127,7 +127,7 @@ class ProcessAnalysis(Analysis):
             if not v['dead']:
                 ret.append(v)
 
-        ret.sort(key=lambda s: s['cpu']['mean'], reverse=True)
+        ret.sort(key=lambda s: s['cpu']['smoothed'][-1], reverse=True)
 
         summary = []
         for v in ret[:5]:

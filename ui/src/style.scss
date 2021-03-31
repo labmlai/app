@@ -553,7 +553,6 @@ span.fas {
 }
 
 svg#chart {
-
   g.bottom-axis, g.right-axis {
     color: #7f8c8d;
 
@@ -586,6 +585,10 @@ svg#chart {
   path.unsmoothed-line {
     stroke-width: 0.5;
   }
+}
+
+line.stokeWidth {
+  stroke-width: 4;
 }
 
 svg#time-series-chart {

@@ -16,6 +16,7 @@ interface ProcessSparkLineOptions {
     color: string
     series: PointValue[]
     stepExtent: [Date, Date]
+    barExtent: [number, number]
 }
 
 class ProcessSparkLine {
@@ -25,6 +26,7 @@ class ProcessSparkLine {
     series: PointValue[]
     yScale: d3.ScaleLinear<number, number>
     xScale: d3.ScaleTime<number, number>
+    barScale: d3.ScaleLinear<number, number>
 
     constructor(opt: ProcessSparkLineOptions) {
         this.width = opt.width
@@ -34,13 +36,16 @@ class ProcessSparkLine {
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getTimeScale(opt.stepExtent, this.width)
+
+        this.barScale = getScale(opt.barExtent, this.width)
     }
 
     render($) {
+        const last = this.series[this.series.length - 1]
+
         $(`div.sparkline-list-item.list-group-item.d-inline-block`, $ => {
             $('div.sparkline-content', {style: {width: `${this.width}px`}}, $ => {
                 $('svg.sparkline', {style: {width: `${this.width}px`}, height: 36}, $ => {
-                    // new DefaultLineGradient().render($)
                     $('g', {transform: `translate(${0}, 30)`}, $ => {
                         new TimeSeriesFill({
                             series: this.series,
@@ -56,8 +61,15 @@ class ProcessSparkLine {
                             color: '#7f8c8d'
                         }).render($)
                     })
+                    $('line', '.stokeWidth', {
+                        x1: "0",
+                        y1: "0",
+                        x2: `${this.barScale(last.smoothed)}`,
+                        y2: "0",
+                        style: {stroke: this.color},
+                        transform: `translate(${0}, 36)`
+                    })
                 })
-                const last = this.series[this.series.length - 1]
                 $('span', `${this.name}:`)
                 $('span', {style: {color: this.color}}, `${formatFixed(last.smoothed, 3)}`)
             })
@@ -69,6 +81,8 @@ class ProcessSparkLine {
 export interface ProcessListItemOptions {
     item: ProcessModel
     stepExtent: [Date, Date]
+    cpuBarExtent: [number, number]
+    rssBarExtent: [number, number]
     width: number
     onClick: (elem: ProcessListItem) => void
 }
@@ -78,12 +92,16 @@ class ProcessListItem {
     width: number
     elem: HTMLAnchorElement
     stepExtent: [Date, Date]
+    cpuBarExtent: [number, number]
+    rssBarExtent: [number, number]
     onClick: (evt: Event) => void
 
     constructor(opt: ProcessListItemOptions) {
         this.item = opt.item
         this.width = opt.width
         this.stepExtent = opt.stepExtent
+        this.cpuBarExtent = opt.cpuBarExtent
+        this.rssBarExtent = opt.rssBarExtent
         this.onClick = (e: Event) => {
             e.preventDefault()
             opt.onClick(this)
@@ -106,6 +124,7 @@ class ProcessListItem {
                         width: this.width / 2.2,
                         series: this.item.cpu.series,
                         stepExtent: this.stepExtent,
+                        barExtent: this.cpuBarExtent,
                         color: "#ffa600",
                         name: 'CPU'
                     }).render($)
@@ -113,6 +132,7 @@ class ProcessListItem {
                         width: this.width / 2.2,
                         series: this.item.rss.series,
                         stepExtent: this.stepExtent,
+                        barExtent: this.rssBarExtent,
                         color: "#bc5090",
                         name: 'RSS'
                     }).render($)
@@ -133,21 +153,28 @@ export class ProcessList {
     items: ProcessModel[]
     width: number
     stepExtent: [number, number]
+    cpuBarExtent: [number, number]
+    rssBarExtent: [number, number]
 
     constructor(opt: ProcessListOptions) {
         this.uuid = opt.uuid
         this.items = opt.items
         this.width = opt.width
 
-        let series: SeriesModel[] = []
+        let rss: SeriesModel[] = []
+        let cpu: SeriesModel[] = []
         for (let item of this.items) {
             item.cpu.series = toPointValue(item.cpu)
+            cpu.push(item.cpu)
             item.rss.series = toPointValue(item.rss)
-            series.push(item.cpu)
-            series.push(item.rss)
+            rss.push(item.rss)
         }
 
+        let series: SeriesModel[] = cpu.concat(rss)
         this.stepExtent = getExtent(series.map(s => s.series), d => d.step)
+
+        this.cpuBarExtent = getExtent(cpu.map(s => s.series), d => d.value, true)
+        this.rssBarExtent = getExtent(rss.map(s => s.series), d => d.value, true)
     }
 
     onclick(elem: ProcessListItem) {
@@ -165,6 +192,8 @@ export class ProcessList {
                         item: s,
                         width: this.width,
                         stepExtent: [toDate(this.stepExtent[0]), toDate(this.stepExtent[1])],
+                        cpuBarExtent: this.cpuBarExtent,
+                        rssBarExtent: this.rssBarExtent,
                         onClick: this.onclick.bind(this)
                     }).render($)
                 })

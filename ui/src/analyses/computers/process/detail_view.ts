@@ -115,7 +115,7 @@ class ProcessDetailView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Processes Details', item: this.computer.name})
+            setTitle({section: 'Processes Details', item: this.processData.name})
             this.calcPreferences()
 
             this.renderFields()
