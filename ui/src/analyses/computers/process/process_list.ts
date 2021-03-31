@@ -7,7 +7,7 @@ import {DefaultLineGradient} from "../../../components/charts/chart_gradients"
 import {formatFixed} from "../../../utils/value"
 import {ROUTER} from "../../../app"
 import {TimeSeriesFill, TimeSeriesPlot} from "../../../components/charts/timeseries/plot"
-import {BadgeView} from "../../../components/badge";
+import {BadgeView} from "../../../components/badge"
 
 
 interface ProcessSparkLineOptions {
@@ -96,7 +96,7 @@ class ProcessListItem {
             $ => {
                 $('div', $ => {
                     $('div', $ => {
-                        $('span', this.item.name )
+                        $('span', this.item.name)
                         $('span', ` PID: ${this.item.pid}`)
                         if (this.item.dead) {
                             new BadgeView({text: 'dead'}).render($)
@@ -157,6 +157,9 @@ export class ProcessList {
     render($: WeyaElementFunction) {
         $('div', '.runs-list', $ => {
             $('div', '.list.runs-list.list-group', $ => {
+                $('svg', {style: {height: `${1}px`}}, $ => {
+                    new DefaultLineGradient().render($)
+                })
                 this.items.map((s, i) => {
                     new ProcessListItem({
                         item: s,
