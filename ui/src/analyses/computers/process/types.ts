@@ -5,6 +5,7 @@ export interface ProcessModel {
     name: string
     cpu: SeriesModel
     rss: SeriesModel
+    dead: number
 }
 
 export interface ProcessDetailsModel extends ProcessModel {
@@ -13,7 +14,6 @@ export interface ProcessDetailsModel extends ProcessModel {
     exe: string
     pid: number
     ppid: number
-    dead: number
     vms: SeriesModel
     threads: SeriesModel
     user: SeriesModel

@@ -7,6 +7,7 @@ import {DefaultLineGradient} from "../../../components/charts/chart_gradients"
 import {formatFixed} from "../../../utils/value"
 import {ROUTER} from "../../../app"
 import {TimeSeriesFill, TimeSeriesPlot} from "../../../components/charts/timeseries/plot"
+import {BadgeView} from "../../../components/badge";
 
 
 interface ProcessSparkLineOptions {
@@ -94,7 +95,13 @@ class ProcessListItem {
             {href: `/details/${this.item.process_id}`, on: {click: this.onClick}},
             $ => {
                 $('div', $ => {
-                    $('p', this.item.name)
+                    $('div', $ => {
+                        $('span', this.item.name)
+                        console.log(this.item.dead)
+                        if (this.item.dead) {
+                            new BadgeView({text: 'dead'}).render($)
+                        }
+                    })
                     new ProcessSparkLine({
                         width: this.width / 2.2,
                         series: this.item.cpu.series,
