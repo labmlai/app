@@ -6,7 +6,7 @@ import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
 import {LineFill, LinePlot} from "./plot"
 import {BottomAxis, RightAxis} from "../axis"
 import {formatStep} from "../../../utils/value"
-import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
+import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
 
@@ -158,7 +158,6 @@ export class LineChart {
                                 height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
-                                new DefaultLineGradient().render($)
                                 new DropShadow().render($)
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g', {}, $ => {

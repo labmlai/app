@@ -4,6 +4,7 @@ import {SeriesModel} from "../../../models/run"
 import {getExtent, toDate} from "../utils"
 import {SparkTimeLine} from "./spark_time_line"
 import ChartColors from "../chart_colors"
+import {DefaultLineGradient} from "../chart_gradients"
 
 
 interface SparkTimeLinesOptions extends ChartOptions {
@@ -64,6 +65,9 @@ export class SparkTimeLines {
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
+                $('svg', {style: {height: `${1}px`}}, $ => {
+                    new DefaultLineGradient().render($)
+                })
                 let onClick
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
@@ -77,7 +81,7 @@ export class SparkTimeLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color:this.chartColors.getColor(this.colorIndices[i]),
+                    color: this.chartColors.getColor(this.colorIndices[i]),
                 })
                 this.sparkTimeLines.push(sparkTimeLine)
                 sparkTimeLine.render($)

@@ -152,7 +152,6 @@ export class CustomLineChart {
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
                                 new DefaultLineGradient().render($)
-                                new DropShadow().render($)
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g', {}, $ => {
                                     this.stepElement = $('text', '.selected-step',

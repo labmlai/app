@@ -4,6 +4,7 @@ import {SeriesModel} from "../../../models/run"
 import {defaultSeriesToPlot, getExtent} from "../utils"
 import {SparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
+import {DefaultLineGradient} from "../chart_gradients"
 
 
 interface SparkLinesOptions extends ChartOptions {
@@ -72,6 +73,9 @@ export class SparkLines {
     render($: WeyaElementFunction) {
         $('div.sparkline-list.list-group', $ => {
             this.series.map((s, i) => {
+                $('svg', {style: {height: `${1}px`}}, $ => {
+                    new DefaultLineGradient().render($)
+                })
                 let onClick
                 if (this.onSelect != null) {
                     onClick = this.onSelect.bind(null, i)
