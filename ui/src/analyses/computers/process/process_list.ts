@@ -1,12 +1,12 @@
 import {WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {PointValue, SeriesModel} from "../../../models/run"
 import {ProcessModel} from "./types"
-import {LineFill, LinePlot} from "../../../components/charts/lines/plot"
-import {getExtent, getScale, toPointValue} from "../../../components/charts/utils"
+import {getExtent, getScale, getTimeScale, toDate, toPointValue} from "../../../components/charts/utils"
 import d3 from "../../../d3"
 import {DefaultLineGradient} from "../../../components/charts/chart_gradients"
 import {formatFixed} from "../../../utils/value"
 import {ROUTER} from "../../../app"
+import {TimeSeriesFill, TimeSeriesPlot} from "../../../components/charts/timeseries/plot"
 
 
 interface ProcessSparkLineOptions {
@@ -14,7 +14,7 @@ interface ProcessSparkLineOptions {
     name: string
     color: string
     series: PointValue[]
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
 }
 
 class ProcessSparkLine {
@@ -23,7 +23,7 @@ class ProcessSparkLine {
     color: string
     series: PointValue[]
     yScale: d3.ScaleLinear<number, number>
-    xScale: d3.ScaleLinear<number, number>
+    xScale: d3.ScaleTime<number, number>
 
     constructor(opt: ProcessSparkLineOptions) {
         this.width = opt.width
@@ -32,23 +32,23 @@ class ProcessSparkLine {
         this.color = opt.color
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
-        this.xScale = getScale(opt.stepExtent, this.width)
+        this.xScale = getTimeScale(opt.stepExtent, this.width)
     }
 
     render($) {
         $(`div.sparkline-list-item.list-group-item.d-inline-block`, $ => {
             $('div.sparkline-content', {style: {width: `${this.width}px`}}, $ => {
                 $('svg.sparkline', {style: {width: `${this.width}px`}, height: 36}, $ => {
-                    new DefaultLineGradient().render($)
+                    // new DefaultLineGradient().render($)
                     $('g', {transform: `translate(${0}, 30)`}, $ => {
-                        new LineFill({
+                        new TimeSeriesFill({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
                             color: '#7f8c8d',
                             colorIdx: 9
                         }).render($)
-                        new LinePlot({
+                        new TimeSeriesPlot({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
@@ -67,7 +67,7 @@ class ProcessSparkLine {
 
 export interface ProcessListItemOptions {
     item: ProcessModel
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
     width: number
     onClick: (elem: ProcessListItem) => void
 }
@@ -76,7 +76,7 @@ class ProcessListItem {
     item: ProcessModel
     width: number
     elem: HTMLAnchorElement
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
     onClick: (evt: Event) => void
 
     constructor(opt: ProcessListItemOptions) {
@@ -154,7 +154,7 @@ export class ProcessList {
                     new ProcessListItem({
                         item: s,
                         width: this.width,
-                        stepExtent: this.stepExtent,
+                        stepExtent: [toDate(this.stepExtent[0]), toDate(this.stepExtent[1])],
                         onClick: this.onclick.bind(this)
                     }).render($)
                 })

@@ -123,6 +123,8 @@ class ProcessAnalysis(Analysis):
                 continue
             ret.append(v)
 
+        ret.sort(key=lambda s: s['cpu']['mean'], reverse=True)
+
         summary = []
         for v in ret[:5]:
             v['cpu']['name'] = v['name']
