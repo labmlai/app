@@ -120,25 +120,21 @@ class ProcessAnalysis(Analysis):
                 res[name][suffix] = series
 
         ret = []
-        dead = []
         for k, v in res.items():
             if 'cpu' not in v or 'rss' not in v:
                 continue
 
-            if v['dead']:
-                dead.append(v)
-            else:
+            if not v['dead']:
                 ret.append(v)
 
         ret.sort(key=lambda s: s['cpu']['mean'], reverse=True)
-        dead.sort(key=lambda s: s['cpu']['mean'], reverse=True)
 
         summary = []
         for v in ret[:5]:
             v['cpu']['name'] = v['name']
             summary.append(v['cpu'])
 
-        return ret + dead, summary
+        return ret, summary
 
     def get_process(self, process_id: str):
         res = {'process_id': process_id,
