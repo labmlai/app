@@ -291,12 +291,13 @@ class HyperParamsView extends ScreenView {
             confirm(`${invalids}`)
             this.onHyperPramsReset()
         } else {
+            this.renderParamsSaveButton(true)
+            this.renderParamsResetButton(true)
+
             await this.analysisCache.setAnalysis(res)
             this.series = toPointValues((await this.analysisCache.get(true)).series)
 
             this.renderLineChart()
-            this.renderParamsSaveButton(true)
-            this.renderParamsResetButton(true)
         }
     }
 
