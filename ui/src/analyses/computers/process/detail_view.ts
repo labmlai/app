@@ -16,19 +16,28 @@ import {setTitle} from '../../../utils/document'
 import {DetailsDataCache} from "./cache_helper"
 import EditableField from "../../../components/editable_field"
 import {formatTime} from "../../../utils/time"
+import {SingleScaleLineChart} from "../../../components/charts/timeseries/single_scale_lines"
+import {SeriesModel} from "../../../models/run"
+import {toPointValues} from "../../../components/charts/utils"
+import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
+
 
 class ProcessDetailView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
+    actualWidth: number
     processId: string
     status: Status
-    plotIdx: number[] = []
     statusCache: ComputerStatusCache
-    series: ProcessDetailsModel
+    processData: ProcessDetailsModel
+    series: SeriesModel[]
+    plotIdx: number[] = []
     analysisCache: DetailsDataCache
     computerHeaderCard: ComputerHeaderCard
-    actualWidth: number
+    sparkTimeLines: SparkTimeLines
     private fieldContainer: HTMLDivElement
+    private lineChartContainer: HTMLDivElement
+    private sparkLinesContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private computerCache: ComputerCache
@@ -46,7 +55,15 @@ class ProcessDetailView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.computer = await this.computerCache.get()
-            this.series = (await this.analysisCache.get(force))
+            this.processData = (await this.analysisCache.get(force))
+
+            this.series = toPointValues([this.processData.system,
+                this.processData.user,
+                this.processData.vms,
+                this.processData.cpu,
+                this.processData.rss,
+                this.processData.threads,
+            ])
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -87,6 +104,10 @@ class ProcessDetailView extends ScreenView {
                         $('h2', '.header.text-center', 'Processes Details')
                         this.loader.render($)
                         this.fieldContainer = $('div', '.input-list-container')
+                        $('div', '.detail-card', $ => {
+                            this.lineChartContainer = $('div', '.fixed-chart')
+                            this.sparkLinesContainer = $('div')
+                        })
                     })
                 })
         })
@@ -95,7 +116,11 @@ class ProcessDetailView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Processes Details', item: this.computer.name})
+            this.calcPreferences()
+
             this.renderFields()
+            this.renderSparkLines()
+            this.renderLineChart()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -121,6 +146,10 @@ class ProcessDetailView extends ScreenView {
     async onRefresh() {
         try {
             await this.loader.load(true)
+            this.calcPreferences()
+
+            this.renderSparkLines()
+            this.renderLineChart()
         } catch (e) {
 
         } finally {
@@ -142,26 +171,82 @@ class ProcessDetailView extends ScreenView {
             $('ul', $ => {
                 new EditableField({
                     name: 'Name',
-                    value: this.series.name,
+                    value: this.processData.name,
                 }).render($)
                 new EditableField({
                     name: 'Created Time',
-                    value: formatTime(this.series.create_time),
+                    value: formatTime(this.processData.create_time),
                 }).render($)
                 new EditableField({
                     name: 'PID',
-                    value: this.series.pid.toString(),
+                    value: this.processData.pid.toString(),
                 }).render($)
                 new EditableField({
                     name: 'CMDLINE',
-                    value: this.series.cmdline,
+                    value: this.processData.cmdline,
                 }).render($)
                 new EditableField({
                     name: 'EXE',
-                    value: this.series.exe,
+                    value: this.processData.exe,
                 }).render($)
             })
         })
+    }
+
+    toggleChart = (idx: number) => {
+        // this.isUpdateDisable = false
+
+        if (this.plotIdx[idx] >= 0) {
+            this.plotIdx[idx] = -1
+        } else {
+            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
+        }
+
+        if (this.plotIdx.length > 1) {
+            this.plotIdx = new Array<number>(...this.plotIdx)
+        }
+
+        this.renderSparkLines()
+        this.renderLineChart()
+        // this.renderSaveButton()
+    }
+
+    renderLineChart() {
+        this.lineChartContainer.innerHTML = ''
+        $(this.lineChartContainer, $ => {
+            new SingleScaleLineChart({
+                series: this.series,
+                width: this.actualWidth,
+                plotIdx: this.plotIdx,
+                onCursorMove: [this.sparkTimeLines.changeCursorValues],
+                isCursorMoveOpt: true,
+                isDivergent: true
+            }).render($)
+        })
+    }
+
+    renderSparkLines() {
+        this.sparkLinesContainer.innerHTML = ''
+        $(this.sparkLinesContainer, $ => {
+            this.sparkTimeLines = new SparkTimeLines({
+                series: this.series,
+                plotIdx: this.plotIdx,
+                width: this.actualWidth,
+                onSelect: this.toggleChart,
+                isDivergent: true
+            })
+            this.sparkTimeLines.render($)
+        })
+    }
+
+    calcPreferences() {
+        if (this.series) {
+            let res: number[] = []
+            for (let i = 0; i < this.series.length; i++) {
+                res.push(i)
+            }
+            this.plotIdx = res
+        }
     }
 }
 

@@ -147,6 +147,7 @@ class ProcessAnalysis(Analysis):
             track = self.process.tracking.get(ind, {})
             if track:
                 series: Dict[str, Any] = Series().load(track).detail
+                series['name'] = s_name
                 res[s_name] = series
 
         return res
