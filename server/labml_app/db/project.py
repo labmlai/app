@@ -60,7 +60,7 @@ class Project(Model['Project']):
                 self.runs.pop(run_uuid)
                 run_key = run.RunIndex.get(run_uuid)
                 if run_key:
-                    r = run_key.load
+                    r = run_key.load()
                     if r.owner == project_owner:
                         run.delete(run_uuid)
 
