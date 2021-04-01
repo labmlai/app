@@ -42,6 +42,9 @@ abstract class Button {
     }
 
     hide = (isHidden: boolean) => {
+        if (this.elem == null) {
+            return
+        }
         if (isHidden) {
             this.elem.classList.add('hide')
         } else {
