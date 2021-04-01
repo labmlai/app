@@ -167,6 +167,11 @@ export class ComputersListCache extends CacheObject<ComputersList> {
         }
         await NETWORK.deleteSessions(Array.from(sessionUUIDS))
     }
+
+    async addSession(session: Computer): Promise<void> {
+        await NETWORK.addSession(session.session_uuid)
+        this.invalidate_cache()
+    }
 }
 
 export class RunCache extends CacheObject<Run> {

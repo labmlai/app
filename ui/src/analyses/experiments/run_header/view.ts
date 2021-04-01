@@ -121,7 +121,7 @@ class RunHeaderView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run Details', item: this.run.name})
-            this.renderAddToRunButton()
+            this.renderAddToRunsButton()
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -228,7 +228,7 @@ class RunHeaderView extends ScreenView {
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
 
-    renderAddToRunButton() {
+    renderAddToRunsButton() {
         this.addToRunsContainer.innerHTML = ''
         $(this.addToRunsContainer, $ => {
             if (!this.isProjectRun) {
@@ -252,7 +252,7 @@ class RunHeaderView extends ScreenView {
             await this.runListCache.addRun(this.run)
             this.isProjectRun = true
             this.userMessages.successMessage('Successfully added to your runs list')
-            this.renderAddToRunButton()
+            this.renderAddToRunsButton()
         } catch (e) {
             this.userMessages.NetworkErrorMessage()
             return

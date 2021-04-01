@@ -2,9 +2,9 @@ import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../../../cache/cache"
+import CACHE, {ComputerCache, ComputersListCache, ComputerStatusCache, IsUserLoggedCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {BackButton, CancelButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
+import {BackButton, CancelButton, CustomButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
@@ -14,11 +14,13 @@ import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Computer} from "../../../models/computer"
 import {setTitle} from '../../../utils/document'
+import {UserMessages} from "../../../components/alert"
 
 class ComputerHeaderView extends ScreenView {
     elem: HTMLDivElement
     computer: Computer
     computerCache: ComputerCache
+    computerListCache: ComputersListCache
     status: Status
     statusCache: ComputerStatusCache
     isUserLogged: IsUserLogged
@@ -28,9 +30,12 @@ class ComputerHeaderView extends ScreenView {
     actualWidth: number
     nameField: EditableField
     commentField: EditableField
+    isProjectSession: boolean = false
+    addToComputersContainer: HTMLSpanElement
     private fieldContainer: HTMLDivElement
     private deleteButton: DeleteButton
     private loader: DataLoader
+    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -38,14 +43,26 @@ class ComputerHeaderView extends ScreenView {
         this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.computerListCache = CACHE.getComputersList()
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.computer = await this.computerCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
+
+            if (this.isUserLogged.is_user_logged) {
+                let computers = (await this.computerListCache.get(force)).computers
+                for (let c of computers) {
+                    if (c.session_uuid == this.computer.session_uuid) {
+                        this.isProjectSession = true
+                        break
+                    }
+                }
+            }
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
@@ -72,9 +89,11 @@ class ComputerHeaderView extends ScreenView {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
+                    this.userMessages.render($)
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                            this.addToComputersContainer = $('span', '.float-right')
                             if (this.isEditMode) {
                                 new CancelButton({
                                     onButtonClick: this.onToggleEdit,
@@ -101,6 +120,7 @@ class ComputerHeaderView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Computer Details', item: this.computer.name})
+            this.renderAddToComputersButton()
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -159,6 +179,31 @@ class ComputerHeaderView extends ScreenView {
             })
         })
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.computer.is_claimed))
+    }
+
+    renderAddToComputersButton() {
+        this.addToComputersContainer.innerHTML = ''
+        $(this.addToComputersContainer, $ => {
+            if (!this.isProjectSession) {
+                new CustomButton({
+                    onButtonClick: this.onAddToComputers.bind(this),
+                    text: 'add to computers',
+                    parent: this.constructor.name
+                }).render($)
+            }
+        })
+    }
+
+    async onAddToComputers() {
+        try {
+            await this.computerListCache.addSession(this.computer)
+            this.isProjectSession = true
+            this.userMessages.successMessage('Successfully added to your computers list')
+            this.renderAddToComputersButton()
+        } catch (e) {
+            this.userMessages.NetworkErrorMessage()
+            return
+        }
     }
 
     onToggleEdit = () => {

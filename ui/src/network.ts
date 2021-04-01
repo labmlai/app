@@ -42,32 +42,36 @@ class Network {
         })
     }
 
-    async getRun(run_uuid: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/run/${run_uuid}`)
+    async getRun(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/run/${runUUID}`)
     }
 
-    async setRun(run_uuid: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/run/${run_uuid}`, data)
+    async setRun(runUUID: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/run/${runUUID}`, data)
     }
 
     async addRun(runUUID: string): Promise<any> {
         return this.sendHttpRequest('PUT', `/run/${runUUID}`)
     }
 
-    async getComputer(computer_uuid: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/computer/${computer_uuid}`)
+    async getComputer(sessionUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/computer/${sessionUUID}`)
     }
 
-    async setComputer(run_uuid: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/computer/${run_uuid}`, data)
+    async setComputer(runUUID: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/computer/${runUUID}`, data)
     }
 
-    async getRunStatus(run_uuid: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/run/status/${run_uuid}`)
+    async addSession(sessionUUID: string): Promise<any> {
+        return this.sendHttpRequest('PUT', `/computer/${sessionUUID}`)
     }
 
-    async getComputerStatus(computer_uuid: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/computer/status/${computer_uuid}`)
+    async getRunStatus(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/run/status/${runUUID}`)
+    }
+
+    async getComputerStatus(sessionUUId: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/computer/status/${sessionUUId}`)
     }
 
     async getRuns(labml_token: string | null): Promise<any> {
@@ -82,8 +86,8 @@ class Network {
         return this.sendHttpRequest('PUT', `/runs`, {'run_uuids': runUUIDS})
     }
 
-    async deleteSessions(computerUUIDS: string[]): Promise<any> {
-        return this.sendHttpRequest('PUT', `/computers`, {'session_uuids': computerUUIDS})
+    async deleteSessions(sessionUUIDS: string[]): Promise<any> {
+        return this.sendHttpRequest('PUT', `/computers`, {'session_uuids': sessionUUIDS})
     }
 
     async getUser(): Promise<any> {
@@ -116,24 +120,24 @@ class Network {
         return this.sendHttpRequest('GET', `/auth/is_logged`)
     }
 
-    async getAnalysis(url: string, run_uuid: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/${url}/${run_uuid}`, {})
+    async getAnalysis(url: string, runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/${url}/${runUUID}`, {})
     }
 
     async getCustomAnalysis(url: string): Promise<any> {
         return this.sendHttpRequest('GET', `/${url}`, {})
     }
 
-    async setAnalysis(url: string, run_uuid: string, data): Promise<any> {
-        return this.sendHttpRequest('POST', `/${url}/${run_uuid}`, data)
+    async setAnalysis(url: string, runUUID: string, data): Promise<any> {
+        return this.sendHttpRequest('POST', `/${url}/${runUUID}`, data)
     }
 
-    async getPreferences(url: string, run_uuid: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/${url}/preferences/${run_uuid}`, {})
+    async getPreferences(url: string, runUUID: string): Promise<any> {
+        return this.sendHttpRequest('GET', `/${url}/preferences/${runUUID}`, {})
     }
 
-    async updatePreferences(url: string, run_uuid: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/${url}/preferences/${run_uuid}`, data)
+    async updatePreferences(url: string, runUUID: string, data: object): Promise<any> {
+        return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)
     }
 }
 
