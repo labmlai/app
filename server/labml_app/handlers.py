@@ -428,7 +428,7 @@ def delete_runs() -> flask.Response:
     run_uuids = request.json['run_uuids']
 
     u = auth.get_auth_user()
-    u.default_project.delete_runs(run_uuids)
+    u.default_project.delete_runs(run_uuids, u.email)
 
     return utils.format_rv({'is_successful': True})
 

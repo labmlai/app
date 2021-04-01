@@ -87,10 +87,10 @@ class RunHeaderView extends ScreenView {
         setTitle({section: 'Run Details'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
-            this.userMessages.render($)
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
+                    this.userMessages.render($)
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)

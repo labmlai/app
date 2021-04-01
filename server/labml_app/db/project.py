@@ -54,11 +54,15 @@ class Project(Model['Project']):
 
         return res
 
-    def delete_runs(self, run_uuids: List[str]) -> None:
+    def delete_runs(self, run_uuids: List[str], project_owner: str) -> None:
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
-                run.delete(run_uuid)
+                run_key = run.RunIndex.get(run_uuid)
+                if run_key:
+                    r = run_key.load
+                    if r.owner == project_owner:
+                        run.delete(run_uuid)
 
         self.save()
 
