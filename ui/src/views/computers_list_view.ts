@@ -185,8 +185,9 @@ class ComputersListView extends ScreenView {
         this.deleteButton.disabled = this.computersDeleteSet.size === 0
     }
 
-    onSearch = (query: string) => {
+    onSearch = async (query: string) => {
         this.searchQuery = query
+        await this.loader.load()
         this.renderList().then()
     }
 
