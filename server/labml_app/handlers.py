@@ -143,7 +143,7 @@ def update_computer() -> flask.Response:
     return jsonify({'errors': errors, 'url': c.url})
 
 
-def claim_computer(session_uuid: str, c: computer.Computer) -> None:
+def claim_computer(c: computer.Computer) -> None:
     at = auth.get_app_token()
 
     if not at.user:
@@ -152,16 +152,16 @@ def claim_computer(session_uuid: str, c: computer.Computer) -> None:
     u = at.user.load()
     default_project = u.default_project
 
-    if session_uuid not in default_project.computers:
+    if c.session_uuid not in default_project.computers:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
-        if session_uuid in float_project.computers:
-            default_project.computers[session_uuid] = c.key
+        if c.session_uuid in float_project.computers:
+            default_project.computers[c.session_uuid] = c.key
             default_project.save()
             c.is_claimed = True
             c.save()
 
-            mix_panel.MixPanelEvent.track('computer_claimed', {'session_uuid': session_uuid})
+            mix_panel.MixPanelEvent.track('computer_claimed', {'session_uuid': c.session_uuid})
             mix_panel.MixPanelEvent.computer_claimed_set(u.email)
 
 
@@ -176,7 +176,7 @@ def get_computer(session_uuid: str) -> flask.Response:
         status_code = 200
 
         if not c.is_claimed:
-            claim_computer(session_uuid, c)
+            claim_computer(c)
 
     response = make_response(utils.format_rv(computer_data))
     response.status_code = status_code
@@ -293,7 +293,7 @@ def update_run() -> flask.Response:
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
 
-def claim_run(run_uuid: str, r: run.Run) -> None:
+def claim_run(r: run.Run) -> None:
     at = auth.get_app_token()
 
     if not at.user:
@@ -302,17 +302,18 @@ def claim_run(run_uuid: str, r: run.Run) -> None:
     u = at.user.load()
     default_project = u.default_project
 
-    if run_uuid not in default_project.runs:
+    if r.run_uuid not in default_project.runs:
         float_project = project.get_project(labml_token=settings.FLOAT_PROJECT_TOKEN)
 
-        if run_uuid in float_project.runs:
-            default_project.runs[run_uuid] = r.key
+        if r.run_uuid in float_project.runs:
+            default_project.runs[r.run_uuid] = r.key
             default_project.is_run_added = True
             default_project.save()
             r.is_claimed = True
+            r.owner = u.email
             r.save()
 
-            mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid})
+            mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': r.run_uuid})
             mix_panel.MixPanelEvent.run_claimed_set(u.email)
 
 
@@ -333,7 +334,7 @@ def get_run(run_uuid: str) -> flask.Response:
         run_data['is_project_run'] = is_project_run
 
         if not r.is_claimed:
-            claim_run(run_uuid, r)
+            claim_run(r)
 
     response = make_response(utils.format_rv(run_data, {'is_run_added': is_new_run_added()}))
     response.status_code = status_code
@@ -449,7 +450,7 @@ def delete_computers() -> flask.Response:
     session_uuids = request.json['session_uuids']
 
     u = auth.get_auth_user()
-    u.default_project.delete_computers(session_uuids)
+    u.default_project.delete_sessions(session_uuids)
 
     return utils.format_rv({'is_successful': True})
 
@@ -461,6 +462,24 @@ def get_user() -> flask.Response:
     logger.debug(f'get_user, user : {u.key}')
 
     return utils.format_rv(u.get_data())
+
+
+@auth.login_required
+def add_run(run_uuid: str) -> flask.Response:
+    u = auth.get_auth_user()
+
+    u.default_project.add_run(run_uuid)
+
+    return utils.format_rv({'is_successful': True})
+
+
+@auth.login_required
+def add_computer(session_uuid: str) -> flask.Response:
+    u = auth.get_auth_user()
+
+    u.default_project.add_session(session_uuid)
+
+    return utils.format_rv({'is_successful': True})
 
 
 @mix_panel.MixPanelEvent.time_this(None)
@@ -489,8 +508,10 @@ def add_handlers(app: flask.Flask):
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
+    _add_ui(app, 'PUT', add_run, 'run/<run_uuid>')
     _add_ui(app, 'GET', get_computer, 'computer/<session_uuid>')
     _add_ui(app, 'POST', edit_computer, 'computer/<session_uuid>')
+    _add_ui(app, 'PUT', add_computer, 'computer/<session_uuid>')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_computer_status, 'computer/status/<session_uuid>')
 

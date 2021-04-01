@@ -4,7 +4,7 @@ from typing import List, Dict, Union
 from labml_db import Model, Key, Index
 
 from . import run
-from .computer import Computer
+from . import computer
 from ..logger import logger
 
 
@@ -13,7 +13,7 @@ class Project(Model['Project']):
     is_sharable: float
     name: str
     runs: Dict[str, Key[run.Run]]
-    computers: Dict[str, Key[Computer]]
+    computers: Dict[str, Key[computer.Computer]]
     is_run_added: bool
 
     @classmethod
@@ -47,14 +47,14 @@ class Project(Model['Project']):
 
         return res
 
-    def get_computers(self) -> List[Computer]:
+    def get_computers(self) -> List[computer.Computer]:
         res = []
         for session_uuid, computer_key in self.computers.items():
             res.append(computer_key.load())
 
         return res
 
-    def delete_runs(self, run_uuids: List[str]):
+    def delete_runs(self, run_uuids: List[str]) -> None:
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
@@ -62,10 +62,26 @@ class Project(Model['Project']):
 
         self.save()
 
-    def delete_computers(self, session_uuids: List[str]):
+    def delete_sessions(self, session_uuids: List[str]) -> None:
         for session_uuid in session_uuids:
             if session_uuid in self.computers:
                 self.computers.pop(session_uuid)
+
+        self.save()
+
+    def add_run(self, run_uuid: str) -> None:
+        run_key = run.RunIndex.get(run_uuid)
+
+        if run_key:
+            self.runs[run_uuid] = run_key
+
+        self.save()
+
+    def add_session(self, session_uuid: str) -> None:
+        computer_key = computer.ComputerIndex.get(session_uuid)
+
+        if computer_key:
+            self.computers[session_uuid] = computer_key
 
         self.save()
 

@@ -137,6 +137,11 @@ export class RunsListCache extends CacheObject<RunsList> {
         }
         await NETWORK.deleteRuns(Array.from(runUUIDS))
     }
+
+    async addRun(run: Run): Promise<void> {
+        await NETWORK.addRun(run.run_uuid)
+        this.invalidate_cache()
+    }
 }
 
 export class ComputersListCache extends CacheObject<ComputersList> {

@@ -298,7 +298,7 @@ export class CustomButton extends Button {
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}, style: {display: 'inline-block'}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span', this.text)
             })

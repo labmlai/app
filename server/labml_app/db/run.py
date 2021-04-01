@@ -20,6 +20,7 @@ class CardInfo(NamedTuple):
 
 class Run(Model['Run']):
     name: str
+    owner: str
     comment: str
     note: str
     tags: List[str]
@@ -49,6 +50,7 @@ class Run(Model['Run']):
     @classmethod
     def defaults(cls):
         return dict(name='',
+                    owner='',
                     comment='',
                     note='',
                     tags=[],
@@ -248,10 +250,12 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
 
     if labml_token == settings.FLOAT_PROJECT_TOKEN:
         is_claimed = False
+        identifier = ''
     else:
         is_claimed = True
 
         from . import user
+
         identifier = user.get_token_owner(labml_token)
         MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
         MixPanelEvent.run_claimed_set(identifier)
@@ -260,6 +264,7 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
 
     status = create_status()
     run = Run(run_uuid=run_uuid,
+              owner=identifier,
               start_time=time_now,
               run_ip=run_ip,
               is_claimed=is_claimed,

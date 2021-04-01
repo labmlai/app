@@ -50,6 +50,10 @@ class Network {
         return this.sendHttpRequest('POST', `/run/${run_uuid}`, data)
     }
 
+    async addRun(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('PUT', `/run/${runUUID}`)
+    }
+
     async getComputer(computer_uuid: string): Promise<any> {
         return this.sendHttpRequest('GET', `/computer/${computer_uuid}`)
     }
