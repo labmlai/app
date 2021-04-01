@@ -16,9 +16,9 @@ class AnalysisManager:
             ans.get_or_create(run_uuid).track(data)
 
     @staticmethod
-    def track_computer(computer_uuid: str, data: Dict[str, SeriesModel]):
+    def track_computer(session_uuid: str, data: Dict[str, SeriesModel]):
         for ans in computer_analyses:
-            ans.get_or_create(computer_uuid).track(data)
+            ans.get_or_create(session_uuid).track(data)
 
     @staticmethod
     def delete_run(run_uuid: str):

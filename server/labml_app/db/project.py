@@ -4,7 +4,7 @@ from typing import List, Dict, Union
 from labml_db import Model, Key, Index
 
 from . import run
-from . import computer
+from . import session
 from ..logger import logger
 
 
@@ -13,7 +13,8 @@ class Project(Model['Project']):
     is_sharable: float
     name: str
     runs: Dict[str, Key[run.Run]]
-    computers: Dict[str, Key[computer.Computer]]
+    sessions: Dict[str, Key[session.Session]]
+    computers: Dict[str, any]
     is_run_added: bool
 
     @classmethod
@@ -22,6 +23,7 @@ class Project(Model['Project']):
                     is_sharable=False,
                     labml_token='',
                     runs={},
+                    sessions={},
                     computers={},
                     is_run_added=False,
                     )
@@ -47,10 +49,10 @@ class Project(Model['Project']):
 
         return res
 
-    def get_computers(self) -> List[computer.Computer]:
+    def get_sessions(self) -> List[session.Session]:
         res = []
-        for session_uuid, computer_key in self.computers.items():
-            res.append(computer_key.load())
+        for session_uuid, session_key in self.sessions.items():
+            res.append(session_key.load())
 
         return res
 
@@ -68,8 +70,8 @@ class Project(Model['Project']):
 
     def delete_sessions(self, session_uuids: List[str]) -> None:
         for session_uuid in session_uuids:
-            if session_uuid in self.computers:
-                self.computers.pop(session_uuid)
+            if session_uuid in self.sessions:
+                self.sessions.pop(session_uuid)
 
         self.save()
 
@@ -82,10 +84,10 @@ class Project(Model['Project']):
         self.save()
 
     def add_session(self, session_uuid: str) -> None:
-        computer_key = computer.ComputerIndex.get(session_uuid)
+        session_key = session.Session.get(session_uuid)
 
-        if computer_key:
-            self.computers[session_uuid] = computer_key
+        if session_key:
+            self.sessions[session_uuid] = session_key
 
         self.save()
 
