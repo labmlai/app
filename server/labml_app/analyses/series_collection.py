@@ -7,12 +7,14 @@ class SeriesCollection:
     tracking: Dict[str, SeriesModel]
     indicators: set
     step: int
+    max_buffer_length: int
 
     @classmethod
     def defaults(cls):
         return dict(tracking={},
                     step=0,
-                    indicators=set()
+                    indicators=set(),
+                    max_buffer_length=None,
                     )
 
     def get_tracks(self):
@@ -85,9 +87,9 @@ class SeriesCollection:
 
     def _update_series(self, ind: str, series: SeriesModel) -> None:
         if ind not in self.tracking:
-            self.tracking[ind] = Series().to_data()
+            self.tracking[ind] = Series(self.max_buffer_length).to_data()
 
-        s = Series().load(self.tracking[ind])
+        s = Series(self.max_buffer_length).load(self.tracking[ind])
         s.update(series['step'], series['value'])
 
         self.tracking[ind] = s.to_data()
