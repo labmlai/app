@@ -83,18 +83,18 @@ class NetworkAnalysis(Analysis):
         return NetworkAnalysis(network_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        network_key = NetworkIndex.get(run_uuid)
-        preferences_key = NetworkPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        network_key = NetworkIndex.get(session_uuid)
+        preferences_key = NetworkPreferencesIndex.get(session_uuid)
 
         if network_key:
             n: NetworkModel = network_key.load()
-            NetworkIndex.delete(run_uuid)
+            NetworkIndex.delete(session_uuid)
             n.delete()
 
         if preferences_key:
             np: NetworkPreferencesModel = preferences_key.load()
-            NetworkPreferencesIndex.delete(run_uuid)
+            NetworkPreferencesIndex.delete(session_uuid)
             np.delete()
 
 

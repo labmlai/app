@@ -176,18 +176,18 @@ class ProcessAnalysis(Analysis):
         return ProcessAnalysis(process_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        process_key = ProcessIndex.get(run_uuid)
-        preferences_key = ProcessPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        process_key = ProcessIndex.get(session_uuid)
+        preferences_key = ProcessPreferencesIndex.get(session_uuid)
 
         if process_key:
             p: ProcessModel = process_key.load()
-            ProcessIndex.delete(run_uuid)
+            ProcessIndex.delete(session_uuid)
             p.delete()
 
         if preferences_key:
             pp: ProcessPreferencesModel = preferences_key.load()
-            ProcessPreferencesIndex.delete(run_uuid)
+            ProcessPreferencesIndex.delete(session_uuid)
             pp.delete()
 
 

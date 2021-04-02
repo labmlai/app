@@ -86,18 +86,18 @@ class DiskAnalysis(Analysis):
         return DiskAnalysis(disk_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        disk_key = DiskIndex.get(run_uuid)
-        preferences_key = DiskPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        disk_key = DiskIndex.get(session_uuid)
+        preferences_key = DiskPreferencesIndex.get(session_uuid)
 
         if disk_key:
             d: DiskModel = disk_key.load()
-            DiskIndex.delete(run_uuid)
+            DiskIndex.delete(session_uuid)
             d.delete()
 
         if preferences_key:
             dp: DiskPreferencesModel = preferences_key.load()
-            DiskPreferencesIndex.delete(run_uuid)
+            DiskPreferencesIndex.delete(session_uuid)
             dp.delete()
 
 

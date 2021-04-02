@@ -81,18 +81,18 @@ class GPUAnalysis(Analysis):
         return GPUAnalysis(gpu_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        gpu_key = GPUIndex.get(run_uuid)
-        preferences_key = GPUPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        gpu_key = GPUIndex.get(session_uuid)
+        preferences_key = GPUPreferencesIndex.get(session_uuid)
 
         if gpu_key:
             g: GPUModel = gpu_key.load()
-            GPUIndex.delete(run_uuid)
+            GPUIndex.delete(session_uuid)
             g.delete()
 
         if preferences_key:
             gp: GPUPreferencesModel = preferences_key.load()
-            GPUPreferencesIndex.delete(run_uuid)
+            GPUPreferencesIndex.delete(session_uuid)
             gp.delete()
 
 
