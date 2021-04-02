@@ -23,6 +23,7 @@ class COMPUTEREnums:
     MEMORY = 'memory'
     NETWORK = 'net'
     PROCESS = 'process'
+    BATTERY = 'battery'
 
 
 class InsightEnums:

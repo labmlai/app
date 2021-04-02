@@ -89,18 +89,18 @@ class CPUAnalysis(Analysis):
         return CPUAnalysis(cpu_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        cpu_key = CPUIndex.get(run_uuid)
-        preferences_key = CPUPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        cpu_key = CPUIndex.get(session_uuid)
+        preferences_key = CPUPreferencesIndex.get(session_uuid)
 
         if cpu_key:
             c: CPUModel = cpu_key.load()
-            CPUIndex.delete(run_uuid)
+            CPUIndex.delete(session_uuid)
             c.delete()
 
         if preferences_key:
             cp: CPUPreferencesModel = preferences_key.load()
-            CPUPreferencesIndex.delete(run_uuid)
+            CPUPreferencesIndex.delete(session_uuid)
             cp.delete()
 
 

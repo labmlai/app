@@ -4,6 +4,7 @@ from uuid import uuid4
 from functools import wraps
 
 from flask import jsonify
+from . import mix_panel
 
 
 def check_version(user_v, new_v):

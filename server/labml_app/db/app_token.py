@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from labml_db import Model, Key, Index
 
-from .user import User
+from . import user
 
 EXPIRATION_DELAY = 60 * 60 * 24 * 30
 
@@ -19,7 +19,7 @@ def gen_expiration() -> float:
 class AppToken(Model['Session']):
     token_id: str
     expiration: float
-    user: Key[User]
+    user: Key[user.User]
 
     @classmethod
     def defaults(cls):

@@ -87,18 +87,18 @@ class MemoryAnalysis(Analysis):
         return MemoryAnalysis(memory_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        memory_key = MemoryIndex.get(run_uuid)
-        preferences_key = MemoryPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        memory_key = MemoryIndex.get(session_uuid)
+        preferences_key = MemoryPreferencesIndex.get(session_uuid)
 
         if memory_key:
             m: MemoryModel = memory_key.load()
-            MemoryIndex.delete(run_uuid)
+            MemoryIndex.delete(session_uuid)
             m.delete()
 
         if preferences_key:
             mp: MemoryPreferencesModel = preferences_key.load()
-            MemoryPreferencesIndex.delete(run_uuid)
+            MemoryPreferencesIndex.delete(session_uuid)
             mp.delete()
 
 
