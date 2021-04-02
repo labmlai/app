@@ -3,11 +3,11 @@ from typing import Dict, List, Optional, Union
 
 from labml_db import Model, Key, Index
 
-from ..utils.mix_panel import MixPanelEvent
+from .. import utils
 
 from . import project
 from . import computer
-from .status import create_status, Status
+from . import status
 from .. import settings
 
 
@@ -19,7 +19,7 @@ class Session(Model['Session']):
     computer_uuid: str
     session_uuid: str
     is_claimed: bool
-    status: Key[Status]
+    status: Key[status.Status]
     configs: Dict[str, any]
     errors: List[Dict[str, str]]
 
@@ -106,18 +106,18 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
 
         from . import user
         identifier = user.get_token_owner(labml_token)
-        MixPanelEvent.track('session_claimed', {'session_uuid': session_uuid}, identifier=identifier)
-        MixPanelEvent.computer_claimed_set(identifier)
+        utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': session_uuid}, identifier=identifier)
+        utils.mix_panel.MixPanelEvent.computer_claimed_set(identifier)
 
     time_now = time.time()
 
-    status = create_status()
+    s = status.create_status()
     session = Session(session_uuid=session_uuid,
                       computer_uuid=computer_uuid,
                       start_time=time_now,
                       computer_ip=computer_ip,
                       is_claimed=is_claimed,
-                      status=status.key,
+                      status=s.key,
                       )
     p.sessions[session.session_uuid] = session.key
 
@@ -128,7 +128,7 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
 
     computer.add_session(computer_uuid, session_uuid)
 
-    MixPanelEvent.track('session_created', {'session_uuid': session_uuid, 'labml_token': labml_token})
+    utils.mix_panel.MixPanelEvent.track('session_created', {'session_uuid': session_uuid, 'labml_token': labml_token})
 
     return session
 
@@ -151,7 +151,7 @@ def get_session(session_uuid: str) -> Optional[Session]:
     return None
 
 
-def get_status(session_uuid: str) -> Union[None, Status]:
+def get_status(session_uuid: str) -> Union[None, status.Status]:
     s = get_session(session_uuid)
 
     if s:

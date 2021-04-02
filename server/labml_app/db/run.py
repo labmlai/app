@@ -3,12 +3,12 @@ from typing import Dict, List, Optional, Union, NamedTuple
 
 from labml_db import Model, Key, Index
 
-from ..utils.mix_panel import MixPanelEvent
+from .. import utils
 from . import project
-from .status import create_status, Status
+from . import status
 from .. import settings
 from ..logger import logger
-from ..analyses import AnalysisManager
+from .. import analyses
 
 
 class CardInfo(NamedTuple):
@@ -33,7 +33,7 @@ class Run(Model['Run']):
     commit_message: str
     start_step: int
     is_claimed: bool
-    status: Key[Status]
+    status: Key[status.Status]
     configs: Dict[str, any]
     dynamic: Dict[str, any]
     stdout: str
@@ -111,7 +111,7 @@ class Run(Model['Run']):
                     defaults[name] = computed
 
             if defaults:
-                AnalysisManager.get_analysis('HyperParamsAnalysis', self.run_uuid).set_default_values(defaults)
+                analyses.AnalysisManager.get_analysis('HyperParamsAnalysis', self.run_uuid).set_default_values(defaults)
 
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
@@ -257,18 +257,18 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
         from . import user
 
         identifier = user.get_token_owner(labml_token)
-        MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
-        MixPanelEvent.run_claimed_set(identifier)
+        utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
+        utils.mix_panel.MixPanelEvent.run_claimed_set(identifier)
 
     time_now = time.time()
 
-    status = create_status()
+    s = status.create_status()
     run = Run(run_uuid=run_uuid,
               owner=identifier,
               start_time=time_now,
               run_ip=run_ip,
               is_claimed=is_claimed,
-              status=status.key,
+              status=s.key,
               )
     p.runs[run.run_uuid] = run.key
     p.is_run_added = True
@@ -278,7 +278,7 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
 
     RunIndex.set(run.run_uuid, run.key)
 
-    MixPanelEvent.track('run_created', {'run_uuid': run_uuid,
+    utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid,
                                         'run_ip': run_ip,
                                         'labml_token': labml_token}
                         )
@@ -297,7 +297,7 @@ def delete(run_uuid: str):
         r.delete()
         RunIndex.delete(run_uuid)
 
-        AnalysisManager.delete_run(run_uuid)
+        analyses.AnalysisManager.delete_run(run_uuid)
 
 
 def get_runs(labml_token: str) -> List[Run]:
@@ -318,7 +318,7 @@ def get_run(run_uuid: str) -> Optional[Run]:
     return None
 
 
-def get_status(run_uuid: str) -> Union[None, Status]:
+def get_status(run_uuid: str) -> Union[None, status.Status]:
     r = get_run(run_uuid)
 
     if r:

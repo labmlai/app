@@ -10,15 +10,14 @@ from .logger import logger
 from . import settings
 from . import block_uuids
 from . import auth
-from . import utils
 from .db import run
 from .db import computer
 from .db import session
 from .db import app_token
 from .db import user
 from .db import project
-from .utils import mix_panel
-from .analyses import AnalysisManager
+from . import utils
+from . import analyses
 
 request = typing.cast(werkzeug.wrappers.Request, request)
 
@@ -38,7 +37,7 @@ def get_user_profile(token: str):
     return res.json()
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def sign_in() -> flask.Response:
     ret = request.json
     if 'token' in ret:
@@ -49,7 +48,7 @@ def sign_in() -> flask.Response:
     else:
         u = user.get_or_create_user(user.AuthOInfo(**request.json))
 
-    mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
+    utils.mix_panel.MixPanelEvent.people_set(identifier=u.email, first_name=u.name, last_name='', email=u.email)
 
     token_id = ''  # generate different token for every login
     at = app_token.get_or_create(token_id)
@@ -62,7 +61,7 @@ def sign_in() -> flask.Response:
     return response
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def sign_out() -> flask.Response:
     token_id = request.headers.get('Authorization', '')
     at = app_token.get_or_create(token_id)
@@ -74,7 +73,7 @@ def sign_out() -> flask.Response:
     return response
 
 
-@mix_panel.MixPanelEvent.time_this(0.4)
+@utils.mix_panel.MixPanelEvent.time_this(0.4)
 def update_session() -> flask.Response:
     errors = []
 
@@ -132,7 +131,7 @@ def update_session() -> flask.Response:
         c.update_session(d)
         s.update_time_status(d)
         if 'track' in d:
-            AnalysisManager.track_computer(session_uuid, d['track'])
+            analyses.AnalysisManager.track_computer(session_uuid, d['track'])
 
     logger.debug(
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
@@ -158,11 +157,11 @@ def claim_session(c: session.Session) -> None:
             c.is_claimed = True
             c.save()
 
-            mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': c.session_uuid})
-            mix_panel.MixPanelEvent.computer_claimed_set(u.email)
+            utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': c.session_uuid})
+            utils.mix_panel.MixPanelEvent.computer_claimed_set(u.email)
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_session(session_uuid: str) -> flask.Response:
     session_data = {}
     status_code = 404
@@ -196,7 +195,7 @@ def edit_session(session_uuid: str) -> flask.Response:
 
 @auth.login_required
 @auth.check_labml_token_permission
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_sessions(labml_token: str) -> flask.Response:
     u = auth.get_auth_user()
 
@@ -219,7 +218,7 @@ def get_sessions(labml_token: str) -> flask.Response:
     return utils.format_rv({'computers': res, 'labml_token': labml_token})
 
 
-@mix_panel.MixPanelEvent.time_this(0.4)
+@utils.mix_panel.MixPanelEvent.time_this(0.4)
 def update_run() -> flask.Response:
     errors = []
 
@@ -276,11 +275,11 @@ def update_run() -> flask.Response:
         r.update_run(d)
         s.update_time_status(d)
         if 'track' in d:
-            AnalysisManager.track(run_uuid, d['track'])
+            analyses.AnalysisManager.track(run_uuid, d['track'])
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    hp_values = AnalysisManager.get_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
+    hp_values = analyses.AnalysisManager.get_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
@@ -305,11 +304,11 @@ def claim_run(r: run.Run) -> None:
             r.owner = u.email
             r.save()
 
-            mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': r.run_uuid})
-            mix_panel.MixPanelEvent.run_claimed_set(u.email)
+            utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': r.run_uuid})
+            utils.mix_panel.MixPanelEvent.run_claimed_set(u.email)
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
     is_project_run = False
@@ -348,7 +347,7 @@ def edit_run(run_uuid: str) -> flask.Response:
     return utils.format_rv({'errors': errors})
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_run_status(run_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 404
@@ -364,7 +363,7 @@ def get_run_status(run_uuid: str) -> flask.Response:
     return response
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_session_status(session_uuid: str) -> flask.Response:
     status_data = {}
     status_code = 404
@@ -381,7 +380,7 @@ def get_session_status(session_uuid: str) -> flask.Response:
 
 
 @auth.login_required
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.check_labml_token_permission
 def get_runs(labml_token: str) -> flask.Response:
     u = auth.get_auth_user()
@@ -404,7 +403,7 @@ def get_runs(labml_token: str) -> flask.Response:
     return utils.format_rv({'runs': res, 'labml_token': labml_token})
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.login_required
 def delete_runs() -> flask.Response:
     run_uuids = request.json['run_uuids']
@@ -416,7 +415,7 @@ def delete_runs() -> flask.Response:
 
 
 @auth.login_required
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def set_user() -> flask.Response:
     data = request.json['user']
     u = auth.get_auth_user()
@@ -426,7 +425,7 @@ def set_user() -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.login_required
 def delete_sessions() -> flask.Response:
     session_uuids = request.json['session_uuids']
@@ -438,7 +437,7 @@ def delete_sessions() -> flask.Response:
 
 
 @auth.login_required
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_user() -> flask.Response:
     u = auth.get_auth_user()
 
@@ -463,12 +462,12 @@ def add_session(session_uuid: str) -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def is_user_logged() -> flask.Response:
     return utils.format_rv({'is_user_logged': auth.get_is_user_logged()})
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_computer(computer_uuid) -> flask.Response:
     c = computer.get_or_create(computer_uuid)
 
@@ -508,7 +507,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
-    for method, func, url, login_required in AnalysisManager.get_handlers():
+    for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:
             func = auth.login_required(func)
         _add_ui(app, method, func, url)
