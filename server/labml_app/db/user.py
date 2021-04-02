@@ -4,7 +4,7 @@ from labml_db import Model, Key, Index
 
 from . import project
 from . import run
-from ..utils import gen_token
+from .. import utils
 
 
 class User(Model['User']):
@@ -77,7 +77,7 @@ def get_or_create_user(info: AuthOInfo) -> User:
     user_key = UserIndex.get(info.email)
 
     if not user_key:
-        p = project.Project(labml_token=gen_token())
+        p = project.Project(labml_token=utils.gen_token())
         user = User(name=info.name,
                     sub=info.sub,
                     email=info.email,
