@@ -34,7 +34,7 @@ def get_or_create(computer_uuid: str) -> Computer:
         computer = Computer(computer_uuid=computer_uuid,
                             )
         computer.save()
-        ComputerIndex.set(computer_uuid, computer_key)
+        ComputerIndex.set(computer_uuid, computer.key)
 
         return computer
 
