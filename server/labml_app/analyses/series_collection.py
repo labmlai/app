@@ -17,6 +17,7 @@ class SeriesCollection:
                     max_buffer_length=None,
                     )
 
+    # TODO clean this, only have common methods
     def get_tracks(self):
         res = []
         is_series_updated = False
@@ -43,6 +44,7 @@ class SeriesCollection:
 
         return res
 
+    # TODO clean this, only have common methods
     def get_track_summaries(self):
         data = {}
         inds = set()
