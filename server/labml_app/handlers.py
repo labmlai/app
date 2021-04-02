@@ -12,6 +12,7 @@ from . import block_uuids
 from . import auth
 from . import utils
 from .db import run
+from .db import computer
 from .db import session
 from .db import app_token
 from .db import user
@@ -58,8 +59,6 @@ def sign_in() -> flask.Response:
 
     response = make_response(utils.format_rv({'is_successful': True, 'app_token': at.token_id}))
 
-    logger.debug(f'sign_in, user: {u.key}')
-
     return response
 
 
@@ -71,8 +70,6 @@ def sign_out() -> flask.Response:
     app_token.delete(at)
 
     response = make_response(utils.format_rv({'is_successful': True}))
-
-    logger.debug(f'sign_out, session_id: {at.token_id}')
 
     return response
 
@@ -181,8 +178,6 @@ def get_session(session_uuid: str) -> flask.Response:
     response = make_response(utils.format_rv(session_data))
     response.status_code = status_code
 
-    logger.debug(f'session, session_uuid: {session_uuid}')
-
     return response
 
 
@@ -193,8 +188,6 @@ def edit_session(session_uuid: str) -> flask.Response:
     if c:
         data = request.json
         c.edit_session(data)
-
-        logger.debug(f'edit session: {c.key}')
     else:
         errors.append({'edit_session': 'invalid session_uuid'})
 
@@ -221,8 +214,6 @@ def get_sessions(labml_token: str) -> flask.Response:
             res.append({**c.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
-
-    logger.debug(f'sessions, labml_token : {labml_token}')
 
     # TODO CHANGE HERE
     return utils.format_rv({'computers': res, 'labml_token': labml_token})
@@ -340,8 +331,6 @@ def get_run(run_uuid: str) -> flask.Response:
     response = make_response(utils.format_rv(run_data, {'is_run_added': is_new_run_added()}))
     response.status_code = status_code
 
-    logger.debug(f'run, run_uuid: {run_uuid}')
-
     return response
 
 
@@ -353,8 +342,6 @@ def edit_run(run_uuid: str) -> flask.Response:
     if r:
         data = request.json
         r.edit_run(data)
-
-        logger.debug(f'edit run: {r.key}')
     else:
         errors.append({'edit_run': 'invalid run uuid'})
 
@@ -374,8 +361,6 @@ def get_run_status(run_uuid: str) -> flask.Response:
     response = make_response(utils.format_rv(status_data))
     response.status_code = status_code
 
-    logger.debug(f'run_status, run_uuid: {run_uuid}')
-
     return response
 
 
@@ -391,8 +376,6 @@ def get_session_status(session_uuid: str) -> flask.Response:
 
     response = make_response(utils.format_rv(status_data))
     response.status_code = status_code
-
-    logger.debug(f'session_status, session_uuid: {session_uuid}')
 
     return response
 
@@ -417,8 +400,6 @@ def get_runs(labml_token: str) -> flask.Response:
             res.append({**r.get_summary(), **s.get_data()})
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
-
-    logger.debug(f'runs, labml_token : {labml_token}')
 
     return utils.format_rv({'runs': res, 'labml_token': labml_token})
 
@@ -460,7 +441,6 @@ def delete_sessions() -> flask.Response:
 @mix_panel.MixPanelEvent.time_this(None)
 def get_user() -> flask.Response:
     u = auth.get_auth_user()
-    logger.debug(f'get_user, user : {u.key}')
 
     return utils.format_rv(u.get_data())
 
@@ -488,6 +468,13 @@ def is_user_logged() -> flask.Response:
     return utils.format_rv({'is_user_logged': auth.get_is_user_logged()})
 
 
+@mix_panel.MixPanelEvent.time_this(None)
+def get_computer(computer_uuid) -> flask.Response:
+    c = computer.get_or_create(computer_uuid)
+
+    return utils.format_rv(c.get_data())
+
+
 def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
@@ -504,6 +491,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_sessions, 'computers/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'PUT', delete_sessions, 'computers')
+    # _add_ui(app, 'GET', get_computer, 'computer')
     _add_ui(app, 'GET', get_user, 'user')
     _add_ui(app, 'POST', set_user, 'user')
 
