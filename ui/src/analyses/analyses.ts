@@ -9,12 +9,14 @@ import stdOutAnalysis from "./experiments/stdout"
 import stderrAnalysis from "./experiments/stderror"
 import loggerAnalysis from "./experiments/logger"
 import configsAnalysis from "./experiments/configs"
+
 import cpuAnalysis from './computers/cpu'
 import diskAnalysis from './computers/disk'
 import {gpuMemoryAnalysis, gpuPowerAnalysis, gpuTempAnalysis, gpuUtilAnalysis} from './computers/gpu'
 import memoryAnalysis from './computers/memory'
 import networkAnalysis from './computers/network'
 import processAnalysis from './computers/process'
+import batteryAnalysis from './computers/battery'
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -37,6 +39,7 @@ let computerAnalyses: Analysis[] = [
     gpuTempAnalysis,
     gpuMemoryAnalysis,
     gpuPowerAnalysis,
+    batteryAnalysis,
     networkAnalysis,
 ]
 

@@ -51,20 +51,26 @@ class BatteryAnalysis(Analysis):
 
     def get_tracking(self):
         res = []
-        summary = []
+        summary = {}
         for ind, track in self.battery.tracking.items():
             name = ind.split('.')
+
+            if 'secsleft' in name:
+                continue
 
             series: Dict[str, Any] = Series().load(track).detail
             series['name'] = ''.join(name[-1])
 
+            if series['name'] == 'percent':
+                summary = series
+
             res.append(series)
 
         if res:
-            summary = [get_mean_series(res)]
+            summary = [summary]
 
         if len(res) > 1:
-            res.sort(key=lambda s: int(s['name']))
+            res.sort(key=lambda s: s['name'])
 
         return res, summary
 
@@ -105,6 +111,7 @@ class BatteryAnalysis(Analysis):
 def get_battery_tracking(session_uuid: str) -> Any:
     track_data = []
     summary_data = []
+
     status_code = 404
 
     ans = BatteryAnalysis.get_or_create(session_uuid)
