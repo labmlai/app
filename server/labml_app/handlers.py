@@ -139,11 +139,12 @@ def update_session() -> flask.Response:
     return jsonify({'errors': errors, 'url': c.url})
 
 
-def claim_session(c: session.Session) -> None:
+def claim_session(session_uuid: str) -> None:
+    c = session.get_session(session_uuid)
     at = auth.get_app_token()
 
     if not at.user:
-        return
+        return utils.format_rv({'is_successful': False})
 
     u = at.user.load()
     default_project = u.default_project
@@ -160,6 +161,8 @@ def claim_session(c: session.Session) -> None:
             utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': c.session_uuid})
             utils.mix_panel.MixPanelEvent.computer_claimed_set(u.email)
 
+    return utils.format_rv({'is_successful': True})
+
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_session(session_uuid: str) -> flask.Response:
@@ -170,9 +173,6 @@ def get_session(session_uuid: str) -> flask.Response:
     if c:
         session_data = c.get_data()
         status_code = 200
-
-        if not c.is_claimed:
-            claim_session(c)
 
     response = make_response(utils.format_rv(session_data))
     response.status_code = status_code
@@ -486,7 +486,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_sessions, 'computers/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'PUT', delete_sessions, 'computers')
-    _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
+    # _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
     _add_ui(app, 'GET', get_user, 'user')
     _add_ui(app, 'POST', set_user, 'user')
 
@@ -496,7 +496,8 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'PUT', claim_run, 'run/<run_uuid>/claim')
     _add_ui(app, 'GET', get_session, 'computer/<session_uuid>')
     _add_ui(app, 'POST', edit_session, 'computer/<session_uuid>')
-    _add_ui(app, 'PUT', add_session, 'computer/<session_uuid>')
+    _add_ui(app, 'PUT', add_session, 'computer/<session_uuid>/add')
+    _add_ui(app, 'PUT', claim_session, 'computer/<session_uuid>/claim')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_session_status, 'computer/status/<session_uuid>')
 
