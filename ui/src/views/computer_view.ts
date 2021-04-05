@@ -4,13 +4,13 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {BackButton} from "../components/buttons"
+import {AddButton, BackButton, CustomButton} from "../components/buttons"
 import {Card} from "../analyses/types"
-import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
+import CACHE, {ComputerCache, ComputersListCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer'
 import {ComputerHeaderCard} from '../analyses/computers/computer_header/card'
 import {computerAnalyses} from '../analyses/analyses'
-import {AlertMessage} from "../components/alert"
+import {UserMessages} from "../components/alert"
 import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
@@ -22,6 +22,7 @@ class ComputerView extends ScreenView {
     computerCache: ComputerCache
     status: Status
     statusCache: ComputerStatusCache
+    computerListCache: ComputersListCache
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
@@ -29,10 +30,12 @@ class ComputerView extends ScreenView {
     computerHeaderCard: ComputerHeaderCard
     cards: Card[] = []
     lastUpdated: number
+    ButtonsContainer: HTMLSpanElement
+    isProjectSession: boolean = false
     private cardContainer: HTMLDivElement
-    private alertMessage: AlertMessage
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -40,16 +43,24 @@ class ComputerView extends ScreenView {
         this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.computerListCache = CACHE.getComputersList()
 
-        this.alertMessage = new AlertMessage({
-            message: 'This computer will be deleted in 12 hours. Click here to add it to your computers.',
-            onClickMessage: this.onMessageClick.bind(this)
-        })
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.computer = await this.computerCache.get(force)
             this.status = await this.statusCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
+
+            if (this.isUserLogged.is_user_logged) {
+                let computers = (await this.computerListCache.get(force)).computers
+                for (let c of computers) {
+                    if (c.session_uuid == this.computer.session_uuid) {
+                        this.isProjectSession = true
+                        break
+                    }
+                }
+            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -76,10 +87,8 @@ class ComputerView extends ScreenView {
         $(this.elem, $ => {
             $('div', '.run.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
-                    $('div', $ => {
-                        this.alertMessage.render($)
-                        this.alertMessage.hideMessage(true)
-                    })
+                    this.userMessages.render($)
+                    this.ButtonsContainer = $('span', '.float-right')
                     $('div', '.nav-container', $ => {
                         new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
                         this.refresh.render($)
@@ -100,6 +109,7 @@ class ComputerView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Computer', item: this.computer.name})
+            this.renderButtons()
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -119,8 +129,48 @@ class ComputerView extends ScreenView {
                 card.render($)
             })
         })
+    }
 
-        this.alertMessage.hideMessage(!(!this.isUserLogged.is_user_logged && !this.computer.is_claimed))
+    renderButtons() {
+        this.ButtonsContainer.innerHTML = ''
+        $(this.ButtonsContainer, $ => {
+            if (!this.computer.is_claimed) {
+                new CustomButton({
+                    onButtonClick: this.onSessionAction.bind(this, true),
+                    text: 'claim',
+                    parent: this.constructor.name
+                }).render($)
+            } else if (!this.isProjectSession || !this.isUserLogged.is_user_logged) {
+                new AddButton({
+                    onButtonClick: this.onSessionAction.bind(this, false),
+                    parent: this.constructor.name
+                }).render($)
+            }
+        })
+    }
+
+    async onSessionAction(isSessionClaim: boolean) {
+        if (!this.isUserLogged.is_user_logged) {
+            mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
+            ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+        } else {
+            try {
+                if (isSessionClaim) {
+                    await this.computerListCache.claimSession(this.computer)
+                    this.userMessages.successMessage('Successfully claimed and added to your computers list')
+                    this.computer.is_claimed = true
+                } else {
+                    await this.computerListCache.addSession(this.computer)
+                    this.userMessages.successMessage('Successfully added to your computers list')
+                }
+
+                this.isProjectSession = true
+                this.renderButtons()
+            } catch (e) {
+                this.userMessages.NetworkErrorMessage()
+                return
+            }
+        }
     }
 
     render(): WeyaElement {
@@ -162,12 +212,6 @@ class ComputerView extends ScreenView {
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
-    }
-
-    onMessageClick() {
-        mix_panel.track('Unclaimed Warning Clicked', {uuid: this.uuid, analysis: this.constructor.name})
-
-        ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
     }
 }
 

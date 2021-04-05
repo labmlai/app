@@ -67,7 +67,11 @@ class Network {
     }
 
     async addSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/computer/${sessionUUID}`)
+        return this.sendHttpRequest('PUT', `/computer/${sessionUUID}/add`)
+    }
+
+    async claimSession(sessionUUID: string): Promise<any> {
+        return this.sendHttpRequest('PUT', `/computer/${sessionUUID}/claim`)
     }
 
     async getRunStatus(runUUID: string): Promise<any> {
