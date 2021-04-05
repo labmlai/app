@@ -51,7 +51,11 @@ class Network {
     }
 
     async addRun(runUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/run/${runUUID}`)
+        return this.sendHttpRequest('PUT', `/run/${runUUID}/add`)
+    }
+
+    async claimRun(runUUID: string): Promise<any> {
+        return this.sendHttpRequest('PUT', `/run/${runUUID}/claim`)
     }
 
     async getComputer(sessionUUID: string): Promise<any> {

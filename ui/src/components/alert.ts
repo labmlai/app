@@ -67,6 +67,7 @@ export class UserMessages {
                 )
             })
         })
+        this.hideMessage(false)
     }
 
     successMessage(message: string) {
@@ -81,5 +82,6 @@ export class UserMessages {
                 )
             })
         })
+        this.hideMessage(false)
     }
 }

@@ -10,7 +10,6 @@ import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
 import {StatusView} from "../../../components/status"
-import {UserMessages} from '../../../components/alert'
 import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
@@ -22,7 +21,6 @@ class RunHeaderView extends ScreenView {
     runCache: RunCache
     status: Status
     statusCache: RunStatusCache
-    runListCache: RunsListCache
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     isEditMode: boolean
@@ -30,13 +28,11 @@ class RunHeaderView extends ScreenView {
     actualWidth: number
     isProjectRun: boolean = false
     fieldContainer: HTMLDivElement
-    addToRunsContainer: HTMLSpanElement
     nameField: EditableField
     commentField: EditableField
     noteField: EditableField
     private deleteButton: DeleteButton
     private loader: DataLoader
-    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -44,26 +40,14 @@ class RunHeaderView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
-        this.runListCache = CACHE.getRunsList()
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
-        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
-
-            if (this.isUserLogged.is_user_logged) {
-                let runs = (await this.runListCache.get(force)).runs
-                for (let r of runs) {
-                    if (r.run_uuid == this.run.run_uuid) {
-                        this.isProjectRun = true
-                        break
-                    }
-                }
-            }
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
@@ -90,11 +74,9 @@ class RunHeaderView extends ScreenView {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
-                    this.userMessages.render($)
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.addToRunsContainer = $('span', '.float-right')
                             if (this.isEditMode) {
                                 new CancelButton({
                                     onButtonClick: this.onToggleEdit,
@@ -121,7 +103,6 @@ class RunHeaderView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run Details', item: this.run.name})
-            this.renderAddToRunsButton()
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -228,35 +209,11 @@ class RunHeaderView extends ScreenView {
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
 
-    renderAddToRunsButton() {
-        this.addToRunsContainer.innerHTML = ''
-        $(this.addToRunsContainer, $ => {
-            if (!this.isProjectRun) {
-                new CustomButton({
-                    onButtonClick: this.onAddToRuns.bind(this),
-                    text: 'add to runs',
-                    parent: this.constructor.name
-                }).render($)
-            }
-        })
-    }
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
 
         this._render().then()
-    }
-
-    async onAddToRuns() {
-        try {
-            await this.runListCache.addRun(this.run)
-            this.isProjectRun = true
-            this.userMessages.successMessage('Successfully added to your runs list')
-            this.renderAddToRunsButton()
-        } catch (e) {
-            this.userMessages.NetworkErrorMessage()
-            return
-        }
     }
 
     onDelete = async () => {

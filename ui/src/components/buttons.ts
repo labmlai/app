@@ -182,6 +182,20 @@ export class CancelButton extends Button {
     }
 }
 
+export class AddButton extends Button {
+    constructor(opt: buttonOptions) {
+        super(opt)
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', '.fas.fa-plus', '')
+            })
+    }
+}
+
 export class MenuButton extends Button {
     constructor(opt: buttonOptions) {
         super(opt)

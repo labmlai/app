@@ -284,11 +284,12 @@ def update_run() -> flask.Response:
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
 
-def claim_run(r: run.Run) -> None:
+def claim_run(run_uuid: str) -> flask.Response:
+    r = run.get_run(run_uuid)
     at = auth.get_app_token()
 
     if not at.user:
-        return
+        return utils.format_rv({'is_successful': False})
 
     u = at.user.load()
     default_project = u.default_project
@@ -307,11 +308,12 @@ def claim_run(r: run.Run) -> None:
             utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': r.run_uuid})
             utils.mix_panel.MixPanelEvent.run_claimed_set(u.email)
 
+    return utils.format_rv({'is_successful': True})
+
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
-    is_project_run = False
     status_code = 404
 
     r = run.get_run(run_uuid)
@@ -319,13 +321,7 @@ def get_run(run_uuid: str) -> flask.Response:
         run_data = r.get_data()
         status_code = 200
 
-        u = auth.get_auth_user()
-        if u:
-            is_project_run = u.default_project.is_project_run(r.run_uuid)
-        run_data['is_project_run'] = is_project_run
-
-        if not r.is_claimed:
-            claim_run(r)
+    print(run_data)
 
     response = make_response(utils.format_rv(run_data, {'is_run_added': is_new_run_added()}))
     response.status_code = status_code
@@ -490,13 +486,14 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', get_sessions, 'computers/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
     _add_ui(app, 'PUT', delete_sessions, 'computers')
-    # _add_ui(app, 'GET', get_computer, 'computer')
+    _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
     _add_ui(app, 'GET', get_user, 'user')
     _add_ui(app, 'POST', set_user, 'user')
 
     _add_ui(app, 'GET', get_run, 'run/<run_uuid>')
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
-    _add_ui(app, 'PUT', add_run, 'run/<run_uuid>')
+    _add_ui(app, 'PUT', add_run, 'run/<run_uuid>/add')
+    _add_ui(app, 'PUT', claim_run, 'run/<run_uuid>/claim')
     _add_ui(app, 'GET', get_session, 'computer/<session_uuid>')
     _add_ui(app, 'POST', edit_session, 'computer/<session_uuid>')
     _add_ui(app, 'PUT', add_session, 'computer/<session_uuid>')
