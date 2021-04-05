@@ -134,7 +134,7 @@ class HyperParamsView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Dynamic Hyperparameters', item: this.run.name})
+            setTitle({section: 'Hyper-Parameters', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()
