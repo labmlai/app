@@ -4,7 +4,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {BackButton} from "../components/buttons"
+import {BackButton, ShareButton} from "../components/buttons"
 import {Card} from "../analyses/types"
 import CACHE, {ComputerCache, ComputerStatusCache, IsUserLoggedCache} from "../cache/cache"
 import {Computer} from '../models/computer'
@@ -33,6 +33,7 @@ class ComputerView extends ScreenView {
     private alertMessage: AlertMessage
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private share: ShareButton
 
     constructor(uuid: string) {
         super()
@@ -52,6 +53,10 @@ class ComputerView extends ScreenView {
             this.isUserLogged = await this.isUserLoggedCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.share = new ShareButton({
+            text: 'computer',
+            parent: this.constructor.name
+        })
 
         mix_panel.track('Computer View', {uuid: this.uuid})
     }
@@ -83,6 +88,7 @@ class ComputerView extends ScreenView {
                     $('div', '.nav-container', $ => {
                         new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
                         this.refresh.render($)
+                        this.share.render($)
                     })
                     this.computerHeaderCard = new ComputerHeaderCard({
                         uuid: this.uuid,
@@ -100,6 +106,7 @@ class ComputerView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Computer', item: this.computer.name})
+            this.share.text = `${this.computer.name} computer`
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)
