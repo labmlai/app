@@ -59,6 +59,7 @@ class ProcessAnalysis(Analysis):
 
     def __init__(self, data):
         self.process = data
+        self.process.max_buffer_length = 100
 
     def track(self, data: Dict[str, SeriesModel]):
         res: Dict[str, SeriesModel] = {}
