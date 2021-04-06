@@ -87,15 +87,6 @@ class SessionIndex(Index['Session']):
     pass
 
 
-def get(session_uuid: str, labml_token: str = '') -> Optional[Session]:
-    p = project.get_project(labml_token)
-
-    if session_uuid in p.sessions:
-        return p.sessions[session_uuid].load()
-    else:
-        return None
-
-
 def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', computer_ip: str = '') -> Session:
     p = project.get_project(labml_token)
 

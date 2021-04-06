@@ -233,15 +233,6 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get(run_uuid: str, labml_token: str = '') -> Optional[Run]:
-    p = project.get_project(labml_token)
-
-    if run_uuid in p.runs:
-        return p.runs[run_uuid].load()
-    else:
-        return None
-
-
 def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run:
     p = project.get_project(labml_token)
 

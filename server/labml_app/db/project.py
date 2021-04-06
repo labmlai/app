@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 from labml_db import Model, Key, Index
 
@@ -103,6 +103,24 @@ def get_project(labml_token: str) -> Union[None, Project]:
         return project_key.load()
 
     return None
+
+
+def get_run(run_uuid: str, labml_token: str = '') -> Optional[run.Run]:
+    p = get_project(labml_token)
+
+    if run_uuid in p.runs:
+        return p.runs[run_uuid].load()
+    else:
+        return None
+
+
+def get_session(session_uuid: str, labml_token: str = '') -> Optional[session.Session]:
+    p = get_project(labml_token)
+
+    if session_uuid in p.sessions:
+        return p.sessions[session_uuid].load()
+    else:
+        return None
 
 
 def create_project(labml_token: str, name: str) -> None:

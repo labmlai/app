@@ -104,7 +104,7 @@ def update_run() -> flask.Response:
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
-    r = run.get(run_uuid, token)
+    r = project.get_run(run_uuid, token)
     if not r and not p:
         if request.args.get('labml_token', ''):
             error = {'error': 'invalid_token',
@@ -171,7 +171,7 @@ def update_session() -> flask.Response:
     if not p:
         token = settings.FLOAT_PROJECT_TOKEN
 
-    c = session.get(session_uuid, token)
+    c = project.get_session(session_uuid, token)
     if not c and not p:
         if request.args.get('labml_token', ''):
             error = {'error': 'invalid_token',
