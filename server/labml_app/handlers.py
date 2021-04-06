@@ -156,6 +156,7 @@ def claim_session(session_uuid: str) -> flask.Response:
             default_project.sessions[c.session_uuid] = c.key
             default_project.save()
             c.is_claimed = True
+            c.owner = u.email
             c.save()
 
             utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': c.session_uuid})
@@ -425,7 +426,7 @@ def delete_sessions() -> flask.Response:
     session_uuids = request.json['session_uuids']
 
     u = auth.get_auth_user()
-    u.default_project.delete_sessions(session_uuids)
+    u.default_project.delete_sessions(session_uuids, u.email)
 
     return utils.format_rv({'is_successful': True})
 

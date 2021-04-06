@@ -255,7 +255,6 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
         is_claimed = True
 
         from . import user
-
         identifier = user.get_token_owner(labml_token)
         utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
         utils.mix_panel.MixPanelEvent.run_claimed_set(identifier)

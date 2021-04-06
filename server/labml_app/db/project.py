@@ -1,4 +1,3 @@
-import time
 from typing import List, Dict, Union
 
 from labml_db import Model, Key, Index
@@ -60,18 +59,19 @@ class Project(Model['Project']):
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
-                run_key = run.RunIndex.get(run_uuid)
-                if run_key:
-                    r = run_key.load()
-                    if r.owner == project_owner:
-                        run.delete(run_uuid)
+                r = run.get(run_uuid)
+                if r and r.owner == project_owner:
+                    run.delete(run_uuid)
 
         self.save()
 
-    def delete_sessions(self, session_uuids: List[str]) -> None:
+    def delete_sessions(self, session_uuids: List[str], project_owner: str) -> None:
         for session_uuid in session_uuids:
             if session_uuid in self.sessions:
                 self.sessions.pop(session_uuid)
+                s = session.get(session_uuid)
+                if s and s.owner == project_owner:
+                    session.delete(session_uuid)
 
         self.save()
 
@@ -115,39 +115,3 @@ def create_project(labml_token: str, name: str) -> None:
                           )
         ProjectIndex.set(project.labml_token, project.key)
         project.save()
-
-
-def clean_project(labml_token: str) -> None:
-    project_key = ProjectIndex.get(labml_token)
-    p = project_key.load()
-
-    delete_list = []
-    for run_uuid, run_key in p.runs.items():
-        try:
-            r = run_key.load()
-            s = r.status.load()
-
-            if (time.time() - 86400) > s.last_updated_time:
-                delete_list.append(run_uuid)
-        except TypeError:
-            logger.error(f'error while deleting the run {run_uuid}')
-            delete_list.append(run_uuid)
-
-    for run_uuid in delete_list:
-        p.runs.pop(run_uuid)
-
-    p.save()
-
-
-def delete_unclaimed_runs() -> None:
-    run_keys = run.Run.get_all()
-    for run_key in run_keys:
-        if run_key:
-            try:
-                r = run_key.load()
-                s = r.status.load()
-
-                if not r.is_claimed and (time.time() - 86400) > s.last_updated_time:
-                    run.delete(r.run_uuid)
-            except TypeError:
-                logger.error(f'error while deleting the run {run_key}')

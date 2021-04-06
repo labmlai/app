@@ -9,10 +9,12 @@ from . import project
 from . import computer
 from . import status
 from .. import settings
+from .. import analyses
 
 
 class Session(Model['Session']):
     name: str
+    owner: str
     comment: str
     start_time: float
     computer_ip: str
@@ -26,6 +28,7 @@ class Session(Model['Session']):
     @classmethod
     def defaults(cls):
         return dict(name='',
+                    owner='',
                     comment='',
                     start_time=None,
                     computer_uuid='',
@@ -101,6 +104,7 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
 
     if labml_token == settings.FLOAT_PROJECT_TOKEN:
         is_claimed = False
+        identifier = ''
     else:
         is_claimed = True
 
@@ -114,6 +118,7 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
     s = status.create_status()
     session = Session(session_uuid=session_uuid,
                       computer_uuid=computer_uuid,
+                      owner=identifier,
                       start_time=time_now,
                       computer_ip=computer_ip,
                       is_claimed=is_claimed,
@@ -131,6 +136,20 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
     utils.mix_panel.MixPanelEvent.track('session_created', {'session_uuid': session_uuid, 'labml_token': labml_token})
 
     return session
+
+
+def delete(session_uuid: str) -> None:
+    session_key = SessionIndex.get(session_uuid)
+
+    if session_key:
+        ss = session_key.load()
+        s = ss.status.load()
+
+        s.delete()
+        ss.delete()
+        SessionIndex.delete(session_uuid)
+
+        analyses.AnalysisManager.delete_run(session_uuid)
 
 
 def get_sessions(labml_token: str) -> List[Session]:

@@ -3,7 +3,6 @@ from typing import List, NamedTuple, Dict, Optional
 from labml_db import Model, Key, Index
 
 from . import project
-from . import run
 from .. import utils
 
 
@@ -98,31 +97,3 @@ def get_or_create_user(info: AuthOInfo) -> User:
     return user_key.load()
 
 
-def add_token_owners() -> None:
-    user_keys = User.get_all()
-    for user_key in user_keys:
-        u = user_key.load()
-        labml_token = u.default_project.labml_token
-
-        if TokenOwnerIndex.get(labml_token):
-            continue
-
-        TokenOwnerIndex.set(labml_token, user_key)
-        print(labml_token)
-
-
-def remove_corrupted_runs() -> None:
-    user_keys = User.get_all()
-    for user_key in user_keys:
-        u = user_key.load()
-        p = u.default_project
-
-        delete_runs = []
-        for run_uuid in p.runs:
-            if not run.get_run(run_uuid):
-                delete_runs.append(run_uuid)
-
-        for run_uuid in delete_runs:
-            p.runs.pop(run_uuid)
-
-        p.save()
