@@ -130,7 +130,7 @@ class Run(Model['Run']):
 
         self.save()
 
-    def merge_output(self, unmerged: str, new: str):
+    def merge_output(self, unmerged: str, new: str) -> (str, str):
         unmerged += new
         processed = ''
         if len(new) > 1:
@@ -157,7 +157,7 @@ class Run(Model['Run']):
         return ''.join(res), temp
 
     @staticmethod
-    def format_remote_repo(urls: str):
+    def format_remote_repo(urls: str) -> str:
         if not urls:
             return ''
 
@@ -178,7 +178,7 @@ class Run(Model['Run']):
         return url[:-4]
 
     @staticmethod
-    def format_commit(url: str, commit: str):
+    def format_commit(url: str, commit: str) -> str:
         if not url:
             return ''
         if 'unknown' in commit:
@@ -279,14 +279,14 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     RunIndex.set(run.run_uuid, run.key)
 
     utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid,
-                                        'run_ip': run_ip,
-                                        'labml_token': labml_token}
-                        )
+                                                        'run_ip': run_ip,
+                                                        'labml_token': labml_token}
+                                        )
 
     return run
 
 
-def delete(run_uuid: str):
+def delete(run_uuid: str) -> None:
     run_key = RunIndex.get(run_uuid)
 
     if run_key:

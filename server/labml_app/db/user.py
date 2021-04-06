@@ -41,7 +41,7 @@ class User(Model['User']):
             'default_project': self.default_project.labml_token
         }
 
-    def set_user(self, data):
+    def set_user(self, data) -> None:
         if 'theme' in data:
             self.theme = data['theme']
             self.save()
@@ -98,7 +98,7 @@ def get_or_create_user(info: AuthOInfo) -> User:
     return user_key.load()
 
 
-def add_token_owners():
+def add_token_owners() -> None:
     user_keys = User.get_all()
     for user_key in user_keys:
         u = user_key.load()
@@ -111,7 +111,7 @@ def add_token_owners():
         print(labml_token)
 
 
-def remove_corrupted_runs():
+def remove_corrupted_runs() -> None:
     user_keys = User.get_all()
     for user_key in user_keys:
         u = user_key.load()

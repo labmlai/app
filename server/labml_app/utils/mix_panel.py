@@ -3,7 +3,7 @@ import re
 import threading
 import time
 from functools import wraps
-from typing import NamedTuple, Dict, Union
+from typing import NamedTuple, Dict, Union, Callable
 
 from flask import request
 
@@ -30,11 +30,11 @@ class Event:
         else:
             self.__mp = None
 
-    def _track(self, identifier: str, event: str, data: Dict):
+    def _track(self, identifier: str, event: str, data: Dict) -> None:
         if self.__mp:
             self.__mp.track(identifier, event, data)
 
-    def people_set(self, identifier: str, first_name: str, last_name: str, email: str):
+    def people_set(self, identifier: str, first_name: str, last_name: str, email: str) -> None:
         if self.__mp:
             self.__mp.people_set(identifier, {
                 '$first_name': first_name,
@@ -42,20 +42,20 @@ class Event:
                 '$email': email,
             })
 
-    def run_claimed_set(self, identifier: str):
+    def run_claimed_set(self, identifier: str) -> None:
         if self.__mp:
             self.__mp.people_set(identifier, {
                 '$has_run_claimed': True
             })
 
-    def computer_claimed_set(self, identifier: str):
+    def computer_claimed_set(self, identifier: str) -> None:
         if self.__mp:
             self.__mp.people_set(identifier, {
                 '$has_computer_claimed': True
             })
 
     @staticmethod
-    def has_numbers(input_string):
+    def has_numbers(input_string) -> bool:
         return bool(re.search(r'\d', input_string))
 
     def get_meta_data(self) -> Dict[str, str]:
@@ -98,7 +98,7 @@ class Event:
 
         return self._track(identifier, event, data)
 
-    def time_this(self, time_limit: float = None):
+    def time_this(self, time_limit: float = None) -> Callable:
         def decorator_function(function):
             @wraps(function)
             def time_wrapper(*args, **kwargs):
@@ -127,7 +127,7 @@ class MixPanelThread(threading.Thread):
         else:
             self.__consumer = None
 
-    def run(self):
+    def run(self) -> None:
         while True:
             job = QUEUE.get()
             if self.__consumer:

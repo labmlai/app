@@ -2,7 +2,7 @@ import math
 from typing import List, Dict, Any
 
 
-def find_common_prefix(names: List[str]):
+def find_common_prefix(names: List[str]) -> str:
     shortest = min(names, key=len)
     for i, word in enumerate(shortest):
         for name in names:
@@ -12,7 +12,7 @@ def find_common_prefix(names: List[str]):
     return ''
 
 
-def remove_common_prefix(series: List[Dict[str, Any]], key: str):
+def remove_common_prefix(series: List[Dict[str, Any]], key: str) -> None:
     if not series:
         return
 
@@ -34,7 +34,7 @@ def remove_common_prefix(series: List[Dict[str, Any]], key: str):
         s[key] = '.'.join(name)
 
 
-def replace_nans(series: List[Dict[str, Any]], keys: List[str]):
+def replace_nans(series: List[Dict[str, Any]], keys: List[str]) -> None:
     for s in series:
         for key in keys:
             if isinstance(s[key], list):

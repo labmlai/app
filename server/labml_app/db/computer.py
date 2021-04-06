@@ -41,7 +41,7 @@ def get_or_create(computer_uuid: str) -> Computer:
     return computer_key.load()
 
 
-def add_session(computer_uuid: str, session_uuid: str):
+def add_session(computer_uuid: str, session_uuid: str) -> None:
     c = get_or_create(computer_uuid)
 
     c.sessions.append(session_uuid)

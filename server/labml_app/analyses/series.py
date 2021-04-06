@@ -79,7 +79,7 @@ class Series:
             self.step_gap *= 2
             self.merge()
 
-    def _remove_nan(self, start_step):
+    def _remove_nan(self, start_step) -> None:
         for i in range(start_step, len(self.value)):
             if not np.isfinite(self.value[i]):
                 self.value[i] = 0 if i == 0 else self.value[i - 1]

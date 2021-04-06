@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from ..analyses.series import SeriesModel, Series
 
@@ -17,7 +17,7 @@ class SeriesCollection:
                     max_buffer_length=None,
                     )
 
-    def get_tracks(self):
+    def get_tracks(self) -> List[SeriesModel]:
         res = []
         is_series_updated = False
         for ind, track in self.tracking.items():

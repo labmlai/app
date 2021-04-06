@@ -1,5 +1,5 @@
 import sys
-import typing
+from typing import cast, Callable
 
 import flask
 import requests
@@ -19,10 +19,10 @@ from .db import project
 from . import utils
 from . import analyses
 
-request = typing.cast(werkzeug.wrappers.Request, request)
+request = cast(werkzeug.wrappers.Request, request)
 
 
-def is_new_run_added():
+def is_new_run_added() -> bool:
     is_run_added = False
     u = auth.get_auth_user()
     if u:
@@ -139,7 +139,7 @@ def update_session() -> flask.Response:
     return jsonify({'errors': errors, 'url': c.url})
 
 
-def claim_session(session_uuid: str) -> None:
+def claim_session(session_uuid: str) -> flask.Response:
     c = session.get_session(session_uuid)
     at = auth.get_app_token()
 
@@ -468,11 +468,11 @@ def get_computer(computer_uuid) -> flask.Response:
     return utils.format_rv(c.get_data())
 
 
-def _add_server(app: flask.Flask, method: str, func: typing.Callable, url: str):
+def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
 
-def _add_ui(app: flask.Flask, method: str, func: typing.Callable, url: str):
+def _add_ui(app: flask.Flask, method: str, func: Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
 

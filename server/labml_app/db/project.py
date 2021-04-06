@@ -105,7 +105,7 @@ def get_project(labml_token: str) -> Union[None, Project]:
     return None
 
 
-def create_project(labml_token: str, name: str):
+def create_project(labml_token: str, name: str) -> None:
     project_key = ProjectIndex.get(labml_token)
 
     if not project_key:
@@ -117,7 +117,7 @@ def create_project(labml_token: str, name: str):
         project.save()
 
 
-def clean_project(labml_token: str):
+def clean_project(labml_token: str) -> None:
     project_key = ProjectIndex.get(labml_token)
     p = project_key.load()
 
@@ -139,7 +139,7 @@ def clean_project(labml_token: str):
     p.save()
 
 
-def delete_unclaimed_runs():
+def delete_unclaimed_runs() -> None:
     run_keys = run.Run.get_all()
     for run_key in run_keys:
         if run_key:
