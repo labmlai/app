@@ -5,8 +5,7 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app.utils import format_rv
-from labml_app.utils import mix_panel
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.settings import INDICATOR_LIMIT
@@ -14,7 +13,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from .. import utils
+from .. import helper
 
 
 @Analysis.db_model(PickleSerializer, 'parameters')
@@ -114,7 +113,7 @@ class ParametersAnalysis(Analysis):
 
         res.sort(key=lambda s: s['mean'], reverse=True)
 
-        utils.remove_common_prefix(res, 'name')
+        helper.remove_common_prefix(res, 'name')
 
         return res
 
@@ -151,7 +150,7 @@ class ParametersAnalysis(Analysis):
             pp.delete()
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'parameters/<run_uuid>')
 def get_params_tracking(run_uuid: str) -> Any:
     track_data = []
@@ -164,7 +163,7 @@ def get_params_tracking(run_uuid: str) -> Any:
         summary_data = ans.get_track_summaries()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response
@@ -176,12 +175,12 @@ def get_params_preferences(run_uuid: str) -> Any:
 
     preferences_key = ParametersPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     pp: ParametersPreferencesModel = preferences_key.load()
     preferences_data = pp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -191,11 +190,11 @@ def set_params_preferences(run_uuid: str) -> Any:
     preferences_key = ParametersPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     pp = preferences_key.load()
     pp.update_preferences(request.json)
 
     logger.debug(f'update parameters preferences: {pp.key}')
 
-    return format_rv({'errors': pp.errors})
+    return utils.format_rv({'errors': pp.errors})

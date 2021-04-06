@@ -4,7 +4,7 @@ from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml_app.utils import format_rv
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
@@ -203,7 +203,7 @@ def get_process_tracking(session_uuid: str) -> Any:
         track_data, summary_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response
@@ -219,7 +219,7 @@ def get_process_detail(session_uuid: str, process_id: str) -> Any:
         data = ans.get_process(process_id)
         status_code = 200
 
-    response = make_response(format_rv(data))
+    response = make_response(utils.format_rv(data))
     response.status_code = status_code
 
     return response
@@ -231,12 +231,12 @@ def get_process_preferences(session_uuid: str) -> Any:
 
     preferences_key = ProcessPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     pp: ProcessPreferencesModel = preferences_key.load()
     preferences_data = pp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -246,11 +246,11 @@ def set_process_preferences(session_uuid: str) -> Any:
     preferences_key = ProcessPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     pp = preferences_key.load()
     pp.update_preferences(request.json)
 
     logger.debug(f'update process preferences: {pp.key}')
 
-    return format_rv({'errors': pp.errors})
+    return utils.format_rv({'errors': pp.errors})

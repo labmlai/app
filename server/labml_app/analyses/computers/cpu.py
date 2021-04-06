@@ -4,14 +4,14 @@ from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml_app.utils import format_rv
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from ..utils import get_mean_series
+from ..helper import get_mean_series
 
 
 @Analysis.db_model(PickleSerializer, 'CPU')
@@ -115,7 +115,7 @@ def get_cpu_tracking(session_uuid: str) -> Any:
         track_data, summary_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response
@@ -127,12 +127,12 @@ def get_cpu_preferences(session_uuid: str) -> Any:
 
     preferences_key = CPUPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     cp: CPUPreferencesModel = preferences_key.load()
     preferences_data = cp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -142,11 +142,11 @@ def set_cpu_preferences(session_uuid: str) -> Any:
     preferences_key = CPUPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     cp = preferences_key.load()
     cp.update_preferences(request.json)
 
     logger.debug(f'update cpu preferences: {cp.key}')
 
-    return format_rv({'errors': cp.errors})
+    return utils.format_rv({'errors': cp.errors})

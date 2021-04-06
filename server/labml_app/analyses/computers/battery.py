@@ -4,14 +4,13 @@ from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml_app.utils import format_rv
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from ..utils import get_mean_series
 
 
 @Analysis.db_model(PickleSerializer, 'Battery')
@@ -119,7 +118,7 @@ def get_battery_tracking(session_uuid: str) -> Any:
         track_data, summary_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response
@@ -131,12 +130,12 @@ def get_battery_preferences(session_uuid: str) -> Any:
 
     preferences_key = BatteryPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     bp: BatteryPreferencesModel = preferences_key.load()
     preferences_data = bp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -146,11 +145,11 @@ def set_battery_preferences(session_uuid: str) -> Any:
     preferences_key = BatteryPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     bp = preferences_key.load()
     bp.update_preferences(request.json)
 
     logger.debug(f'update battery_key preferences: {bp.key}')
 
-    return format_rv({'errors': bp.errors})
+    return utils.format_rv({'errors': bp.errors})

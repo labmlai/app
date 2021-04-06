@@ -5,14 +5,14 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app.utils import format_rv
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from .. import utils
+from .. import helper
 
 
 @Analysis.db_model(PickleSerializer, 'Memory')
@@ -65,7 +65,7 @@ class MemoryAnalysis(Analysis):
 
         res.sort(key=lambda s: s['name'])
 
-        utils.remove_common_prefix(res, 'name')
+        helper.remove_common_prefix(res, 'name')
 
         return res
 
@@ -112,7 +112,7 @@ def get_memory_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
@@ -124,12 +124,12 @@ def get_memory_preferences(session_uuid: str) -> Any:
 
     preferences_key = MemoryPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     mp: MemoryPreferencesModel = preferences_key.load()
     preferences_data = mp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -139,11 +139,11 @@ def set_memory_preferences(session_uuid: str) -> Any:
     preferences_key = MemoryPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     mp = preferences_key.load()
     mp.update_preferences(request.json)
 
     logger.debug(f'update memory preferences: {mp.key}')
 
-    return format_rv({'errors': mp.errors})
+    return utils.format_rv({'errors': mp.errors})

@@ -6,8 +6,7 @@ from labml_db.serializer.pickle import PickleSerializer
 
 from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
-from labml_app.utils import format_rv
-from labml_app.utils import mix_panel
+from labml_app import utils
 from labml_app import auth
 from ..series import Series
 from ..analysis import Analysis
@@ -204,7 +203,7 @@ class HyperParamsAnalysis(Analysis):
         return res
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'hyper_params/<run_uuid>')
 def get_hyper_params_tracking(run_uuid: str) -> Any:
     track_data = []
@@ -215,7 +214,7 @@ def get_hyper_params_tracking(run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
@@ -227,12 +226,12 @@ def get_hyper_params_preferences(run_uuid: str) -> Any:
 
     preferences_key = HyperParamsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     hpp: HyperParamsPreferencesModel = preferences_key.load()
     preferences_data = hpp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -242,14 +241,14 @@ def set_hyper_params_preferences(run_uuid: str) -> Any:
     preferences_key = HyperParamsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     hpp = preferences_key.load()
     hpp.update_preferences(request.json)
 
     logger.debug(f'update hyper_params preferences: {hpp.key}')
 
-    return format_rv({'errors': hpp.errors})
+    return utils.format_rv({'errors': hpp.errors})
 
 
 @Analysis.route('POST', 'hyper_params/<run_uuid>', True)
@@ -259,7 +258,7 @@ def set_hyper_params(run_uuid: str) -> Any:
     p = auth.get_auth_user().default_project
     if not p.is_project_run(run_uuid):
         status_code = 403
-        response = make_response(format_rv({'errors': []}))
+        response = make_response(utils.format_rv({'errors': []}))
         response.status_code = status_code
 
         return response
@@ -269,7 +268,7 @@ def set_hyper_params(run_uuid: str) -> Any:
         ans.set_hyper_params(request.json)
         status_code = 200
 
-    response = make_response(format_rv({'errors': []}))
+    response = make_response(utils.format_rv({'errors': []}))
     response.status_code = status_code
 
     return response
