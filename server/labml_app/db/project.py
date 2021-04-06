@@ -76,18 +76,18 @@ class Project(Model['Project']):
         self.save()
 
     def add_run(self, run_uuid: str) -> None:
-        run_key = run.RunIndex.get(run_uuid)
+        r = run.get(run_uuid)
 
-        if run_key:
-            self.runs[run_uuid] = run_key
+        if r:
+            self.runs[run_uuid] = r.key
 
         self.save()
 
     def add_session(self, session_uuid: str) -> None:
-        session_key = session.Session.get(session_uuid)
+        s = session.get(session_uuid)
 
-        if session_key:
-            self.sessions[session_uuid] = session_key
+        if s:
+            self.sessions[session_uuid] = s.key
 
         self.save()
 

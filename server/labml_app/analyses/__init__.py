@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Tuple, Callable
+from typing import Dict, List, Tuple, Callable
 
 from . import analysis
 from .series import SeriesModel
@@ -43,8 +43,7 @@ class AnalysisManager:
         return analysis.DB_MODELS
 
     @staticmethod
-    def get_analysis(name: str, run_uuid: str) -> Optional[analysis.Analysis]:
-        if name in EXPERIMENT_ANALYSES:
-            return EXPERIMENT_ANALYSES[name].get_or_create(run_uuid)
+    def get_experiment_analysis(name: str, run_uuid: str) -> any:
+        assert name in EXPERIMENT_ANALYSES
 
-        return None
+        return EXPERIMENT_ANALYSES[name].get_or_create(run_uuid)
