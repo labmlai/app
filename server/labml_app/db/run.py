@@ -111,7 +111,7 @@ class Run(Model['Run']):
                     defaults[name] = computed
 
             if defaults:
-                analyses.AnalysisManager.get_analysis('HyperParamsAnalysis', self.run_uuid).set_default_values(defaults)
+                analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', self.run_uuid).set_default_values(defaults)
 
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
