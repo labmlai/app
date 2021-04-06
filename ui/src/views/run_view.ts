@@ -5,7 +5,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {BackButton} from "../components/buttons"
+import {BackButton, ShareButton} from "../components/buttons"
 import {AlertMessage} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -33,6 +33,7 @@ class RunView extends ScreenView {
     private alertMessage: AlertMessage
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private share: ShareButton
 
     constructor(uuid: string) {
         super()
@@ -52,6 +53,10 @@ class RunView extends ScreenView {
             this.isUserLogged = await this.isUserLoggedCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.share = new ShareButton({
+            text: 'run',
+            parent: this.constructor.name
+        })
 
         mix_panel.track('Run View', {uuid: this.uuid})
     }
@@ -82,6 +87,7 @@ class RunView extends ScreenView {
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                             this.refresh.render($)
+                            this.share.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
                             uuid: this.uuid,
@@ -100,6 +106,7 @@ class RunView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run', item: this.run.name})
+            this.share.text = `${this.run.name} run`
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)
