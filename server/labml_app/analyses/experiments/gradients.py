@@ -11,7 +11,7 @@ from labml_app.utils import format_rv
 from labml_app.utils import mix_panel
 from labml_app.settings import INDICATOR_LIMIT
 from ..analysis import Analysis
-from ..series import SeriesModel
+from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
 from .. import utils
@@ -60,7 +60,26 @@ class GradientsAnalysis(Analysis):
         self.gradients.track(res)
 
     def get_tracking(self):
-        res = self.gradients.get_tracks()
+        res = []
+        is_series_updated = False
+        for ind, track in self.gradients.tracking.items():
+            name = ind.split('.')
+            if name[-1] != 'l2':
+                continue
+            name = name[1:-1]
+
+            s = Series().load(track)
+            series: Dict[str, Any] = s.detail
+            series['name'] = '.'.join(name)
+
+            if s.is_smoothed_updated:
+                self.gradients.tracking[ind] = s.to_data()
+                is_series_updated = True
+
+            res.append(series)
+
+        if is_series_updated:
+            self.gradients.save()
 
         res.sort(key=lambda s: s['mean'], reverse=True)
 
@@ -69,9 +88,36 @@ class GradientsAnalysis(Analysis):
         return res
 
     def get_track_summaries(self):
-        res = self.gradients.get_track_summaries()
+        data = {}
+        for ind, track in self.gradients.tracking.items():
+            name_split = ind.split('.')
+            ind = name_split[-1]
+            name = '.'.join(name_split[1:-1])
 
-        return res
+            series: Dict[str, Any] = Series().load(track).summary
+
+            if name in data:
+                data[name][ind] = series['mean']
+            else:
+                data[name] = {ind: series['mean']}
+
+        if not data:
+            return []
+
+        sort_key = 'l2'
+
+        res = [v for k, v in data.items() if sort_key in v]
+        sorted_res = sorted(res, key=lambda k: k[sort_key])
+
+        ret = {}
+        for d in sorted_res:
+            for k, v in d.items():
+                if k not in ret:
+                    ret[k] = {'name': k, 'value': []}
+                else:
+                    ret[k]['value'].append(v)
+
+        return [v for k, v in ret.items()]
 
     @staticmethod
     def get_or_create(run_uuid: str):

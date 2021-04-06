@@ -321,8 +321,6 @@ def get_run(run_uuid: str) -> flask.Response:
         run_data = r.get_data()
         status_code = 200
 
-    print(run_data)
-
     response = make_response(utils.format_rv(run_data, {'is_run_added': is_new_run_added()}))
     response.status_code = status_code
 
