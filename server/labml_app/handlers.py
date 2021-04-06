@@ -233,6 +233,7 @@ def claim_run(run_uuid: str) -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_session(session_uuid: str) -> flask.Response:
     c = session.get_session(session_uuid)
     at = auth.get_app_token()
