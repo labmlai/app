@@ -19,7 +19,7 @@ def gen_expiration() -> float:
 class AppToken(Model['Session']):
     token_id: str
     expiration: float
-    user: Key[user.User]
+    user: Key['user.User']
 
     @classmethod
     def defaults(cls):

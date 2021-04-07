@@ -33,7 +33,7 @@ class Run(Model['Run']):
     commit_message: str
     start_step: int
     is_claimed: bool
-    status: Key[status.Status]
+    status: Key['status.Status']
     configs: Dict[str, any]
     dynamic: Dict[str, any]
     stdout: str
@@ -233,7 +233,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run:
+def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -290,7 +290,7 @@ def delete(run_uuid: str) -> None:
         analyses.AnalysisManager.delete_run(run_uuid)
 
 
-def get_runs(labml_token: str) -> List[Run]:
+def get_runs(labml_token: str) -> List['Run']:
     res = []
     p = project.get_project(labml_token)
     for run_uuid, run_key in p.runs.items():
@@ -299,7 +299,7 @@ def get_runs(labml_token: str) -> List[Run]:
     return res
 
 
-def get_run(run_uuid: str) -> Optional[Run]:
+def get_run(run_uuid: str) -> Optional['Run']:
     run_key = RunIndex.get(run_uuid)
 
     if run_key:
@@ -308,7 +308,7 @@ def get_run(run_uuid: str) -> Optional[Run]:
     return None
 
 
-def get_status(run_uuid: str) -> Union[None, status.Status]:
+def get_status(run_uuid: str) -> Union[None, 'status.Status']:
     r = get_run(run_uuid)
 
     if r:

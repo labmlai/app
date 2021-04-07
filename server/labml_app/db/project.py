@@ -11,8 +11,8 @@ class Project(Model['Project']):
     labml_token: str
     is_sharable: float
     name: str
-    runs: Dict[str, Key[run.Run]]
-    sessions: Dict[str, Key[session.Session]]
+    runs: Dict[str, Key['run.Run']]
+    sessions: Dict[str, Key['session.Session']]
     computers: Dict[str, any]
     is_run_added: bool
 
@@ -30,7 +30,7 @@ class Project(Model['Project']):
     def is_project_run(self, run_uuid: str) -> bool:
         return run_uuid in self.runs
 
-    def get_runs(self) -> List[run.Run]:
+    def get_runs(self) -> List['run.Run']:
         res = []
         for run_uuid, run_key in self.runs.items():
             try:
@@ -48,7 +48,7 @@ class Project(Model['Project']):
 
         return res
 
-    def get_sessions(self) -> List[session.Session]:
+    def get_sessions(self) -> List['session.Session']:
         res = []
         for session_uuid, session_key in self.sessions.items():
             res.append(session_key.load())
@@ -105,7 +105,7 @@ def get_project(labml_token: str) -> Union[None, Project]:
     return None
 
 
-def get_run(run_uuid: str, labml_token: str = '') -> Optional[run.Run]:
+def get_run(run_uuid: str, labml_token: str = '') -> Optional['run.Run']:
     p = get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -114,7 +114,7 @@ def get_run(run_uuid: str, labml_token: str = '') -> Optional[run.Run]:
         return None
 
 
-def get_session(session_uuid: str, labml_token: str = '') -> Optional[session.Session]:
+def get_session(session_uuid: str, labml_token: str = '') -> Optional['session.Session']:
     p = get_project(labml_token)
 
     if session_uuid in p.sessions:

@@ -21,7 +21,7 @@ class Session(Model['Session']):
     computer_uuid: str
     session_uuid: str
     is_claimed: bool
-    status: Key[status.Status]
+    status: Key['status.Status']
     configs: Dict[str, any]
     errors: List[Dict[str, str]]
 
@@ -161,7 +161,7 @@ def get_session(session_uuid: str) -> Optional[Session]:
     return None
 
 
-def get_status(session_uuid: str) -> Union[None, status.Status]:
+def get_status(session_uuid: str) -> Union[None, 'status.Status']:
     s = get_session(session_uuid)
 
     if s:
