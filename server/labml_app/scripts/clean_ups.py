@@ -3,24 +3,7 @@ import time
 from labml_app import settings
 from labml_app import block_uuids
 from labml_app.logger import logger
-from labml_app.db import project, user, run, session
-
-
-def remove_corrupted_runs() -> None:
-    user_keys = user.User.get_all()
-    for user_key in user_keys:
-        u = user_key.load()
-        p = u.default_project
-
-        delete_runs = []
-        for run_uuid in p.runs:
-            if not run.get_run(run_uuid):
-                delete_runs.append(run_uuid)
-
-        for run_uuid in delete_runs:
-            p.runs.pop(run_uuid)
-
-        p.save()
+from labml_app.db import project, run, session
 
 
 def clean_float_project() -> None:
