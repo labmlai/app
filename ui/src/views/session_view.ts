@@ -53,7 +53,7 @@ class SessionView extends ScreenView {
             this.isUserLogged = await this.isUserLoggedCache.get(force)
 
             if (this.isUserLogged.is_user_logged) {
-                let sessions = (await this.sessionsListCache.get(force)).sessions
+                let sessions = (await this.sessionsListCache.get(force)).computers
                 for (let c of sessions) {
                     if (c.session_uuid == this.session.session_uuid) {
                         this.isProjectSession = true
