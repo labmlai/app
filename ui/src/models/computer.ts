@@ -7,6 +7,7 @@ export interface ComputerModel {
     comment: string
     start_time: number
     is_claimed: boolean
+    is_project_session: boolean
     configs: ConfigModel[]
 }
 
@@ -16,6 +17,7 @@ export class Computer {
     name: string
     comment: string
     is_claimed: boolean
+    is_project_session: boolean
     start_time: number
     configs: Config[]
 
@@ -26,6 +28,7 @@ export class Computer {
         this.comment = computer.comment
         this.start_time = computer.start_time
         this.is_claimed = computer.is_claimed
+        this.is_project_session = computer.is_project_session
         this.configs = []
         for (let c of computer.configs) {
             this.configs.push(new Config(c))

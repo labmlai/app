@@ -5,6 +5,8 @@ from labml_db import Model, Key, Index
 
 from .. import utils
 
+from .. import auth
+from . import user
 from . import project
 from . import computer
 from . import status
@@ -55,8 +57,14 @@ class Session(Model['Session']):
         self.save()
 
     def get_data(self) -> Dict[str, Union[str, any]]:
+        is_project_session = False
+        u = auth.get_auth_user()
+        if u:
+            is_project_session = u.default_project.is_project_run(self.run_uuid)
+
         return {
             'computer_uuid': self.computer_uuid,
+            'is_project_session': is_project_session,
             'session_uuid': self.session_uuid,
             'name': self.name,
             'comment': self.comment,
@@ -99,7 +107,6 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
     else:
         is_claimed = True
 
-        from . import user
         identifier = user.get_token_owner(labml_token)
         utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': session_uuid}, identifier=identifier)
         utils.mix_panel.MixPanelEvent.computer_claimed_set(identifier)

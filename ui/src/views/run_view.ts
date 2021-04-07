@@ -31,7 +31,6 @@ class RunView extends ScreenView {
     cards: Card[] = []
     lastUpdated: number
     ButtonsContainer: HTMLSpanElement
-    isProjectRun: boolean = false
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -51,16 +50,6 @@ class RunView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
-
-            if (this.isUserLogged.is_user_logged) {
-                let runs = (await this.runListCache.get(force)).runs
-                for (let r of runs) {
-                    if (r.run_uuid == this.run.run_uuid) {
-                        this.isProjectRun = true
-                        break
-                    }
-                }
-            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -142,7 +131,7 @@ class RunView extends ScreenView {
                     text: 'claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.isProjectRun || !this.isUserLogged.is_user_logged) {
+            } else if (!this.run.is_project_run || !this.isUserLogged.is_user_logged) {
                 new AddButton({
                     onButtonClick: this.onRunAction.bind(this, false),
                     parent: this.constructor.name
@@ -166,7 +155,7 @@ class RunView extends ScreenView {
                     this.userMessages.successMessage('Successfully added to your runs list')
                 }
 
-                this.isProjectRun = true
+                this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
                 this.userMessages.NetworkErrorMessage()

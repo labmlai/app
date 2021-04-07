@@ -31,7 +31,6 @@ class ComputerView extends ScreenView {
     cards: Card[] = []
     lastUpdated: number
     ButtonsContainer: HTMLSpanElement
-    isProjectSession: boolean = false
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -51,16 +50,6 @@ class ComputerView extends ScreenView {
             this.computer = await this.computerCache.get(force)
             this.status = await this.statusCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
-
-            if (this.isUserLogged.is_user_logged) {
-                let computers = (await this.computerListCache.get(force)).computers
-                for (let c of computers) {
-                    if (c.session_uuid == this.computer.session_uuid) {
-                        this.isProjectSession = true
-                        break
-                    }
-                }
-            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -140,7 +129,7 @@ class ComputerView extends ScreenView {
                     text: 'claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.isProjectSession || !this.isUserLogged.is_user_logged) {
+            } else if (!this.computer.is_project_session || !this.isUserLogged.is_user_logged) {
                 new AddButton({
                     onButtonClick: this.onSessionAction.bind(this, false),
                     parent: this.constructor.name
@@ -164,7 +153,7 @@ class ComputerView extends ScreenView {
                     this.userMessages.successMessage('Successfully added to your computers list')
                 }
 
-                this.isProjectSession = true
+                this.computer.is_project_session = true
                 this.renderButtons()
             } catch (e) {
                 this.userMessages.NetworkErrorMessage()
