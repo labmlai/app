@@ -30,6 +30,9 @@ class Project(Model['Project']):
     def is_project_run(self, run_uuid: str) -> bool:
         return run_uuid in self.runs
 
+    def is_project_session(self, session_uuid: str) -> bool:
+        return session_uuid in self.sessions
+
     def get_runs(self) -> List['run.Run']:
         res = []
         for run_uuid, run_key in self.runs.items():

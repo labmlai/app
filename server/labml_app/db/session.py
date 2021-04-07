@@ -60,7 +60,7 @@ class Session(Model['Session']):
         is_project_session = False
         u = auth.get_auth_user()
         if u:
-            is_project_session = u.default_project.is_project_run(self.session_uuid)
+            is_project_session = u.default_project.is_project_session(self.session_uuid)
 
         return {
             'computer_uuid': self.computer_uuid,
