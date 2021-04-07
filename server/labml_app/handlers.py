@@ -81,7 +81,7 @@ def update_run() -> flask.Response:
     version = request.args.get('labml_version', '')
     run_uuid = request.args.get('run_uuid', '')
 
-    if run_uuid in block_uuids.run_uuids:
+    if run_uuid in block_uuids.update_run_uuids:
         error = {'error': 'block_run_uuid',
                  'message': f'Block Run UUID'}
         errors.append(error)
