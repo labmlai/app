@@ -119,8 +119,8 @@ class HyperParamsView extends ScreenView {
                         this.runHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Dynamic Hyperparameters')
                         $('div', '.text-center', $ => {
-                            this.paramsResetButtonContainer = $('span')
-                            this.paramsSaveButtonContainer = $('span')
+                            this.paramsResetButtonContainer = $('span', '.show-inline')
+                            this.paramsSaveButtonContainer = $('span', '.show-inline')
                         })
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
@@ -134,7 +134,7 @@ class HyperParamsView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Dynamic Hyperparameters', item: this.run.name})
+            setTitle({section: 'Hyper-Parameters', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()
@@ -291,12 +291,13 @@ class HyperParamsView extends ScreenView {
             confirm(`${invalids}`)
             this.onHyperPramsReset()
         } else {
+            this.renderParamsSaveButton(true)
+            this.renderParamsResetButton(true)
+
             await this.analysisCache.setAnalysis(res)
             this.series = toPointValues((await this.analysisCache.get(true)).series)
 
             this.renderLineChart()
-            this.renderParamsSaveButton(true)
-            this.renderParamsResetButton(true)
         }
     }
 

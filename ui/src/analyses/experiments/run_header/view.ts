@@ -2,9 +2,9 @@ import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {BackButton, CancelButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
+import {BackButton, CancelButton, CustomButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
@@ -26,6 +26,7 @@ class RunHeaderView extends ScreenView {
     isEditMode: boolean
     uuid: string
     actualWidth: number
+    isProjectRun: boolean = false
     fieldContainer: HTMLDivElement
     nameField: EditableField
     commentField: EditableField
@@ -207,6 +208,7 @@ class RunHeaderView extends ScreenView {
         })
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
+
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode

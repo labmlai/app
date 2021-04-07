@@ -18,14 +18,19 @@ class Series:
     smoothed: List[float]
     is_smoothed_updated: bool
     step_gap: float
+    max_buffer_length: int
 
-    def __init__(self):
+    def __init__(self, max_buffer_length: int = None):
         self.step = []
         self.last_step = []
         self.value = []
         self.smoothed = []
         self.is_smoothed_updated = False
         self.step_gap = 0
+        if max_buffer_length:
+            self.max_buffer_length = max_buffer_length
+        else:
+            self.max_buffer_length = MAX_BUFFER_LENGTH
 
     @property
     def last_value(self) -> float:
@@ -70,11 +75,11 @@ class Series:
         self._remove_nan(start_step)
 
         self.merge()
-        while len(self) > MAX_BUFFER_LENGTH:
+        while len(self) > self.max_buffer_length:
             self.step_gap *= 2
             self.merge()
 
-    def _remove_nan(self, start_step):
+    def _remove_nan(self, start_step) -> None:
         for i in range(start_step, len(self.value)):
             if not np.isfinite(self.value[i]):
                 self.value[i] = 0 if i == 0 else self.value[i - 1]

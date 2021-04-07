@@ -11,41 +11,47 @@ from labml_db.serializer.yaml import YamlSerializer
 from labml_db.serializer.pickle import PickleSerializer
 
 from .. import settings
-from .project import Project, ProjectIndex, create_project, clean_project, delete_unclaimed_runs
-from .user import User, UserIndex, TokenOwnerIndex, add_token_owners, remove_corrupted_runs
-from .status import Status, RunStatus
-from .app_token import AppToken, AppTokenIndex
-from .run import Run, RunIndex
-from .computer import Computer, ComputerIndex
-from ..analyses import AnalysisManager
-
-Models = [(YamlSerializer(), User), (YamlSerializer(), Project), (JsonSerializer(), Status),
-          (JsonSerializer(), RunStatus), (JsonSerializer(), AppToken), (JsonSerializer(), Run),
-          (JsonSerializer(), Computer)] + [(s(), m) for s, m, p in AnalysisManager.get_db_models()]
-
-Indexes = [ProjectIndex, UserIndex, TokenOwnerIndex, AppTokenIndex, RunIndex, ComputerIndex] + [m for s, m, p in
-                                                                                                AnalysisManager.get_db_indexes()]
+from . import project
+from . import user
+from . import status
+from . import app_token
+from . import run
+from . import session
+from . import computer
+from .. import analyses
 
 DATA_PATH = settings.DATA_PATH
 
 db = redis.Redis(host='localhost', port=6379, db=0)
 
+Models = [(YamlSerializer(), user.User),
+          (YamlSerializer(), project.Project),
+          (JsonSerializer(), status.Status),
+          (JsonSerializer(), status.RunStatus),
+          (JsonSerializer(), app_token.AppToken),
+          (JsonSerializer(), run.Run),
+          (JsonSerializer(), session.Session),
+          (JsonSerializer(), computer.Computer)] + [(s(), m) for s, m, p in analyses.AnalysisManager.get_db_models()]
+
+Indexes = [project.ProjectIndex,
+           user.UserIndex,
+           user.TokenOwnerIndex,
+           app_token.AppTokenIndex,
+           run.RunIndex,
+           session.SessionIndex,
+           computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
+
 if settings.IS_LOCAL_SETUP:
     Model.set_db_drivers([FileDbDriver(PickleSerializer(), m, Path(f'{DATA_PATH}/{m.__name__}')) for s, m in Models])
-else:
-    Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
-
-if settings.IS_LOCAL_SETUP:
     Index.set_db_drivers(
         [FileIndexDbDriver(YamlSerializer(), m, Path(f'{DATA_PATH}/{m.__name__}.yaml')) for m in Indexes])
-
 else:
+    Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
     Index.set_db_drivers([RedisIndexDbDriver(m, db) for m in Indexes])
 
-create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
-create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
+project.create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
+project.create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
 
 # clean_project(settings.FLOAT_PROJECT_TOKEN)
-# # TODO schedule this event to run every 12 hours later
 # delete_unclaimed_runs()
 # remove_corrupted_runs()

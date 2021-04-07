@@ -4,14 +4,14 @@ from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml_app.utils import format_rv
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from .. import utils
+from .. import helper
 
 
 @Analysis.db_model(PickleSerializer, 'Disk')
@@ -64,7 +64,7 @@ class DiskAnalysis(Analysis):
 
         res.sort(key=lambda s: s['name'])
 
-        utils.remove_common_prefix(res, 'name')
+        helper.remove_common_prefix(res, 'name')
 
         return res
 
@@ -86,18 +86,18 @@ class DiskAnalysis(Analysis):
         return DiskAnalysis(disk_key.load())
 
     @staticmethod
-    def delete(run_uuid: str):
-        disk_key = DiskIndex.get(run_uuid)
-        preferences_key = DiskPreferencesIndex.get(run_uuid)
+    def delete(session_uuid: str):
+        disk_key = DiskIndex.get(session_uuid)
+        preferences_key = DiskPreferencesIndex.get(session_uuid)
 
         if disk_key:
             d: DiskModel = disk_key.load()
-            DiskIndex.delete(run_uuid)
+            DiskIndex.delete(session_uuid)
             d.delete()
 
         if preferences_key:
             dp: DiskPreferencesModel = preferences_key.load()
-            DiskPreferencesIndex.delete(run_uuid)
+            DiskPreferencesIndex.delete(session_uuid)
             dp.delete()
 
 
@@ -111,7 +111,7 @@ def get_disk_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
@@ -123,12 +123,12 @@ def get_disk_preferences(session_uuid: str) -> Any:
 
     preferences_key = DiskPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     dp: DiskPreferencesModel = preferences_key.load()
     preferences_data = dp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -138,11 +138,11 @@ def set_disk_preferences(session_uuid: str) -> Any:
     preferences_key = DiskPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     dp = preferences_key.load()
     dp.update_preferences(request.json)
 
     logger.debug(f'update disk preferences: {dp.key}')
 
-    return format_rv({'errors': dp.errors})
+    return utils.format_rv({'errors': dp.errors})

@@ -1,10 +1,9 @@
-import time
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 from labml_db import Model, Key, Index
 
 from . import run
-from .computer import Computer
+from . import session
 from ..logger import logger
 
 
@@ -13,7 +12,8 @@ class Project(Model['Project']):
     is_sharable: float
     name: str
     runs: Dict[str, Key[run.Run]]
-    computers: Dict[str, Key[Computer]]
+    sessions: Dict[str, Key[session.Session]]
+    computers: Dict[str, any]
     is_run_added: bool
 
     @classmethod
@@ -22,6 +22,7 @@ class Project(Model['Project']):
                     is_sharable=False,
                     labml_token='',
                     runs={},
+                    sessions={},
                     computers={},
                     is_run_added=False,
                     )
@@ -47,25 +48,46 @@ class Project(Model['Project']):
 
         return res
 
-    def get_computers(self) -> List[Computer]:
+    def get_sessions(self) -> List[session.Session]:
         res = []
-        for session_uuid, computer_key in self.computers.items():
-            res.append(computer_key.load())
+        for session_uuid, session_key in self.sessions.items():
+            res.append(session_key.load())
 
         return res
 
-    def delete_runs(self, run_uuids: List[str]):
+    def delete_runs(self, run_uuids: List[str], project_owner: str) -> None:
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
-                run.delete(run_uuid)
+                r = run.get_run(run_uuid)
+                if r and r.owner == project_owner:
+                    run.delete(run_uuid)
 
         self.save()
 
-    def delete_computers(self, session_uuids: List[str]):
+    def delete_sessions(self, session_uuids: List[str], project_owner: str) -> None:
         for session_uuid in session_uuids:
-            if session_uuid in self.computers:
-                self.computers.pop(session_uuid)
+            if session_uuid in self.sessions:
+                self.sessions.pop(session_uuid)
+                s = session.get_session(session_uuid)
+                if s and s.owner == project_owner:
+                    session.delete(session_uuid)
+
+        self.save()
+
+    def add_run(self, run_uuid: str) -> None:
+        r = run.get_run(run_uuid)
+
+        if r:
+            self.runs[run_uuid] = r.key
+
+        self.save()
+
+    def add_session(self, session_uuid: str) -> None:
+        s = session.get_session(session_uuid)
+
+        if s:
+            self.sessions[session_uuid] = s.key
 
         self.save()
 
@@ -83,7 +105,25 @@ def get_project(labml_token: str) -> Union[None, Project]:
     return None
 
 
-def create_project(labml_token: str, name: str):
+def get_run(run_uuid: str, labml_token: str = '') -> Optional[run.Run]:
+    p = get_project(labml_token)
+
+    if run_uuid in p.runs:
+        return p.runs[run_uuid].load()
+    else:
+        return None
+
+
+def get_session(session_uuid: str, labml_token: str = '') -> Optional[session.Session]:
+    p = get_project(labml_token)
+
+    if session_uuid in p.sessions:
+        return p.sessions[session_uuid].load()
+    else:
+        return None
+
+
+def create_project(labml_token: str, name: str) -> None:
     project_key = ProjectIndex.get(labml_token)
 
     if not project_key:
@@ -93,39 +133,3 @@ def create_project(labml_token: str, name: str):
                           )
         ProjectIndex.set(project.labml_token, project.key)
         project.save()
-
-
-def clean_project(labml_token: str):
-    project_key = ProjectIndex.get(labml_token)
-    p = project_key.load()
-
-    delete_list = []
-    for run_uuid, run_key in p.runs.items():
-        try:
-            r = run_key.load()
-            s = r.status.load()
-
-            if (time.time() - 86400) > s.last_updated_time:
-                delete_list.append(run_uuid)
-        except TypeError:
-            logger.error(f'error while deleting the run {run_uuid}')
-            delete_list.append(run_uuid)
-
-    for run_uuid in delete_list:
-        p.runs.pop(run_uuid)
-
-    p.save()
-
-
-def delete_unclaimed_runs():
-    run_keys = run.Run.get_all()
-    for run_key in run_keys:
-        if run_key:
-            try:
-                r = run_key.load()
-                s = r.status.load()
-
-                if not r.is_claimed and (time.time() - 86400) > s.last_updated_time:
-                    run.delete(r.run_uuid)
-            except TypeError:
-                logger.error(f'error while deleting the run {run_key}')

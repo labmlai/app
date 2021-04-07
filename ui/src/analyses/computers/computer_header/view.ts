@@ -15,6 +15,7 @@ import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redi
 import {Computer} from "../../../models/computer"
 import {setTitle} from '../../../utils/document'
 
+
 class ComputerHeaderView extends ScreenView {
     elem: HTMLDivElement
     computer: Computer

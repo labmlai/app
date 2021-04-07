@@ -1,69 +1,69 @@
 import {ScreenView} from "../../../screen"
-import {ProcessDetailsModel} from "./types"
-import CACHE, {ComputerCache, ComputerStatusCache} from "../../../cache/cache"
+import {SeriesModel} from "../../../models/run"
+import CACHE, {
+    AnalysisDataCache,
+    AnalysisPreferenceCache,
+    ComputerCache,
+    ComputerStatusCache
+} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton} from "../../../components/buttons"
-import {processDetailsCache} from "./cache"
+import {BackButton, SaveButton} from "../../../components/buttons"
+import {AnalysisPreferenceModel} from "../../../models/preferences"
+import batteryCache from "./cache"
+import {toPointValues} from "../../../components/charts/utils"
 import {ComputerHeaderCard} from '../computer_header/card'
+import {TimeSeriesChart} from '../../../components/charts/timeseries/chart'
+import {SparkTimeLines} from '../../../components/charts/spark_time_lines/chart'
 import mix_panel from "../../../mix_panel"
+import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
-import {Computer} from '../../../models/computer'
 import {setTitle} from '../../../utils/document'
-import {DetailsDataCache} from "./cache_helper"
-import EditableField from "../../../components/editable_field"
-import {formatTime} from "../../../utils/time"
-import {SingleScaleLineChart} from "../../../components/charts/timeseries/single_scale_lines"
-import {SeriesModel} from "../../../models/run"
-import {toPointValues} from "../../../components/charts/utils"
-import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
+import {Computer} from '../../../models/computer'
 
-
-class ProcessDetailView extends ScreenView {
+class BatteryView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
-    actualWidth: number
-    processId: string
     status: Status
-    statusCache: ComputerStatusCache
-    processData: ProcessDetailsModel
-    series: SeriesModel[]
     plotIdx: number[] = []
-    analysisCache: DetailsDataCache
+    statusCache: ComputerStatusCache
+    series: SeriesModel[]
+    preferenceData: AnalysisPreferenceModel
+    analysisCache: AnalysisDataCache
+    preferenceCache: AnalysisPreferenceCache
     computerHeaderCard: ComputerHeaderCard
     sparkTimeLines: SparkTimeLines
-    private fieldContainer: HTMLDivElement
-    private lineChartContainer: HTMLDivElement
-    private sparkLinesContainer: HTMLDivElement
+    lineChartContainer: HTMLDivElement
+    sparkLinesContainer: HTMLDivElement
+    saveButtonContainer: HTMLDivElement
+    saveButton: SaveButton
+    isUpdateDisable: boolean
+    actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private computerCache: ComputerCache
     private computer: Computer
 
-    constructor(uuid: string, processId: string) {
+    constructor(uuid: string) {
         super()
 
         this.uuid = uuid
-        this.processId = processId
         this.computerCache = CACHE.getComputer(this.uuid)
         this.statusCache = CACHE.getComputerStatus(this.uuid)
-        this.analysisCache = processDetailsCache.getAnalysis(this.uuid, this.processId)
+        this.analysisCache = batteryCache.getAnalysis(this.uuid)
+        this.preferenceCache = batteryCache.getPreferences(this.uuid)
+
+        this.isUpdateDisable = true
+        this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.computer = await this.computerCache.get()
-            this.processData = (await this.analysisCache.get(force))
-
-            this.series = toPointValues([this.processData.system,
-                this.processData.user,
-                this.processData.vms,
-                this.processData.cpu,
-                this.processData.rss,
-                this.processData.threads,
-            ])
+            this.series = toPointValues((await this.analysisCache.get(force)).series)
+            this.preferenceData = await this.preferenceCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -85,7 +85,7 @@ class ProcessDetailView extends ScreenView {
     }
 
     async _render() {
-        setTitle({section: 'Processes Details'})
+        setTitle({section: 'Battery'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -94,6 +94,7 @@ class ProcessDetailView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Session', parent: this.constructor.name}).render($)
+                            this.saveButtonContainer = $('div')
                             this.refresh.render($)
                         })
                         this.computerHeaderCard = new ComputerHeaderCard({
@@ -101,9 +102,8 @@ class ProcessDetailView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.computerHeaderCard.render($).then()
-                        $('h2', '.header.text-center', 'Processes Details')
+                        $('h2', '.header.text-center', 'Battery')
                         this.loader.render($)
-                        this.fieldContainer = $('div', '.input-list-container')
                         $('div', '.detail-card', $ => {
                             this.lineChartContainer = $('div', '.fixed-chart')
                             this.sparkLinesContainer = $('div')
@@ -115,12 +115,13 @@ class ProcessDetailView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Processes Details', item: this.processData.name})
+            setTitle({section: 'Battery', item: this.computer.name})
             this.calcPreferences()
 
-            this.renderFields()
             this.renderSparkLines()
             this.renderLineChart()
+            this.renderSaveButton()
+
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -146,8 +147,8 @@ class ProcessDetailView extends ScreenView {
     async onRefresh() {
         try {
             await this.loader.load(true)
-            this.calcPreferences()
 
+            this.calcPreferences()
             this.renderSparkLines()
             this.renderLineChart()
         } catch (e) {
@@ -165,53 +166,18 @@ class ProcessDetailView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderFields() {
-        this.fieldContainer.innerHTML = ''
-        $(this.fieldContainer, $ => {
-            $('ul', $ => {
-                new EditableField({
-                    name: 'Name',
-                    value: this.processData.name,
-                }).render($)
-                new EditableField({
-                    name: 'Created Time',
-                    value: formatTime(this.processData.create_time),
-                }).render($)
-                new EditableField({
-                    name: 'PID',
-                    value: this.processData.pid.toString(),
-                }).render($)
-                new EditableField({
-                    name: 'CMDLINE',
-                    value: this.processData.cmdline,
-                }).render($)
-                new EditableField({
-                    name: 'EXE',
-                    value: this.processData.exe,
-                }).render($)
-            })
+    renderSaveButton() {
+        this.saveButton.disabled = this.isUpdateDisable
+        this.saveButtonContainer.innerHTML = ''
+        $(this.saveButtonContainer, $ => {
+            this.saveButton.render($)
         })
-    }
-
-    toggleChart = (idx: number) => {
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
-        } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
-        }
-
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
-        }
-
-        this.renderSparkLines()
-        this.renderLineChart()
     }
 
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
-            new SingleScaleLineChart({
+            new TimeSeriesChart({
                 series: this.series,
                 width: this.actualWidth,
                 plotIdx: this.plotIdx,
@@ -236,8 +202,29 @@ class ProcessDetailView extends ScreenView {
         })
     }
 
+    toggleChart = (idx: number) => {
+        this.isUpdateDisable = false
+
+        if (this.plotIdx[idx] >= 0) {
+            this.plotIdx[idx] = -1
+        } else {
+            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
+        }
+
+        if (this.plotIdx.length > 1) {
+            this.plotIdx = new Array<number>(...this.plotIdx)
+        }
+
+        this.renderSparkLines()
+        this.renderLineChart()
+        this.renderSaveButton()
+    }
+
     calcPreferences() {
-        if (this.series) {
+        let analysisPreferences = this.preferenceData.series_preferences
+        if (analysisPreferences && analysisPreferences.length > 0) {
+            this.plotIdx = [...analysisPreferences]
+        } else if (this.series) {
             let res: number[] = []
             for (let i = 0; i < this.series.length; i++) {
                 res.push(i)
@@ -245,14 +232,23 @@ class ProcessDetailView extends ScreenView {
             this.plotIdx = res
         }
     }
+
+    updatePreferences = () => {
+        this.preferenceData.series_preferences = this.plotIdx
+        this.preferenceCache.setPreference(this.preferenceData).then()
+
+        this.isUpdateDisable = true
+        this.renderSaveButton()
+    }
 }
 
-export class ProcessDetailsHandler {
+export class BatteryHandler extends ViewHandler {
     constructor() {
-        ROUTER.route('session/:uuid/process/:processId', [this.handleProcessDetails])
+        super()
+        ROUTER.route('session/:uuid/battery', [this.handleBattery])
     }
 
-    handleProcessDetails = (uuid: string, processId: string) => {
-        SCREEN.setView(new ProcessDetailView(uuid, processId))
+    handleBattery = (uuid: string) => {
+        SCREEN.setView(new BatteryView(uuid))
     }
 }

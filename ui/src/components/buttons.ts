@@ -42,6 +42,9 @@ abstract class Button {
     }
 
     hide = (isHidden: boolean) => {
+        if (this.elem == null) {
+            return
+        }
         if (isHidden) {
             this.elem.classList.add('hide')
         } else {
@@ -179,6 +182,20 @@ export class CancelButton extends Button {
     }
 }
 
+export class AddButton extends Button {
+    constructor(opt: buttonOptions) {
+        super(opt)
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', '.fas.fa-plus', '')
+            })
+    }
+}
+
 export class MenuButton extends Button {
     constructor(opt: buttonOptions) {
         super(opt)
@@ -298,7 +315,7 @@ export class CustomButton extends Button {
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}, style: {display: 'inline-block'}},
+            {on: {click: this.onClick}},
             $ => {
                 $('span', this.text)
             })

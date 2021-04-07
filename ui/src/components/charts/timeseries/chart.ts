@@ -6,7 +6,7 @@ import {defaultSeriesToPlot, getExtent, getLogScale, getScale, getTimeScale, toD
 import {BottomTimeAxis, RightAxis} from "../axis"
 import {TimeSeriesFill, TimeSeriesPlot} from './plot'
 import {formatDateTime} from '../../../utils/time'
-import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
+import {DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
 
@@ -47,6 +47,7 @@ export class TimeSeriesChart {
     isCursorMoveOpt?: boolean
     chartColors: ChartColors
     isDivergent: boolean
+    private svgBoundingClientRect: DOMRect
 
     constructor(opt: TimeSeriesOptions) {
         this.series = opt.series
@@ -104,15 +105,46 @@ export class TimeSeriesChart {
         }
     }
 
-    updateCursorStep(ev: TouchEvent | MouseEvent) {
+    onTouchStart = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return
+        this.updateCursorStep(ev.touches[0].clientX)
+    }
+
+    onTouchMove = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return
+        this.updateCursorStep(ev.touches[0].clientX)
+    }
+
+    onTouchEnd = (ev: TouchEvent) => {
+        if (ev.touches.length !== 1) return
+        this.updateCursorStep(ev.touches[0].clientX)
+    }
+
+    onMouseDown = (ev: MouseEvent) => {
+        this.updateCursorStep(ev.clientX)
+    }
+
+    onMouseUp = (ev: MouseEvent) => {
+        this.updateCursorStep(ev.clientX)
+    }
+
+    onMouseMove = (ev: MouseEvent) => {
+        this.updateCursorStep(ev.clientX)
+    }
+
+
+    updateCursorStep(clientX: number) {
         let cursorStep: Date = null
-        let clientX = ev instanceof TouchEvent ? ev.touches[0].clientX : ev.clientX
+
+        if (this.svgBoundingClientRect == null) {
+            return
+        }
 
         if (clientX) {
-            const info = this.svgElem.getBoundingClientRect()
-            let currentX = this.xScale.invert(clientX - info.left - this.margin)
-
-            cursorStep = currentX
+            let currentX: Date = this.xScale.invert(clientX - this.svgBoundingClientRect.left - this.margin)
+            if (currentX) {
+                cursorStep = currentX
+            }
         }
 
         this.renderStep(cursorStep)
@@ -142,7 +174,6 @@ export class TimeSeriesChart {
                                 height: 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
-                                new DefaultLineGradient().render($)
                                 new DropShadow().render($)
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g',
@@ -195,10 +226,19 @@ export class TimeSeriesChart {
                 )
             })
             if (this.isCursorMoveOpt) {
-                this.svgElem.addEventListener('touchmove', this.updateCursorStep.bind(this))
-                this.svgElem.addEventListener('touchstart', this.updateCursorStep.bind(this))
-                this.svgElem.addEventListener('mousemove', this.updateCursorStep.bind(this))
+                this.svgElem.addEventListener('touchstart', this.onTouchStart)
+                this.svgElem.addEventListener('touchmove', this.onTouchMove)
+                this.svgElem.addEventListener('touchend', this.onTouchEnd)
+                this.svgElem.addEventListener('mouseup', this.onMouseUp)
+                this.svgElem.addEventListener('mousemove', this.onMouseMove)
+                this.svgElem.addEventListener('mousedown', this.onMouseDown)
             }
+
+            this.svgBoundingClientRect = null
+
+            window.requestAnimationFrame(() => {
+                this.svgBoundingClientRect = this.svgElem.getBoundingClientRect()
+            })
         }
     }
 }

@@ -1,12 +1,14 @@
 import time
-from typing import Any, Dict
+from typing import Any, Dict, Callable
 from uuid import uuid4
 from functools import wraps
 
+import flask
 from flask import jsonify
+from . import mix_panel
 
 
-def check_version(user_v, new_v):
+def check_version(user_v, new_v) -> bool:
     for uv, nw in zip(user_v.split('.'), new_v.split('.')):
         if int(nw) == int(uv):
             continue
@@ -20,7 +22,7 @@ def gen_token() -> str:
     return uuid4().hex
 
 
-def format_rv(data: Any, updated: Dict[str, Any] = None):
+def format_rv(data: Any, updated: Dict[str, Any] = None) -> flask.Response:
     meta = {'is_run_added': False}
 
     if updated:
@@ -29,7 +31,7 @@ def format_rv(data: Any, updated: Dict[str, Any] = None):
     return jsonify({'data': data, 'meta': meta})
 
 
-def time_this(function):
+def time_this(function) -> Callable:
     @wraps(function)
     def time_wrapper(*args, **kwargs):
         start = time.time()

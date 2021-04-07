@@ -19,6 +19,10 @@ html, body {
   display: block;
 }
 
+.show-inline {
+  display: inline-block;
+}
+
 .float-right {
   float: right;
 }
@@ -328,11 +332,18 @@ span.fas {
 }
 
 /* alert message */
-.alert {
+.message {
   padding: 8px;
-  background-color: #ffa600;
   opacity: 0.75;
   text-align: center;
+
+  &.alert {
+    background-color: #f0ad4e;
+  }
+
+  &.success{
+    background-color: #5cb85c;
+  }
 }
 
 .close-btn {
@@ -553,7 +564,6 @@ span.fas {
 }
 
 svg#chart {
-
   g.bottom-axis, g.right-axis {
     color: #7f8c8d;
 
@@ -586,6 +596,10 @@ svg#chart {
   path.unsmoothed-line {
     stroke-width: 0.5;
   }
+}
+
+line.stokeWidth {
+  stroke-width: 3;
 }
 
 svg#time-series-chart {

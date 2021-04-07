@@ -11,8 +11,7 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from labml_app.utils import format_rv
-from labml_app.utils import mix_panel
+from labml_app import utils
 from labml_app.settings import INDICATOR_LIMIT
 
 
@@ -113,7 +112,7 @@ class MetricsAnalysis(Analysis):
             mp.delete()
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'metrics/<run_uuid>')
 def get_metrics_tracking(run_uuid: str) -> Any:
     track_data = []
@@ -124,7 +123,7 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': []}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
     response.status_code = status_code
 
     return response
@@ -136,12 +135,12 @@ def get_metrics_preferences(run_uuid: str) -> Any:
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     mp: MetricsPreferencesModel = preferences_key.load()
     preferences_data = mp.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -151,11 +150,11 @@ def set_metrics_preferences(run_uuid: str) -> Any:
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     mp = preferences_key.load()
     mp.update_preferences(request.json)
 
     logger.debug(f'update metrics preferences: {mp.key}')
 
-    return format_rv({'errors': mp.errors})
+    return utils.format_rv({'errors': mp.errors})

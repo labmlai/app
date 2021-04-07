@@ -5,16 +5,15 @@ from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app.utils import format_rv
-from labml_app.utils import mix_panel
+from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.settings import INDICATOR_LIMIT
 from ..analysis import Analysis
-from ..series import SeriesModel
+from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from .. import utils
+from .. import helper
 
 
 @Analysis.db_model(PickleSerializer, 'outputs')
@@ -61,16 +60,62 @@ class OutputsAnalysis(Analysis):
         self.outputs.track(res)
 
     def get_track_summaries(self):
-        res = self.outputs.get_track_summaries()
+        data = {}
+        for ind, track in self.outputs.tracking.items():
+            name_split = ind.split('.')
+            ind = name_split[-1]
+            name = '.'.join(name_split[1:-1])
 
-        return res
+            series: Dict[str, Any] = Series().load(track).summary
+
+            if name in data:
+                data[name][ind] = series['mean']
+            else:
+                data[name] = {ind: series['mean']}
+
+        if not data:
+            return []
+
+        sort_key = 'var'
+
+        res = [v for k, v in data.items() if sort_key in v]
+        sorted_res = sorted(res, key=lambda k: k[sort_key])
+
+        ret = {}
+        for d in sorted_res:
+            for k, v in d.items():
+                if k not in ret:
+                    ret[k] = {'name': k, 'value': []}
+                else:
+                    ret[k]['value'].append(v)
+
+        return [v for k, v in ret.items()]
 
     def get_tracking(self):
-        res = self.outputs.get_tracks()
+        res = []
+        is_series_updated = False
+        for ind, track in self.outputs.tracking.items():
+            name = ind.split('.')
+            if name[-1] != 'var':
+                continue
+            name = name[1:-1]
+
+            s = Series().load(track)
+            series: Dict[str, Any] = s.detail
+            series['name'] = '.'.join(name)
+
+            if s.is_smoothed_updated:
+                self.outputs.tracking[ind] = s.to_data()
+                is_series_updated = True
+
+            res.append(series)
+
+        if is_series_updated:
+            self.outputs.save()
 
         res.sort(key=lambda s: s['mean'], reverse=True)
 
-        utils.remove_common_prefix(res, 'name')
+        helper.remove_common_prefix(res, 'name')
 
         return res
 
@@ -107,7 +152,7 @@ class OutputsAnalysis(Analysis):
             op.delete()
 
 
-@mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @Analysis.route('GET', 'outputs/<run_uuid>')
 def get_modules_tracking(run_uuid: str) -> Any:
     track_data = []
@@ -120,7 +165,7 @@ def get_modules_tracking(run_uuid: str) -> Any:
         summary_data = ans.get_track_summaries()
         status_code = 200
 
-    response = make_response(format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
     response.status_code = status_code
 
     return response
@@ -132,12 +177,12 @@ def get_modules_preferences(run_uuid: str) -> Any:
 
     preferences_key = OutputsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return format_rv(preferences_data)
+        return utils.format_rv(preferences_data)
 
     op: OutputsPreferencesModel = preferences_key.load()
     preferences_data = op.get_data()
 
-    response = make_response(format_rv(preferences_data))
+    response = make_response(utils.format_rv(preferences_data))
 
     return response
 
@@ -147,11 +192,11 @@ def set_modules_preferences(run_uuid: str) -> Any:
     preferences_key = OutputsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return format_rv({})
+        return utils.format_rv({})
 
     op = preferences_key.load()
     op.update_preferences(request.json)
 
     logger.debug(f'update outputs preferences: {op.key}')
 
-    return format_rv({'errors': op.errors})
+    return utils.format_rv({'errors': op.errors})

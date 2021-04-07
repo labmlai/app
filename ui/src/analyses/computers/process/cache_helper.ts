@@ -40,18 +40,22 @@ export class DetailsDataCache extends CacheObject<ProcessDetailsModel> {
 
 export class DetailsCache<TA extends DetailsDataCache> {
     private readonly series: new (uuid: string, processId: string, status: ComputerStatusCache) => TA
-    private readonly seriesCaches: { [uuid: string]: DetailsDataCache }
+    private readonly processCache: { [uuid: string]: { [processId: string]: DetailsDataCache } }
 
     constructor(series: new (uuid: string, processId: string, status: ComputerStatusCache) => TA) {
-        this.seriesCaches = {}
+        this.processCache = {}
         this.series = series
     }
 
     getAnalysis(uuid: string, processId: string) {
-        if (this.seriesCaches[uuid] == null) {
-            this.seriesCaches[uuid] = new this.series(uuid, processId, CACHE.getComputerStatus(uuid))
+        if (this.processCache[uuid] == null) {
+            let seriesCaches = {}
+            seriesCaches[processId] = new this.series(uuid, processId, CACHE.getComputerStatus(uuid))
+            this.processCache[uuid] = seriesCaches
+        } else if (this.processCache[uuid][processId] == null) {
+            this.processCache[uuid][processId] = new this.series(uuid, processId, CACHE.getComputerStatus(uuid))
         }
 
-        return this.seriesCaches[uuid]
+        return this.processCache[uuid][processId]
     }
 }

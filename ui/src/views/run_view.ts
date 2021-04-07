@@ -5,12 +5,12 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {BackButton, ShareButton} from "../components/buttons"
-import {AlertMessage} from "../components/alert"
+import {BackButton, AddButton, CustomButton, ShareButton} from "../components/buttons"
+import {UserMessages} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
-import CACHE, {IsUserLoggedCache, RunCache, RunStatusCache} from "../cache/cache"
+import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../cache/cache"
 import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
@@ -22,6 +22,7 @@ class RunView extends ScreenView {
     runCache: RunCache
     status: Status
     statusCache: RunStatusCache
+    runListCache: RunsListCache
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
@@ -29,10 +30,12 @@ class RunView extends ScreenView {
     runHeaderCard: RunHeaderCard
     cards: Card[] = []
     lastUpdated: number
+    ButtonsContainer: HTMLSpanElement
+    isProjectRun: boolean = false
     private cardContainer: HTMLDivElement
-    private alertMessage: AlertMessage
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
+    private userMessages: UserMessages
     private share: ShareButton
 
     constructor(uuid: string) {
@@ -41,16 +44,24 @@ class RunView extends ScreenView {
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.runListCache = CACHE.getRunsList()
 
-        this.alertMessage = new AlertMessage({
-            message: 'This run will be deleted in 12 hours. Click here to add it to your runs.',
-            onClickMessage: this.onMessageClick.bind(this)
-        })
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
+
+            if (this.isUserLogged.is_user_logged) {
+                let runs = (await this.runListCache.get(force)).runs
+                for (let r of runs) {
+                    if (r.run_uuid == this.run.run_uuid) {
+                        this.isProjectRun = true
+                        break
+                    }
+                }
+            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
@@ -82,8 +93,8 @@ class RunView extends ScreenView {
             $('div', '.run.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
                     $('div', $ => {
-                        this.alertMessage.render($)
-                        this.alertMessage.hideMessage(true)
+                        this.userMessages.render($)
+                        this.ButtonsContainer = $('span', '.float-right')
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                             this.refresh.render($)
@@ -106,6 +117,7 @@ class RunView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run', item: this.run.name})
+            this.renderButtons()
             this.share.text = `${this.run.name} run`
             this.renderCards()
         } catch (e) {
@@ -126,8 +138,48 @@ class RunView extends ScreenView {
                 card.render($)
             })
         })
+    }
 
-        this.alertMessage.hideMessage(!(!this.isUserLogged.is_user_logged && !this.run.is_claimed))
+    renderButtons() {
+        this.ButtonsContainer.innerHTML = ''
+        $(this.ButtonsContainer, $ => {
+            if (!this.run.is_claimed) {
+                new CustomButton({
+                    onButtonClick: this.onRunAction.bind(this, true),
+                    text: 'claim',
+                    parent: this.constructor.name
+                }).render($)
+            } else if (!this.isProjectRun || !this.isUserLogged.is_user_logged) {
+                new AddButton({
+                    onButtonClick: this.onRunAction.bind(this, false),
+                    parent: this.constructor.name
+                }).render($)
+            }
+        })
+    }
+
+    async onRunAction(isRunClaim: boolean) {
+        if (!this.isUserLogged.is_user_logged) {
+            mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
+            ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
+        } else {
+            try {
+                if (isRunClaim) {
+                    await this.runListCache.claimRun(this.run)
+                    this.userMessages.successMessage('Successfully claimed and added to your runs list')
+                    this.run.is_claimed = true
+                } else {
+                    await this.runListCache.addRun(this.run)
+                    this.userMessages.successMessage('Successfully added to your runs list')
+                }
+
+                this.isProjectRun = true
+                this.renderButtons()
+            } catch (e) {
+                this.userMessages.NetworkErrorMessage()
+                return
+            }
+        }
     }
 
     render(): WeyaElement {
@@ -164,17 +216,10 @@ class RunView extends ScreenView {
             this.lastUpdated = oldest
             this.runHeaderCard.refresh(this.lastUpdated).then()
         }
-
     }
 
     onVisibilityChange() {
         this.refresh.changeVisibility(!document.hidden)
-    }
-
-    onMessageClick() {
-        mix_panel.track('Unclaimed Warning Clicked', {uuid: this.uuid, analysis: this.constructor.name})
-
-        ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
     }
 }
 

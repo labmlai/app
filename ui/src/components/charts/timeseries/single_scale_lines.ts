@@ -2,50 +2,47 @@ import d3 from "../../../d3"
 import {WeyaElement, WeyaElementFunction} from '../../../../../lib/weya/weya'
 import {ChartOptions} from '../types'
 import {SeriesModel} from "../../../models/run"
-import {defaultSeriesToPlot, getExtent, getLogScale, getScale} from "../utils"
-import {LineFill, LinePlot} from "./plot"
-import {BottomAxis, RightAxis} from "../axis"
-import {formatStep} from "../../../utils/value"
-import {DropShadow, LineGradients} from "../chart_gradients"
+import {defaultSeriesToPlot, getExtent, getScale, getTimeScale, toDate} from "../utils"
+import {TimeSeriesFill, TimeSeriesPlot} from './plot'
+import {BottomTimeAxis, RightAxis} from "../axis"
+import {DefaultLineGradient, DropShadow, LineGradients} from "../chart_gradients"
 import ChartColors from "../chart_colors"
 import {getWindowDimensions} from '../../../utils/window_dimentions'
+import {formatDateTime} from "../../../utils/time"
 
 const LABEL_HEIGHT = 10
 
 interface LineChartOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
-    chartType: string
-    onCursorMove?: ((cursorStep?: number | null) => void)[]
+    onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
     isDivergent?: boolean
 }
 
-export class LineChart {
+export class SingleScaleLineChart {
     series: SeriesModel[]
     plotIdx: number[]
     plot: SeriesModel[] = []
     filteredPlotIdx: number[] = []
-    chartType: string
     chartWidth: number
     chartHeight: number
     margin: number
     axisSize: number
     labels: string[] = []
-    xScale: d3.ScaleLinear<number, number>
-    yScale: d3.ScaleLinear<number, number>
+    xScale: d3.ScaleTime<number, number>
     svgElem: WeyaElement
     stepElement: WeyaElement
-    linePlots: LinePlot[] = []
-    onCursorMove?: ((cursorStep?: number | null) => void)[]
+    timeSeriesPlots: TimeSeriesPlot[] = []
+    onCursorMove?: ((cursorStep?: Date | null) => void)[]
     isCursorMoveOpt?: boolean
     chartColors: ChartColors
     isDivergent: boolean
+    private yScales: { [name: string]: d3.ScaleLinear<number, number> } = {}
     private svgBoundingClientRect: DOMRect
 
     constructor(opt: LineChartOptions) {
         this.series = opt.series
-        this.chartType = opt.chartType
         this.plotIdx = opt.plotIdx
         this.onCursorMove = opt.onCursorMove ? opt.onCursorMove : []
         this.isCursorMoveOpt = opt.isCursorMoveOpt
@@ -72,23 +69,17 @@ export class LineChart {
             this.filteredPlotIdx = [0]
         }
 
+        for (let s of this.plot) {
+            this.yScales[s.name] = getScale(getExtent([s.series], d => d.value, false), -this.chartHeight)
+        }
+
         const stepExtent = getExtent(this.series.map(s => s.series), d => d.step)
-        this.xScale = getScale(stepExtent, this.chartWidth, false)
+        this.xScale = getTimeScale([toDate(stepExtent[0]), toDate(stepExtent[1])], this.chartWidth)
 
         this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
-
-    changeScale() {
-        let plotSeries = this.plot.map(s => s.series)
-
-        if (this.chartType === 'log') {
-            this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
-        } else {
-            this.yScale = getScale(getExtent(plotSeries, d => d.value, false), -this.chartHeight)
-        }
-    }
 
     onTouchStart = (ev: TouchEvent) => {
         if (ev.touches.length !== 1) return
@@ -118,7 +109,7 @@ export class LineChart {
     }
 
     updateCursorStep(clientX: number) {
-        let cursorStep: number = null
+        let cursorStep: Date = null
 
         if (this.svgBoundingClientRect == null) {
             return
@@ -126,38 +117,34 @@ export class LineChart {
 
         if (clientX) {
             let currentX = this.xScale.invert(clientX - this.svgBoundingClientRect.left - this.margin)
-            if (currentX > 0) {
-                cursorStep = currentX
-            }
+            cursorStep = currentX
         }
 
         this.renderStep(cursorStep)
-        for (let linePlot of this.linePlots) {
-            linePlot.renderCursorCircle(cursorStep)
+        for (let timeSeriesPlot of this.timeSeriesPlots) {
+            timeSeriesPlot.renderCursorCircle(cursorStep)
         }
         for (let func of this.onCursorMove) {
             func(cursorStep)
         }
     }
 
-    renderStep(cursorStep: number) {
-        this.stepElement.textContent = `Step : ${formatStep(cursorStep)}`
+    renderStep(cursorStep: Date) {
+        this.stepElement.textContent = `${formatDateTime(cursorStep)}`
     }
 
     render($: WeyaElementFunction) {
-        this.changeScale()
-
         if (this.series.length === 0) {
             $('div', '')
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
                                 width: 2 * this.margin + this.axisSize + this.chartWidth,
                             }, $ => {
+                                new DefaultLineGradient().render($)
                                 new DropShadow().render($)
                                 new LineGradients({chartColors: this.chartColors, chartId: this.chartId}).render($)
                                 $('g', {}, $ => {
@@ -170,10 +157,10 @@ export class LineChart {
                                     }, $ => {
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
-                                                new LineFill({
+                                                new TimeSeriesFill({
                                                     series: s.series,
                                                     xScale: this.xScale,
-                                                    yScale: this.yScale,
+                                                    yScale: this.yScales[s.name],
                                                     color: this.chartColors.getColor(this.filteredPlotIdx[i]),
                                                     colorIdx: this.filteredPlotIdx[i],
                                                     chartId: this.chartId
@@ -181,28 +168,36 @@ export class LineChart {
                                             })
                                         }
                                         this.plot.map((s, i) => {
-                                            let linePlot = new LinePlot({
+                                            let linePlot = new TimeSeriesPlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
-                                                yScale: this.yScale,
+                                                yScale: this.yScales[s.name],
                                                 color: this.chartColors.getColor(this.filteredPlotIdx[i])
                                             })
-                                            this.linePlots.push(linePlot)
+                                            this.timeSeriesPlots.push(linePlot)
                                             linePlot.render($)
                                         })
                                     })
                                 $('g.bottom-axis',
                                     {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
-                                    }, $ => {
-                                        new BottomAxis({chartId: this.chartId, scale: this.xScale}).render($)
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
+                                    },
+                                    $ => {
+                                        new BottomTimeAxis({chartId: this.chartId, scale: this.xScale}).render($)
                                     })
-                                $('g.right-axis',
-                                    {
-                                        transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
-                                    }, $ => {
-                                        new RightAxis({chartId: this.chartId, scale: this.yScale}).render($)
-                                    })
+                                if (this.plot.length == 1) {
+                                    $('g.right-axis',
+                                        {
+                                            transform: `translate(${this.margin + this.chartWidth}, ${this.margin + this.chartHeight})`
+                                        }, $ => {
+                                            new RightAxis({
+                                                chartId: this.chartId,
+                                                scale: this.yScales[this.plot[0].name],
+                                                specifier: '.1s',
+                                                numTicks: 3
+                                            }).render($)
+                                        })
+                                }
                             })
                     }
                 )

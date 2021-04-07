@@ -1,12 +1,14 @@
-import {WeyaElementFunction} from "../../../../../lib/weya/weya"
+import {Weya as $, WeyaElementFunction} from "../../../../../lib/weya/weya"
 import {PointValue, SeriesModel} from "../../../models/run"
 import {ProcessModel} from "./types"
-import {LineFill, LinePlot} from "../../../components/charts/lines/plot"
-import {getExtent, getScale, toPointValue} from "../../../components/charts/utils"
+import {getExtent, getScale, getTimeScale, toDate, toPointValue} from "../../../components/charts/utils"
 import d3 from "../../../d3"
 import {DefaultLineGradient} from "../../../components/charts/chart_gradients"
 import {formatFixed} from "../../../utils/value"
 import {ROUTER} from "../../../app"
+import {TimeSeriesFill, TimeSeriesPlot} from "../../../components/charts/timeseries/plot"
+import {BadgeView} from "../../../components/badge"
+import {SearchView} from "../../../components/search"
 
 
 interface ProcessSparkLineOptions {
@@ -14,7 +16,8 @@ interface ProcessSparkLineOptions {
     name: string
     color: string
     series: PointValue[]
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
+    barExtent: [number, number]
 }
 
 class ProcessSparkLine {
@@ -23,7 +26,8 @@ class ProcessSparkLine {
     color: string
     series: PointValue[]
     yScale: d3.ScaleLinear<number, number>
-    xScale: d3.ScaleLinear<number, number>
+    xScale: d3.ScaleTime<number, number>
+    barScale: d3.ScaleLinear<number, number>
 
     constructor(opt: ProcessSparkLineOptions) {
         this.width = opt.width
@@ -32,31 +36,41 @@ class ProcessSparkLine {
         this.color = opt.color
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
-        this.xScale = getScale(opt.stepExtent, this.width)
+        this.xScale = getTimeScale(opt.stepExtent, this.width)
+
+        this.barScale = getScale(opt.barExtent, this.width)
     }
 
     render($) {
+        const last = this.series[this.series.length - 1]
+
         $(`div.sparkline-list-item.list-group-item.d-inline-block`, $ => {
             $('div.sparkline-content', {style: {width: `${this.width}px`}}, $ => {
                 $('svg.sparkline', {style: {width: `${this.width}px`}, height: 36}, $ => {
-                    new DefaultLineGradient().render($)
                     $('g', {transform: `translate(${0}, 30)`}, $ => {
-                        new LineFill({
+                        new TimeSeriesFill({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
                             color: '#7f8c8d',
                             colorIdx: 9
                         }).render($)
-                        new LinePlot({
+                        new TimeSeriesPlot({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
                             color: '#7f8c8d'
                         }).render($)
                     })
+                    $('line', '.stokeWidth', {
+                        x1: "0",
+                        y1: "0",
+                        x2: `${this.barScale(last.smoothed)}`,
+                        y2: "0",
+                        style: {stroke: this.color},
+                        transform: `translate(${0}, 36)`
+                    })
                 })
-                const last = this.series[this.series.length - 1]
                 $('span', `${this.name}:`)
                 $('span', {style: {color: this.color}}, `${formatFixed(last.smoothed, 3)}`)
             })
@@ -67,7 +81,9 @@ class ProcessSparkLine {
 
 export interface ProcessListItemOptions {
     item: ProcessModel
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
+    cpuBarExtent: [number, number]
+    rssBarExtent: [number, number]
     width: number
     onClick: (elem: ProcessListItem) => void
 }
@@ -76,13 +92,17 @@ class ProcessListItem {
     item: ProcessModel
     width: number
     elem: HTMLAnchorElement
-    stepExtent: [number, number]
+    stepExtent: [Date, Date]
+    cpuBarExtent: [number, number]
+    rssBarExtent: [number, number]
     onClick: (evt: Event) => void
 
     constructor(opt: ProcessListItemOptions) {
         this.item = opt.item
         this.width = opt.width
         this.stepExtent = opt.stepExtent
+        this.cpuBarExtent = opt.cpuBarExtent
+        this.rssBarExtent = opt.rssBarExtent
         this.onClick = (e: Event) => {
             e.preventDefault()
             opt.onClick(this)
@@ -94,11 +114,18 @@ class ProcessListItem {
             {href: `/details/${this.item.process_id}`, on: {click: this.onClick}},
             $ => {
                 $('div', $ => {
-                    $('p', this.item.name)
+                    $('div', $ => {
+                        $('span', this.item.name)
+                        $('span', ` PID: ${this.item.pid}`)
+                        if (this.item.dead) {
+                            new BadgeView({text: 'dead'}).render($)
+                        }
+                    })
                     new ProcessSparkLine({
                         width: this.width / 2.2,
                         series: this.item.cpu.series,
                         stepExtent: this.stepExtent,
+                        barExtent: this.cpuBarExtent,
                         color: "#ffa600",
                         name: 'CPU'
                     }).render($)
@@ -106,6 +133,7 @@ class ProcessListItem {
                         width: this.width / 2.2,
                         series: this.item.rss.series,
                         stepExtent: this.stepExtent,
+                        barExtent: this.rssBarExtent,
                         color: "#bc5090",
                         name: 'RSS'
                     }).render($)
@@ -123,24 +151,36 @@ export interface ProcessListOptions {
 
 export class ProcessList {
     uuid: string
-    items: ProcessModel[]
     width: number
     stepExtent: [number, number]
+    cpuBarExtent: [number, number]
+    rssBarExtent: [number, number]
+    searchQuery: string
+    processListContainer: HTMLDivElement
+    items: ProcessModel[]
+    currentProcessList: ProcessModel[]
 
     constructor(opt: ProcessListOptions) {
         this.uuid = opt.uuid
         this.items = opt.items
         this.width = opt.width
 
-        let series: SeriesModel[] = []
+        let rss: SeriesModel[] = []
+        let cpu: SeriesModel[] = []
         for (let item of this.items) {
             item.cpu.series = toPointValue(item.cpu)
+            cpu.push(item.cpu)
             item.rss.series = toPointValue(item.rss)
-            series.push(item.cpu)
-            series.push(item.rss)
+            rss.push(item.rss)
         }
 
+        let series: SeriesModel[] = cpu.concat(rss)
         this.stepExtent = getExtent(series.map(s => s.series), d => d.step)
+
+        this.cpuBarExtent = getExtent(cpu.map(s => s.series), d => d.value, true)
+        this.rssBarExtent = getExtent(rss.map(s => s.series), d => d.value, true)
+
+        this.searchQuery = ''
     }
 
     onclick(elem: ProcessListItem) {
@@ -149,16 +189,46 @@ export class ProcessList {
 
     render($: WeyaElementFunction) {
         $('div', '.runs-list', $ => {
-            $('div', '.list.runs-list.list-group', $ => {
-                this.items.map((s, i) => {
+            new SearchView({onSearch: this.onSearch}).render($)
+            $('svg', {style: {height: `${1}px`}}, $ => {
+                new DefaultLineGradient().render($)
+            })
+            this.processListContainer = $('div', '.list.runs-list.list-group')
+        })
+
+        this.renderList()
+    }
+
+    onSearch = (query: string) => {
+        this.searchQuery = query
+        this.renderList()
+    }
+
+    processFilter = (process: ProcessModel, query: RegExp) => {
+        let name = process.name.toLowerCase()
+        let pid = process.pid.toString()
+
+        return (name.search(query) !== -1 || pid.search(query) !== -1)
+    }
+
+    private renderList() {
+        if (this.items.length > 0) {
+            let re = new RegExp(this.searchQuery.toLowerCase(), 'g')
+            this.currentProcessList = this.items.filter(process => this.processFilter(process, re))
+
+            this.processListContainer.innerHTML = ''
+            $(this.processListContainer, $ => {
+                for (let i = 0; i < this.currentProcessList.length; i++) {
                     new ProcessListItem({
-                        item: s,
+                        item: this.currentProcessList[i],
                         width: this.width,
-                        stepExtent: this.stepExtent,
+                        stepExtent: [toDate(this.stepExtent[0]), toDate(this.stepExtent[1])],
+                        cpuBarExtent: this.cpuBarExtent,
+                        rssBarExtent: this.rssBarExtent,
                         onClick: this.onclick.bind(this)
                     }).render($)
-                })
+                }
             })
-        })
+        }
     }
 }
