@@ -128,13 +128,13 @@ class RunView extends ScreenView {
             if (!this.run.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
-                    text: 'claim',
+                    text: 'Claim',
                     parent: this.constructor.name
                 }).render($)
             } else if (!this.run.is_project_run || !this.isUserLogged.is_user_logged) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
-                    text: 'add',
+                    text: 'Add',
                     parent: this.constructor.name
                 }).render($)
             }

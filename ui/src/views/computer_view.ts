@@ -126,12 +126,13 @@ class ComputerView extends ScreenView {
             if (!this.computer.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onSessionAction.bind(this, true),
-                    text: 'claim',
+                    text: 'Claim',
                     parent: this.constructor.name
                 }).render($)
             } else if (!this.computer.is_project_session || !this.isUserLogged.is_user_logged) {
-                new AddButton({
+                new CustomButton({
                     onButtonClick: this.onSessionAction.bind(this, false),
+                    text: 'Add',
                     parent: this.constructor.name
                 }).render($)
             }
