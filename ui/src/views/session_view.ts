@@ -1,4 +1,3 @@
-import {Run} from '../models/run'
 import {Status} from "../models/status"
 import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
@@ -6,32 +5,33 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
 import {AddButton, BackButton, CustomButton} from "../components/buttons"
-import {UserMessages} from "../components/alert"
-import {RunHeaderCard} from "../analyses/experiments/run_header/card"
-import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
-import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../cache/cache"
+import CACHE, {IsUserLoggedCache, SessionCache, SessionsListCache, SessionStatusCache} from "../cache/cache"
+import {Session} from '../models/session'
+import {SessionHeaderCard} from '../analyses/sessions/session_header/card'
+import {sessionAnalyses} from '../analyses/analyses'
+import {UserMessages} from "../components/alert"
 import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
 
-class RunView extends ScreenView {
+class SessionView extends ScreenView {
     uuid: string
-    run: Run
-    runCache: RunCache
+    session: Session
+    sessionCache: SessionCache
     status: Status
-    statusCache: RunStatusCache
-    runListCache: RunsListCache
+    statusCache: SessionStatusCache
+    sessionsListCache: SessionsListCache
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     actualWidth: number
     elem: HTMLDivElement
-    runHeaderCard: RunHeaderCard
+    sessionHeaderCard: SessionHeaderCard
     cards: Card[] = []
     lastUpdated: number
     ButtonsContainer: HTMLSpanElement
-    isProjectRun: boolean = false
+    isProjectSession: boolean = false
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -40,23 +40,23 @@ class RunView extends ScreenView {
     constructor(uuid: string) {
         super()
         this.uuid = uuid
-        this.runCache = CACHE.getRun(this.uuid)
-        this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.sessionCache = CACHE.getSession(this.uuid)
+        this.statusCache = CACHE.getSessionStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
-        this.runListCache = CACHE.getRunsList()
+        this.sessionsListCache = CACHE.getSessionsList()
 
         this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
+            this.session = await this.sessionCache.get(force)
             this.status = await this.statusCache.get(force)
-            this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
 
             if (this.isUserLogged.is_user_logged) {
-                let runs = (await this.runListCache.get(force)).runs
-                for (let r of runs) {
-                    if (r.run_uuid == this.run.run_uuid) {
-                        this.isProjectRun = true
+                let sessions = (await this.sessionsListCache.get(force)).sessions
+                for (let c of sessions) {
+                    if (c.session_uuid == this.session.session_uuid) {
+                        this.isProjectSession = true
                         break
                     }
                 }
@@ -64,7 +64,7 @@ class RunView extends ScreenView {
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        mix_panel.track('Run View', {uuid: this.uuid})
+        mix_panel.track('Computer View', {uuid: this.uuid})
     }
 
     get requiresAuth(): boolean {
@@ -82,42 +82,40 @@ class RunView extends ScreenView {
     }
 
     async _render() {
-        setTitle({section: 'Run'})
+        setTitle({section: 'Computer'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.run.page',
                 {style: {width: `${this.actualWidth}px`}}, $ => {
-                    $('div', $ => {
-                        this.userMessages.render($)
-                        this.ButtonsContainer = $('span', '.float-right')
-                        $('div.nav-container', $ => {
-                            new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
-                            this.refresh.render($)
-                        })
-                        this.runHeaderCard = new RunHeaderCard({
-                            uuid: this.uuid,
-                            width: this.actualWidth,
-                            lastUpdated: this.lastUpdated,
-                            clickable: true
-                        })
-                        this.loader.render($)
-                        this.runHeaderCard.render($)
-                        this.cardContainer = $('div')
+                    this.userMessages.render($)
+                    this.ButtonsContainer = $('span', '.float-right')
+                    $('div', '.nav-container', $ => {
+                        new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
+                        this.refresh.render($)
                     })
+                    this.sessionHeaderCard = new SessionHeaderCard({
+                        uuid: this.uuid,
+                        width: this.actualWidth,
+                        lastUpdated: this.lastUpdated,
+                        clickable: true
+                    })
+                    this.loader.render($)
+                    this.sessionHeaderCard.render($)
+                    this.cardContainer = $('div')
                 })
         })
 
         try {
             await this.loader.load()
 
-            setTitle({section: 'Run', item: this.run.name})
+            setTitle({section: 'Computer', item: this.session.name})
             this.renderButtons()
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
-                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
+                this.refresh.attachHandler(this.sessionHeaderCard.renderLastRecorded.bind(this.sessionHeaderCard))
                 this.refresh.start()
             }
         }
@@ -126,37 +124,37 @@ class RunView extends ScreenView {
     renderButtons() {
         this.ButtonsContainer.innerHTML = ''
         $(this.ButtonsContainer, $ => {
-            if (!this.run.is_claimed) {
+            if (!this.session.is_claimed) {
                 new CustomButton({
-                    onButtonClick: this.onRunAction.bind(this, true),
+                    onButtonClick: this.onSessionAction.bind(this, true),
                     text: 'claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.isProjectRun || !this.isUserLogged.is_user_logged) {
+            } else if (!this.isProjectSession || !this.isUserLogged.is_user_logged) {
                 new AddButton({
-                    onButtonClick: this.onRunAction.bind(this, false),
+                    onButtonClick: this.onSessionAction.bind(this, false),
                     parent: this.constructor.name
                 }).render($)
             }
         })
     }
 
-    async onRunAction(isRunClaim: boolean) {
+    async onSessionAction(isSessionClaim: boolean) {
         if (!this.isUserLogged.is_user_logged) {
             mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
             ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
         } else {
             try {
-                if (isRunClaim) {
-                    await this.runListCache.claimRun(this.run)
-                    this.userMessages.successMessage('Successfully claimed and added to your runs list')
-                    this.run.is_claimed = true
+                if (isSessionClaim) {
+                    await this.sessionsListCache.claimSession(this.session)
+                    this.userMessages.successMessage('Successfully claimed and added to your computers list')
+                    this.session.is_claimed = true
                 } else {
-                    await this.runListCache.addRun(this.run)
-                    this.userMessages.successMessage('Successfully added to your runs list')
+                    await this.sessionsListCache.addSession(this.session)
+                    this.userMessages.successMessage('Successfully added to your computers list')
                 }
 
-                this.isProjectRun = true
+                this.isProjectSession = true
                 this.renderButtons()
             } catch (e) {
                 this.userMessages.NetworkErrorMessage()
@@ -187,6 +185,7 @@ class RunView extends ScreenView {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
+
             for (let card of this.cards) {
                 card.refresh()
 
@@ -197,7 +196,7 @@ class RunView extends ScreenView {
             }
 
             this.lastUpdated = oldest
-            this.runHeaderCard.refresh(this.lastUpdated).then()
+            this.sessionHeaderCard.refresh(this.lastUpdated).then()
         }
     }
 
@@ -207,7 +206,7 @@ class RunView extends ScreenView {
 
     private renderCards() {
         $(this.cardContainer, $ => {
-            experimentAnalyses.map((analysis, i) => {
+            sessionAnalyses.map((analysis, i) => {
                 let card: Card = new analysis.card({uuid: this.uuid, width: this.actualWidth})
                 this.cards.push(card)
                 card.render($)
@@ -216,12 +215,12 @@ class RunView extends ScreenView {
     }
 }
 
-export class RunHandler {
+export class SessionHandler {
     constructor() {
-        ROUTER.route('run/:uuid', [this.handleRun])
+        ROUTER.route('session/:uuid', [this.handleSession])
     }
 
-    handleRun = (uuid: string) => {
-        SCREEN.setView(new RunView(uuid))
+    handleSession = (uuid: string) => {
+        SCREEN.setView(new SessionView(uuid))
     }
 }

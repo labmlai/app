@@ -1,1 +1,1 @@
-export type ContentType = 'run' | 'computer'
+export type ContentType = 'run' | 'session'

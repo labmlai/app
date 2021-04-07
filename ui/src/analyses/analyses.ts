@@ -10,13 +10,13 @@ import stderrAnalysis from "./experiments/stderror"
 import loggerAnalysis from "./experiments/logger"
 import configsAnalysis from "./experiments/configs"
 
-import cpuAnalysis from './computers/cpu'
-import diskAnalysis from './computers/disk'
-import {gpuMemoryAnalysis, gpuPowerAnalysis, gpuTempAnalysis, gpuUtilAnalysis} from './computers/gpu'
-import memoryAnalysis from './computers/memory'
-import networkAnalysis from './computers/network'
-import processAnalysis from './computers/process'
-import batteryAnalysis from './computers/battery'
+import cpuAnalysis from './sessions/cpu'
+import diskAnalysis from './sessions/disk'
+import {gpuMemoryAnalysis, gpuPowerAnalysis, gpuTempAnalysis, gpuUtilAnalysis} from './sessions/gpu'
+import memoryAnalysis from './sessions/memory'
+import networkAnalysis from './sessions/network'
+import processAnalysis from './sessions/process'
+import batteryAnalysis from './sessions/battery'
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
@@ -30,7 +30,7 @@ let experimentAnalyses: Analysis[] = [
     loggerAnalysis
 ]
 
-let computerAnalyses: Analysis[] = [
+let sessionAnalyses: Analysis[] = [
     cpuAnalysis,
     processAnalysis,
     memoryAnalysis,
@@ -45,5 +45,5 @@ let computerAnalyses: Analysis[] = [
 
 export {
     experimentAnalyses,
-    computerAnalyses
+    sessionAnalyses
 }
