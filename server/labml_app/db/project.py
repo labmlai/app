@@ -64,7 +64,10 @@ class Project(Model['Project']):
                 self.runs.pop(run_uuid)
                 r = run.get_run(run_uuid)
                 if r and r.owner == project_owner:
-                    run.delete(run_uuid)
+                    try:
+                        run.delete(run_uuid)
+                    except TypeError:
+                        logger.error(f'error while deleting the run {run_uuid}')
 
         self.save()
 
@@ -74,7 +77,10 @@ class Project(Model['Project']):
                 self.sessions.pop(session_uuid)
                 s = session.get_session(session_uuid)
                 if s and s.owner == project_owner:
-                    session.delete(session_uuid)
+                    try:
+                        session.delete(session_uuid)
+                    except TypeError:
+                        logger.error(f'error while deleting the session {session_uuid}')
 
         self.save()
 
