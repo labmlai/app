@@ -1,7 +1,7 @@
 import time
 
-from . import settings
-from . import block_uuids
+from labml_app import settings
+from labml_app import block_uuids
 from labml_app.logger import logger
 from labml_app.db import project, user, run, session
 

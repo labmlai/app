@@ -17,7 +17,7 @@ server-prod: ## compile and start server in prod
 	cd server && pipenv install --ignore-pipfile && pipenv run gunicorn -c gunicorn.conf.py --bind 0.0.0.0:5000 labml_app.flask_app:app --daemon
 
 clean-db: ## clean float-project and move samples to float-project
-	cd server &&  pipenv run python -m labml_app.clean_ups
+	cd server &&  pipenv run python -m labml_app.scripts.clean_ups
 
 compile: ## Compile JS
 	rm -rf static
