@@ -5,7 +5,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {BackButton, AddButton, CustomButton} from "../components/buttons"
+import {BackButton, CustomButton} from "../components/buttons"
 import {UserMessages} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -132,8 +132,9 @@ class RunView extends ScreenView {
                     parent: this.constructor.name
                 }).render($)
             } else if (!this.run.is_project_run || !this.isUserLogged.is_user_logged) {
-                new AddButton({
+                new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
+                    text: 'add',
                     parent: this.constructor.name
                 }).render($)
             }
@@ -158,7 +159,7 @@ class RunView extends ScreenView {
                 this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.NetworkErrorMessage()
+                this.userMessages.networkErrorMessage()
                 return
             }
         }

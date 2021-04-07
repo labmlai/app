@@ -17,6 +17,7 @@ import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
+import {UserMessages} from "../../../components/alert"
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement
@@ -44,7 +45,8 @@ class HyperParamsView extends ScreenView {
     actualWidth: number
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
-    isEditMode: boolean
+    private isEditMode: boolean
+    private userMessages: UserMessages
 
     constructor(uuid: string) {
         super()
@@ -69,6 +71,8 @@ class HyperParamsView extends ScreenView {
             parent: this.constructor.name,
             text: 'reset'
         })
+
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
@@ -106,6 +110,7 @@ class HyperParamsView extends ScreenView {
             $('div', '.page',
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
+                    this.userMessages.render($)
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
@@ -142,6 +147,10 @@ class HyperParamsView extends ScreenView {
             this.renderPrefsSaveButton(true)
             this.renderParamsSaveButton(true)
             this.renderParamsResetButton(true)
+
+            if (!this.run.is_project_run) {
+                this.userMessages.warningMessage('Please claim or add this run to change parameters')
+            }
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {

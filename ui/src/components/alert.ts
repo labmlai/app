@@ -55,7 +55,7 @@ export class UserMessages {
         }
     }
 
-    NetworkErrorMessage() {
+    networkErrorMessage() {
         this.message = 'An unexpected network error occurred. Please try again later'
         this.elem.innerHTML = ''
         $(this.elem, $ => {
@@ -75,6 +75,21 @@ export class UserMessages {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.message.success', $ => {
+                $('span', this.message)
+                $('span', '.close-btn',
+                    String.fromCharCode(215),
+                    {on: {click: this.hideMessage.bind(this, true)}}
+                )
+            })
+        })
+        this.hideMessage(false)
+    }
+
+    warningMessage(message: string) {
+        this.message = message
+        this.elem.innerHTML = ''
+        $(this.elem, $ => {
+            $('div', '.message.alert', $ => {
                 $('span', this.message)
                 $('span', '.close-btn',
                     String.fromCharCode(215),

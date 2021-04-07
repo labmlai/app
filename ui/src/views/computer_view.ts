@@ -156,7 +156,7 @@ class ComputerView extends ScreenView {
                 this.computer.is_project_session = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.NetworkErrorMessage()
+                this.userMessages.networkErrorMessage()
                 return
             }
         }
