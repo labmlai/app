@@ -31,7 +31,6 @@ class SessionView extends ScreenView {
     cards: Card[] = []
     lastUpdated: number
     ButtonsContainer: HTMLSpanElement
-    isProjectSession: boolean = false
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -51,16 +50,6 @@ class SessionView extends ScreenView {
             this.session = await this.sessionCache.get(force)
             this.status = await this.statusCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
-
-            if (this.isUserLogged.is_user_logged) {
-                let sessions = (await this.sessionsListCache.get(force)).computers
-                for (let c of sessions) {
-                    if (c.session_uuid == this.session.session_uuid) {
-                        this.isProjectSession = true
-                        break
-                    }
-                }
-            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -127,12 +116,13 @@ class SessionView extends ScreenView {
             if (!this.session.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onSessionAction.bind(this, true),
-                    text: 'claim',
+                    text: 'Claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.isProjectSession || !this.isUserLogged.is_user_logged) {
-                new AddButton({
+            } else if (!this.session.is_project_session || !this.isUserLogged.is_user_logged) {
+                new CustomButton({
                     onButtonClick: this.onSessionAction.bind(this, false),
+                    text: 'Add',
                     parent: this.constructor.name
                 }).render($)
             }
@@ -154,10 +144,10 @@ class SessionView extends ScreenView {
                     this.userMessages.successMessage('Successfully added to your computers list')
                 }
 
-                this.isProjectSession = true
+                this.session.is_project_session = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.NetworkErrorMessage()
+                this.userMessages.networkErrorMessage()
                 return
             }
         }

@@ -5,7 +5,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {AddButton, BackButton, CustomButton} from "../components/buttons"
+import {BackButton, CustomButton} from "../components/buttons"
 import {UserMessages} from "../components/alert"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
@@ -31,7 +31,6 @@ class RunView extends ScreenView {
     cards: Card[] = []
     lastUpdated: number
     ButtonsContainer: HTMLSpanElement
-    isProjectRun: boolean = false
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -51,16 +50,6 @@ class RunView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
-
-            if (this.isUserLogged.is_user_logged) {
-                let runs = (await this.runListCache.get(force)).runs
-                for (let r of runs) {
-                    if (r.run_uuid == this.run.run_uuid) {
-                        this.isProjectRun = true
-                        break
-                    }
-                }
-            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -129,12 +118,13 @@ class RunView extends ScreenView {
             if (!this.run.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
-                    text: 'claim',
+                    text: 'Claim',
                     parent: this.constructor.name
                 }).render($)
-            } else if (!this.isProjectRun || !this.isUserLogged.is_user_logged) {
-                new AddButton({
+            } else if (!this.run.is_project_run || !this.isUserLogged.is_user_logged) {
+                new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, false),
+                    text: 'Add',
                     parent: this.constructor.name
                 }).render($)
             }
@@ -156,10 +146,10 @@ class RunView extends ScreenView {
                     this.userMessages.successMessage('Successfully added to your runs list')
                 }
 
-                this.isProjectRun = true
+                this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.NetworkErrorMessage()
+                this.userMessages.networkErrorMessage()
                 return
             }
         }

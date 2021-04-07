@@ -3,6 +3,8 @@ from typing import Dict, List, Optional, Union, NamedTuple
 
 from labml_db import Model, Key, Index
 
+from .. import auth
+from . import user
 from .. import utils
 from . import project
 from . import status
@@ -33,7 +35,7 @@ class Run(Model['Run']):
     commit_message: str
     start_step: int
     is_claimed: bool
-    status: Key[status.Status]
+    status: Key['status.Status']
     configs: Dict[str, any]
     dynamic: Dict[str, any]
     stdout: str
@@ -111,7 +113,8 @@ class Run(Model['Run']):
                     defaults[name] = computed
 
             if defaults:
-                analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', self.run_uuid).set_default_values(defaults)
+                analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis',
+                                                                 self.run_uuid).set_default_values(defaults)
 
         if 'stdout' in data and data['stdout']:
             stdout_processed, self.stdout_unmerged = self.merge_output(self.stdout_unmerged, data['stdout'])
@@ -188,11 +191,17 @@ class Run(Model['Run']):
         return url + f'/commit/{commit}'
 
     def get_data(self) -> Dict[str, Union[str, any]]:
+        is_project_run = False
+        u = auth.get_auth_user()
+        if u:
+            is_project_run = u.default_project.is_project_run(self.run_uuid)
+
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
         return {
             'run_uuid': self.run_uuid,
+            'is_project_run': is_project_run,
             'name': self.name,
             'comment': self.comment,
             'note': self.note,
@@ -233,7 +242,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run:
+def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -245,7 +254,6 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> Run
     else:
         is_claimed = True
 
-        from . import user
         identifier = user.get_token_owner(labml_token)
         utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
         utils.mix_panel.MixPanelEvent.run_claimed_set(identifier)
@@ -290,7 +298,7 @@ def delete(run_uuid: str) -> None:
         analyses.AnalysisManager.delete_run(run_uuid)
 
 
-def get_runs(labml_token: str) -> List[Run]:
+def get_runs(labml_token: str) -> List['Run']:
     res = []
     p = project.get_project(labml_token)
     for run_uuid, run_key in p.runs.items():
@@ -299,7 +307,7 @@ def get_runs(labml_token: str) -> List[Run]:
     return res
 
 
-def get_run(run_uuid: str) -> Optional[Run]:
+def get_run(run_uuid: str) -> Optional['Run']:
     run_key = RunIndex.get(run_uuid)
 
     if run_key:
@@ -308,7 +316,7 @@ def get_run(run_uuid: str) -> Optional[Run]:
     return None
 
 
-def get_status(run_uuid: str) -> Union[None, status.Status]:
+def get_status(run_uuid: str) -> Union[None, 'status.Status']:
     r = get_run(run_uuid)
 
     if r:
