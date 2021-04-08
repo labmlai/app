@@ -47,12 +47,12 @@ class GradientsAnalysis(Analysis):
         for ind, s in data.items():
             ind_split = ind.split('.')
             ind_type = ind_split[0]
-            ind_prefix = '.'.join(ind_split[:-1])
+            ind_name = '.'.join(ind_split[:-1])
             if ind_type == enums.SeriesEnums.GRAD:
-                if ind_prefix not in self.gradients.indicators:
+                if ind_name not in self.gradients.indicators:
                     if len(self.gradients.indicators) >= settings.INDICATOR_LIMIT:
                         continue
-                    self.gradients.indicators.add('.'.join(ind_prefix))
+                    self.gradients.indicators.add(ind_name)
 
                 res[ind] = s
 
