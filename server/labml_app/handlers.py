@@ -396,8 +396,7 @@ def get_sessions(labml_token: str) -> flask.Response:
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
-    # TODO CHANGE HERE
-    return utils.format_rv({'computers': res, 'labml_token': labml_token})
+    return utils.format_rv({'sessions': res, 'labml_token': labml_token})
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)

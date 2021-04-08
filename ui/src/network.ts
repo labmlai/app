@@ -8,40 +8,6 @@ class Network {
         this.baseURL = baseURL
     }
 
-    private sendHttpRequest = (method: string, url: string, data: object = {}) => {
-        return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest()
-            xhr.withCredentials = true
-            xhr.open(method, this.baseURL + url)
-            xhr.responseType = 'json'
-
-            let authToken = localStorage.getItem('app_token')
-            if (authToken) {
-                xhr.setRequestHeader('Authorization', authToken)
-            }
-
-            if (data) {
-                xhr.setRequestHeader('Content-Type', 'application/json')
-            }
-
-            xhr.onload = () => {
-                if (xhr.status >= 400) {
-                    if (xhr.status != 403) {
-                        reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response)))
-                    }
-                } else {
-                    resolve(xhr.response.data)
-                }
-            }
-
-            xhr.onerror = () => {
-                reject('Network Failure')
-            }
-
-            xhr.send(JSON.stringify(data))
-        })
-    }
-
     async getRun(runUUID: string): Promise<any> {
         return this.sendHttpRequest('GET', `/run/${runUUID}`)
     }
@@ -58,11 +24,11 @@ class Network {
         return this.sendHttpRequest('PUT', `/run/${runUUID}/claim`)
     }
 
-    async getComputer(sessionUUID: string): Promise<any> {
+    async getSession(sessionUUID: string): Promise<any> {
         return this.sendHttpRequest('GET', `/computer/${sessionUUID}`)
     }
 
-    async setComputer(runUUID: string, data: object): Promise<any> {
+    async setSession(runUUID: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/computer/${runUUID}`, data)
     }
 
@@ -78,7 +44,7 @@ class Network {
         return this.sendHttpRequest('GET', `/run/status/${runUUID}`)
     }
 
-    async getComputerStatus(sessionUUId: string): Promise<any> {
+    async getSessionStatus(sessionUUId: string): Promise<any> {
         return this.sendHttpRequest('GET', `/computer/status/${sessionUUId}`)
     }
 
@@ -86,7 +52,7 @@ class Network {
         return this.sendHttpRequest('GET', `/runs/${labml_token}`)
     }
 
-    async getComputers(): Promise<any> {
+    async getSessions(): Promise<any> {
         return this.sendHttpRequest('GET', `/computers/${null}`)
     }
 
@@ -146,6 +112,40 @@ class Network {
 
     async updatePreferences(url: string, runUUID: string, data: object): Promise<any> {
         return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)
+    }
+
+    private sendHttpRequest = (method: string, url: string, data: object = {}) => {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest()
+            xhr.withCredentials = true
+            xhr.open(method, this.baseURL + url)
+            xhr.responseType = 'json'
+
+            let authToken = localStorage.getItem('app_token')
+            if (authToken) {
+                xhr.setRequestHeader('Authorization', authToken)
+            }
+
+            if (data) {
+                xhr.setRequestHeader('Content-Type', 'application/json')
+            }
+
+            xhr.onload = () => {
+                if (xhr.status >= 400) {
+                    if (xhr.status != 403) {
+                        reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response)))
+                    }
+                } else {
+                    resolve(xhr.response.data)
+                }
+            }
+
+            xhr.onerror = () => {
+                reject('Network Failure')
+            }
+
+            xhr.send(JSON.stringify(data))
+        })
     }
 }
 
