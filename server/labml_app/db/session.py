@@ -12,6 +12,7 @@ from . import computer
 from . import status
 from .. import settings
 from .. import analyses
+from ..enums import RunEnums
 
 
 class Session(Model['Session']):
@@ -45,6 +46,12 @@ class Session(Model['Session']):
     @property
     def url(self) -> str:
         return f'{settings.WEB_URL}/session/{self.session_uuid}'
+
+    @property
+    def is_in_progress(self) -> bool:
+        s = get_status(self.session_uuid)
+
+        return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
 
     def update_session(self, data: Dict[str, any]) -> None:
         if not self.name:

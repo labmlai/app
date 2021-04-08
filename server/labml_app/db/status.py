@@ -31,7 +31,7 @@ class Status(Model['Status']):
 
     def get_data(self) -> Dict[str, any]:
         run_status = self.run_status.load().to_dict()
-        run_status['status'] = self.get_actual_status(run_status.get('status', ''))
+        run_status['status'] = self.get_true_status(run_status.get('status', ''))
 
         return {
             'last_updated_time': self.last_updated_time,
@@ -53,7 +53,9 @@ class Status(Model['Status']):
 
         self.save()
 
-    def get_actual_status(self, status: str) -> str:
+    def get_true_status(self, status: str = None) -> str:
+        if not status:
+            status = self.run_status.load().status
         not_responding = False
 
         if status == RunEnums.RUN_IN_PROGRESS:
@@ -83,6 +85,3 @@ def create_status() -> Status:
     run_status.save()
 
     return status
-
-
-

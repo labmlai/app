@@ -11,6 +11,7 @@ from . import status
 from .. import settings
 from ..logger import logger
 from .. import analyses
+from ..enums import RunEnums
 
 
 class CardInfo(NamedTuple):
@@ -82,6 +83,12 @@ class Run(Model['Run']):
     @property
     def url(self) -> str:
         return f'{settings.WEB_URL}/run/{self.run_uuid}'
+
+    @property
+    def is_in_progress(self) -> bool:
+        s = get_status(self.run_uuid)
+
+        return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
 
     def update_run(self, data: Dict[str, any]) -> None:
         if not self.name:

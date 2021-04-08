@@ -12,6 +12,7 @@ class User(Model['User']):
     email: str
     picture: str
     theme: str
+    is_dev: bool
     email_verified: bool
     projects: List[Key['project.Project']]
 
@@ -22,6 +23,7 @@ class User(Model['User']):
                     email='',
                     picture='',
                     theme='light',
+                    is_dev=False,
                     email_verified=False,
                     projects=[]
                     )
