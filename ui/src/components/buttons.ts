@@ -302,20 +302,23 @@ export class ToggleButton extends Button {
 
 interface CustomButtonOptions extends buttonOptions {
     text: string
+    title?: string
 }
 
 export class CustomButton extends Button {
     text: string
+    title: string
 
     constructor(opt: CustomButtonOptions) {
         super(opt)
 
         this.text = opt.text
+        this.title = opt.title
     }
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}},
+            {on: {click: this.onClick}, title: this.title},
             $ => {
                 $('span', this.text)
             })
