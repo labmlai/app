@@ -159,7 +159,6 @@ class SessionsListView extends ScreenView {
         } catch (e) {
             this.renderAlertMessage()
         }
-
     }
 
     onCancel = () => {
@@ -212,7 +211,6 @@ class SessionsListView extends ScreenView {
         }
         this.updateButtons()
     }
-
 }
 
 export class SessionsListHandler {

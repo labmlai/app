@@ -25,19 +25,19 @@ class Network {
     }
 
     async getSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/computer/${sessionUUID}`)
+        return this.sendHttpRequest('GET', `/session/${sessionUUID}`)
     }
 
     async setSession(runUUID: string, data: object): Promise<any> {
-        return this.sendHttpRequest('POST', `/computer/${runUUID}`, data)
+        return this.sendHttpRequest('POST', `/session/${runUUID}`, data)
     }
 
     async addSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/computer/${sessionUUID}/add`)
+        return this.sendHttpRequest('PUT', `/session/${sessionUUID}/add`)
     }
 
     async claimSession(sessionUUID: string): Promise<any> {
-        return this.sendHttpRequest('PUT', `/computer/${sessionUUID}/claim`)
+        return this.sendHttpRequest('PUT', `/session/${sessionUUID}/claim`)
     }
 
     async getRunStatus(runUUID: string): Promise<any> {
@@ -45,7 +45,7 @@ class Network {
     }
 
     async getSessionStatus(sessionUUId: string): Promise<any> {
-        return this.sendHttpRequest('GET', `/computer/status/${sessionUUId}`)
+        return this.sendHttpRequest('GET', `/session/status/${sessionUUId}`)
     }
 
     async getRuns(labml_token: string | null): Promise<any> {
@@ -53,7 +53,7 @@ class Network {
     }
 
     async getSessions(): Promise<any> {
-        return this.sendHttpRequest('GET', `/computers/${null}`)
+        return this.sendHttpRequest('GET', `/sessions/${null}`)
     }
 
     async deleteRuns(runUUIDS: string[]): Promise<any> {
@@ -61,7 +61,7 @@ class Network {
     }
 
     async deleteSessions(sessionUUIDS: string[]): Promise<any> {
-        return this.sendHttpRequest('PUT', `/computers`, {'session_uuids': sessionUUIDS})
+        return this.sendHttpRequest('PUT', `/sessions`, {'session_uuids': sessionUUIDS})
     }
 
     async getUser(): Promise<any> {
