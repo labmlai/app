@@ -109,9 +109,13 @@ class ProcessAnalysis(Analysis):
             suffix = ind_split[-1]
             name = '.'.join(ind_split[:-1])
 
+            dead = self.process.dead.get(name, 0)
+            if dead:
+                continue
+
             if name not in res:
                 res[name] = {'process_id': name,
-                             'dead': self.process.dead.get(name, 0),
+                             'dead': dead,
                              'pid': self.process.pids.get(name, 0),
                              'name': self.process.names[name],
                              }
@@ -124,9 +128,6 @@ class ProcessAnalysis(Analysis):
         for k, v in res.items():
             if 'cpu' not in v or 'rss' not in v:
                 continue
-
-            if not v['dead']:
-                ret.append(v)
 
         ret.sort(key=lambda s: s['cpu']['smoothed'][-1], reverse=True)
 
