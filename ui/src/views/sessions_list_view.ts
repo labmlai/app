@@ -205,6 +205,7 @@ class SessionsListView extends ScreenView {
                 }
             })
         } else {
+            this.sessionsListContainer.innerHTML = ''
             $(this.sessionsListContainer, $ => {
                 new EmptySessionsList().render($)
             })

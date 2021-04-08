@@ -202,6 +202,7 @@ class RunsListView extends ScreenView {
                 }
             })
         } else {
+            this.runsListContainer.innerHTML = ''
             $(this.runsListContainer, $ => {
                 new EmptyRunsList().render($)
             })
