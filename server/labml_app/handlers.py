@@ -81,7 +81,7 @@ def update_run() -> flask.Response:
     version = request.args.get('labml_version', '')
     run_uuid = request.args.get('run_uuid', '')
 
-    if run_uuid in block_uuids.run_uuids:
+    if run_uuid in block_uuids.update_run_uuids:
         error = {'error': 'block_run_uuid',
                  'message': f'Block Run UUID'}
         errors.append(error)
@@ -396,8 +396,7 @@ def get_sessions(labml_token: str) -> flask.Response:
 
     res = sorted(res, key=lambda i: i['start_time'], reverse=True)
 
-    # TODO CHANGE HERE
-    return utils.format_rv({'computers': res, 'labml_token': labml_token})
+    return utils.format_rv({'sessions': res, 'labml_token': labml_token})
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
@@ -484,10 +483,10 @@ def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_session, 'computer')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
-    _add_ui(app, 'GET', get_sessions, 'computers/<labml_token>')
+    _add_ui(app, 'GET', get_sessions, 'sessions/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
-    _add_ui(app, 'PUT', delete_sessions, 'computers')
-    # _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
+    _add_ui(app, 'PUT', delete_sessions, 'sessions')
+    _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
     _add_ui(app, 'GET', get_user, 'user')
     _add_ui(app, 'POST', set_user, 'user')
 
@@ -495,12 +494,12 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
     _add_ui(app, 'PUT', add_run, 'run/<run_uuid>/add')
     _add_ui(app, 'PUT', claim_run, 'run/<run_uuid>/claim')
-    _add_ui(app, 'GET', get_session, 'computer/<session_uuid>')
-    _add_ui(app, 'POST', edit_session, 'computer/<session_uuid>')
-    _add_ui(app, 'PUT', add_session, 'computer/<session_uuid>/add')
-    _add_ui(app, 'PUT', claim_session, 'computer/<session_uuid>/claim')
+    _add_ui(app, 'GET', get_session, 'session/<session_uuid>')
+    _add_ui(app, 'POST', edit_session, 'session/<session_uuid>')
+    _add_ui(app, 'PUT', add_session, 'session/<session_uuid>/add')
+    _add_ui(app, 'PUT', claim_session, 'session/<session_uuid>/claim')
     _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
-    _add_ui(app, 'GET', get_session_status, 'computer/status/<session_uuid>')
+    _add_ui(app, 'GET', get_session_status, 'session/status/<session_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')

@@ -12,7 +12,7 @@ from ..db import user
 request = typing.cast(werkzeug.wrappers.Request, request)
 
 
-def get_app_token() -> app_token.AppToken:
+def get_app_token() -> 'app_token.AppToken':
     token_id = request.headers.get('Authorization', '')
 
     return app_token.get_or_create(token_id)
@@ -50,7 +50,7 @@ def login_required(func) -> functools.wraps:
     return wrapper
 
 
-def get_auth_user() -> Optional[user.User]:
+def get_auth_user() -> Optional['user.User']:
     s = get_app_token()
 
     u = None

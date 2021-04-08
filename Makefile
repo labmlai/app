@@ -16,6 +16,12 @@ server-prod: ## compile and start server in prod
     # export PATH=~/miniconda/bin:$PATH
 	cd server && pipenv install --ignore-pipfile && pipenv run gunicorn -c gunicorn.conf.py --bind 0.0.0.0:5000 labml_app.flask_app:app --daemon
 
+clean-db: ## clean float-project and move samples to float-project
+	cd server &&  pipenv run python -m labml_app.scripts.clean_ups
+
+check-db: ## db checks
+	cd server &&  pipenv run python -m labml_app.scripts.db_checks
+
 compile: ## Compile JS
 	rm -rf static
 	mkdir -p static/js

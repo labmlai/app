@@ -1,15 +1,14 @@
-import CACHE, {ComputerStatusCache, RunStatusCache, AnalysisDataCache, AnalysisPreferenceCache} from "../cache/cache"
+import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunStatusCache, SessionStatusCache} from "../cache/cache"
 import {ContentType} from '../types'
-
 
 export class AnalysisCache<TA extends AnalysisDataCache, TAP extends AnalysisPreferenceCache> {
     private readonly type: ContentType
-    private readonly series: new (uuid: string, status: RunStatusCache | ComputerStatusCache) => TA
+    private readonly series: new (uuid: string, status: RunStatusCache | SessionStatusCache) => TA
     private readonly seriesCaches: { [uuid: string]: AnalysisDataCache }
     private readonly preferences: new (uuid: string) => TAP
     private readonly preferencesCaches: { [uuid: string]: AnalysisPreferenceCache }
 
-    constructor(type: ContentType, series: new (uuid: string, status: RunStatusCache | ComputerStatusCache) => TA, preferences: new (uuid: string) => TAP) {
+    constructor(type: ContentType, series: new (uuid: string, status: RunStatusCache | SessionStatusCache) => TA, preferences: new (uuid: string) => TAP) {
         this.type = type
         this.seriesCaches = {}
         this.preferencesCaches = {}
@@ -36,8 +35,8 @@ export class AnalysisCache<TA extends AnalysisDataCache, TAP extends AnalysisPre
     private getStatus(uuid: string) {
         if (this.type === 'run') {
             return CACHE.getRunStatus(uuid)
-        } else if (this.type === 'computer') {
-            return CACHE.getComputerStatus(uuid)
+        } else if (this.type === 'session') {
+            return CACHE.getSessionStatus(uuid)
         }
 
         return null

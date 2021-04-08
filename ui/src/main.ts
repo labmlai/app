@@ -1,18 +1,18 @@
-import {Sentry, Integrations} from './sentry'
+import {Integrations, Sentry} from './sentry'
 
 import {ROUTER} from './app'
 import {RunHandler} from './views/run_view'
 import {PageNotFoundHandler} from './views/errors/page_not_found_view'
 import {RunsListHandler} from './views/runs_list_view'
-import {ComputersListHandler} from './views/computers_list_view'
+import {SessionsListHandler} from './views/sessions_list_view'
 import {LoginHandler} from './views/login_view'
 import {SettingsHandler} from './views/settings_view'
 
-import {computerAnalyses, experimentAnalyses} from "./analyses/analyses"
-import {ProcessDetailsHandler} from "./analyses/computers/process/detail_view"
+import {experimentAnalyses, sessionAnalyses} from "./analyses/analyses"
+import {ProcessDetailsHandler} from "./analyses/sessions/process/detail_view"
 import {RunHeaderHandler} from "./analyses/experiments/run_header/view"
-import {ComputerHeaderHandler} from "./analyses/computers/computer_header/view"
-import {ComputerHandler} from './views/computer_view'
+import {SessionHeaderHandler} from "./analyses/sessions/session_header/view"
+import {SessionHandler} from './views/session_view'
 import {SENTRY_DSN} from './env'
 import {AuthErrorHandler} from './views/errors/auth_error_view'
 import {OtherErrorHandler} from './views/errors/other_error_view'
@@ -30,13 +30,13 @@ new OtherErrorHandler()
 new NetworkErrorHandler()
 
 new RunHandler()
-new ComputerHandler()
+new SessionHandler()
 new RunsListHandler()
-new ComputersListHandler()
+new SessionsListHandler()
 new SettingsHandler()
 
 new RunHeaderHandler()
-new ComputerHeaderHandler()
+new SessionHeaderHandler()
 
 //TODO properly import this later
 new ProcessDetailsHandler()
@@ -54,7 +54,7 @@ experimentAnalyses.map((analysis, i) => {
     new analysis.viewHandler()
 })
 
-computerAnalyses.map((analysis, i) => {
+sessionAnalyses.map((analysis, i) => {
     new analysis.viewHandler()
 })
 

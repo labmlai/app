@@ -13,7 +13,7 @@ class User(Model['User']):
     picture: str
     theme: str
     email_verified: bool
-    projects: List[Key[project.Project]]
+    projects: List[Key['project.Project']]
 
     @classmethod
     def defaults(cls):
@@ -27,7 +27,7 @@ class User(Model['User']):
                     )
 
     @property
-    def default_project(self) -> project.Project:
+    def default_project(self) -> 'project.Project':
         return self.projects[0].load()
 
     def get_data(self) -> Dict[str, any]:
@@ -95,5 +95,3 @@ def get_or_create_user(info: AuthOInfo) -> User:
         return user
 
     return user_key.load()
-
-

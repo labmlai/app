@@ -4,9 +4,8 @@ import NETWORK from "../network"
 import {IsUserLogged, User} from "../models/user"
 import {RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
-import {ComputersList} from '../models/computer_list'
-import {Computer} from '../models/computer'
-
+import {SessionsList} from '../models/session_list'
+import {Session} from '../models/session'
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -26,11 +25,6 @@ class BroadcastPromise<T> {
         this.rejectors = []
     }
 
-    private add(resolve: (value: T) => void, reject: (err: any) => void) {
-        this.resolvers.push(resolve)
-        this.rejectors.push(reject)
-    }
-
     create(load: () => Promise<T>): Promise<T> {
         let promise = new Promise<T>((resolve, reject) => {
             this.add(resolve, reject)
@@ -48,6 +42,11 @@ class BroadcastPromise<T> {
         }
 
         return promise
+    }
+
+    private add(resolve: (value: T) => void, reject: (err: any) => void) {
+        this.resolvers.push(resolve)
+        this.rejectors.push(reject)
     }
 
     private resolve(value: T) {
@@ -74,10 +73,10 @@ class BroadcastPromise<T> {
 }
 
 export abstract class CacheObject<T> {
+    public lastUpdated: number
     protected data!: T
     protected broadcastPromise = new BroadcastPromise<T>()
     private lastUsed: number
-    public lastUpdated: number
 
     constructor() {
         this.lastUsed = 0
@@ -149,36 +148,36 @@ export class RunsListCache extends CacheObject<RunsList> {
     }
 }
 
-export class ComputersListCache extends CacheObject<ComputersList> {
-    async load(): Promise<ComputersList> {
+export class SessionsListCache extends CacheObject<SessionsList> {
+    async load(): Promise<SessionsList> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getComputers()
-            return new ComputersList(res)
+            let res = await NETWORK.getSessions()
+            return new SessionsList(res)
         })
     }
 
     async deleteSessions(sessionUUIDS: Set<string>): Promise<void> {
-        let computers = []
+        let sessions = []
         // Only updating the cache manually, if the cache exists
         if (this.data) {
-            let currentComputers = this.data.computers
-            for (let computer of currentComputers) {
-                if (!sessionUUIDS.has(computer.session_uuid)) {
-                    computers.push(computer)
+            let currentSessions = this.data.sessions
+            for (let session of currentSessions) {
+                if (!sessionUUIDS.has(session.session_uuid)) {
+                    sessions.push(session)
                 }
             }
 
-            this.data.computers = computers
+            this.data.sessions = sessions
         }
         await NETWORK.deleteSessions(Array.from(sessionUUIDS))
     }
 
-    async addSession(session: Computer): Promise<void> {
+    async addSession(session: Session): Promise<void> {
         await NETWORK.addSession(session.session_uuid)
         this.invalidate_cache()
     }
 
-    async claimSession(session: Computer): Promise<void> {
+    async claimSession(session: Session): Promise<void> {
         await NETWORK.claimSession(session.session_uuid)
         this.invalidate_cache()
     }
@@ -221,7 +220,7 @@ export class RunCache extends CacheObject<Run> {
     }
 }
 
-export class ComputerCache extends CacheObject<Computer> {
+export class SessionCache extends CacheObject<Session> {
     private readonly uuid: string
 
     constructor(uuid: string) {
@@ -229,15 +228,15 @@ export class ComputerCache extends CacheObject<Computer> {
         this.uuid = uuid
     }
 
-    async load(): Promise<Computer> {
+    async load(): Promise<Session> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getComputer(this.uuid)
-            return new Computer(res)
+            let res = await NETWORK.getSession(this.uuid)
+            return new Session(res)
         })
     }
 
-    async setComputer(computer: Computer): Promise<void> {
-        await NETWORK.setComputer(this.uuid, computer)
+    async setSession(session: Session): Promise<void> {
+        await NETWORK.setSession(this.uuid, session)
     }
 }
 
@@ -260,7 +259,7 @@ export class RunStatusCache extends StatusCache {
     }
 }
 
-export class ComputerStatusCache extends StatusCache {
+export class SessionStatusCache extends StatusCache {
     private readonly uuid: string
 
     constructor(uuid: string) {
@@ -270,7 +269,7 @@ export class ComputerStatusCache extends StatusCache {
 
     async load(): Promise<Status> {
         return this.broadcastPromise.create(async () => {
-            let res = await NETWORK.getComputerStatus(this.uuid)
+            let res = await NETWORK.getSessionStatus(this.uuid)
             return new Status(res)
         })
     }
@@ -290,15 +289,15 @@ export class UserCache extends CacheObject<User> {
 }
 
 export class IsUserLoggedCache extends CacheObject<IsUserLogged> {
+    set userLogged(is_user_logged: boolean) {
+        this.data = new IsUserLogged({is_user_logged: is_user_logged})
+    }
+
     async load(): Promise<IsUserLogged> {
         return this.broadcastPromise.create(async () => {
             let res = await NETWORK.getIsUserLogged()
             return new IsUserLogged(res)
         })
-    }
-
-    set userLogged(is_user_logged: boolean) {
-        this.data = new IsUserLogged({is_user_logged: is_user_logged})
     }
 }
 
@@ -363,23 +362,23 @@ export class AnalysisPreferenceCache extends CacheObject<AnalysisPreference> {
 
 class Cache {
     private readonly runs: { [uuid: string]: RunCache }
-    private readonly computers: { [uuid: string]: ComputerCache }
+    private readonly sessions: { [uuid: string]: SessionCache }
     private readonly runStatuses: { [uuid: string]: RunStatusCache }
-    private readonly computerStatuses: { [uuid: string]: ComputerStatusCache }
+    private readonly sessionStatuses: { [uuid: string]: SessionStatusCache }
 
     private user: UserCache | null
     private isUserLogged: IsUserLoggedCache | null
     private runsList: RunsListCache | null
-    private computersList: ComputersListCache | null
+    private sessionsList: SessionsListCache | null
 
     constructor() {
         this.runs = {}
-        this.computers = {}
+        this.sessions = {}
         this.runStatuses = {}
-        this.computerStatuses = {}
+        this.sessionStatuses = {}
         this.user = null
         this.runsList = null
-        this.computersList = null
+        this.sessionsList = null
         this.isUserLogged = null
     }
 
@@ -391,12 +390,12 @@ class Cache {
         return this.runs[uuid]
     }
 
-    getComputer(uuid: string) {
-        if (this.computers[uuid] == null) {
-            this.computers[uuid] = new ComputerCache(uuid)
+    getSession(uuid: string) {
+        if (this.sessions[uuid] == null) {
+            this.sessions[uuid] = new SessionCache(uuid)
         }
 
-        return this.computers[uuid]
+        return this.sessions[uuid]
     }
 
     getRunsList() {
@@ -407,12 +406,12 @@ class Cache {
         return this.runsList
     }
 
-    getComputersList() {
-        if (this.computersList == null) {
-            this.computersList = new ComputersListCache()
+    getSessionsList() {
+        if (this.sessionsList == null) {
+            this.sessionsList = new SessionsListCache()
         }
 
-        return this.computersList
+        return this.sessionsList
     }
 
     getRunStatus(uuid: string) {
@@ -423,12 +422,12 @@ class Cache {
         return this.runStatuses[uuid]
     }
 
-    getComputerStatus(uuid: string) {
-        if (this.computerStatuses[uuid] == null) {
-            this.computerStatuses[uuid] = new ComputerStatusCache(uuid)
+    getSessionStatus(uuid: string) {
+        if (this.sessionStatuses[uuid] == null) {
+            this.sessionStatuses[uuid] = new SessionStatusCache(uuid)
         }
 
-        return this.computerStatuses[uuid]
+        return this.sessionStatuses[uuid]
     }
 
     getUser() {

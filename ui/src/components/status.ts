@@ -18,7 +18,7 @@ export class StatusView {
 
     render($: WeyaElementFunction) {
         if (this.status.status === 'in progress') {
-            if (this.type === 'computer') {
+            if (this.type === 'session') {
                 $('div.status.text-info.text-uppercase', 'monitoring')
                 return
             }

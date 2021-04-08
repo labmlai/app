@@ -51,7 +51,3 @@ else:
 
 project.create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
 project.create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
-
-# clean_project(settings.FLOAT_PROJECT_TOKEN)
-# delete_unclaimed_runs()
-# remove_corrupted_runs()
