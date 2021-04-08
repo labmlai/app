@@ -129,6 +129,8 @@ class ProcessAnalysis(Analysis):
             if 'cpu' not in v or 'rss' not in v:
                 continue
 
+            ret.append(v)
+
         ret.sort(key=lambda s: s['cpu']['smoothed'][-1], reverse=True)
 
         summary = []
