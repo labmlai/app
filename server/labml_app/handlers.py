@@ -207,7 +207,7 @@ def update_session() -> flask.Response:
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_run(run_uuid: str) -> flask.Response:
-    r = run.get_run(run_uuid)
+    r = run.get(run_uuid)
     at = auth.get_app_token()
 
     if not at.user:
@@ -235,7 +235,7 @@ def claim_run(run_uuid: str) -> flask.Response:
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_session(session_uuid: str) -> flask.Response:
-    c = session.get_session(session_uuid)
+    c = session.get(session_uuid)
     at = auth.get_app_token()
 
     if not at.user:
@@ -265,7 +265,7 @@ def get_run(run_uuid: str) -> flask.Response:
     run_data = {}
     status_code = 404
 
-    r = run.get_run(run_uuid)
+    r = run.get(run_uuid)
     if r:
         run_data = r.get_data()
         status_code = 200
@@ -281,7 +281,7 @@ def get_session(session_uuid: str) -> flask.Response:
     session_data = {}
     status_code = 404
 
-    c = session.get_session(session_uuid)
+    c = session.get(session_uuid)
     if c:
         session_data = c.get_data()
         status_code = 200
@@ -294,7 +294,7 @@ def get_session(session_uuid: str) -> flask.Response:
 
 @auth.login_required
 def edit_run(run_uuid: str) -> flask.Response:
-    r = run.get_run(run_uuid)
+    r = run.get(run_uuid)
     errors = []
 
     if r:
@@ -307,7 +307,7 @@ def edit_run(run_uuid: str) -> flask.Response:
 
 
 def edit_session(session_uuid: str) -> flask.Response:
-    c = session.get_session(session_uuid)
+    c = session.get(session_uuid)
     errors = []
 
     if c:

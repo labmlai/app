@@ -37,7 +37,7 @@ class Project(Model['Project']):
         res = []
         for run_uuid, run_key in self.runs.items():
             try:
-                r = run.get_run(run_uuid)
+                r = run.get(run_uuid)
                 if r:
                     res.append(r)
                 else:
@@ -62,7 +62,7 @@ class Project(Model['Project']):
         for run_uuid in run_uuids:
             if run_uuid in self.runs:
                 self.runs.pop(run_uuid)
-                r = run.get_run(run_uuid)
+                r = run.get(run_uuid)
                 if r and r.owner == project_owner:
                     try:
                         run.delete(run_uuid)
@@ -75,7 +75,7 @@ class Project(Model['Project']):
         for session_uuid in session_uuids:
             if session_uuid in self.sessions:
                 self.sessions.pop(session_uuid)
-                s = session.get_session(session_uuid)
+                s = session.get(session_uuid)
                 if s and s.owner == project_owner:
                     try:
                         session.delete(session_uuid)
@@ -85,7 +85,7 @@ class Project(Model['Project']):
         self.save()
 
     def add_run(self, run_uuid: str) -> None:
-        r = run.get_run(run_uuid)
+        r = run.get(run_uuid)
 
         if r:
             self.runs[run_uuid] = r.key
@@ -93,7 +93,7 @@ class Project(Model['Project']):
         self.save()
 
     def add_session(self, session_uuid: str) -> None:
-        s = session.get_session(session_uuid)
+        s = session.get(session_uuid)
 
         if s:
             self.sessions[session_uuid] = s.key
