@@ -41,7 +41,7 @@ class SessionsListView extends ScreenView {
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
-            this.currentSessionsList = (await this.sessionListCache.get(force)).computers
+            this.currentSessionsList = (await this.sessionListCache.get(force)).sessions
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 

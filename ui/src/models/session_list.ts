@@ -11,7 +11,7 @@ export interface SessionsListItemModel {
 }
 
 export interface SessionsListModel {
-    computers: SessionsListItemModel[]
+    sessions: SessionsListItemModel[]
     labml_token: string
 }
 
@@ -36,13 +36,13 @@ export class SessionListItem {
 }
 
 export class SessionsList {
-    computers: SessionsListItemModel[]
+    sessions: SessionsListItemModel[]
     labml_token: string
 
     constructor(sessionsList: SessionsListModel) {
-        this.computers = []
-        for (let c of sessionsList.computers) {
-            this.computers.push(new SessionListItem(c))
+        this.sessions = []
+        for (let c of sessionsList.sessions) {
+            this.sessions.push(new SessionListItem(c))
         }
         this.labml_token = sessionsList.labml_token
     }

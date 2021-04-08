@@ -160,14 +160,14 @@ export class SessionsListCache extends CacheObject<SessionsList> {
         let sessions = []
         // Only updating the cache manually, if the cache exists
         if (this.data) {
-            let currentSessions = this.data.computers
+            let currentSessions = this.data.sessions
             for (let session of currentSessions) {
                 if (!sessionUUIDS.has(session.session_uuid)) {
                     sessions.push(session)
                 }
             }
 
-            this.data.computers = sessions
+            this.data.sessions = sessions
         }
         await NETWORK.deleteSessions(Array.from(sessionUUIDS))
     }
