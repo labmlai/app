@@ -11,6 +11,7 @@ from . import status
 from .. import settings
 from ..logger import logger
 from .. import analyses
+from ..enums import RunEnums
 
 
 class CardInfo(NamedTuple):
@@ -82,6 +83,12 @@ class Run(Model['Run']):
     @property
     def url(self) -> str:
         return f'{settings.WEB_URL}/run/{self.run_uuid}'
+
+    @property
+    def is_in_progress(self) -> bool:
+        s = get_status(self.run_uuid)
+
+        return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
 
     def update_run(self, data: Dict[str, any]) -> None:
         if not self.name:
@@ -285,14 +292,14 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> 'Ru
 
 
 def delete(run_uuid: str) -> None:
-    run_key = RunIndex.get(run_uuid)
+    r = get(run_uuid)
 
-    if run_key:
-        r = run_key.load()
+    if r:
         s = r.status.load()
 
         s.delete()
         r.delete()
+
         RunIndex.delete(run_uuid)
 
         analyses.AnalysisManager.delete_run(run_uuid)
@@ -307,7 +314,7 @@ def get_runs(labml_token: str) -> List['Run']:
     return res
 
 
-def get_run(run_uuid: str) -> Optional['Run']:
+def get(run_uuid: str) -> Optional['Run']:
     run_key = RunIndex.get(run_uuid)
 
     if run_key:
@@ -317,7 +324,7 @@ def get_run(run_uuid: str) -> Optional['Run']:
 
 
 def get_status(run_uuid: str) -> Union[None, 'status.Status']:
-    r = get_run(run_uuid)
+    r = get(run_uuid)
 
     if r:
         return r.status.load()

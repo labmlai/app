@@ -12,6 +12,7 @@ from . import computer
 from . import status
 from .. import settings
 from .. import analyses
+from ..enums import RunEnums
 
 
 class Session(Model['Session']):
@@ -45,6 +46,12 @@ class Session(Model['Session']):
     @property
     def url(self) -> str:
         return f'{settings.WEB_URL}/session/{self.session_uuid}'
+
+    @property
+    def is_in_progress(self) -> bool:
+        s = get_status(self.session_uuid)
+
+        return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
 
     def update_session(self, data: Dict[str, any]) -> None:
         if not self.name:
@@ -137,14 +144,14 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
 
 
 def delete(session_uuid: str) -> None:
-    session_key = SessionIndex.get(session_uuid)
+    ss = get(session_uuid)
 
-    if session_key:
-        ss = session_key.load()
+    if ss:
         s = ss.status.load()
 
         s.delete()
         ss.delete()
+
         SessionIndex.delete(session_uuid)
 
         analyses.AnalysisManager.delete_run(session_uuid)
@@ -159,7 +166,7 @@ def get_sessions(labml_token: str) -> List[Session]:
     return res
 
 
-def get_session(session_uuid: str) -> Optional[Session]:
+def get(session_uuid: str) -> Optional[Session]:
     session_key = SessionIndex.get(session_uuid)
 
     if session_key:
@@ -169,7 +176,7 @@ def get_session(session_uuid: str) -> Optional[Session]:
 
 
 def get_status(session_uuid: str) -> Union[None, 'status.Status']:
-    s = get_session(session_uuid)
+    s = get(session_uuid)
 
     if s:
         return s.status.load()

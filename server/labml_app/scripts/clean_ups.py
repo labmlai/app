@@ -57,7 +57,7 @@ def move_to_samples():
     logger.info('Samples moving started')
     p = project.get_project(settings.SAMPLES_PROJECT_TOKEN)
     for run_uuid in block_uuids.delete_run_uuids:
-        r = run.get_run(run_uuid)
+        r = run.get(run_uuid)
 
         if r.owner == 'samples':
             continue
