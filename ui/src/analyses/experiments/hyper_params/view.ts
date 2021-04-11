@@ -148,7 +148,7 @@ class HyperParamsView extends ScreenView {
             this.renderParamsSaveButton(true)
             this.renderParamsResetButton(true)
 
-            if (!this.run.is_project_run) {
+            if (!this.run.is_project_run && this.status.isRunning) {
                 this.userMessages.warningMessage('Please claim or add this run to change parameters')
             }
         } catch (e) {
