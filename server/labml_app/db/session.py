@@ -69,6 +69,8 @@ class Session(Model['Session']):
         if u:
             is_project_session = u.default_project.is_project_session(self.session_uuid)
 
+        configs = [{'key': k, 'value': c} for k, c in self.configs.items()]
+
         return {
             'computer_uuid': self.computer_uuid,
             'is_project_session': is_project_session,
@@ -77,7 +79,7 @@ class Session(Model['Session']):
             'comment': self.comment,
             'start_time': self.start_time,
             'is_claimed': self.is_claimed,
-            'configs': [],
+            'configs': configs,
         }
 
     def get_summary(self) -> Dict[str, str]:

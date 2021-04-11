@@ -33,7 +33,7 @@ export class Config {
         this.name = config.name
         this.computed = config.computed
         this.value = config.value
-        this.options = config.options
+        this.options = config.options ? config.options: []
         this.order = config.order
         this.type = config.type
         this.isHyperparam = config.is_hyperparam

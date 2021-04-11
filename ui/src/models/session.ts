@@ -1,4 +1,4 @@
-import {Config, ConfigModel} from "./config";
+import {Config, ConfigModel} from "./config"
 
 export interface SessionModel {
     computer_uuid: string
