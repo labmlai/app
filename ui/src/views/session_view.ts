@@ -4,7 +4,7 @@ import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
-import {AddButton, BackButton, CustomButton} from "../components/buttons"
+import {BackButton, CustomButton, ShareButton} from "../components/buttons"
 import {Card} from "../analyses/types"
 import CACHE, {IsUserLoggedCache, SessionCache, SessionsListCache, SessionStatusCache} from "../cache/cache"
 import {Session} from '../models/session'
@@ -35,6 +35,7 @@ class SessionView extends ScreenView {
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
+    private share: ShareButton
 
     constructor(uuid: string) {
         super()
@@ -52,6 +53,10 @@ class SessionView extends ScreenView {
             this.isUserLogged = await this.isUserLoggedCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
+        this.share = new ShareButton({
+            text: 'computer',
+            parent: this.constructor.name
+        })
 
         mix_panel.track('Computer View', {uuid: this.uuid})
     }
@@ -81,6 +86,7 @@ class SessionView extends ScreenView {
                     $('div', '.nav-container', $ => {
                         new BackButton({text: 'Computers', parent: this.constructor.name}).render($)
                         this.refresh.render($)
+                        this.share.render($)
                     })
                     this.sessionHeaderCard = new SessionHeaderCard({
                         uuid: this.uuid,
@@ -99,6 +105,7 @@ class SessionView extends ScreenView {
 
             setTitle({section: 'Computer', item: this.session.name})
             this.renderButtons()
+            this.share.text = `${this.session.name} computer`
             this.renderCards()
         } catch (e) {
             handleNetworkErrorInplace(e)

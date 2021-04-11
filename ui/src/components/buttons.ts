@@ -324,3 +324,77 @@ export class CustomButton extends Button {
             })
     }
 }
+
+interface ShareButtonOptions extends buttonOptions {
+    text: string
+}
+
+export class ShareButton extends Button {
+    private _text: string
+    private toastDiv: HTMLDivElement
+
+    constructor(opt: ShareButtonOptions) {
+        super(opt)
+
+        this._text = `Check this ${opt.text} on labml`
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}},
+            $ => {
+                $('span', '.fas.fa-share-alt', '')
+            })
+
+        this.renderToast()
+
+    }
+
+    renderToast() {
+        $(document.body, $ => {
+            $('div', '.toast-custom-container', $ => {
+                this.toastDiv = $('div', '.toast.align-items-center', {
+                    role: 'alert',
+                    'aria-live': 'assertive',
+                    'aria-atomic': 'true'
+                }, $ => {
+                    $('div', '.d-flex', $ => {
+                        $('div', '.toast-body', 'Link copied!')
+                    })
+                })
+            })
+        })
+    }
+
+    copyLink() {
+        this.toastDiv.classList.add('show')
+        $(document.body, $ => {
+            let elm = $('input', {value: window.location.href})
+            elm.select()
+            document.execCommand('copy')
+            elm.remove()
+        })
+        window.setTimeout(() => {
+            this.toastDiv.classList.remove('show')
+        }, 2500)
+    }
+
+    onClick = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    text: `Check this ${this._text} on labml`,
+                    url: window.location.href
+                })
+            } catch (e) {
+                this.copyLink()
+            }
+        } else {
+            this.copyLink()
+        }
+    }
+
+    set text(value: string) {
+        this._text = `Check this ${value} on labml`
+    }
+}
