@@ -1,12 +1,12 @@
 import {ROUTER, SCREEN} from "../../../app"
 import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
-import {Run} from "../../../models/run"
+import {Session} from "../../../models/session"
 import {Status} from "../../../models/status"
-import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {SessionCache, SessionStatusCache} from "../../../cache/cache"
 import {DataLoader} from "../../../components/loader"
 import {BackButton} from "../../../components/buttons"
-import {RunHeaderCard} from "../run_header/card"
+import {SessionHeaderCard} from "../session_header/card"
 import {Configs} from "./components"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
@@ -14,15 +14,15 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 
-class RunConfigsView extends ScreenView {
+class SessionConfigsView extends ScreenView {
     elem: HTMLDivElement
     uuid: string
-    run: Run
+    session: Session
     status: Status
-    statusCache: RunStatusCache
-    runCache: RunCache
+    statusCache: SessionStatusCache
+    sessionCache: SessionCache
     actualWidth: number
-    runHeaderCard: RunHeaderCard
+    sessionHeaderCard: SessionHeaderCard
     configsContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -31,12 +31,12 @@ class RunConfigsView extends ScreenView {
         super()
 
         this.uuid = uuid
-        this.runCache = CACHE.getRun(this.uuid)
-        this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.sessionCache = CACHE.getSession(this.uuid)
+        this.statusCache = CACHE.getSessionStatus(this.uuid)
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
-            this.run = await this.runCache.get(force)
+            this.session = await this.sessionCache.get(force)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -65,14 +65,14 @@ class RunConfigsView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}}, $ => {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
-                            new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                            new BackButton({text: 'Session', parent: this.constructor.name}).render($)
                             this.refresh.render($)
                         })
-                        this.runHeaderCard = new RunHeaderCard({
+                        this.sessionHeaderCard = new SessionHeaderCard({
                             uuid: this.uuid,
                             width: this.actualWidth
                         })
-                        this.runHeaderCard.render($).then()
+                        this.sessionHeaderCard.render($).then()
                         $('h2', '.header.text-center', 'Configurations')
                         this.loader.render($)
                         this.configsContainer = $('div', '.labml-card')
@@ -83,13 +83,13 @@ class RunConfigsView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Configurations', item: this.run.name})
+            setTitle({section: 'Configurations', item: this.session.name})
             this.renderConfigsView()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
             if (this.status && this.status.isRunning) {
-                this.refresh.attachHandler(this.runHeaderCard.renderLastRecorded.bind(this.runHeaderCard))
+                this.refresh.attachHandler(this.sessionHeaderCard.renderLastRecorded.bind(this.sessionHeaderCard))
                 this.refresh.start()
             }
         }
@@ -117,7 +117,7 @@ class RunConfigsView extends ScreenView {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
-            this.runHeaderCard.refresh().then()
+            this.sessionHeaderCard.refresh().then()
         }
     }
 
@@ -128,19 +128,19 @@ class RunConfigsView extends ScreenView {
     renderConfigsView() {
         this.configsContainer.innerHTML = ''
         $(this.configsContainer, $ => {
-            new Configs({configs: this.run.configs, width: this.actualWidth, isHyperParamOnly: false}).render($)
+            new Configs({configs: this.session.configs, width: this.actualWidth}).render($)
         })
     }
 
 }
 
-export class RunConfigsHandler extends ViewHandler {
+export class SessionConfigsHandler extends ViewHandler {
     constructor() {
         super()
-        ROUTER.route('run/:uuid/configs', [this.handleRunConfigs])
+        ROUTER.route('session/:uuid/configs', [this.handleSessionConfigs])
     }
 
-    handleRunConfigs = (uuid: string) => {
-        SCREEN.setView(new RunConfigsView(uuid))
+    handleSessionConfigs = (uuid: string) => {
+        SCREEN.setView(new SessionConfigsView(uuid))
     }
 }

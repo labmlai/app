@@ -8,7 +8,7 @@ import moduleAnalysis from "./experiments/activations"
 import stdOutAnalysis from "./experiments/stdout"
 import stderrAnalysis from "./experiments/stderror"
 import loggerAnalysis from "./experiments/logger"
-import configsAnalysis from "./experiments/configs"
+import runConfigsAnalysis from "./experiments/configs"
 
 import cpuAnalysis from './sessions/cpu'
 import diskAnalysis from './sessions/disk'
@@ -17,10 +17,11 @@ import memoryAnalysis from './sessions/memory'
 import networkAnalysis from './sessions/network'
 import processAnalysis from './sessions/process'
 import batteryAnalysis from './sessions/battery'
+import sessionConfigsAnalysis from "./sessions/configs"
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
-    configsAnalysis,
+    runConfigsAnalysis,
     hyperPramsAnalysis,
     gradientAnalysis,
     parameterAnalysis,
@@ -32,6 +33,7 @@ let experimentAnalyses: Analysis[] = [
 
 let sessionAnalyses: Analysis[] = [
     cpuAnalysis,
+    sessionConfigsAnalysis,
     processAnalysis,
     memoryAnalysis,
     diskAnalysis,

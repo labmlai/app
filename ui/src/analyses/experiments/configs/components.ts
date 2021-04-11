@@ -3,11 +3,11 @@ import {Config} from "../../../models/config"
 import {WeyaElement, WeyaElementFunction} from "../../../../../lib/weya/weya"
 
 
-const CONFIG_PRINT_LEN = 20
-const KEY_WIDTH = 125
-const PADDING = 11
+export const CONFIG_PRINT_LEN = 20
+export const KEY_WIDTH = 125
+export const PADDING = 11
 
-class ComputedValue {
+export class ComputedValue {
     computed: any
 
     constructor(opt: { computed: any }) {

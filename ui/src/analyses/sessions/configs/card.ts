@@ -1,16 +1,16 @@
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {Run} from "../../../models/run"
-import CACHE, {RunCache} from "../../../cache/cache"
+import {Session} from "../../../models/session"
+import CACHE, {SessionCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
 import {DataLoader} from "../../../components/loader"
 import {Configs} from "./components"
 import {ROUTER} from '../../../app'
 
-export class RunConfigsCard extends Card {
-    run: Run
+export class SessionConfigsCard extends Card {
+    session: Session
     uuid: string
     width: number
-    runCache: RunCache
+    sessionCache: SessionCache
     elem: HTMLDivElement
     configsContainer: HTMLDivElement
     private loader: DataLoader
@@ -20,14 +20,14 @@ export class RunConfigsCard extends Card {
 
         this.uuid = opt.uuid
         this.width = opt.width
-        this.runCache = CACHE.getRun(this.uuid)
+        this.sessionCache = CACHE.getSession(this.uuid)
         this.loader = new DataLoader(async (force) => {
-            this.run = await this.runCache.get(force)
+            this.session = await this.sessionCache.get(force)
         })
     }
 
     getLastUpdated(): number {
-        return this.runCache.lastUpdated
+        return this.sessionCache.lastUpdated
     }
 
     async render($: WeyaElementFunction) {
@@ -40,7 +40,7 @@ export class RunConfigsCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.run.configs.length > 0) {
+            if (this.session.configs.length > 0) {
                 this.renderConfigs()
             } else {
                 this.elem.classList.add('hide')
@@ -53,7 +53,7 @@ export class RunConfigsCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.run.configs.length > 0) {
+            if (this.session.configs.length > 0) {
                 this.renderConfigs()
                 this.elem.classList.remove('hide')
             }
@@ -65,11 +65,11 @@ export class RunConfigsCard extends Card {
     renderConfigs() {
         this.configsContainer.innerHTML = ''
         $(this.configsContainer, $ => {
-            new Configs({configs: this.run.configs, width: this.width, isHyperParamOnly: true}).render($)
+            new Configs({configs: this.session.configs, width: this.width}).render($)
         })
     }
 
     onClick = () => {
-        ROUTER.navigate(`/run/${this.uuid}/configs`)
+        ROUTER.navigate(`/session/${this.uuid}/configs`)
     }
 }

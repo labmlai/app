@@ -1,12 +1,12 @@
-import {ConfigsCard} from "./card"
-import {ConfigsHandler} from "./view"
+import {RunConfigsCard} from "./card"
+import {RunConfigsHandler} from "./view"
 import {Analysis} from "../../types"
 
 
-let configsAnalysis: Analysis = {
-    card: ConfigsCard,
-    viewHandler: ConfigsHandler,
+let runConfigsAnalysis: Analysis = {
+    card: RunConfigsCard,
+    viewHandler: RunConfigsHandler,
     route: 'configs'
 }
 
-export default configsAnalysis
+export default runConfigsAnalysis
