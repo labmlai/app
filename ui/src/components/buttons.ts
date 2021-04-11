@@ -383,7 +383,7 @@ export class ShareButton extends Button {
         if (navigator.share) {
             try {
                 await navigator.share({
-                    text: `Check this ${this._text} on labml`,
+                    text: `${this._text}`,
                     url: window.location.href
                 })
             } catch (e) {
