@@ -122,7 +122,7 @@ class HyperParamsView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
-                        $('h2', '.header.text-center', 'Dynamic Hyperparameters')
+                        $('h2', '.header.text-center', 'Hyper-Parameters')
                         $('div', '.text-center', $ => {
                             this.paramsResetButtonContainer = $('span', '.show-inline')
                             this.paramsSaveButtonContainer = $('span', '.show-inline')
