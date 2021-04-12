@@ -52,6 +52,8 @@ class RunView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
+
+             changeRunDec(this.run)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
         this.share = new ShareButton({
@@ -60,7 +62,6 @@ class RunView extends ScreenView {
         })
 
         mix_panel.track('Run View', {uuid: this.uuid})
-        changeRunDec(this.run)
     }
 
     get requiresAuth(): boolean {
