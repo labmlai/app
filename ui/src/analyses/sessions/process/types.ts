@@ -14,8 +14,5 @@ export interface ProcessDetailsModel extends ProcessModel {
     cmdline: string,
     exe: string
     ppid: number
-    vms: SeriesModel
-    threads: SeriesModel
-    user: SeriesModel
-    system: SeriesModel
+    series: SeriesModel[]
 }

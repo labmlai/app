@@ -163,6 +163,7 @@ class ProcessAnalysis(Analysis):
                'dead': self.process.dead.get(process_id, 0),
                }
 
+        series_list = []
         for s_name in SERIES_NAMES:
             ind = process_id + f'.{s_name}'
 
@@ -170,7 +171,7 @@ class ProcessAnalysis(Analysis):
             if track:
                 series: Dict[str, Any] = Series().load(track).detail
                 series['name'] = s_name
-                res[s_name] = series
+                series_list.append(series)
 
         gpu_processes = self.process.gpu_processes.get(process_id, [])
         for gpu_process in gpu_processes:
@@ -181,7 +182,9 @@ class ProcessAnalysis(Analysis):
             if track:
                 series: Dict[str, Any] = Series().load(track).detail
                 series['name'] = s_name
-                res[s_name] = series
+                series_list.append(series)
+
+        res['series'] = series_list
 
         return res
 
