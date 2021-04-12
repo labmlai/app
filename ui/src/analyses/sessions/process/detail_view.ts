@@ -56,13 +56,7 @@ class ProcessDetailView extends ScreenView {
             this.session = await this.sessionCache.get()
             this.processData = (await this.analysisCache.get(force))
 
-            this.series = toPointValues([this.processData.system,
-                this.processData.user,
-                this.processData.vms,
-                this.processData.cpu,
-                this.processData.rss,
-                this.processData.threads,
-            ])
+            this.series = toPointValues(this.processData.series)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
