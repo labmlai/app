@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Dict, List, Any
 
 from flask import make_response, request
 from labml_db import Model, Index
@@ -25,6 +25,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
     pids: Dict[str, float]
     ppids: Dict[str, float]
     dead: Dict[str, bool]
+    gpu_processes: Dict[str, List[str]]
 
     @classmethod
     def defaults(cls):
@@ -36,6 +37,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
             pids={},
             ppids={},
             dead={},
+            gpu_processes={}
         )
 
 
@@ -66,37 +68,47 @@ class ProcessAnalysis(Analysis):
         for ind, s in data.items():
             ind_split = ind.split('.')
             ind_type = ind_split[0]
-            suffix = ind_split[-1]
             if ind_type == COMPUTEREnums.PROCESS:
-                name = '.'.join(ind_split[:-1])
+                suffix = ind_split[-1]
+                process_id = '.'.join(ind_split[:-1])
+
                 if 'name' == suffix:
-                    if name not in self.process.names:
-                        self.process.names[name] = s['value'][0]
+                    if process_id not in self.process.names:
+                        self.process.names[process_id] = s['value'][0]
                     continue
                 elif 'exe' == suffix:
-                    if name not in self.process.exes:
-                        self.process.exes[name] = s['value'][0]
+                    if process_id not in self.process.exes:
+                        self.process.exes[process_id] = s['value'][0]
                     continue
                 elif 'cmdline' == suffix:
-                    if name not in self.process.cmdlines:
-                        self.process.cmdlines[name] = s['value'][0]
+                    if process_id not in self.process.cmdlines:
+                        self.process.cmdlines[process_id] = s['value'][0]
                     continue
                 elif 'create_time' == suffix:
-                    if name not in self.process.create_times:
-                        self.process.create_times[name] = s['value'][0]
+                    if process_id not in self.process.create_times:
+                        self.process.create_times[process_id] = s['value'][0]
                     continue
                 elif 'pid' == suffix:
-                    if name not in self.process.pids:
-                        self.process.pids[name] = s['value'][0]
+                    if process_id not in self.process.pids:
+                        self.process.pids[process_id] = s['value'][0]
                     continue
                 elif 'ppids' == suffix:
-                    if name not in self.process.ppids:
-                        self.process.ppids[name] = s['value'][0]
+                    if process_id not in self.process.ppids:
+                        self.process.ppids[process_id] = s['value'][0]
                     continue
                 elif 'dead' == suffix:
-                    if name not in self.process.dead:
-                        self.process.dead[name] = s['value'][0]
+                    if process_id not in self.process.dead:
+                        self.process.dead[process_id] = s['value'][0]
                     continue
+
+                if 'gpu' in process_id:
+                    process_id = '.'.join(ind_split[:2])
+                    gpu_process = '.'.join(ind_split[2:4])
+
+                    if process_id in self.process.gpu_processes:
+                        self.process.gpu_processes[process_id].append(gpu_process)
+                    else:
+                        self.process.gpu_processes[process_id] = [gpu_process]
 
                 res[ind] = s
 
@@ -106,23 +118,23 @@ class ProcessAnalysis(Analysis):
         res = {}
         for ind, track in self.process.tracking.items():
             ind_split = ind.split('.')
-            suffix = ind_split[-1]
-            name = '.'.join(ind_split[:-1])
+            process_id = '.'.join(ind_split[:-1])
 
-            dead = self.process.dead.get(name, 0)
+            dead = self.process.dead.get(process_id, 0)
             if dead:
                 continue
 
-            if name not in res:
-                res[name] = {'process_id': name,
-                             'dead': dead,
-                             'pid': self.process.pids.get(name, 0),
-                             'name': self.process.names[name],
-                             }
+            if process_id not in res:
+                res[process_id] = {'process_id': process_id,
+                                   'dead': dead,
+                                   'pid': self.process.pids.get(process_id, 0),
+                                   'name': self.process.names.get(process_id, ''),
+                                   }
 
+            suffix = ind_split[-1]
             if suffix in ['cpu', 'rss']:
                 series: Dict[str, Any] = Series().load(track).detail
-                res[name][suffix] = series
+                res[process_id][suffix] = series
 
         ret = []
         for k, v in res.items():
@@ -153,6 +165,17 @@ class ProcessAnalysis(Analysis):
 
         for s_name in SERIES_NAMES:
             ind = process_id + f'.{s_name}'
+
+            track = self.process.tracking.get(ind, {})
+            if track:
+                series: Dict[str, Any] = Series().load(track).detail
+                series['name'] = s_name
+                res[s_name] = series
+
+        gpu_processes = self.process.gpu_processes.get(process_id, [])
+        for gpu_process in gpu_processes:
+            s_name = f'.{gpu_process}.mem'
+            ind = process_id + s_name
 
             track = self.process.tracking.get(ind, {})
             if track:
