@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Dict, Set, Any
 
 from flask import make_response, request
 from labml_db import Model, Index
@@ -25,7 +25,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
     pids: Dict[str, float]
     ppids: Dict[str, float]
     dead: Dict[str, bool]
-    gpu_processes: Dict[str, List[str]]
+    gpu_processes: Dict[str, Set[str]]
 
     @classmethod
     def defaults(cls):
@@ -106,9 +106,9 @@ class ProcessAnalysis(Analysis):
                     gpu_process = '.'.join(ind_split[2:4])
 
                     if process_id in self.process.gpu_processes:
-                        self.process.gpu_processes[process_id].append(gpu_process)
+                        self.process.gpu_processes[process_id].add(gpu_process)
                     else:
-                        self.process.gpu_processes[process_id] = [gpu_process]
+                        self.process.gpu_processes[process_id] = {gpu_process}
 
                 res[ind] = s
 
@@ -175,8 +175,8 @@ class ProcessAnalysis(Analysis):
 
         gpu_processes = self.process.gpu_processes.get(process_id, [])
         for gpu_process in gpu_processes:
-            s_name = f'.{gpu_process}.mem'
-            ind = process_id + s_name
+            s_name = f'{gpu_process}.mem'
+            ind = f'{process_id}.{s_name}'
 
             track = self.process.tracking.get(ind, {})
             if track:

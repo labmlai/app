@@ -15,7 +15,7 @@ import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
-import {changeRunDec} from "../utils/meta_tags"
+
 
 class RunView extends ScreenView {
     uuid: string
