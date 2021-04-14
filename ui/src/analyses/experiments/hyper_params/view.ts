@@ -184,7 +184,7 @@ class HyperParamsView extends ScreenView {
                 this.refresh.stop()
                 this.isEditMode = false
             }
-            this.runHeaderCard.refresh().then()
+            await this.runHeaderCard.refresh().then()
             this.renderSparkLines()
             this.renderLineChart()
         }

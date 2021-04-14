@@ -351,6 +351,9 @@ export class ShareButton extends Button {
     }
 
     renderToast() {
+        if(this.toastDiv != null) {
+            this.toastDiv.remove()
+        }
         $(document.body, $ => {
             $('div', '.toast-custom-container', $ => {
                 this.toastDiv = $('div', '.toast.align-items-center', {

@@ -123,7 +123,7 @@ class ProcessView extends ScreenView {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
-            this.sessionHeaderCard.refresh().then()
+            await this.sessionHeaderCard.refresh().then()
         }
     }
 

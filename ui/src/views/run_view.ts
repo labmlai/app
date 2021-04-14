@@ -188,7 +188,7 @@ class RunView extends ScreenView {
                 this.refresh.stop()
             }
             for (let card of this.cards) {
-                card.refresh()
+                await card.refresh()
 
                 let lastUpdated = card.getLastUpdated()
                 if (lastUpdated < oldest) {
@@ -197,7 +197,7 @@ class RunView extends ScreenView {
             }
 
             this.lastUpdated = oldest
-            this.runHeaderCard.refresh(this.lastUpdated).then()
+            await this.runHeaderCard.refresh(this.lastUpdated).then()
         }
     }
 

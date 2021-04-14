@@ -150,7 +150,7 @@ class ProcessDetailView extends ScreenView {
                 this.refresh.stop()
             }
 
-            this.sessionHeaderCard.refresh().then()
+            await this.sessionHeaderCard.refresh().then()
         }
     }
 

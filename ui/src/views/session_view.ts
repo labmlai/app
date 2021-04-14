@@ -184,7 +184,7 @@ class SessionView extends ScreenView {
             }
 
             for (let card of this.cards) {
-                card.refresh()
+                await card.refresh()
 
                 let lastUpdated = card.getLastUpdated()
                 if (lastUpdated < oldest) {
@@ -193,7 +193,7 @@ class SessionView extends ScreenView {
             }
 
             this.lastUpdated = oldest
-            this.sessionHeaderCard.refresh(this.lastUpdated).then()
+            await this.sessionHeaderCard.refresh(this.lastUpdated).then()
         }
     }
 

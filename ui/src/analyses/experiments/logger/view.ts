@@ -120,7 +120,7 @@ class LoggerView extends ScreenView {
                 this.refresh.stop()
             }
 
-            this.runHeaderCard.refresh().then()
+            await this.runHeaderCard.refresh().then()
         }
     }
 

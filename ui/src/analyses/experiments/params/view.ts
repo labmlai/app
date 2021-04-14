@@ -155,7 +155,7 @@ class ParametersView extends ScreenView {
             if (this.status && !this.status.isRunning) {
                 this.refresh.stop()
             }
-            this.runHeaderCard.refresh().then()
+            await this.runHeaderCard.refresh().then()
         }
     }
 
