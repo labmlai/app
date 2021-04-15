@@ -71,10 +71,6 @@ class Series:
         return len(self.last_step)
 
     def update(self, steps: List[float], values: List[float]) -> None:
-        self.value = self.value
-        self.step = self.step
-        self.last_step = self.last_step
-
         start_step = len(self.value)
         values = np.array(values)
         steps = np.array(steps)
@@ -93,17 +89,6 @@ class Series:
             self.step_gap *= 2
             self.merge()
 
-    def update_old(self, steps: List[float], values: List[float]) -> None:
-        self.step += steps.copy()
-        self.value += values.copy()
-        self.last_step += steps.copy()
-        # self._remove_nan(values)
-
-        self.merge()
-        while len(self) > self.max_buffer_length:
-            self.step_gap *= 2
-            self.merge()
-
     def _remove_nan(self, values) -> None:
         infin = np.isfinite(values)
         np.bitwise_not(infin, out=infin)
@@ -114,7 +99,7 @@ class Series:
             if infin[i]:
                 values[i] = values[i - 1]
 
-    def _find_gap_new(self, last_step) -> None:
+    def _find_gap(self, last_step) -> None:
         if not self.step_gap:
             if len(self) > 1:
                 gap = self.last_step[1:] - self.last_step[:-1]
@@ -123,18 +108,9 @@ class Series:
 
             self.step_gap = gap.max().item()
 
-    def _find_gap(self) -> None:
-        if self.step_gap:
-            return
-        assert len(self) > 1
-
-        last_step = np.array(self.last_step)
-        gap = last_step[1:] - last_step[:-1]
-        self.step_gap = gap.max().item()
-
     def merge_n(self, start_step, values, last_step, steps):
         if len(last_step) != 1:
-            self._find_gap_new(last_step)
+            self._find_gap(last_step)
 
             i = 0
             j = 1
@@ -165,7 +141,7 @@ class Series:
             self.value = np.concatenate((self.value[:-1], values))
             self.step = np.concatenate((self.step[:-1], steps))
             self.last_step = np.concatenate((self.last_step[:-1], last_step))
-        else:  # TODO need this ?
+        else:
             self.value = np.concatenate((self.value, values))
             self.step = np.concatenate((self.step, steps))
             self.last_step = np.concatenate((self.last_step, last_step))
@@ -173,8 +149,6 @@ class Series:
     def merge(self) -> None:
         if len(self) == 1:
             return
-
-        # self._find_gap()
 
         i = 0
         j = 1
