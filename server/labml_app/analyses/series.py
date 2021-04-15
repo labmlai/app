@@ -12,18 +12,18 @@ SeriesModel = Dict[str, Union[List[float], float]]
 
 
 class Series:
-    step: List[float]
-    last_step: List[float]
-    value: List[float]
+    step: np.ndarray
+    last_step: np.ndarray
+    value: np.ndarray
     smoothed: List[float]
     is_smoothed_updated: bool
     step_gap: float
     max_buffer_length: int
 
     def __init__(self, max_buffer_length: int = None):
-        self.step = []
-        self.last_step = []
-        self.value = []
+        self.step = np.array([])
+        self.last_step = np.array([])
+        self.value = np.array([])
         self.smoothed = []
         self.is_smoothed_updated = False
         self.step_gap = 0
@@ -45,8 +45,8 @@ class Series:
             self.is_smoothed_updated = False
 
         return {
-            'step': self.last_step,
-            'value': self.value,
+            'step': self.last_step.tolist(),
+            'value': self.value.tolist(),
             'smoothed': self.smoothed,
             'mean': np.mean(self.value),
         }
@@ -67,22 +67,61 @@ class Series:
             'step_gap': self.step_gap
         }
 
+    def __len__(self):
+        return len(self.last_step)
+
     def update(self, steps: List[float], values: List[float]) -> None:
+        self.value = self.value
+        self.step = self.step
+        self.last_step = self.last_step
+
         start_step = len(self.value)
+        values = np.array(values)
+        steps = np.array(steps)
+        last_step = np.array(steps)
+
+        self._remove_nan(values)
+
+        if start_step:
+            values = np.concatenate((self.value[-1:], values))
+            steps = np.concatenate((self.step[-1:], steps))
+            last_step = np.concatenate((self.last_step[-1:], last_step))
+
+        self.merge_n(start_step, values, last_step, steps)
+
+        while len(self) > self.max_buffer_length:
+            self.step_gap *= 2
+            self.merge()
+
+    def update_old(self, steps: List[float], values: List[float]) -> None:
         self.step += steps.copy()
         self.value += values.copy()
         self.last_step += steps.copy()
-        self._remove_nan(start_step)
+        # self._remove_nan(values)
 
         self.merge()
         while len(self) > self.max_buffer_length:
             self.step_gap *= 2
             self.merge()
 
-    def _remove_nan(self, start_step) -> None:
-        for i in range(start_step, len(self.value)):
-            if not np.isfinite(self.value[i]):
-                self.value[i] = 0 if i == 0 else self.value[i - 1]
+    def _remove_nan(self, values) -> None:
+        infin = np.isfinite(values)
+        np.bitwise_not(infin, out=infin)
+
+        if infin[0]:
+            values[0] = 0.0 if len(self.value) == 0 else self.value[-1]
+        for i in range(1, len(values)):
+            if infin[i]:
+                values[i] = values[i - 1]
+
+    def _find_gap_new(self, last_step) -> None:
+        if not self.step_gap:
+            if len(self) > 1:
+                gap = self.last_step[1:] - self.last_step[:-1]
+            else:
+                gap = last_step[1:] - last_step[:-1]
+
+            self.step_gap = gap.max().item()
 
     def _find_gap(self) -> None:
         if self.step_gap:
@@ -93,11 +132,49 @@ class Series:
         gap = last_step[1:] - last_step[:-1]
         self.step_gap = gap.max().item()
 
+    def merge_n(self, start_step, values, last_step, steps):
+        if len(last_step) != 1:
+            self._find_gap_new(last_step)
+
+            i = 0
+            j = 1
+            ls = 0
+            while j < len(values):
+                if last_step[j] - ls < self.step_gap:
+                    # merge
+                    iw = max(1., last_step[i] - ls)
+                    jw = max(1., last_step[j] - last_step[i])
+                    steps[i] = (steps[i] * iw + steps[j] * jw) / (iw + jw)
+                    values[i] = (values[i] * iw + values[j] * jw) / (iw + jw)
+                    last_step[i] = last_step[j]
+                    j += 1
+                else:
+                    ls = last_step[i]
+                    i += 1
+                    last_step[i] = last_step[j]
+                    steps[i] = steps[j]
+                    values[i] = values[j]
+                    j += 1
+
+            i += 1
+            last_step = last_step[:i]
+            steps = steps[:i]
+            values = values[:i]
+
+        if start_step:
+            self.value = np.concatenate((self.value[:-1], values))
+            self.step = np.concatenate((self.step[:-1], steps))
+            self.last_step = np.concatenate((self.last_step[:-1], last_step))
+        else:  # TODO need this ?
+            self.value = np.concatenate((self.value, values))
+            self.step = np.concatenate((self.step, steps))
+            self.last_step = np.concatenate((self.last_step, last_step))
+
     def merge(self) -> None:
         if len(self) == 1:
             return
 
-        self._find_gap()
+        # self._find_gap()
 
         i = 0
         j = 1
@@ -123,9 +200,6 @@ class Series:
         self.last_step = self.last_step[:i]
         self.step = self.step[:i]
         self.value = self.value[:i]
-
-    def __len__(self):
-        return len(self.last_step)
 
     def get_extent(self, is_remove_outliers: bool):
         if len(self.value) == 0:
@@ -212,6 +286,5 @@ class Series:
             self.smoothed = data['smoothed'].copy()
         else:
             self.smoothed = []
-        self._remove_nan(0)
 
         return self
