@@ -8,7 +8,7 @@ SMOOTH_POINTS = 50
 MIN_SMOOTH_POINTS = 1
 OUTLIER_MARGIN = 0.04
 
-SeriesModel = Dict[str, Union[List[float], float]]
+SeriesModel = Dict[str, Union[np.ndarray, List[float], float]]
 
 
 class Series:
