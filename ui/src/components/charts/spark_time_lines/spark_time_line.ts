@@ -42,8 +42,8 @@ export class SparkTimeLine {
         this.selected = opt.selected
         this.onClick = opt.onClick
         this.color = this.selected >= 0 ? opt.color : getBaseColor()
-        this.titleWidth = Math.min(150, Math.round(opt.width * .35))
-        this.chartWidth = opt.width - this.titleWidth * 2
+        this.chartWidth = Math.min(300, Math.round(opt.width * .60))
+        this.titleWidth = (opt.width - this.chartWidth) / 2
         this.minLastValue = opt.minLastValue
         this.maxLastValue = opt.maxLastValue
 
@@ -84,10 +84,10 @@ export class SparkTimeLine {
 
     render($: WeyaElementFunction) {
         $(`div.sparkline-list-item.list-group-item.${this.className}`, {on: {click: this.onClick}}, $ => {
-            $('div.sparkline-content', {style: {width: `${this.titleWidth * 2 + this.chartWidth}px`}}, $ => {
-                $('span', this.name, {style: {width: `${this.titleWidth}px`, color: this.color}})
-                $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth}px`}, height: 36}, $ => {
-                    $('g', {transform: `translate(${0}, 30)`}, $ => {
+            $('div.sparkline-content', {style: {width: `${Math.min(this.titleWidth * 2 + this.chartWidth, 450)}px`}}, $ => {
+                $('span', '.title', this.name, {style: {color: this.color}})
+                $('svg.sparkline', {style: {width: `${this.chartWidth + this.titleWidth * 2}px`}, height: 36}, $ => {
+                    $('g', {transform: `translate(${this.titleWidth}, 30)`}, $ => {
                         new TimeSeriesFill({
                             series: this.series,
                             xScale: this.xScale,
@@ -103,14 +103,14 @@ export class SparkTimeLine {
                         })
                         this.timeSeriesPlot.render($)
                     })
-                    $('g', {transform: `translate(${this.titleWidth}, ${0})`}, $ => {
+                    $('g', {transform: `translate(${this.titleWidth * 2 + this.chartWidth}, ${0})`}, $ => {
                         this.secondaryElem = $('text', '.value-secondary', {
                             style: {fill: this.color},
-                            transform: `translate(${this.chartWidth},${12})`
+                            transform: `translate(${0},${12})`
                         })
                         this.primaryElem = $('text', '.value-primary', {
                             style: {fill: this.color},
-                            transform: `translate(${this.chartWidth},${29})`
+                            transform: `translate(${0},${29})`
                         })
                     })
                 })

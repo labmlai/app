@@ -682,6 +682,15 @@ button.sparkline-list-item {
       display: inline-block;
     }
 
+    .title {
+      height: 1.5em;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      margin-top: auto;
+      margin-bottom: auto;
+    }
+
     svg.sparkline {
       path.smoothed-line {
         stroke-width: 1.5;
