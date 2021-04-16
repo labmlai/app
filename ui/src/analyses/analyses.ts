@@ -33,7 +33,6 @@ let experimentAnalyses: Analysis[] = [
 
 let sessionAnalyses: Analysis[] = [
     cpuAnalysis,
-    sessionConfigsAnalysis,
     processAnalysis,
     memoryAnalysis,
     diskAnalysis,
@@ -43,6 +42,7 @@ let sessionAnalyses: Analysis[] = [
     gpuPowerAnalysis,
     batteryAnalysis,
     networkAnalysis,
+    sessionConfigsAnalysis,
 ]
 
 export {

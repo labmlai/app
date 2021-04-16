@@ -1,13 +1,13 @@
 import {Weya as $, WeyaElementFunction} from '../../../../../lib/weya/weya'
-import {Session} from "../../../models/session"
 import CACHE, {SessionCache} from "../../../cache/cache"
 import {Card, CardOptions} from "../../types"
 import {DataLoader} from "../../../components/loader"
 import {Configs} from "./components"
 import {ROUTER} from '../../../app'
+import {Config} from "../../../models/config"
 
 export class SessionConfigsCard extends Card {
-    session: Session
+    configs: Config[]
     uuid: string
     width: number
     sessionCache: SessionCache
@@ -22,7 +22,8 @@ export class SessionConfigsCard extends Card {
         this.width = opt.width
         this.sessionCache = CACHE.getSession(this.uuid)
         this.loader = new DataLoader(async (force) => {
-            this.session = await this.sessionCache.get(force)
+            let session = await this.sessionCache.get(force)
+            this.configs = session.configs.filter(conf => !conf['key'].includes('sensor'))
         })
     }
 
@@ -31,8 +32,8 @@ export class SessionConfigsCard extends Card {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div','.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3','.header', 'Configurations')
+        this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
+            $('h3', '.header', 'Configurations')
             this.loader.render($)
             this.configsContainer = $('div')
         })
@@ -40,7 +41,7 @@ export class SessionConfigsCard extends Card {
         try {
             await this.loader.load()
 
-            if (this.session.configs.length > 0) {
+            if (this.configs.length > 0) {
                 this.renderConfigs()
             } else {
                 this.elem.classList.add('hide')
@@ -53,7 +54,7 @@ export class SessionConfigsCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.session.configs.length > 0) {
+            if (this.configs.length > 0) {
                 this.renderConfigs()
                 this.elem.classList.remove('hide')
             }
@@ -65,7 +66,7 @@ export class SessionConfigsCard extends Card {
     renderConfigs() {
         this.configsContainer.innerHTML = ''
         $(this.configsContainer, $ => {
-            new Configs({configs: this.session.configs, width: this.width}).render($)
+            new Configs({configs: this.configs, width: this.width}).render($)
         })
     }
 
