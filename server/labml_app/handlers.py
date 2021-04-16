@@ -8,7 +8,6 @@ from flask import request, make_response, jsonify
 
 from .logger import logger
 from . import settings
-from . import block_uuids
 from . import auth
 from .db import run
 from .db import computer
@@ -16,6 +15,7 @@ from .db import session
 from .db import app_token
 from .db import user
 from .db import project
+from .db import blocked_uuids
 from . import utils
 from . import analyses
 
@@ -81,9 +81,9 @@ def update_run() -> flask.Response:
     version = request.args.get('labml_version', '')
     run_uuid = request.args.get('run_uuid', '')
 
-    if run_uuid in block_uuids.update_run_uuids:
-        error = {'error': 'block_run_uuid',
-                 'message': f'Block Run UUID'}
+    if blocked_uuids.is_run_blocked(run_uuid):
+        error = {'error': 'blocked_run_uuid',
+                 'message': f'Blocked or deleted run, uuid:{run_uuid}'}
         errors.append(error)
         return jsonify({'errors': errors})
 
@@ -147,6 +147,12 @@ def update_session() -> flask.Response:
     session_uuid = request.args.get('session_uuid', '')
     computer_uuid = request.args.get('computer_uuid', '')
     version = request.args.get('labml_version', '')
+
+    if blocked_uuids.is_session_blocked(session_uuid):
+        error = {'error': 'blocked_session_uuid',
+                 'message': f'Blocked or deleted session, uuid:{session_uuid}'}
+        errors.append(error)
+        return jsonify({'errors': errors})
 
     if len(computer_uuid) < 10:
         error = {'error': 'invalid_computer_uuid',

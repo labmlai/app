@@ -3,7 +3,7 @@ import time
 from labml_app import settings
 from labml_app import block_uuids
 from labml_app.logger import logger
-from labml_app.db import project, run, session
+from labml_app.db import project, run, session, blocked_uuids
 
 
 def clean_float_project() -> None:
@@ -19,6 +19,7 @@ def clean_float_project() -> None:
 
             if not r.is_claimed and (time.time() - 86400) > s.last_updated_time:
                 run.delete(run_uuid)
+                blocked_uuids.remove_blocked_run(run_uuid)
                 delete_run_list.append(run_uuid)
             elif (time.time() - 86400) > s.last_updated_time:
                 delete_run_list.append(run_uuid)
@@ -40,6 +41,7 @@ def clean_float_project() -> None:
 
             if not ss.is_claimed and (time.time() - 86400) > s.last_updated_time:
                 session.delete(session_uuid)
+                blocked_uuids.remove_blocked_session(session_uuid)
                 delete_session_list.append(session_uuid)
             elif (time.time() - 86400) > s.last_updated_time:
                 delete_session_list.append(session_uuid)

@@ -18,6 +18,7 @@ from . import app_token
 from . import run
 from . import session
 from . import computer
+from . import blocked_uuids
 from .. import analyses
 
 DATA_PATH = settings.DATA_PATH
@@ -35,6 +36,8 @@ Models = [(YamlSerializer(), user.User),
 
 Indexes = [project.ProjectIndex,
            user.UserIndex,
+           blocked_uuids.BlockedRunIndex,
+           blocked_uuids.BlockedSessionIndex,
            user.TokenOwnerIndex,
            app_token.AppTokenIndex,
            run.RunIndex,

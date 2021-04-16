@@ -4,6 +4,7 @@ from labml_db import Model, Key, Index
 
 from . import run
 from . import session
+from . import blocked_uuids
 from ..logger import logger
 
 
@@ -63,6 +64,8 @@ class Project(Model['Project']):
                 r = run.get(run_uuid)
                 if r and r.owner == project_owner:
                     try:
+                        if r.is_in_progress:
+                            blocked_uuids.add_blocked_run(r)
                         run.delete(run_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the run {run_uuid}')
@@ -76,6 +79,8 @@ class Project(Model['Project']):
                 s = session.get(session_uuid)
                 if s and s.owner == project_owner:
                     try:
+                        if s.is_in_progress:
+                            blocked_uuids.add_blocked_session(s)
                         session.delete(session_uuid)
                     except TypeError:
                         logger.error(f'error while deleting the session {session_uuid}')
