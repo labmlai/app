@@ -13,7 +13,6 @@ class Project(Model['Project']):
     name: str
     runs: Dict[str, Key['run.Run']]
     sessions: Dict[str, Key['session.Session']]
-    computers: Dict[str, any]
     is_run_added: bool
 
     @classmethod
@@ -23,7 +22,6 @@ class Project(Model['Project']):
                     labml_token='',
                     runs={},
                     sessions={},
-                    computers={},
                     is_run_added=False,
                     )
 
