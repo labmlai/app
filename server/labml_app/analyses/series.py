@@ -126,14 +126,14 @@ class Series:
                 values[i] = values[j]
                 j += 1
 
-        i += 1
-        return last_step[:i], steps[:i], values[:i]
+        return i + 1
 
     def merge_n(self, start_step, values, last_step, steps):
         if len(last_step) > 1:
             self._find_gap(last_step)
 
-            last_step, steps, values = self._merge(values, last_step, steps)
+            n = self._merge(values, last_step, steps)
+            last_step, steps, values = last_step[:n], steps[:n], values[:n]
 
         if start_step:
             self.value = np.concatenate((self.value[:-1], values))
@@ -148,8 +148,10 @@ class Series:
         if len(self) == 1:
             return
 
-        self.last_step, self.steps, self.values = \
-            self._merge(self.values, self.last_step, self.steps)
+        n = self._merge(self.value, self.last_step, self.step)
+        self.last_step = self.last_step[:n]
+        self.step = self.step[:n]
+        self.value = self.value[:n]
 
     def get_extent(self, is_remove_outliers: bool):
         if len(self.value) == 0:
