@@ -18,7 +18,7 @@ def update_equal_gap_equal_sizes(prev: int = 0, size=5, gap: int = 1, max_step=1
 
         data = s.to_data()
 
-    print(data['step'])
+    print(data['step'].tolist())
 
 
 def update_equal_gap_equal_sizes_diff_gap_between(prev: int = 0, size=5, gap: int = 1, max_step=100):
@@ -36,7 +36,7 @@ def update_equal_gap_equal_sizes_diff_gap_between(prev: int = 0, size=5, gap: in
 
         data = s.to_data()
 
-    print(data['step'])
+    print(data['step'].tolist())
 
 
 def update_equal_gap_diff_sizes(prev: int = 0, gap: int = 1, max_step=100):
@@ -55,7 +55,7 @@ def update_equal_gap_diff_sizes(prev: int = 0, gap: int = 1, max_step=100):
 
         data = s.to_data()
 
-    print(data['step'])
+    print(data['step'].tolist())
 
 
 def update_equal_gap_diff_sizes_diff_gap_between(prev: int = 0, gap: int = 1, max_step=100):
@@ -74,7 +74,7 @@ def update_equal_gap_diff_sizes_diff_gap_between(prev: int = 0, gap: int = 1, ma
 
         data = s.to_data()
 
-    print(data['step'])
+    print(data['step'].tolist())
 
 
 def update_diff_gap_diff_sizes(prev: int = 0, max_step=100):
@@ -96,7 +96,7 @@ def update_diff_gap_diff_sizes(prev: int = 0, max_step=100):
 
         data = s.to_data()
 
-    print(data['step'])
+    print(data['step'].tolist())
 
 
 def update_equal_and_diff_gaps_diff_sizes(prev: int = 0, size=5, gap: int = 1, max_step=100):
@@ -131,7 +131,7 @@ def update_equal_and_diff_gaps_diff_sizes(prev: int = 0, size=5, gap: int = 1, m
 
         data = s.to_data()
 
-    print(data['step'])
+    print(data['step'].tolist())
 
 
 if __name__ == "__main__":
@@ -143,6 +143,6 @@ if __name__ == "__main__":
     # update_equal_gap_diff_sizes(gap=2, max_step=int(1e+4))
     # update_equal_gap_diff_sizes_diff_gap_between(gap=2, max_step=int(1e+4))
 
-    # update_diff_gap_diff_sizes(max_step=int(1e+4))
-
+    update_diff_gap_diff_sizes(max_step=int(1e+4))
+    #
     update_equal_and_diff_gaps_diff_sizes(max_step=int(1e+4))

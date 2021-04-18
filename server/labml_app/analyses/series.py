@@ -107,9 +107,11 @@ class Series:
         else:
             self.step_gap = 1.
 
-    def _merge(self, values: np.ndarray, last_step: np.ndarray, steps: np.ndarray, prev_ls=0):
-        i = 0
-        j = 1
+    def _merge(self,
+               values: np.ndarray, last_step: np.ndarray, steps: np.ndarray,
+               prev_ls: int = 0,
+               i: int = 0):
+        j = i + 1
         while j < len(values):
             if last_step[j] - prev_ls < self.step_gap:
                 # merge
@@ -140,7 +142,7 @@ class Series:
             prev_ls = self.last_step[from_step - 1].item()
         else:
             prev_ls = 0
-        n = self._merge(self.value, self.last_step, self.step, prev_ls)
+        n = self._merge(self.value, self.last_step, self.step, prev_ls, from_step)
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]
         self.value = self.value[:n]
