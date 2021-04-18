@@ -70,20 +70,19 @@ class Series:
     def __len__(self):
         return len(self.last_step)
 
-    def update(self, steps: List[float], values: List[float]) -> None:
-        start_step = len(self.value)
-        values = np.array(values)
-        steps = np.array(steps)
-        last_step = np.array(steps)
+    def update(self, step: List[float], value: List[float]) -> None:
+        prev_size = len(self.value)
+        value = np.array(value)
+        step = np.array(step)
+        last_step = np.array(step)
 
-        self._remove_nan(values)
+        self._remove_nan(value)
 
-        if start_step:
-            values = np.concatenate((self.value[-1:], values))
-            steps = np.concatenate((self.step[-1:], steps))
-            last_step = np.concatenate((self.last_step[-1:], last_step))
+        self.value = np.concatenate((self.value, value))
+        self.step = np.concatenate((self.step, step))
+        self.last_step = np.concatenate((self.last_step, last_step))
 
-        self.merge_n(start_step, values, last_step, steps)
+        self.merge(prev_size)
 
         while len(self) > self.max_buffer_length:
             self.step_gap *= 2
@@ -99,81 +98,52 @@ class Series:
             if infin[i]:
                 values[i] = values[i - 1]
 
-    def _find_gap(self, last_step) -> None:
-        if not self.step_gap:
-            if len(self) > 1:
-                gap = self.last_step[1:] - self.last_step[:-1]
-            else:
-                gap = last_step[1:] - last_step[:-1]
-
-            self.step_gap = gap.max().item()
-
-    def merge_n(self, start_step, values, last_step, steps):
-        if len(last_step) > 1:
-            self._find_gap(last_step)
-
-            i = 0
-            j = 1
-            ls = 0
-            while j < len(values):
-                if last_step[j] - ls < self.step_gap:
-                    # merge
-                    iw = max(1., last_step[i] - ls)
-                    jw = max(1., last_step[j] - last_step[i])
-                    steps[i] = (steps[i] * iw + steps[j] * jw) / (iw + jw)
-                    values[i] = (values[i] * iw + values[j] * jw) / (iw + jw)
-                    last_step[i] = last_step[j]
-                    j += 1
-                else:
-                    ls = last_step[i]
-                    i += 1
-                    last_step[i] = last_step[j]
-                    steps[i] = steps[j]
-                    values[i] = values[j]
-                    j += 1
-
-            i += 1
-            last_step = last_step[:i]
-            steps = steps[:i]
-            values = values[:i]
-
-        if start_step:
-            self.value = np.concatenate((self.value[:-1], values))
-            self.step = np.concatenate((self.step[:-1], steps))
-            self.last_step = np.concatenate((self.last_step[:-1], last_step))
-        else:
-            self.value = np.concatenate((self.value, values))
-            self.step = np.concatenate((self.step, steps))
-            self.last_step = np.concatenate((self.last_step, last_step))
-
-    def merge(self) -> None:
-        if len(self) == 1:
+    def _find_gap(self) -> None:
+        if self.step_gap:
             return
 
+        if len(self) > 1:
+            self.step_gap = (self.last_step[1] - self.last_step[0]).item()
+        else:
+            self.step_gap = 1.
+
+    def _merge(self, values: np.ndarray, last_step: np.ndarray, steps: np.ndarray, prev_ls=0):
         i = 0
         j = 1
-        last_step = 0
-        while j < len(self):
-            if self.last_step[j] - last_step < self.step_gap:
+        while j < len(values):
+            if last_step[j] - prev_ls < self.step_gap:
                 # merge
-                iw = max(1., self.last_step[i] - last_step)
-                jw = max(1., self.last_step[j] - self.last_step[i])
-                self.step[i] = (self.step[i] * iw + self.step[j] * jw) / (iw + jw)
-                self.value[i] = (self.value[i] * iw + self.value[j] * jw) / (iw + jw)
-                self.last_step[i] = self.last_step[j]
+                iw = max(1., last_step[i] - prev_ls)
+                jw = max(1., last_step[j] - last_step[i])
+                steps[i] = (steps[i] * iw + steps[j] * jw) / (iw + jw)
+                values[i] = (values[i] * iw + values[j] * jw) / (iw + jw)
+                last_step[i] = last_step[j]
                 j += 1
             else:
-                last_step = self.last_step[i]
+                prev_ls = last_step[i]
                 i += 1
-                self.last_step[i] = self.last_step[j]
-                self.step[i] = self.step[j]
-                self.value[i] = self.value[j]
+                last_step[i] = last_step[j]
+                steps[i] = steps[j]
+                values[i] = values[j]
                 j += 1
 
-        i += 1
-        self.last_step = self.last_step[:i]
-        self.step = self.step[:i]
-        self.value = self.value[:i]
+        return i + 1
+
+    def merge(self, prev_size: int = 0):
+        from_step = max(0, prev_size - 1)
+        if len(self) - from_step <= 1:
+            return
+
+        self._find_gap()
+
+        if from_step > 0:
+            prev_ls = self.last_step[from_step - 1].item()
+        else:
+            prev_ls = 0
+        n = self._merge(self.value, self.last_step, self.step, prev_ls)
+        self.last_step = self.last_step[:n]
+        self.step = self.step[:n]
+        self.value = self.value[:n]
 
     def get_extent(self, is_remove_outliers: bool):
         if len(self.value) == 0:
