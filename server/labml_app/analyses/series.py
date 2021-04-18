@@ -82,6 +82,11 @@ class Series:
         self.step = np.concatenate((self.step, step))
         self.last_step = np.concatenate((self.last_step, last_step))
 
+        if len(self) > 1:
+            self.step_gap = (self.last_step[1] - self.last_step[0]).item()
+        else:
+            self.step_gap = 1.
+
         self.merge(prev_size)
 
         while len(self) > self.max_buffer_length:
@@ -97,15 +102,6 @@ class Series:
         for i in range(1, len(values)):
             if infin[i]:
                 values[i] = values[i - 1]
-
-    def _find_gap(self) -> None:
-        if self.step_gap:
-            return
-
-        if len(self) > 1:
-            self.step_gap = (self.last_step[1] - self.last_step[0]).item()
-        else:
-            self.step_gap = 1.
 
     def _merge(self,
                values: np.ndarray, last_step: np.ndarray, steps: np.ndarray,
@@ -135,8 +131,6 @@ class Series:
         from_step = max(0, prev_size - 1)
         if len(self) - from_step <= 1:
             return
-
-        self._find_gap()
 
         if from_step > 0:
             prev_ls = self.last_step[from_step - 1].item()
