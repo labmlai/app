@@ -102,11 +102,9 @@ class Series:
     def _find_gap(self, last_step) -> None:
         if not self.step_gap:
             if len(self) > 1:
-                gap = self.last_step[1:] - self.last_step[:-1]
+                return (self.last_step[1] - self.last_step[0]).item()
             else:
-                gap = last_step[1:] - last_step[:-1]
-
-            self.step_gap = gap.max().item()
+                return (last_step[1] - last_step[0]).item()
 
     def merge_n(self, start_step, values, last_step, steps):
         if len(last_step) > 1:
