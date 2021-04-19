@@ -45,7 +45,7 @@ class ProcessSparkLine {
 
         $(`div.sparkline-list-item.list-group-item.d-inline-block`, $ => {
             $('div.sparkline-content', {style: {width: `${this.width}px`}}, $ => {
-                $('svg.sparkline', {style: {width: `${this.width}px`}, height: 36}, $ => {
+                $('svg.sparkline', {style: {width: `${this.width}px`}, height: 54}, $ => {
                     $('g', {transform: `translate(${0}, 30)`}, $ => {
                         new TimeSeriesFill({
                             series: this.series,
@@ -61,7 +61,7 @@ class ProcessSparkLine {
                             color: '#7f8c8d'
                         }).render($)
                     })
-                    $('line', '.stokeWidth', {
+                    $('line', '.wide-stroke', {
                         x1: "0",
                         y1: "0",
                         x2: `${this.barScale(last.smoothed)}`,
@@ -69,9 +69,15 @@ class ProcessSparkLine {
                         style: {stroke: this.color},
                         transform: `translate(${0}, 36)`
                     })
+                    $('g', {transform: `translate(${2}, ${39.5})`}, $ => {
+                        $('text', '.line-text', {
+                            style: {fill: this.color},
+                        }, $ => {
+                            $('tspan', `${this.name}: `)
+                            $('tspan', `${formatFixed(last.smoothed, 3)}`)
+                        })
+                    })
                 })
-                $('span', `${this.name}:`)
-                $('span', {style: {color: this.color}}, `${formatFixed(last.smoothed, 3)}`)
             })
         })
     }
@@ -98,7 +104,7 @@ class ProcessListItem {
 
     constructor(opt: ProcessListItemOptions) {
         this.item = opt.item
-        this.width = opt.width
+        this.width = opt.width - 52
         this.stepExtent = opt.stepExtent
         this.cpuBarExtent = opt.cpuBarExtent
         this.rssBarExtent = opt.rssBarExtent
@@ -112,16 +118,19 @@ class ProcessListItem {
         this.elem = $('a', '.list-item.list-group-item.list-group-item-action',
             {href: `/details/${this.item.process_id}`, on: {click: this.onClick}},
             $ => {
-                $('div', $ => {
+                $('div', '.process-item', $ => {
                     $('div', $ => {
                         $('span', this.item.name)
-                        $('span', ` PID: ${this.item.pid}`)
                         if (this.item.dead) {
                             new BadgeView({text: 'dead'}).render($)
                         }
+                        $('div', '.pid', $ => {
+                            $('span', '.title', 'PID: ')
+                            $('span', `${this.item.pid}`)
+                        })
                     })
                     new ProcessSparkLine({
-                        width: this.width / 2.2,
+                        width: this.width / 2,
                         series: this.item.cpu.series,
                         stepExtent: this.stepExtent,
                         barExtent: this.cpuBarExtent,
@@ -129,12 +138,12 @@ class ProcessListItem {
                         name: 'CPU'
                     }).render($)
                     new ProcessSparkLine({
-                        width: this.width / 2.2,
+                        width: this.width / 2,
                         series: this.item.rss.series,
                         stepExtent: this.stepExtent,
                         barExtent: this.rssBarExtent,
                         color: "#bc5090",
-                        name: 'RSS'
+                        name: 'RAM'
                     }).render($)
                 })
             })

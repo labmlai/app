@@ -341,7 +341,7 @@ span.fas {
     background-color: #f0ad4e;
   }
 
-  &.success{
+  &.success {
     background-color: #5cb85c;
   }
 }
@@ -556,6 +556,18 @@ span.fas {
   }
 }
 
+.process-item {
+  & .pid {
+    float: right;
+    display: inline-block;
+    width: 72px;
+
+    & > .title {
+      font-weight: bold;
+    }
+  }
+}
+
 /* Charts */
 
 .selected-step {
@@ -596,10 +608,6 @@ svg#chart {
   path.unsmoothed-line {
     stroke-width: 0.5;
   }
-}
-
-line.stokeWidth {
-  stroke-width: 3;
 }
 
 svg#time-series-chart {
@@ -692,6 +700,8 @@ button.sparkline-list-item {
     }
 
     svg.sparkline {
+      isolation: isolate;
+
       path.smoothed-line {
         stroke-width: 1.5;
       }
@@ -716,6 +726,15 @@ button.sparkline-list-item {
         font-size: 12px;
         text-anchor: end;
         fill: #7f8c8d;
+      }
+
+      & line.wide-stroke {
+        stroke-width: 14;
+      }
+
+      & .line-text {
+        font-weight: bold;
+        mix-blend-mode: difference;
       }
     }
 
