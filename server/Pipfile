@@ -16,6 +16,7 @@ sentry-sdk = {extras = ["flask"], version = "*"}
 labml-db = "*"
 redis = "*"
 mixpanel = "*"
+slack-sdk = "*"
 
 [requires]
 python_version = "3.7"

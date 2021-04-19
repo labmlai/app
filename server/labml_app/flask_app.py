@@ -11,7 +11,7 @@ from flask_cors import CORS
 from labml_app import handlers
 from labml_app import settings
 from labml_app.logger import logger
-from labml_app.utils import mix_panel
+from labml_app.utils import mix_panel, slack
 
 if settings.SENTRY_DSN:
     try:
@@ -117,7 +117,7 @@ def after_request(response):
         return response
 
     if request_time > time_limit:
-        logger.error(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
+        slack.client(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
     else:
         logger.info(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
 

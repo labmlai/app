@@ -108,6 +108,7 @@ class RunView extends ScreenView {
 
             setTitle({section: 'Run', item: this.run.name})
             this.renderButtons()
+            this.renderClaimMessage()
             this.share.text = `${this.run.name} run`
             this.renderCards()
         } catch (e) {
@@ -139,6 +140,12 @@ class RunView extends ScreenView {
                 }).render($)
             }
         })
+    }
+
+    renderClaimMessage() {
+        if (!this.run.is_claimed) {
+            this.userMessages.warningMessage('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
+        }
     }
 
     async onRunAction(isRunClaim: boolean) {
