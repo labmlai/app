@@ -42,7 +42,7 @@ export class SessionHeaderCard {
     }
 
     async render($: WeyaElementFunction) {
-        this.elem = $('div', '.labml-card.disabled', {on: {click: this.onClick}}, $ => {
+        this.elem = $('div', '.labml-card.disabled', $ => {
             this.loader.render($)
         })
 
