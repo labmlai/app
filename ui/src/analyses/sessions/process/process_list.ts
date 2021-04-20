@@ -45,7 +45,7 @@ class ProcessSparkLine {
 
         $(`div.sparkline-list-item.list-group-item.d-inline-block`, $ => {
             $('div.sparkline-content', {style: {width: `${this.width}px`}}, $ => {
-                $('svg.sparkline', {style: {width: `${this.width}px`}, height: 54}, $ => {
+                $('svg.sparkline', {style: {width: `${this.width}px`}, height: 51}, $ => {
                     $('g', {transform: `translate(${0}, 30)`}, $ => {
                         new TimeSeriesFill({
                             series: this.series,
@@ -62,19 +62,18 @@ class ProcessSparkLine {
                         }).render($)
                     })
                     $('line', '.wide-stroke', {
-                        x1: "0",
+                        x1: `${this.width - this.barScale(last.smoothed)}`,
                         y1: "0",
-                        x2: `${this.barScale(last.smoothed)}`,
+                        x2: `${this.width}`,
                         y2: "0",
                         style: {stroke: this.color},
-                        transform: `translate(${0}, 36)`
+                        transform: `translate(${0}, 42)`
                     })
-                    $('g', {transform: `translate(${2}, ${39.5})`}, $ => {
-                        $('text', '.line-text', {
+                    $('g', {transform: `translate(${2}, ${46})`}, $ => {
+                        $('text', '.line-text', `${this.name}: `, {style: {fill: this.color},})
+                        $('text', '.line-text.line-end', `${formatFixed(last.smoothed, 3)}`, {
                             style: {fill: this.color},
-                        }, $ => {
-                            $('tspan', `${this.name}: `)
-                            $('tspan', `${formatFixed(last.smoothed, 3)}`)
+                            transform: `translate(${this.width - 4}, ${0})`
                         })
                     })
                 })

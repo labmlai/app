@@ -729,12 +729,17 @@ button.sparkline-list-item {
       }
 
       & line.wide-stroke {
-        stroke-width: 14;
+        stroke-width: 15;
       }
 
       & .line-text {
         font-weight: bold;
         mix-blend-mode: difference;
+
+        &.line-end {
+          font-weight: bolder;
+          text-anchor: end;
+        }
       }
     }
 
