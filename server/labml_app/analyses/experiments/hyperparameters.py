@@ -1,5 +1,6 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 
+import numpy as np
 from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
@@ -70,9 +71,10 @@ class HyperParamsAnalysis(Analysis):
             name = ''.join(name[-1])
 
             s = Series().load(track)
-            series: Dict[str, Any] = {'step': s.last_step,
-                                      'value': s.value,
-                                      'smoothed': s.value,
+            step, value = s.step.tolist(), s.value.tolist()
+            series: Dict[str, Any] = {'step': step,
+                                      'value': value,
+                                      'smoothed': value,
                                       'is_editable': name in default_values,
                                       'range': default_values[name]['range'],
                                       'dynamic_type': default_values[name]['dynamic_type'],
@@ -80,7 +82,8 @@ class HyperParamsAnalysis(Analysis):
 
             if name in self.hyper_params.hp_series:
                 s = Series().load(self.hyper_params.hp_series[name])
-                steps, values = self.get_input_series(s, self.hyper_params.step, default_values[name]['default'])
+                steps, values = self.get_input_series(s.step.tolist(), s.value.tolist(), self.hyper_params.step,
+                                                      default_values[name]['default'])
 
                 series['sub'] = {'step': steps, 'value': values, 'smoothed': values}
 
@@ -91,18 +94,18 @@ class HyperParamsAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_input_series(series: Series, current_step, default: float):
-        steps, values = [0, series.step[0] - 1], [default, default]
+    def get_input_series(series_steps: List[float], series_values: List[float], current_step, default: float):
+        steps, values = [0, series_steps[0] - 1], [default, default]
 
-        for i in range(len(series.step)):
-            v = series.value[i]
+        for i in range(len(series_steps)):
+            v = series_values[i]
 
-            if i + 1 > len(series.step) - 1:
+            if i + 1 > len(series_steps) - 1:
                 ns = current_step - 1
             else:
-                ns = series.step[i + 1] - 1
+                ns = series_steps[i + 1] - 1
 
-            steps += [series.step[i], ns]
+            steps += [series_steps[i], ns]
             values += [v, v]
 
         if values:
@@ -171,8 +174,8 @@ class HyperParamsAnalysis(Analysis):
 
         s = Series().load(hp_series[ind])
 
-        s.step.append(self.hyper_params.step)
-        s.value.append(value)
+        s.step = np.append(s.step, self.hyper_params.step)
+        s.value = np.append(s.value, value)
 
         hp_series[ind] = s.to_data()
 
