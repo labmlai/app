@@ -1,4 +1,4 @@
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Optional
 
 from labml_db import Model, Index, Key
 
@@ -26,6 +26,22 @@ class Computer(Model['Computer']):
 
     def get_runs(self) -> List[str]:
         return list(self.active_runs)
+
+    def get_job(self, job_uuid: str) -> Optional['job.Job']:
+        if job_uuid in self.jobs:
+            job_key = self.jobs[job_uuid]
+
+            return job_key.load()
+
+        return None
+
+    def create_job(self, instruction: str) -> 'job.Job':
+        j = job.create(instruction)
+
+        self.jobs[j.job_uuid] = j.key
+        self.save()
+
+        return j
 
     def sync_runs(self, runs: List[str]) -> Dict[str, List[str]]:
         active = []

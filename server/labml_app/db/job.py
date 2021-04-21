@@ -4,9 +4,7 @@ from labml_db import Model, Index
 
 from labml_app import utils
 
-INSTRUCTIONS = {
-
-}
+INSTRUCTIONS = ['start_tensor_board']
 
 STATUSES = ['instruction_received', 'computer_notified', 'ui_notified', 'completed']
 
@@ -23,7 +21,7 @@ class Job(Model['Job']):
                     status='',
                     )
 
-    def get_data(self):
+    def to_data(self):
         return {
             'job_uuid': self.job_uuid,
             'instruction': self.instruction,

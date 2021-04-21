@@ -5,6 +5,7 @@ import flask
 import requests
 import werkzeug.wrappers
 from flask import request, make_response, jsonify
+from flasgger import swag_from
 
 from .logger import logger
 from . import settings
@@ -18,6 +19,7 @@ from .db import project
 from .db import blocked_uuids
 from . import utils
 from . import analyses
+from . import docs
 
 request = cast(werkzeug.wrappers.Request, request)
 
@@ -483,6 +485,27 @@ def is_user_logged() -> flask.Response:
     return utils.format_rv({'is_user_logged': auth.get_is_user_logged()})
 
 
+@swag_from(docs.sync_computer)
+def sync_computer(computer_uuid: str) -> flask.Response:
+    pass
+
+
+@swag_from(docs.sync_ui)
+def sync_ui(computer_uuid: str, job_uuid: str) -> flask.Response:
+    if job_uuid:
+        c = computer.get_or_create(computer_uuid)
+        j = c.get_job(job_uuid)
+
+        return utils.format_rv(j.to_data())
+
+    instruction = request.args.get('instruction', '')
+    if instruction:
+        c = computer.get_or_create(computer_uuid)
+        j = c.create_job(instruction)
+
+        return utils.format_rv(j.to_data())
+
+
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
@@ -494,12 +517,15 @@ def _add_ui(app: flask.Flask, method: str, func: Callable, url: str):
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
     _add_server(app, 'POST', update_session, 'computer')
+    _add_server(app, 'POST', sync_computer, 'sync_computer/<computer_uuid>')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
-    _add_ui(app, 'GET', get_sessions, 'sessions/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
+    _add_ui(app, 'GET', get_sessions, 'sessions/<labml_token>')
     _add_ui(app, 'PUT', delete_sessions, 'sessions')
+
     _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
+
     _add_ui(app, 'GET', get_user, 'user')
     _add_ui(app, 'POST', set_user, 'user')
 
@@ -507,16 +533,19 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
     _add_ui(app, 'PUT', add_run, 'run/<run_uuid>/add')
     _add_ui(app, 'PUT', claim_run, 'run/<run_uuid>/claim')
+    _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
+
     _add_ui(app, 'GET', get_session, 'session/<session_uuid>')
     _add_ui(app, 'POST', edit_session, 'session/<session_uuid>')
     _add_ui(app, 'PUT', add_session, 'session/<session_uuid>/add')
     _add_ui(app, 'PUT', claim_session, 'session/<session_uuid>/claim')
-    _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_session_status, 'session/status/<session_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
+
+    _add_ui(app, 'POST', sync_ui, 'sync_ui/<computer_uuid>')
 
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:
