@@ -7,6 +7,7 @@ from .. import auth
 from . import user
 from .. import utils
 from . import project
+from . import computer
 from . import status
 from .. import settings
 from ..logger import logger
@@ -38,6 +39,7 @@ class Run(Model['Run']):
     is_claimed: bool
     status: Key['status.Status']
     configs: Dict[str, any]
+    computer_uuid: str
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -67,6 +69,7 @@ class Run(Model['Run']):
                     is_claimed=True,
                     status=None,
                     configs={},
+                    computer_uuid='',
                     stdout='',
                     stdout_unmerged='',
                     logger='',
@@ -103,8 +106,10 @@ class Run(Model['Run']):
             self.commit = data.get('commit', '')
         if not self.commit_message:
             self.commit_message = data.get('commit_message', '')
-        if self.start_step == None:
+        if self.start_step is None:
             self.start_step = data.get('start_step', '')
+        if not self.computer_uuid:
+            self.computer_uuid = data.get('computer_uuid', '')
 
         if 'configs' in data:
             configs = data.get('configs', {})
@@ -247,7 +252,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> 'Run':
+def get_or_create(run_uuid: str, computer_uuid: str, labml_token: str = '', computer_ip: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -267,9 +272,10 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> 'Ru
 
     s = status.create_status()
     run = Run(run_uuid=run_uuid,
+              computer_uuid=computer_uuid,
               owner=identifier,
               start_time=time_now,
-              run_ip=run_ip,
+              run_ip=computer_ip,
               is_claimed=is_claimed,
               status=s.key,
               )
@@ -281,10 +287,9 @@ def get_or_create(run_uuid: str, labml_token: str = '', run_ip: str = '') -> 'Ru
 
     RunIndex.set(run.run_uuid, run.key)
 
-    utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid,
-                                                        'run_ip': run_ip,
-                                                        'labml_token': labml_token}
-                                        )
+    computer.add_session(computer_uuid, run_uuid)
+
+    utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid, 'labml_token': labml_token})
 
     return run
 
@@ -294,6 +299,8 @@ def delete(run_uuid: str) -> None:
 
     if r:
         s = r.status.load()
+
+        computer.remove_run(r.computer_uuid, run_uuid)
 
         s.delete()
         r.delete()

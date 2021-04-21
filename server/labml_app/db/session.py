@@ -151,6 +151,8 @@ def delete(session_uuid: str) -> None:
     if ss:
         s = ss.status.load()
 
+        computer.remove_session(ss.computer_uuid, session_uuid)
+
         s.delete()
         ss.delete()
 
