@@ -18,6 +18,7 @@ from . import app_token
 from . import run
 from . import session
 from . import computer
+from . import job
 from . import blocked_uuids
 from .. import analyses
 
@@ -32,7 +33,8 @@ Models = [(YamlSerializer(), user.User),
           (JsonSerializer(), app_token.AppToken),
           (JsonSerializer(), run.Run),
           (JsonSerializer(), session.Session),
-          (JsonSerializer(), computer.Computer)] + [(s(), m) for s, m, p in analyses.AnalysisManager.get_db_models()]
+          (PickleSerializer(), job.Job),
+          (PickleSerializer(), computer.Computer)] + [(s(), m) for s, m, p in analyses.AnalysisManager.get_db_models()]
 
 Indexes = [project.ProjectIndex,
            user.UserIndex,
@@ -42,6 +44,7 @@ Indexes = [project.ProjectIndex,
            app_token.AppTokenIndex,
            run.RunIndex,
            session.SessionIndex,
+           job.JobIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
 if settings.IS_LOCAL_SETUP:

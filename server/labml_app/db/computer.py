@@ -18,9 +18,9 @@ class Computer(Model['Computer']):
     @classmethod
     def defaults(cls):
         return dict(computer_uuid='',
-                    sessions={},
-                    active_runs={},
-                    deleted_runs={},
+                    sessions=set(),
+                    active_runs=set(),
+                    deleted_runs=set(),
                     active_jobs={},
                     completed_jobs={},
                     )
@@ -31,19 +31,35 @@ class Computer(Model['Computer']):
     def get_active_runs(self) -> List[str]:
         return list(self.active_runs)
 
-    def get_job(self, job_uuid: str) -> Optional['job.Job']:
-        job_key = None
+    def get_deleted_runs(self) -> List[str]:
+        return list(self.deleted_runs)
 
-        if job_uuid in self.active_jobs:
-            job_key = self.active_jobs[job_uuid]
+    def get_jobs(self, job_uuids: List[str]) -> List[job.JobDict]:
+        res = []
+        for job_uuid in job_uuids:
+            job_key = None
+            if job_uuid in self.active_jobs:
+                job_key = self.active_jobs[job_uuid]
 
-        if job_uuid in self.completed_jobs:
-            job_key = self.completed_jobs[job_uuid]
+            if job_uuid in self.completed_jobs:
+                job_key = self.completed_jobs[job_uuid]
 
-        if job_key:
-            return job_key.load()
+            if job_key:
+                j = job_key.load()
+                res.append(j.to_data())
 
-        return None
+        return res
+
+    def create_jobs(self, instructions: List[str]) -> List[job.JobDict]:
+        res = []
+        for instruction in instructions:
+            j = job.create(instruction)
+            self.active_jobs[j.job_uuid] = j.key
+            res.append(j.to_data())
+
+        self.save()
+
+        return res
 
     def get_active_jobs(self) -> List['job.JobDict']:
         res = []
@@ -52,14 +68,6 @@ class Computer(Model['Computer']):
             res.append(j.to_data())
 
         return res
-
-    def create_job(self, instruction: str) -> 'job.Job':
-        j = job.create(instruction)
-
-        self.active_jobs[j.job_uuid] = j.key
-        self.save()
-
-        return j
 
     def sync_runs(self, runs: List[str]) -> Dict[str, List[str]]:
         active = []
@@ -77,7 +85,7 @@ class Computer(Model['Computer']):
                 'deleted': deleted,
                 'unknown': unknown}
 
-    def sync_job_statuses(self, responses: List[JobResponse]) -> None:
+    def sync_jobs(self, responses: List[JobResponse]) -> None:
         for response in responses:
             job_uuid = response['job_uuid']
             status = response['status']

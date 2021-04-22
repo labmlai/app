@@ -501,15 +501,15 @@ def sync_computer(computer_uuid: str) -> flask.Response:
 
     job_responses = request.args.get('job_responses', [])
     if job_responses:
-        c.sync_job_statuses(job_responses)
+        c.sync_jobs(job_responses)
 
     active_jobs = []
-    for i in range(5):
+    for i in range(100):
         active_jobs = c.get_active_jobs()
         if active_jobs:
             break
 
-        time.sleep(0.5)
+        time.sleep(0.6)
 
     return utils.format_rv({'active_jobs': active_jobs})
 
@@ -517,25 +517,25 @@ def sync_computer(computer_uuid: str) -> flask.Response:
 @swag_from(docs.sync_ui)
 def sync_ui(computer_uuid: str) -> flask.Response:
     """End point to sync UI-computer (specified by computer_uuid).
-    job_uuid: to get an update about a job.
-    instruction: to create a new job.
+    job_uuids: to get an update about jobs.
+    instructions: to create new jobs.
     """
     c = computer.get_or_create(computer_uuid)
 
-    job_uuid = request.args.get('job_uuid', '')
-    if job_uuid:
-        j = c.get_job(job_uuid)
+    job_uuids = request.args.get('job_uuids', [])
+    if job_uuids:
+        res = c.get_jobs(job_uuids)
 
-        return utils.format_rv(j.to_data())
+        return utils.format_rv({'jobs': res})
 
-    instruction = request.args.get('instruction', '')
-    if instruction:
-        j = c.create_job(instruction)
+    instructions = request.args.get('instructions', [])
+    if instructions:
+        res = c.create_jobs(instructions)
 
-        return utils.format_rv(j.to_data())
+        return utils.format_rv({'jobs': res})
 
     return utils.format_rv({'error': 'invalid parameters',
-                            'message': 'either job_uuid or instruction should not be empty'})
+                            'message': 'either job_uuids or instructions should not be empty'})
 
 
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):

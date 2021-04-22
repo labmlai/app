@@ -71,47 +71,39 @@ sync_ui = {
             "example": "0c112ffda506f10f9f793c0fb6d9de4b43595d03"
         },
         {
-            "name": "instruction",
+            "name": "instructions",
             "in": "body",
-            "type": "string",
-            "description": "Instruction for the computer",
+            "type": "list",
+            "description": "Instructions for the computer",
             "enum": [job.JobInstructions.START_TB],
-            "example": job.JobInstructions.START_TB
+            "example": [job.JobInstructions.START_TB]
         },
         {
-            "name": "job_uuid",
+            "name": "job_uuids",
             "in": "body",
-            "type": "string",
-            "description": "job_uuid value of the job quarried",
-            "example": "0c112ffda506f10f9f793c0fb6d9de4b43595d03"
+            "type": "list",
+            "description": "job_uuids of jobs quarried",
+            "example": ["0c112ffda506f10f9f793c0fb6d9de4b43595d03"]
         }
     ],
 
     "responses": {
         "200": {
-            "description": "Details of created or quarried job_uuid",
+            "description": "Details of created or quarried job_uuids",
             "schema": {
                 'type': 'object',
                 'properties': {
-                    'instruction': {
-                        'type': 'string',
-                        'example': "start_tensor_board"
-                    },
-                    'status': {
-                        'type': 'string',
-                        'example': job.JobStatuses.COMPLETED,
-                    },
-                    'created_time': {
-                        'type': 'float',
-                        'example': '16234567',
-                    },
-                    'completed_time': {
-                        'type': 'float',
-                        'example': '16234567',
-                    },
-                    'job_uuid': {
-                        'type': 'string',
-                        'example': "0c112ffda506f10f9f793c0fb6d9de4b43595d03"
+                    'jobs': {
+                        'type': 'list',
+                        'example': [
+                            {
+                                'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                'status': job.JobStatuses.COMPLETED,
+                                'created_time': '16234567',
+                                'completed_time': '16234567',
+                                'instruction': 'start_tensor_board'
+                            }
+                        ]
                     },
                 }
             },
