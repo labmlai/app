@@ -29,6 +29,10 @@ class Job(Model['Job']):
                     completed_time=None
                     )
 
+    @property
+    def is_completed(self) -> bool:
+        return self.status == STATUSES[-1]
+
     def to_data(self) -> JobDict:
         return {
             'job_uuid': self.job_uuid,

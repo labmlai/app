@@ -86,6 +86,12 @@ class Computer(Model['Computer']):
                 j = self.active_jobs[job_uuid].load()
                 j.update_status(status)
 
+                if j.is_completed:
+                    self.active_jobs.pop(job_uuid)
+                    self.completed_jobs[job_uuid] = j.key
+
+        self.save()
+
     def get_data(self):
         return {
             'computer_uuid': self.computer_uuid,
@@ -151,4 +157,5 @@ def remove_run(computer_uuid: str, run_uuid: str) -> None:
 
     if run_uuid in c.active_runs:
         c.active_runs.remove(run_uuid)
+        c.deleted_runs.add(run_uuid)
         c.save()
