@@ -91,11 +91,11 @@ def update_run() -> flask.Response:
         errors.append(error)
         return jsonify({'errors': errors})
 
-    if len(computer_uuid) < 10:
-        error = {'error': 'invalid_computer_uuid',
-                 'message': f'Invalid Computer UUID'}
-        errors.append(error)
-        return jsonify({'errors': errors})
+    # if len(computer_uuid) < 10:
+    #     error = {'error': 'invalid_computer_uuid',
+    #              'message': f'Invalid Computer UUID'}
+    #     errors.append(error)
+    #     return jsonify({'errors': errors})
 
     if len(run_uuid) < 10:
         error = {'error': 'invalid_run_uuid',
