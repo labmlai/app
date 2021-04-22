@@ -41,6 +41,9 @@ class Job(Model['Job']):
     def is_completed(self) -> bool:
         return self.status == JobStatuses.COMPLETED
 
+    def is_error(self) -> bool:
+        return self.status == JobStatuses.ERROR
+
     def to_data(self) -> JobDict:
         return {
             'job_uuid': self.job_uuid,
