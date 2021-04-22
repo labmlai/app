@@ -4,13 +4,16 @@ from labml_db import Model, Index, Key
 
 from . import job
 
+JobResponse = Dict[str, str]
+
 
 class Computer(Model['Computer']):
     computer_uuid: str
     sessions: Set[str]
     active_runs: Set[str]
     deleted_runs: Set[str]
-    jobs: Dict[str, Key['job.Job']]
+    active_jobs: Dict[str, Key['job.Job']]
+    completed_jobs: Dict[str, Key['job.Job']]
 
     @classmethod
     def defaults(cls):
@@ -18,27 +21,42 @@ class Computer(Model['Computer']):
                     sessions={},
                     active_runs={},
                     deleted_runs={},
-                    jobs={}
+                    active_jobs={},
+                    completed_jobs={},
                     )
 
     def get_sessions(self) -> List[str]:
         return list(self.sessions)
 
-    def get_runs(self) -> List[str]:
+    def get_active_runs(self) -> List[str]:
         return list(self.active_runs)
 
     def get_job(self, job_uuid: str) -> Optional['job.Job']:
-        if job_uuid in self.jobs:
-            job_key = self.jobs[job_uuid]
+        job_key = None
 
+        if job_uuid in self.active_jobs:
+            job_key = self.active_jobs[job_uuid]
+
+        if job_uuid in self.completed_jobs:
+            job_key = self.completed_jobs[job_uuid]
+
+        if job_key:
             return job_key.load()
 
         return None
 
+    def get_active_jobs(self) -> List['job.JobDict']:
+        res = []
+        for k, v in self.active_jobs.items():
+            j = v.load()
+            res.append(j.to_data())
+
+        return res
+
     def create_job(self, instruction: str) -> 'job.Job':
         j = job.create(instruction)
 
-        self.jobs[j.job_uuid] = j.key
+        self.active_jobs[j.job_uuid] = j.key
         self.save()
 
         return j
@@ -59,11 +77,20 @@ class Computer(Model['Computer']):
                 'deleted': deleted,
                 'unknown': unknown}
 
+    def sync_job_status(self, responses: List[JobResponse]) -> None:
+        for response in responses:
+            job_uuid = response['job_uuid']
+            status = response['status']
+
+            if job_uuid in self.active_jobs:
+                j = self.active_jobs[job_uuid].load()
+                j.update_status(status)
+
     def get_data(self):
         return {
             'computer_uuid': self.computer_uuid,
-            'sessions': self.sessions,
-            'active_runs': self.active_runs
+            'sessions': self.get_sessions(),
+            'active_runs': self.get_active_runs()
         }
 
 

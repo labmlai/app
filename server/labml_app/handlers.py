@@ -1,4 +1,5 @@
 import sys
+import time
 from typing import cast, Callable
 
 import flask
@@ -487,23 +488,54 @@ def is_user_logged() -> flask.Response:
 
 @swag_from(docs.sync_computer)
 def sync_computer(computer_uuid: str) -> flask.Response:
-    pass
+    """End point to sync UI-server and UI-computer. runs: to sync with the server.
+    else active jobs will be notified.
+        """
+    c = computer.get_or_create(computer_uuid)
+
+    runs = request.args.get('runs', [])
+    if runs:
+        res = c.sync_runs(runs)
+
+        return utils.format_rv(res)
+
+    job_responses = request.args.get('job_responses', [])
+    if job_responses:
+        c.sync_job_status(job_responses)
+
+    active_jobs = []
+    for i in range(5):
+        active_jobs = c.get_active_jobs()
+        if active_jobs:
+            break
+
+        time.sleep(0.5)
+
+    return utils.format_rv({'active_jobs': active_jobs})
 
 
 @swag_from(docs.sync_ui)
-def sync_ui(computer_uuid: str, job_uuid: str) -> flask.Response:
+def sync_ui(computer_uuid: str) -> flask.Response:
+    """End point to sync UI-computer (specified by computer_uuid).
+    job_uuid: to get an update about a job.
+    instruction: to create a new job.
+    """
+    c = computer.get_or_create(computer_uuid)
+
+    job_uuid = request.args.get('job_uuid', '')
     if job_uuid:
-        c = computer.get_or_create(computer_uuid)
         j = c.get_job(job_uuid)
 
         return utils.format_rv(j.to_data())
 
     instruction = request.args.get('instruction', '')
     if instruction:
-        c = computer.get_or_create(computer_uuid)
         j = c.create_job(instruction)
 
         return utils.format_rv(j.to_data())
+
+    return utils.format_rv({'error': 'invalid parameters',
+                            'message': 'either job_uuid or instruction should not be empty'})
 
 
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
