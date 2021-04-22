@@ -108,8 +108,6 @@ class Run(Model['Run']):
             self.commit_message = data.get('commit_message', '')
         if self.start_step is None:
             self.start_step = data.get('start_step', '')
-        if not self.computer_uuid:
-            self.computer_uuid = data.get('computer_uuid', '')
 
         if 'configs' in data:
             configs = data.get('configs', {})
@@ -287,7 +285,7 @@ def get_or_create(run_uuid: str, computer_uuid: str, labml_token: str = '', comp
 
     RunIndex.set(run.run_uuid, run.key)
 
-    computer.add_session(computer_uuid, run_uuid)
+    computer.add_run(computer_uuid, run_uuid)
 
     utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid, 'labml_token': labml_token})
 
