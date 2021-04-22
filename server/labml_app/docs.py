@@ -16,18 +16,48 @@ sync_computer = {
             "name": "runs",
             "in": "body",
             "type": "list",
-            "description": "runs to be synced with the server",
+            "description": "Runs to be synced with the server",
             "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
         },
         {
             "name": "job_responses",
             "in": "body",
             "type": "list",
-            "description": "status of the jobs initiated by UI",
+            "description": "Status of the jobs initiated by UI",
             "example": [{'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'completed'},
                         {'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'error'}]
         }
     ],
+    "responses": {
+        "200": {
+            "description": "Synced server side run_uuid lists or list of pending active jobs",
+            "schema": {
+                'type': 'object',
+                'properties': {
+                    'runs': {
+                        'type': 'object',
+                        'example': {
+                            'active': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03'],
+                            'deleted': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03'],
+                            'unknown': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
+                        }
+                    },
+                    'active_jobs': {
+                        'type': 'list',
+                        'example': [
+                            {
+                                'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                'status': job.JobStatuses.COMPLETED,
+                                'created_time': '16234567',
+                                'completed_time': '16234567',
+                                'instruction': 'start_tensor_board'
+                            }
+                        ]
+                    }
+                }
+            },
+        }
+    }
 }
 
 sync_ui = {
@@ -45,8 +75,8 @@ sync_ui = {
             "in": "body",
             "type": "string",
             "description": "Instruction for the computer",
-            "enum": job.INSTRUCTIONS,
-            "example": job.INSTRUCTIONS[0]
+            "enum": [job.JobInstructions.START_TB],
+            "example": job.JobInstructions.START_TB
         },
         {
             "name": "job_uuid",
@@ -69,7 +99,7 @@ sync_ui = {
                     },
                     'status': {
                         'type': 'string',
-                        'example': job.STATUSES[0],
+                        'example': job.JobStatuses.COMPLETED,
                     },
                     'created_time': {
                         'type': 'float',
@@ -85,13 +115,6 @@ sync_ui = {
                     },
                 }
             },
-            "examples": {
-                "rgb": [
-                    "red",
-                    "green",
-                    "blue"
-                ]
-            }
         }
     }
 }

@@ -497,11 +497,11 @@ def sync_computer(computer_uuid: str) -> flask.Response:
     if runs:
         res = c.sync_runs(runs)
 
-        return utils.format_rv(res)
+        return utils.format_rv({'runs': res})
 
     job_responses = request.args.get('job_responses', [])
     if job_responses:
-        c.sync_job_status(job_responses)
+        c.sync_job_statuses(job_responses)
 
     active_jobs = []
     for i in range(5):

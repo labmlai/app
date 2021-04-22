@@ -5,10 +5,18 @@ from labml_db import Model, Index
 
 from labml_app import utils
 
-INSTRUCTIONS = ['start_tensor_board']
 
-STATUSES = ['instruction_received', 'computer_notified', 'ui_notified', 'completed']
-ERROR_STATUS = 'error'
+class JobStatuses:
+    INITIATED = 'initiated'
+    ERROR = 'error'
+    COMPLETED = 'completed'
+    COMP_NOTIFIED = 'comp_notified'
+    UI_NOTIFIED = 'ui_notified'
+
+
+class JobInstructions:
+    START_TB = 'start_tb'
+
 
 JobDict = Dict[str, Union[str, float]]
 
@@ -31,7 +39,7 @@ class Job(Model['Job']):
 
     @property
     def is_completed(self) -> bool:
-        return self.status == STATUSES[-1]
+        return self.status == JobStatuses.COMPLETED
 
     def to_data(self) -> JobDict:
         return {
@@ -42,18 +50,10 @@ class Job(Model['Job']):
             'completed_time': self.completed_time
         }
 
-    def update_status(self, status: str = '') -> None:
-        if status:
-            self.status = status
-        elif self.status == STATUSES[-1] or self.status == ERROR_STATUS:
-            return
-        else:
-            for i, status in enumerate(STATUSES):
-                if self.status == status:
-                    self.status = STATUSES[i + 1]
-                    break
+    def update_status(self, status: str) -> None:
+        self.status = status
 
-        if self.status == STATUSES[-1]:
+        if self.status == JobStatuses.COMPLETED:
             self.completed_time = time.time()
 
         self.save()
@@ -66,7 +66,8 @@ class JobIndex(Index['Job']):
 def create(instruction: str) -> Job:
     job = Job(job_uuid=utils.gen_token(),
               instruction=instruction,
-              created_time=time.time()
+              created_time=time.time(),
+              status=JobStatuses.INITIATED,
               )
     job.save()
     JobIndex.set(job.job_uuid, job.key)

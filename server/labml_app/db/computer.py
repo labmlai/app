@@ -77,7 +77,7 @@ class Computer(Model['Computer']):
                 'deleted': deleted,
                 'unknown': unknown}
 
-    def sync_job_status(self, responses: List[JobResponse]) -> None:
+    def sync_job_statuses(self, responses: List[JobResponse]) -> None:
         for response in responses:
             job_uuid = response['job_uuid']
             status = response['status']
