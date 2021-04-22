@@ -7,6 +7,7 @@ from time import strftime
 
 from flask import Flask, request, g, send_from_directory
 from flask_cors import CORS
+from flasgger import Swagger
 
 from labml_app import handlers
 from labml_app import settings
@@ -71,6 +72,20 @@ def create_app():
 
 
 app = create_app()
+
+template = {
+    "swagger": "2.0",
+    "info": {
+        "title": "labml.ai Server API",
+        "description": "API to communicate with UI and computer",
+        "version": "v1"
+    },
+    "schemes": [
+        "http",
+        "https"
+    ]
+}
+swagger = Swagger(app, template=template)
 
 cors = CORS(app, supports_credentials=True)
 app.config['CORS_HEADERS'] = 'Content-Type'
