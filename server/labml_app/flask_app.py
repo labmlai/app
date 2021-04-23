@@ -13,6 +13,7 @@ from labml_app import handlers
 from labml_app import settings
 from labml_app.logger import logger
 from labml_app.utils import mix_panel, slack
+from labml_app import db
 
 if settings.SENTRY_DSN:
     try:
@@ -54,6 +55,9 @@ def create_app():
     log.setLevel(logging.ERROR)
 
     _app = Flask(__name__, static_folder=str(STATIC_PATH), static_url_path='/static')
+
+    with _app.app_context():
+        db.init_db()
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)

@@ -505,7 +505,7 @@ def sync_computer(computer_uuid: str) -> flask.Response:
         c.sync_jobs(job_responses)
 
     active_jobs = []
-    for i in range(100):
+    for i in range(50):
         active_jobs = c.get_active_jobs()
         if active_jobs:
             break
@@ -543,7 +543,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
 
-    for i in range(5):
+    for i in range(10):
         completed_job = c.get_job(j.job_uuid)
         if completed_job and j.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})

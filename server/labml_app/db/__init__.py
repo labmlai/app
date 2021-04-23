@@ -22,10 +22,6 @@ from . import job
 from . import blocked_uuids
 from .. import analyses
 
-DATA_PATH = settings.DATA_PATH
-
-db = redis.Redis(host='localhost', port=6379, db=0)
-
 Models = [(YamlSerializer(), user.User),
           (YamlSerializer(), project.Project),
           (JsonSerializer(), status.Status),
@@ -47,13 +43,20 @@ Indexes = [project.ProjectIndex,
            job.JobIndex,
            computer.ComputerIndex] + [m for s, m, p in analyses.AnalysisManager.get_db_indexes()]
 
-if settings.IS_LOCAL_SETUP:
-    Model.set_db_drivers([FileDbDriver(PickleSerializer(), m, Path(f'{DATA_PATH}/{m.__name__}')) for s, m in Models])
-    Index.set_db_drivers(
-        [FileIndexDbDriver(YamlSerializer(), m, Path(f'{DATA_PATH}/{m.__name__}.yaml')) for m in Indexes])
-else:
-    Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
-    Index.set_db_drivers([RedisIndexDbDriver(m, db) for m in Indexes])
 
-project.create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
-project.create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
+def init_db():
+    data_path = settings.DATA_PATH
+
+    if settings.IS_LOCAL_SETUP:
+        Model.set_db_drivers(
+            [FileDbDriver(PickleSerializer(), m, Path(f'{data_path}/{m.__name__}')) for s, m in Models])
+        Index.set_db_drivers(
+            [FileIndexDbDriver(YamlSerializer(), m, Path(f'{data_path}/{m.__name__}.yaml')) for m in Indexes])
+    else:
+        db = redis.Redis(host='localhost', port=6379, db=0)
+
+        Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
+        Index.set_db_drivers([RedisIndexDbDriver(m, db) for m in Indexes])
+
+    project.create_project(settings.FLOAT_PROJECT_TOKEN, 'float project')
+    project.create_project(settings.SAMPLES_PROJECT_TOKEN, 'samples project')
