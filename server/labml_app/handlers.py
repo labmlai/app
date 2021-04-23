@@ -524,7 +524,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     runs = request.args.get('runs', [])
     j = c.create_job(job.JobInstructions.START_TB, {'runs': runs})
 
-    for i in range(100):
+    for i in range(5):
         completed_job = c.get_job(j.job_uuid)
         if completed_job and j.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})
@@ -543,7 +543,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     runs = request.args.get('runs', [])
     j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
 
-    for i in range(100):
+    for i in range(5):
         completed_job = c.get_job(j.job_uuid)
         if completed_job and j.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})
