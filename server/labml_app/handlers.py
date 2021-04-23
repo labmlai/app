@@ -494,13 +494,13 @@ def sync_computer(computer_uuid: str) -> flask.Response:
         """
     c = computer.get_or_create(computer_uuid)
 
-    runs = request.args.get('runs', [])
+    runs = request.json.get('runs', [])
     if runs:
         res = c.sync_runs(runs)
 
         return utils.format_rv({'runs': res})
 
-    job_responses = request.args.get('jobs', [])
+    job_responses = request.json.get('jobs', [])
     if job_responses:
         c.sync_jobs(job_responses)
 
@@ -521,7 +521,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
             """
     c = computer.get_or_create(computer_uuid)
 
-    runs = request.args.get('runs', [])
+    runs = request.json.get('runs', [])
     j = c.create_job(job.JobInstructions.START_TB, {'runs': runs})
 
     for i in range(5):
@@ -540,7 +540,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
             """
     c = computer.get_or_create(computer_uuid)
 
-    runs = request.args.get('runs', [])
+    runs = request.json.get('runs', [])
     j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
 
     for i in range(5):

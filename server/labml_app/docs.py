@@ -131,7 +131,7 @@ clear_checkpoints = {
                                 'status': job.JobStatuses.ERROR,
                                 'created_time': '16234567',
                                 'completed_time': '16234567',
-                                'instruction': job.JobInstructions.CLEAR_CHECKPOINTS
+                                'instruction': job.JobInstructions.CLEAR_CP
                             }
 
                     }
