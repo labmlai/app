@@ -159,7 +159,7 @@ export class CustomLineChart {
                                 })
                                 $('g',
                                     {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
                                         if (this.filteredPlots.length < 3) {
                                             this.filteredPlots.map((s, i) => {

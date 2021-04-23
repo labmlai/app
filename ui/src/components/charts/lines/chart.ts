@@ -166,7 +166,7 @@ export class LineChart {
                                 })
                                 $('g',
                                     {
-                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight + LABEL_HEIGHT})`
+                                        transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
                                         if (this.plot.length < 3) {
                                             this.plot.map((s, i) => {
