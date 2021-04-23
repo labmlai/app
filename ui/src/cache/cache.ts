@@ -86,7 +86,7 @@ export abstract class CacheObject<T> {
     abstract load(...args: any[]): Promise<T>
 
     async get(isRefresh = false, ...args: any[]): Promise<T> {
-        if (this.data == null || isRefresh) {
+        if (this.data == null || isRefresh || isReloadTimeout(this.lastUpdated)) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
         }
@@ -114,8 +114,9 @@ export class RunsListCache extends CacheObject<RunsList> {
             return await this.load(args[0])
         }
 
-        if (this.data == null || isRefresh) {
+        if (this.data == null || isRefresh || isReloadTimeout(this.lastUpdated)) {
             this.data = await this.load(null)
+            this.lastUpdated = (new Date()).getTime()
         }
 
         return this.data
