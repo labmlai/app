@@ -1,25 +1,110 @@
-from typing import List
+from typing import List, Dict, Set, Optional
 
-from labml_db import Model, Index
+from labml_db import Model, Index, Key
+
+from . import job
+
+JobResponse = Dict[str, str]
 
 
 class Computer(Model['Computer']):
     computer_uuid: str
-    sessions: List[str]
+    sessions: Set[str]
+    active_runs: Set[str]
+    deleted_runs: Set[str]
+    active_jobs: Dict[str, Key['job.Job']]
+    completed_jobs: Dict[str, Key['job.Job']]
 
     @classmethod
     def defaults(cls):
         return dict(computer_uuid='',
-                    sessions=[],
+                    sessions=set(),
+                    active_runs=set(),
+                    deleted_runs=set(),
+                    active_jobs={},
+                    completed_jobs={},
                     )
 
     def get_sessions(self) -> List[str]:
-        return self.sessions
+        return list(self.sessions)
+
+    def get_active_runs(self) -> List[str]:
+        return list(self.active_runs)
+
+    def get_deleted_runs(self) -> List[str]:
+        return list(self.deleted_runs)
+
+    def get_jobs(self, job_uuids: List[str]) -> List[job.JobDict]:
+        res = []
+        for job_uuid in job_uuids:
+            job_key = None
+            if job_uuid in self.active_jobs:
+                job_key = self.active_jobs[job_uuid]
+
+            if job_uuid in self.completed_jobs:
+                job_key = self.completed_jobs[job_uuid]
+
+            if job_key:
+                j = job_key.load()
+                res.append(j.to_data())
+
+        return res
+
+    def create_jobs(self, instructions: List[str]) -> List[job.JobDict]:
+        res = []
+        for instruction in instructions:
+            j = job.create(instruction)
+            self.active_jobs[j.job_uuid] = j.key
+            res.append(j.to_data())
+
+        self.save()
+
+        return res
+
+    def get_active_jobs(self) -> List['job.JobDict']:
+        res = []
+        for k, v in self.active_jobs.items():
+            j = v.load()
+            res.append(j.to_data())
+
+        return res
+
+    def sync_runs(self, runs: List[str]) -> Dict[str, List[str]]:
+        active = []
+        deleted = []
+        unknown = []
+        for run_uuid in runs:
+            if run_uuid in self.active_runs:
+                active.append(run_uuid)
+            elif run_uuid in self.deleted_runs:
+                deleted.append(run_uuid)
+            else:
+                unknown.append(run_uuid)
+
+        return {'active': active,
+                'deleted': deleted,
+                'unknown': unknown}
+
+    def sync_jobs(self, responses: List[JobResponse]) -> None:
+        for response in responses:
+            job_uuid = response['job_uuid']
+            status = response['status']
+
+            if job_uuid in self.active_jobs:
+                j = self.active_jobs[job_uuid].load()
+                j.update_status(status)
+
+                if j.is_completed or j.is_error:
+                    self.active_jobs.pop(job_uuid)
+                    self.completed_jobs[job_uuid] = j.key
+
+        self.save()
 
     def get_data(self):
         return {
             'computer_uuid': self.computer_uuid,
-            'sessions': self.sessions
+            'sessions': self.get_sessions(),
+            'active_runs': self.get_active_runs()
         }
 
 
@@ -42,7 +127,43 @@ def get_or_create(computer_uuid: str) -> Computer:
 
 
 def add_session(computer_uuid: str, session_uuid: str) -> None:
+    if not computer_uuid:
+        return
+
     c = get_or_create(computer_uuid)
 
-    c.sessions.append(session_uuid)
+    c.sessions.add(session_uuid)
     c.save()
+
+
+def remove_session(computer_uuid: str, session_uuid: str) -> None:
+    if not computer_uuid:
+        return
+
+    c = get_or_create(computer_uuid)
+
+    if session_uuid in c.sessions:
+        c.sessions.remove(session_uuid)
+        c.save()
+
+
+def add_run(computer_uuid: str, run_uuid: str) -> None:
+    if not computer_uuid:
+        return
+
+    c = get_or_create(computer_uuid)
+
+    c.active_runs.add(run_uuid)
+    c.save()
+
+
+def remove_run(computer_uuid: str, run_uuid: str) -> None:
+    if not computer_uuid:
+        return
+
+    c = get_or_create(computer_uuid)
+
+    if run_uuid in c.active_runs:
+        c.active_runs.remove(run_uuid)
+        c.deleted_runs.add(run_uuid)
+        c.save()

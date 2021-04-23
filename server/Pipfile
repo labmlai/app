@@ -17,6 +17,7 @@ labml-db = "*"
 redis = "*"
 mixpanel = "*"
 slack-sdk = "*"
+flasgger = "*"
 
 [requires]
 python_version = "3.7"

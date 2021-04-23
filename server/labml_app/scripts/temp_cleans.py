@@ -1,6 +1,8 @@
 from labml_app.logger import logger
 from labml_app.db import project, run, session, computer
 
+from labml_db.serializer.json import JsonSerializer
+
 
 def clean_sessions():
     logger.info('clean_sessions....')
@@ -52,8 +54,23 @@ def clean_projects():
             project_key.save(p)
 
 
+def move_computers():
+    computer_keys = computer.Computer.get_all()
+
+    for computer_key in computer_keys:
+        data = computer_key.read_from_serializer(JsonSerializer())
+
+        c = computer.Computer(computer_uuid=data['computer_uuid'],
+                              sessions=data.get('sessions', []))
+        c.save()
+        computer.ComputerIndex.set(c.computer_uuid, c.key)
+
+        computer_key.delete()
+
+
 if __name__ == "__main__":
-    clean_sessions()
-    clean_computers()
-    clean_runs()
-    clean_projects()
+    # clean_sessions()
+    # clean_computers()
+    # clean_runs()
+    # clean_projects()
+    move_computers()

@@ -1,10 +1,12 @@
 import sys
+import time
 from typing import cast, Callable
 
 import flask
 import requests
 import werkzeug.wrappers
 from flask import request, make_response, jsonify
+from flasgger import swag_from
 
 from .logger import logger
 from . import settings
@@ -18,6 +20,7 @@ from .db import project
 from .db import blocked_uuids
 from . import utils
 from . import analyses
+from . import docs
 
 request = cast(werkzeug.wrappers.Request, request)
 
@@ -78,14 +81,21 @@ def update_run() -> flask.Response:
     errors = []
 
     token = request.args.get('labml_token', '')
-    version = request.args.get('labml_version', '')
     run_uuid = request.args.get('run_uuid', '')
+    computer_uuid = request.args.get('computer_uuid', '')
+    version = request.args.get('labml_version', '')
 
     if blocked_uuids.is_run_blocked(run_uuid):
         error = {'error': 'blocked_run_uuid',
                  'message': f'Blocked or deleted run, uuid:{run_uuid}'}
         errors.append(error)
         return jsonify({'errors': errors})
+
+    # if len(computer_uuid) < 10:
+    #     error = {'error': 'invalid_computer_uuid',
+    #              'message': f'Invalid Computer UUID'}
+    #     errors.append(error)
+    #     return jsonify({'errors': errors})
 
     if len(run_uuid) < 10:
         error = {'error': 'invalid_run_uuid',
@@ -118,7 +128,7 @@ def update_run() -> flask.Response:
                                 'add it to your experiments list.'}
         errors.append(error)
 
-    r = run.get_or_create(run_uuid, token, request.remote_addr)
+    r = run.get_or_create(run_uuid, computer_uuid, token, request.remote_addr)
     s = r.status.load()
 
     if isinstance(request.json, list):
@@ -476,6 +486,58 @@ def is_user_logged() -> flask.Response:
     return utils.format_rv({'is_user_logged': auth.get_is_user_logged()})
 
 
+@swag_from(docs.sync_computer)
+def sync_computer(computer_uuid: str) -> flask.Response:
+    """End point to sync UI-server and UI-computer. runs: to sync with the server.
+    else active jobs will be notified.
+        """
+    c = computer.get_or_create(computer_uuid)
+
+    runs = request.args.get('runs', [])
+    if runs:
+        res = c.sync_runs(runs)
+
+        return utils.format_rv({'runs': res})
+
+    job_responses = request.args.get('job_responses', [])
+    if job_responses:
+        c.sync_jobs(job_responses)
+
+    active_jobs = []
+    for i in range(100):
+        active_jobs = c.get_active_jobs()
+        if active_jobs:
+            break
+
+        time.sleep(0.6)
+
+    return utils.format_rv({'active_jobs': active_jobs})
+
+
+@swag_from(docs.sync_ui)
+def sync_ui(computer_uuid: str) -> flask.Response:
+    """End point to sync UI-computer (specified by computer_uuid).
+    job_uuids: to get an update about jobs.
+    instructions: to create new jobs.
+    """
+    c = computer.get_or_create(computer_uuid)
+
+    job_uuids = request.args.get('job_uuids', [])
+    if job_uuids:
+        res = c.get_jobs(job_uuids)
+
+        return utils.format_rv({'jobs': res})
+
+    instructions = request.args.get('instructions', [])
+    if instructions:
+        res = c.create_jobs(instructions)
+
+        return utils.format_rv({'jobs': res})
+
+    return utils.format_rv({'error': 'invalid parameters',
+                            'message': 'either job_uuids or instructions should not be empty'})
+
+
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
     app.add_url_rule(f'/api/v1/{url}', view_func=func, methods=[method])
 
@@ -487,12 +549,15 @@ def _add_ui(app: flask.Flask, method: str, func: Callable, url: str):
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
     _add_server(app, 'POST', update_session, 'computer')
+    _add_server(app, 'POST', sync_computer, 'sync_computer/<computer_uuid>')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
-    _add_ui(app, 'GET', get_sessions, 'sessions/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
+    _add_ui(app, 'GET', get_sessions, 'sessions/<labml_token>')
     _add_ui(app, 'PUT', delete_sessions, 'sessions')
+
     _add_ui(app, 'GET', get_computer, 'computer/<computer_uuid>')
+
     _add_ui(app, 'GET', get_user, 'user')
     _add_ui(app, 'POST', set_user, 'user')
 
@@ -500,16 +565,19 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'POST', edit_run, 'run/<run_uuid>')
     _add_ui(app, 'PUT', add_run, 'run/<run_uuid>/add')
     _add_ui(app, 'PUT', claim_run, 'run/<run_uuid>/claim')
+    _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
+
     _add_ui(app, 'GET', get_session, 'session/<session_uuid>')
     _add_ui(app, 'POST', edit_session, 'session/<session_uuid>')
     _add_ui(app, 'PUT', add_session, 'session/<session_uuid>/add')
     _add_ui(app, 'PUT', claim_session, 'session/<session_uuid>/claim')
-    _add_ui(app, 'GET', get_run_status, 'run/status/<run_uuid>')
     _add_ui(app, 'GET', get_session_status, 'session/status/<session_uuid>')
 
     _add_ui(app, 'POST', sign_in, 'auth/sign_in')
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
+
+    _add_ui(app, 'POST', sync_ui, 'sync_ui/<computer_uuid>')
 
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:
