@@ -21,7 +21,7 @@ sync = {
     ],
     "responses": {
         "200": {
-            "description": "Synced server side run_uuid lists or list of pending active jobs",
+            "description": "Synced server side run_uuid lists",
             "schema": {
                 'type': 'object',
                 'properties': {
@@ -59,7 +59,7 @@ polling = {
     ],
     "responses": {
         "200": {
-            "description": "Synced server side run_uuid lists or list of pending active jobs",
+            "description": "List of pending jobs",
             "schema": {
                 'type': 'object',
                 'properties': {
