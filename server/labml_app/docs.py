@@ -21,7 +21,7 @@ sync = {
     ],
     "responses": {
         "200": {
-            "description": "Synced server side run_uuid lists",
+            "description": "Synced server side run_uuid list",
             "schema": {
                 'type': 'object',
                 'properties': {
