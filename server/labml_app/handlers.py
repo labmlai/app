@@ -531,7 +531,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
 
         time.sleep(2.5)
 
-    return utils.format_rv({'error': 'timeout', 'message': 'timeout while waiting for response'})
+    return utils.format_rv({'error': 'timeout', 'message': 'timeout while waiting for the response'})
 
 
 @swag_from(docs.clear_checkpoints)
@@ -550,7 +550,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
 
         time.sleep(2.5)
 
-    return utils.format_rv({'error': 'timeout', 'message': 'timeout while waiting for response'})
+    return utils.format_rv({'error': 'timeout', 'message': 'timeout while waiting for the response'})
 
 
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
