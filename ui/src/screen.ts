@@ -62,11 +62,13 @@ class ScreenContainer {
     }
 
     async updateTheme() {
-        let theme = 'light'
+        let theme = localStorage.getItem('theme') || 'light'
+        document.body.className = theme
         try {
             this.isUserLogged = (await this.isUserLoggedCache.get()).is_user_logged
             if (this.isUserLogged) {
                 theme = (await this.userCache.get()).theme
+                localStorage.setItem('theme', theme)
             }
         } catch (e) {
             //Let the view handle network failures
