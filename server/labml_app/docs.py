@@ -2,7 +2,7 @@ from labml_app.db import job
 
 SAMPLE_SPECS_DICT = {'parameters': [], 'definitions': {}, 'response': {}}
 
-sync_computer = {
+sync = {
     "parameters": [
         {
             "name": "computer_uuid",
@@ -17,6 +17,36 @@ sync_computer = {
             "type": "list",
             "description": "Runs to be synced with the server",
             "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
+        },
+    ],
+    "responses": {
+        "200": {
+            "description": "Synced server side run_uuid lists or list of pending active jobs",
+            "schema": {
+                'type': 'object',
+                'properties': {
+                    'runs': {
+                        'type': 'object',
+                        'example': {
+                            'active': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03'],
+                            'deleted': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03'],
+                            'unknown': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
+                        }
+                    },
+                }
+            },
+        }
+    }
+}
+
+polling = {
+    "parameters": [
+        {
+            "name": "computer_uuid",
+            "in": "path",
+            "type": "string",
+            "required": "true",
+            "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
         },
         {
             "name": "jobs",
@@ -33,14 +63,6 @@ sync_computer = {
             "schema": {
                 'type': 'object',
                 'properties': {
-                    'runs': {
-                        'type': 'object',
-                        'example': {
-                            'active': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03'],
-                            'deleted': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03'],
-                            'unknown': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
-                        }
-                    },
                     'jobs': {
                         'type': 'list',
                         'example': [

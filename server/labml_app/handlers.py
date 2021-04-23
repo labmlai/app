@@ -487,18 +487,26 @@ def is_user_logged() -> flask.Response:
     return utils.format_rv({'is_user_logged': auth.get_is_user_logged()})
 
 
-@swag_from(docs.sync_computer)
+@swag_from(docs.sync)
 def sync_computer(computer_uuid: str) -> flask.Response:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
-    else active jobs will be notified.
         """
     c = computer.get_or_create(computer_uuid)
 
     runs = request.json.get('runs', [])
+    res = []
     if runs:
         res = c.sync_runs(runs)
 
-        return utils.format_rv({'runs': res})
+    return utils.format_rv({'runs': res})
+
+
+@swag_from(docs.polling)
+def polling(computer_uuid: str) -> flask.Response:
+    """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
+    pending jobs will be returned in the response if there any
+           """
+    c = computer.get_or_create(computer_uuid)
 
     job_responses = request.json.get('jobs', [])
     if job_responses:
@@ -506,7 +514,8 @@ def sync_computer(computer_uuid: str) -> flask.Response:
 
     active_jobs = []
     for i in range(50):
-        active_jobs = c.get_active_jobs()
+        c = computer.get_or_create(computer_uuid)
+        active_jobs = c.get_pending_jobs()
         if active_jobs:
             break
 
@@ -525,6 +534,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     j = c.create_job(job.JobInstructions.START_TB, {'runs': runs})
 
     for i in range(5):
+        c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
         if completed_job and j.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})
@@ -544,6 +554,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
 
     for i in range(10):
+        c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
         if completed_job and j.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})
@@ -565,6 +576,7 @@ def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
     _add_server(app, 'POST', update_session, 'computer')
     _add_server(app, 'POST', sync_computer, 'sync/<computer_uuid>')
+    _add_server(app, 'POST', polling, 'polling/<computer_uuid>')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')

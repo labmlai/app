@@ -12,7 +12,7 @@ class Computer(Model['Computer']):
     sessions: Set[str]
     active_runs: Set[str]
     deleted_runs: Set[str]
-    active_jobs: Dict[str, Key['job.Job']]
+    pending_jobs: Dict[str, Key['job.Job']]
     completed_jobs: Dict[str, Key['job.Job']]
 
     @classmethod
@@ -21,7 +21,7 @@ class Computer(Model['Computer']):
                     sessions=set(),
                     active_runs=set(),
                     deleted_runs=set(),
-                    active_jobs={},
+                    pending_jobs={},
                     completed_jobs={},
                     )
 
@@ -34,6 +34,14 @@ class Computer(Model['Computer']):
     def get_deleted_runs(self) -> List[str]:
         return list(self.deleted_runs)
 
+    def create_job(self, instruction: str, data: Dict[str, str]) -> 'job.Job':
+        j = job.create(instruction, data)
+
+        self.pending_jobs[j.job_uuid] = j.key
+        self.save()
+
+        return j
+
     def get_job(self, job_uuid: str) -> Optional['job.Job']:
         if job_uuid in self.completed_jobs:
             job_key = self.completed_jobs[job_uuid]
@@ -44,17 +52,9 @@ class Computer(Model['Computer']):
 
         return None
 
-    def create_job(self, instruction: str, data: Dict[str, str]) -> 'job.Job':
-        j = job.create(instruction, data)
-
-        self.active_jobs[j.job_uuid] = j.key
-        self.save()
-
-        return j
-
-    def get_active_jobs(self) -> List['job.JobDict']:
+    def get_pending_jobs(self) -> List['job.JobDict']:
         res = []
-        for k, v in self.active_jobs.items():
+        for k, v in self.pending_jobs.items():
             j = v.load()
             res.append(j.to_data())
 
@@ -81,12 +81,12 @@ class Computer(Model['Computer']):
             job_uuid = response['uuid']
             status = response['status']
 
-            if job_uuid in self.active_jobs:
-                j = self.active_jobs[job_uuid].load()
+            if job_uuid in self.pending_jobs:
+                j = self.pending_jobs[job_uuid].load()
                 j.update_status(status)
 
                 if j.is_completed or j.is_error:
-                    self.active_jobs.pop(job_uuid)
+                    self.pending_jobs.pop(job_uuid)
                     self.completed_jobs[job_uuid] = j.key
 
         self.save()
