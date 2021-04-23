@@ -1,5 +1,5 @@
 import time
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, Any
 
 from labml_db import Model, Index
 
@@ -16,7 +16,8 @@ class JobStatuses:
 
 class JobInstructions:
     START_TB = 'start_tb'
-    DELETE_RUN = 'delete_run'
+    DELETE_RUN = 'delete_runs'
+    CLEAR_CHECKPOINTS = 'clear_cp'
 
 
 JobDict = Dict[str, Union[str, float]]
@@ -28,6 +29,7 @@ class Job(Model['Job']):
     status: str
     created_time: float
     completed_time: float
+    data: Dict[str, Any]
 
     @classmethod
     def defaults(cls):
@@ -35,7 +37,8 @@ class Job(Model['Job']):
                     instruction='',
                     status='',
                     created_time=None,
-                    completed_time=None
+                    completed_time=None,
+                    data={},
                     )
 
     @property
@@ -47,11 +50,12 @@ class Job(Model['Job']):
 
     def to_data(self) -> JobDict:
         return {
-            'job_uuid': self.job_uuid,
+            'uuid': self.job_uuid,
             'instruction': self.instruction,
             'status': self.status,
             'created_time': self.created_time,
-            'completed_time': self.completed_time
+            'completed_time': self.completed_time,
+            'data': self.data
         }
 
     def update_status(self, status: str) -> None:
@@ -67,10 +71,11 @@ class JobIndex(Index['Job']):
     pass
 
 
-def create(instruction: str) -> Job:
+def create(instruction: str, data: Dict[str, Any]) -> Job:
     job = Job(job_uuid=utils.gen_token(),
               instruction=instruction,
               created_time=time.time(),
+              data=data,
               status=JobStatuses.INITIATED,
               )
     job.save()

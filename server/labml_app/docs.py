@@ -9,8 +9,7 @@ sync_computer = {
             "in": "path",
             "type": "string",
             "required": "true",
-            "description": "computer_uuid value of the machine",
-            "example": "0c112ffda506f10f9f793c0fb6d9de4b43595d03"
+            "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
         },
         {
             "name": "runs",
@@ -20,12 +19,12 @@ sync_computer = {
             "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
         },
         {
-            "name": "job_responses",
+            "name": "jobs",
             "in": "body",
             "type": "list",
             "description": "Status of the jobs initiated by UI",
-            "example": [{'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'completed'},
-                        {'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'error'}]
+            "example": [{'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'completed'},
+                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'error'}]
         }
     ],
     "responses": {
@@ -42,15 +41,16 @@ sync_computer = {
                             'unknown': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
                         }
                     },
-                    'active_jobs': {
+                    'jobs': {
                         'type': 'list',
                         'example': [
                             {
-                                'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
-                                'status': job.JobStatuses.COMPLETED,
+                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                'status': job.JobStatuses.INITIATED,
                                 'created_time': '16234567',
-                                'completed_time': '16234567',
-                                'instruction': 'start_tensor_board'
+                                'completed_time': None,
+                                'instruction': job.JobInstructions.START_TB,
+                                'data': {'runs': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']}
                             }
                         ]
                     }
@@ -60,51 +60,81 @@ sync_computer = {
     }
 }
 
-sync_ui = {
+start_tensor_board = {
     "parameters": [
         {
             "name": "computer_uuid",
             "in": "path",
             "type": "string",
             "required": "true",
-            "description": "computer_uuid value of the computer",
-            "example": "0c112ffda506f10f9f793c0fb6d9de4b43595d03"
+            "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
         },
         {
-            "name": "instructions",
+            "name": "runs",
             "in": "body",
             "type": "list",
-            "description": "Instructions for the computer",
-            "enum": [job.JobInstructions.START_TB],
-            "example": [job.JobInstructions.START_TB]
+            "description": "Set of runs to start TB. Note that all the runs should be from a same computer",
+            "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
         },
-        {
-            "name": "job_uuids",
-            "in": "body",
-            "type": "list",
-            "description": "job_uuids of jobs quarried",
-            "example": ["0c112ffda506f10f9f793c0fb6d9de4b43595d03"]
-        }
     ],
-
     "responses": {
         "200": {
-            "description": "Details of created or quarried job_uuids",
+            "description": "job details with the response",
             "schema": {
                 'type': 'object',
                 'properties': {
-                    'jobs': {
-                        'type': 'list',
-                        'example': [
+                    'job': {
+                        'type': 'object',
+                        'example':
                             {
-                                'job_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
                                 'status': job.JobStatuses.COMPLETED,
                                 'created_time': '16234567',
                                 'completed_time': '16234567',
-                                'instruction': 'start_tensor_board'
+                                'instruction': job.JobInstructions.START_TB
                             }
-                        ]
-                    },
+                    }
+                }
+            },
+        }
+    }
+}
+
+clear_checkpoints = {
+    "parameters": [
+        {
+            "name": "computer_uuid",
+            "in": "path",
+            "type": "string",
+            "required": "true",
+            "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
+        },
+        {
+            "name": "runs",
+            "in": "body",
+            "type": "list",
+            "description": "Set of runs to clear checkpoints. Note that all the runs should be from same a computer",
+            "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
+        },
+    ],
+    "responses": {
+        "200": {
+            "description": "job details with the response",
+            "schema": {
+                'type': 'object',
+                'properties': {
+                    'job': {
+                        'type': 'object',
+                        'example':
+                            {
+                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                'status': job.JobStatuses.ERROR,
+                                'created_time': '16234567',
+                                'completed_time': '16234567',
+                                'instruction': job.JobInstructions.CLEAR_CHECKPOINTS
+                            }
+
+                    }
                 }
             },
         }

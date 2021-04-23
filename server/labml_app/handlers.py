@@ -18,6 +18,7 @@ from .db import app_token
 from .db import user
 from .db import project
 from .db import blocked_uuids
+from .db import job
 from . import utils
 from . import analyses
 from . import docs
@@ -499,7 +500,7 @@ def sync_computer(computer_uuid: str) -> flask.Response:
 
         return utils.format_rv({'runs': res})
 
-    job_responses = request.args.get('job_responses', [])
+    job_responses = request.args.get('jobs', [])
     if job_responses:
         c.sync_jobs(job_responses)
 
@@ -509,33 +510,47 @@ def sync_computer(computer_uuid: str) -> flask.Response:
         if active_jobs:
             break
 
-        time.sleep(0.6)
+        time.sleep(2.5)
 
-    return utils.format_rv({'active_jobs': active_jobs})
+    return utils.format_rv({'jobs': active_jobs})
 
 
-@swag_from(docs.sync_ui)
-def sync_ui(computer_uuid: str) -> flask.Response:
-    """End point to sync UI-computer (specified by computer_uuid).
-    job_uuids: to get an update about jobs.
-    instructions: to create new jobs.
-    """
+@swag_from(docs.start_tensor_board)
+def start_tensor_board(computer_uuid: str) -> flask.Response:
+    """End point to start TB for set of runs. runs: all the runs should be from a same computer.
+            """
     c = computer.get_or_create(computer_uuid)
 
-    job_uuids = request.args.get('job_uuids', [])
-    if job_uuids:
-        res = c.get_jobs(job_uuids)
+    runs = request.args.get('runs', [])
+    j = c.create_job(job.JobInstructions.START_TB, {'runs': runs})
 
-        return utils.format_rv({'jobs': res})
+    for i in range(100):
+        completed_job = c.get_job(j.job_uuid)
+        if completed_job and j.is_completed:
+            return utils.format_rv({'job': completed_job.to_data()})
 
-    instructions = request.args.get('instructions', [])
-    if instructions:
-        res = c.create_jobs(instructions)
+        time.sleep(2.5)
 
-        return utils.format_rv({'jobs': res})
+    return utils.format_rv({'error': 'timeout', 'message': 'timeout while waiting for response'})
 
-    return utils.format_rv({'error': 'invalid parameters',
-                            'message': 'either job_uuids or instructions should not be empty'})
+
+@swag_from(docs.clear_checkpoints)
+def clear_checkpoints(computer_uuid: str) -> flask.Response:
+    """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
+            """
+    c = computer.get_or_create(computer_uuid)
+
+    runs = request.args.get('runs', [])
+    j = c.create_job(job.JobInstructions.CLEAR_CHECKPOINTS, {'runs': runs})
+
+    for i in range(100):
+        completed_job = c.get_job(j.job_uuid)
+        if completed_job and j.is_completed:
+            return utils.format_rv({'job': completed_job.to_data()})
+
+        time.sleep(2.5)
+
+    return utils.format_rv({'error': 'timeout', 'message': 'timeout while waiting for response'})
 
 
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
@@ -549,7 +564,7 @@ def _add_ui(app: flask.Flask, method: str, func: Callable, url: str):
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
     _add_server(app, 'POST', update_session, 'computer')
-    _add_server(app, 'POST', sync_computer, 'sync_computer/<computer_uuid>')
+    _add_server(app, 'POST', sync_computer, 'sync/<computer_uuid>')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
@@ -577,7 +592,8 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
-    _add_ui(app, 'POST', sync_ui, 'sync_ui/<computer_uuid>')
+    _add_ui(app, 'POST', start_tensor_board, 'start_tb/<computer_uuid>')
+    _add_ui(app, 'POST', clear_checkpoints, 'clear_cp/<computer_uuid>')
 
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:

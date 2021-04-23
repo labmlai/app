@@ -34,32 +34,23 @@ class Computer(Model['Computer']):
     def get_deleted_runs(self) -> List[str]:
         return list(self.deleted_runs)
 
-    def get_jobs(self, job_uuids: List[str]) -> List[job.JobDict]:
-        res = []
-        for job_uuid in job_uuids:
-            job_key = None
-            if job_uuid in self.active_jobs:
-                job_key = self.active_jobs[job_uuid]
+    def get_job(self, job_uuid: str) -> Optional['job.Job']:
+        if job_uuid in self.completed_jobs:
+            job_key = self.completed_jobs[job_uuid]
 
-            if job_uuid in self.completed_jobs:
-                job_key = self.completed_jobs[job_uuid]
+            j = job_key.load()
 
-            if job_key:
-                j = job_key.load()
-                res.append(j.to_data())
+            return j
 
-        return res
+        return None
 
-    def create_jobs(self, instructions: List[str]) -> List[job.JobDict]:
-        res = []
-        for instruction in instructions:
-            j = job.create(instruction)
-            self.active_jobs[j.job_uuid] = j.key
-            res.append(j.to_data())
+    def create_job(self, instruction: str, data: Dict[str, str]) -> 'job.Job':
+        j = job.create(instruction, data)
 
+        self.active_jobs[j.job_uuid] = j.key
         self.save()
 
-        return res
+        return j
 
     def get_active_jobs(self) -> List['job.JobDict']:
         res = []
@@ -87,7 +78,7 @@ class Computer(Model['Computer']):
 
     def sync_jobs(self, responses: List[JobResponse]) -> None:
         for response in responses:
-            job_uuid = response['job_uuid']
+            job_uuid = response['uuid']
             status = response['status']
 
             if job_uuid in self.active_jobs:
