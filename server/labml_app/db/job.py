@@ -17,7 +17,7 @@ class JobStatuses:
 class JobInstructions:
     START_TB = 'start_tb'
     DELETE_RUN = 'delete_runs'
-    CLEAR_CHECKPOINTS = 'clear_cp'
+    CLEAR_CP = 'clear_cp'
 
 
 JobDict = Dict[str, Union[str, float]]
@@ -61,7 +61,7 @@ class Job(Model['Job']):
     def update_status(self, status: str) -> None:
         self.status = status
 
-        if self.status == JobStatuses.COMPLETED:
+        if self.status in [JobStatuses.COMPLETED, JobStatuses.ERROR]:
             self.completed_time = time.time()
 
         self.save()

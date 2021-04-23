@@ -541,7 +541,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     c = computer.get_or_create(computer_uuid)
 
     runs = request.args.get('runs', [])
-    j = c.create_job(job.JobInstructions.CLEAR_CHECKPOINTS, {'runs': runs})
+    j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
 
     for i in range(100):
         completed_job = c.get_job(j.job_uuid)
