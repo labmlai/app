@@ -9,9 +9,8 @@ from labml_app import utils
 class JobStatuses:
     INITIATED = 'initiated'
     ERROR = 'error'
-    SUCCESS = 'completed'
-    COMP_NOTIFIED = 'comp_notified'
-    UI_NOTIFIED = 'ui_notified'
+    SUCCESS = 'success'
+    TIMEOUT = 'timeout'
 
 
 class JobInstructions:
