@@ -536,7 +536,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     for i in range(5):
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
-        if completed_job and j.is_completed:
+        if completed_job and completed_job.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})
 
         time.sleep(2.5)
@@ -556,7 +556,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     for i in range(10):
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
-        if completed_job and j.is_completed:
+        if completed_job and completed_job.is_completed:
             return utils.format_rv({'job': completed_job.to_data()})
 
         time.sleep(2.5)

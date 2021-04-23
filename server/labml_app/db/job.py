@@ -9,7 +9,7 @@ from labml_app import utils
 class JobStatuses:
     INITIATED = 'initiated'
     ERROR = 'error'
-    COMPLETED = 'completed'
+    SUCCESS = 'completed'
     COMP_NOTIFIED = 'comp_notified'
     UI_NOTIFIED = 'ui_notified'
 
@@ -42,11 +42,16 @@ class Job(Model['Job']):
                     )
 
     @property
-    def is_completed(self) -> bool:
-        return self.status == JobStatuses.COMPLETED
+    def is_success(self) -> bool:
+        return self.status == JobStatuses.SUCCESS
 
+    @property
     def is_error(self) -> bool:
         return self.status == JobStatuses.ERROR
+
+    @property
+    def is_completed(self) -> bool:
+        return self.status == JobStatuses.ERROR or self.status == JobStatuses.SUCCESS
 
     def to_data(self) -> JobDict:
         return {
@@ -61,7 +66,7 @@ class Job(Model['Job']):
     def update_status(self, status: str) -> None:
         self.status = status
 
-        if self.status in [JobStatuses.COMPLETED, JobStatuses.ERROR]:
+        if self.status in [JobStatuses.SUCCESS, JobStatuses.ERROR]:
             self.completed_time = time.time()
 
         self.save()

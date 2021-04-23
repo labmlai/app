@@ -53,8 +53,8 @@ polling = {
             "in": "body",
             "type": "list",
             "description": "Status of the jobs initiated by UI",
-            "example": [{'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'completed'},
-                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': 'error'}]
+            "example": [{'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.SUCCESS},
+                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.ERROR}]
         }
     ],
     "responses": {
@@ -110,7 +110,7 @@ start_tensor_board = {
                         'example':
                             {
                                 'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
-                                'status': job.JobStatuses.COMPLETED,
+                                'status': job.JobStatuses.SUCCESS,
                                 'created_time': '16234567',
                                 'completed_time': '16234567',
                                 'instruction': job.JobInstructions.START_TB
