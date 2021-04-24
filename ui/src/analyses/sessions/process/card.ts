@@ -60,6 +60,7 @@ export class ProcessCard extends Card {
                 series: this.series,
                 plotIdx: [1, 2, 3, 4, 5],
                 width: this.width,
+                isColorless: true
             })
             this.sparkTimeLines.render($)
         })

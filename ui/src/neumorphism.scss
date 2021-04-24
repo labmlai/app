@@ -293,6 +293,10 @@ body.light {
     }
   }
 
+  .line-text {
+    fill: $light-btn;
+  }
+
   .danger {
     color: $light-danger;
   }
@@ -566,6 +570,10 @@ body.dark {
   // TODO used in last recorded time
   div {
     color: $dark-btn;
+  }
+
+  .line-text {
+    fill: $dark-btn;
   }
 
   .danger {

@@ -37,7 +37,7 @@ class ProcessSparkLine {
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getTimeScale(opt.stepExtent, this.width)
 
-        this.barScale = getScale(opt.barExtent, this.width)
+        this.barScale = getScale(opt.barExtent, this.width - 36)
     }
 
     render($) {
@@ -70,7 +70,7 @@ class ProcessSparkLine {
                         transform: `translate(${0}, 42)`
                     })
                     $('g', {transform: `translate(${2}, ${46})`}, $ => {
-                        $('text', '.line-text', `${this.name}: `, {style: {fill: this.color},})
+                        $('text', '.line-text', `${this.name}: `,)
                         $('text', '.line-text.line-end', `${formatFixed(last.smoothed, 3)}`, {
                             style: {fill: this.color},
                             transform: `translate(${this.width - 4}, ${0})`

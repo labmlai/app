@@ -5,12 +5,14 @@ import {getExtent, toDate} from "../utils"
 import {SparkTimeLine} from "./spark_time_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
+import {getBaseColor} from '../constants'
 
 
 interface SparkTimeLinesOptions extends ChartOptions {
     plotIdx: number[]
     onSelect?: (i: number) => void
     isDivergent?: boolean
+    isColorless?: boolean
 }
 
 export class SparkTimeLines {
@@ -25,11 +27,13 @@ export class SparkTimeLines {
     sparkTimeLines: SparkTimeLine[] = []
     chartColors: ChartColors
     isDivergent?: boolean
+    isColorless: boolean
 
     constructor(opt: SparkTimeLinesOptions) {
         this.series = opt.series
         this.plotIdx = opt.plotIdx
         this.onSelect = opt.onSelect
+        this.isColorless = opt.isColorless || false
 
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - 3 * margin)
@@ -81,7 +85,7 @@ export class SparkTimeLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color: this.chartColors.getColor(this.colorIndices[i]),
+                    color: this.isColorless ? getBaseColor(): this.chartColors.getColor(this.colorIndices[i]),
                 })
                 this.sparkTimeLines.push(sparkTimeLine)
                 sparkTimeLine.render($)
