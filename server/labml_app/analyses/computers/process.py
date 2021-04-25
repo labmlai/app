@@ -15,6 +15,8 @@ from ..preferences import Preferences
 SERIES_NAMES = ['rss', 'vms', 'cpu', 'threads', 'user', 'system']
 STATIC_NAMEs = ['name', 'create_time', 'pid', 'ppid', 'dead', 'exe', 'cmdline']
 
+ALMOST_ZERO = 1.0E-2
+
 
 @Analysis.db_model(PickleSerializer, 'Process')
 class ProcessModel(Model['ProcessModel'], SeriesCollection):
@@ -26,6 +28,7 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
     ppids: Dict[str, float]
     dead: Dict[str, bool]
     gpu_processes: Dict[str, Set[str]]
+    zero_cpu_processes: Dict[str, Dict['str', Any]]
 
     @classmethod
     def defaults(cls):
@@ -37,7 +40,8 @@ class ProcessModel(Model['ProcessModel'], SeriesCollection):
             pids={},
             ppids={},
             dead={},
-            gpu_processes={}
+            gpu_processes={},
+            zero_cpu_processes={},
         )
 
 
@@ -116,6 +120,7 @@ class ProcessAnalysis(Analysis):
 
     def get_tracking(self):
         res = {}
+        zero_cpu_processes = {}
         for ind, track in self.process.tracking.items():
             ind_split = ind.split('.')
             process_id = '.'.join(ind_split[:-1])
@@ -129,16 +134,24 @@ class ProcessAnalysis(Analysis):
                                    'dead': dead,
                                    'pid': self.process.pids.get(process_id, 0),
                                    'name': self.process.names.get(process_id, ''),
+                                   'is_zero_cpu': False,
                                    }
 
             suffix = ind_split[-1]
             if suffix in ['cpu', 'rss']:
-                series: Dict[str, Any] = Series().load(track).detail
+                s = Series().load(track)
+
+                # TODO better not to cache this and avoid smoothing for zero cpu processes
+                if suffix == 'cpu' and s.summary['mean'] < ALMOST_ZERO:
+                    zero_cpu_processes[process_id] = res[process_id]
+                    res[process_id]['is_zero_cpu'] = True
+
+                series: Dict[str, Any] = s.detail
                 res[process_id][suffix] = series
 
         ret = []
         for k, v in res.items():
-            if 'cpu' not in v or 'rss' not in v:
+            if v['is_zero_cpu'] or 'cpu' not in v or 'rss' not in v:
                 continue
 
             ret.append(v)
@@ -150,7 +163,22 @@ class ProcessAnalysis(Analysis):
             v['cpu']['name'] = v['name']
             summary.append(v['cpu'])
 
+        self.process.zero_cpu_processes = zero_cpu_processes
+        self.process.save()
+
         return ret, summary
+
+    def get_zero_cpu_processes(self):
+        ret = []
+        for k, v in self.process.zero_cpu_processes.items():
+            if 'cpu' not in v or 'rss' not in v:
+                continue
+
+            ret.append(v)
+
+        ret.sort(key=lambda s: s['cpu']['smoothed'][-1], reverse=True)
+
+        return ret
 
     def get_process(self, process_id: str):
         res = {'process_id': process_id,
@@ -233,6 +261,22 @@ def get_process_tracking(session_uuid: str) -> Any:
         status_code = 200
 
     response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response.status_code = status_code
+
+    return response
+
+
+@Analysis.route('GET', 'process/zero_cpu/<session_uuid>')
+def get_zero_cpu_processes(session_uuid: str) -> Any:
+    track_data = []
+    status_code = 404
+
+    ans = ProcessAnalysis.get_or_create(session_uuid)
+    if ans:
+        track_data = ans.get_zero_cpu_processes()
+        status_code = 200
+
+    response = make_response(utils.format_rv({'series': track_data}))
     response.status_code = status_code
 
     return response
