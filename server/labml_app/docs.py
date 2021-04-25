@@ -147,15 +147,29 @@ clear_checkpoints = {
                 'properties': {
                     'job': {
                         'type': 'object',
-                        'example':
-                            {
-                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
-                                'status': job.JobStatuses.ERROR,
-                                'created_time': '16234567',
-                                'completed_time': '16234567',
-                                'instruction': job.JobInstructions.CLEAR_CP
-                            }
-
+                        'properties': {
+                            'uuid': {
+                                'type': 'string',
+                                'example': '0c112ffda506f10f9f793c0fb6d9de4b43595d03'
+                            },
+                            'status': {
+                                'type': 'string',
+                                'example': job.JobStatuses.ERROR,
+                                'enum': [job.JobStatuses.ERROR, job.JobStatuses.SUCCESS, job.JobStatuses.TIMEOUT]
+                            },
+                            'created_time': {
+                                'type': 'float',
+                                'example': '16234567',
+                            },
+                            'completed_time': {
+                                'type': 'float',
+                                'example': '16234567'
+                            },
+                            'instruction': {
+                                'type': 'string',
+                                'example': job.JobInstructions.CLEAR_CHECKPOINTS
+                            },
+                        },
                     }
                 }
             },

@@ -16,7 +16,7 @@ class JobStatuses:
 class JobInstructions:
     START_TB = 'start_tb'
     DELETE_RUN = 'delete_runs'
-    CLEAR_CP = 'clear_cp'
+    CLEAR_CHECKPOINTS = 'clear_checkpoints'
 
 
 JobDict = Dict[str, Union[str, float]]

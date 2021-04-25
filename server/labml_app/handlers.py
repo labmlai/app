@@ -554,7 +554,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     c = computer.get_or_create(computer_uuid)
 
     runs = request.json.get('runs', [])
-    j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
+    j = c.create_job(job.JobInstructions.CLEAR_CHECKPOINTS, {'runs': runs})
 
     for i in range(10):
         c = computer.get_or_create(computer_uuid)
@@ -611,7 +611,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
     _add_ui(app, 'POST', start_tensor_board, 'start_tb/<computer_uuid>')
-    _add_ui(app, 'POST', clear_checkpoints, 'clear_cp/<computer_uuid>')
+    _add_ui(app, 'POST', clear_checkpoints, 'clear_checkpoints/<computer_uuid>')
 
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:
