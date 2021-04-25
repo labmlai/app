@@ -10,7 +10,7 @@ zero_cpu = {
     ],
     "responses": {
         "200": {
-            "description": "Synced server side run_uuid list",
+            "description": "list of processes where mean of the cpu time series is < 1.0E-2",
             "schema": {
                 'type': 'object',
                 'properties': {
