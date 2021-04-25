@@ -509,7 +509,7 @@ def sync_computer() -> flask.Response:
     if runs:
         res = c.sync_runs(runs)
 
-    return utils.format_rv({'runs': res})
+    return jsonify({'runs': res})
 
 
 @swag_from(docs.polling)
@@ -541,7 +541,7 @@ def polling() -> flask.Response:
 
         time.sleep(2.5)
 
-    return utils.format_rv({'jobs': active_jobs})
+    return jsonify({'jobs': active_jobs})
 
 
 @swag_from(docs.start_tensor_board)
