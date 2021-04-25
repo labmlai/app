@@ -96,7 +96,6 @@ class Computer(Model['Computer']):
         return {
             'computer_uuid': self.computer_uuid,
             'sessions': self.get_sessions(),
-            'active_runs': self.get_active_runs()
         }
 
 

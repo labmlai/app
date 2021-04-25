@@ -456,6 +456,7 @@ def add_session(session_uuid: str) -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
+@swag_from(docs.get_computer)
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_computer(computer_uuid) -> flask.Response:
     c = computer.get_or_create(computer_uuid)
@@ -488,6 +489,7 @@ def is_user_logged() -> flask.Response:
 
 
 @swag_from(docs.sync)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def sync_computer(computer_uuid: str) -> flask.Response:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
         """

@@ -180,3 +180,30 @@ clear_checkpoints = {
         }
     }
 }
+
+get_computer = {
+    "parameters": [
+        {
+            "name": "session_uuid",
+            "in": "path",
+            "type": "string",
+            "required": "true",
+            "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
+        },
+    ],
+    "responses": {
+        "200": {
+            "description": "Synced server side run_uuid list",
+            "schema": {
+                'type': 'object',
+                'example': {
+                    'sessions': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                 '0c112ffda506f10f9f793c0fb6d9de4b43595d03'
+                                 ],
+                    'session_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+
+                }
+            },
+        }
+    }
+}
