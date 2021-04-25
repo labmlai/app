@@ -10,7 +10,7 @@ zero_cpu = {
     ],
     "responses": {
         "200": {
-            "description": "list of processes where mean of the cpu time series is < 1.0E-2",
+            "description": "List of processes where mean of the cpu time series is < 1.0E-2",
             "schema": {
                 'type': 'object',
                 'properties': {
