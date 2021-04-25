@@ -6,7 +6,7 @@ sync = {
     "parameters": [
         {
             "name": "computer_uuid",
-            "in": "path",
+            "in": "query",
             "type": "string",
             "required": "true",
             "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
@@ -47,7 +47,7 @@ polling = {
     "parameters": [
         {
             "name": "computer_uuid",
-            "in": "path",
+            "in": "query",
             "type": "string",
             "required": "true",
             "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",

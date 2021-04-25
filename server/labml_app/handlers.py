@@ -490,9 +490,18 @@ def is_user_logged() -> flask.Response:
 
 @swag_from(docs.sync)
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def sync_computer(computer_uuid: str) -> flask.Response:
+def sync_computer() -> flask.Response:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
         """
+    errors = []
+
+    computer_uuid = request.args.get('computer_uuid', '')
+    if len(computer_uuid) < 10:
+        error = {'error': 'invalid_computer_uuid',
+                 'message': f'Invalid Computer UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
     c = computer.get_or_create(computer_uuid)
 
     runs = request.json.get('runs', [])
@@ -504,10 +513,19 @@ def sync_computer(computer_uuid: str) -> flask.Response:
 
 
 @swag_from(docs.polling)
-def polling(computer_uuid: str) -> flask.Response:
+def polling() -> flask.Response:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
            """
+    errors = []
+
+    computer_uuid = request.args.get('computer_uuid', '')
+    if len(computer_uuid) < 10:
+        error = {'error': 'invalid_computer_uuid',
+                 'message': f'Invalid Computer UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
     c = computer.get_or_create(computer_uuid)
 
     job_responses = request.json.get('jobs', [])
@@ -583,8 +601,8 @@ def _add_ui(app: flask.Flask, method: str, func: Callable, url: str):
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
     _add_server(app, 'POST', update_session, 'computer')
-    _add_server(app, 'POST', sync_computer, 'sync/<computer_uuid>')
-    _add_server(app, 'POST', polling, 'polling/<computer_uuid>')
+    _add_server(app, 'POST', sync_computer, 'sync')
+    _add_server(app, 'POST', polling, 'polling')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
