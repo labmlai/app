@@ -1,6 +1,8 @@
 from typing import Dict, Set, Any
 
 from flask import make_response, request
+from flasgger import swag_from
+from . import docs
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
@@ -266,6 +268,7 @@ def get_process_tracking(session_uuid: str) -> Any:
     return response
 
 
+@swag_from(docs.zero_cpu)
 @Analysis.route('GET', 'process/zero_cpu/<session_uuid>')
 def get_zero_cpu_processes(session_uuid: str) -> Any:
     track_data = []
