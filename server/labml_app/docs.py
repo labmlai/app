@@ -16,7 +16,11 @@ sync = {
             "in": "body",
             "type": "list",
             "description": "Runs to be synced with the server",
-            "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
+            "example": [{
+                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                'size_tensorboard': 10.2,
+                'size_checkpoints': 15.4
+            }]
         },
     ],
     "responses": {

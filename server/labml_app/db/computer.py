@@ -1,4 +1,4 @@
-from typing import List, Dict, Set, Optional
+from typing import List, Dict, Set, Optional, Any
 
 from labml_db import Model, Index, Key
 
@@ -60,11 +60,12 @@ class Computer(Model['Computer']):
 
         return res
 
-    def sync_runs(self, runs: List[str]) -> Dict[str, List[str]]:
+    def sync_runs(self, runs: List[Dict[str, Any]]) -> Dict[str, List[str]]:
         active = []
         deleted = []
         unknown = []
-        for run_uuid in runs:
+        for run in runs:
+            run_uuid = run['uuid']
             if run_uuid in self.active_runs:
                 active.append(run_uuid)
             elif run_uuid in self.deleted_runs:
