@@ -6,11 +6,11 @@ import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, DeleteButton, EditButton} from '../components/buttons'
+import {CancelButton, CustomButton, EditButton, DeleteButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
-import {AlertMessage} from '../components/alert'
+import {UserMessages} from '../components/alert'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
@@ -22,13 +22,14 @@ class RunsListView extends ScreenView {
     runsListContainer: HTMLDivElement
     searchQuery: string
     buttonContainer: HTMLDivElement
-    alertContainer: HTMLDivElement
     deleteButton: DeleteButton
+    startTBButton: CustomButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
-    runsDeleteSet: Set<string>
+    selectedRunsSet: Set<RunListItemModel>
     private loader: DataLoader
+    private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
 
     constructor() {
@@ -37,8 +38,15 @@ class RunsListView extends ScreenView {
         this.runListCache = CACHE.getRunsList()
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
+        this.startTBButton = new CustomButton({
+            onButtonClick: this.onStartTensorBoard,
+            text: 'TB',
+            parent: this.constructor.name
+        })
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
+
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.currentRunsList = (await this.runListCache.get(force)).runs
@@ -47,7 +55,7 @@ class RunsListView extends ScreenView {
 
         this.searchQuery = ''
         this.isEditMode = false
-        this.runsDeleteSet = new Set<string>()
+        this.selectedRunsSet = new Set<RunListItemModel>()
 
         mix_panel.track('Runs List View')
     }
@@ -57,7 +65,7 @@ class RunsListView extends ScreenView {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {
-                this.alertContainer = $('div')
+                this.userMessages.render($)
                 new HamburgerMenuView({
                     title: 'Runs',
                     setButtonContainer: container => this.buttonContainer = container
@@ -71,11 +79,13 @@ class RunsListView extends ScreenView {
             })
         })
         $(this.buttonContainer, $ => {
+            // this.startTBButton.render($)
             this.deleteButton.render($)
             this.cancelButton.render($)
             this.editButton.render($)
             this.refresh.render($)
             this.deleteButton.hide(true)
+            this.startTBButton.hide(true)
             this.cancelButton.hide(true)
             this.editButton.hide(true)
         })
@@ -103,21 +113,17 @@ class RunsListView extends ScreenView {
 
     updateButtons() {
         let noRuns = this.currentRunsList.length == 0
+
         this.deleteButton.hide(noRuns || !this.isEditMode)
+        this.startTBButton.hide(noRuns || !this.isEditMode)
         this.cancelButton.hide(noRuns || !this.isEditMode)
         this.editButton.hide(noRuns || this.isEditMode)
+
         if (!noRuns && !this.isEditMode) {
             this.refresh.start()
         } else {
             this.refresh.stop()
         }
-    }
-
-    renderAlertMessage() {
-        this.alertContainer.innerHTML = ''
-        $(this.alertContainer, $ => {
-            new AlertMessage({message: 'An unexpected network error occurred. Please try again later'}).render($)
-        })
     }
 
     runsFilter = (run: RunListItemModel, query: RegExp) => {
@@ -141,47 +147,92 @@ class RunsListView extends ScreenView {
     }
 
     onEdit = () => {
+        let isRunsSelected = this.selectedRunsSet.size === 0
+
         this.isEditMode = true
-        this.deleteButton.disabled = this.runsDeleteSet.size === 0
+        this.deleteButton.disabled = isRunsSelected
+        this.startTBButton.disabled = isRunsSelected
         this.updateButtons()
     }
 
     onDelete = async () => {
         try {
-            await this.runListCache.deleteRuns(this.runsDeleteSet)
+            let runUUIDs: Array<string> = []
+            for (let runListItem of this.selectedRunsSet) {
+                runUUIDs.push(runListItem.run_uuid)
+            }
+
+            await this.runListCache.deleteRuns(runUUIDs)
 
             this.isEditMode = false
-            this.runsDeleteSet.clear()
-            this.deleteButton.disabled = this.runsDeleteSet.size === 0
+            this.selectedRunsSet.clear()
+            this.deleteButton.disabled = this.selectedRunsSet.size === 0
 
             await this.loader.load()
             await this.renderList()
         } catch (e) {
-            this.renderAlertMessage()
+            this.userMessages.networkErrorMessage()
+        }
+    }
+
+    onStartTensorBoard = async () => {
+        let computerUUID: string = ''
+        let runUUIDs: Array<string> = []
+
+        for (let run of this.selectedRunsSet) {
+            if (!computerUUID) {
+                computerUUID = run.computer_uuid
+            } else if (computerUUID !== run.computer_uuid) {
+                this.userMessages.warningMessage('To start TensorBoard, all the selected runs should be from a same computer')
+                return
+            } else {
+                runUUIDs.push(run.run_uuid)
+            }
+        }
+
+        if (!computerUUID) {
+            this.userMessages.warningMessage('Selected runs do not belong to any computer')
+            return
+        }
+
+        try {
+            let job = await this.runListCache.startTensorBoard(computerUUID, runUUIDs)
+            if (job.isSuccessful) {
+                this.userMessages.successMessage('Successfully started the TensorBoard')
+            } else {
+                this.userMessages.warningMessage('Error occurred while starting the TensorBoard')
+            }
+        } catch (e) {
+            this.userMessages.networkErrorMessage()
         }
     }
 
     onCancel = () => {
         this.isEditMode = false
-        this.runsDeleteSet.clear()
+        this.selectedRunsSet.clear()
         this.renderList().then()
     }
 
     onItemClicked = (elem: RunsListItemView) => {
-        let uuid = elem.item.run_uuid
+        let runListItem = elem.item
+
         if (!this.isEditMode) {
-            ROUTER.navigate(`/run/${uuid}`)
+            ROUTER.navigate(`/run/${runListItem.run_uuid}`)
             return
         }
 
-        if (this.runsDeleteSet.has(uuid)) {
-            this.runsDeleteSet.delete(uuid)
+        if (this.selectedRunsSet.has(runListItem)) {
+            this.selectedRunsSet.delete(runListItem)
             elem.elem.classList.remove('selected')
         } else {
-            this.runsDeleteSet.add(uuid)
+            this.selectedRunsSet.add(runListItem)
             elem.elem.classList.add('selected')
         }
-        this.deleteButton.disabled = this.runsDeleteSet.size === 0
+
+        let isRunsSelected = this.selectedRunsSet.size === 0
+
+        this.deleteButton.disabled = isRunsSelected
+        this.startTBButton.disabled = isRunsSelected
     }
 
     onSearch = async (query: string) => {

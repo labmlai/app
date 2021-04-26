@@ -182,7 +182,7 @@ class RunView extends ScreenView {
     async onStartTensorBoard() {
         try {
             let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
-            if (job.isSuccessful()) {
+            if (job.isSuccessful) {
                 this.userMessages.successMessage('Successfully started the TensorBoard')
             } else {
                 this.userMessages.warningMessage('Error occurred while starting the TensorBoard')

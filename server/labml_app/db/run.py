@@ -246,6 +246,7 @@ class Run(Model['Run']):
     def get_summary(self) -> Dict[str, str]:
         return {
             'run_uuid': self.run_uuid,
+            'computer_uuid': self.computer_uuid,
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,

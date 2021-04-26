@@ -2,6 +2,7 @@ import {RunStatus} from "./status"
 
 export interface RunListItemModel {
     run_uuid: string
+    computer_uuid : string
     run_status: RunStatus
     last_updated_time: number
     name: string
@@ -16,6 +17,7 @@ export interface RunsListModel {
 
 export class RunListItem {
     run_uuid: string
+    computer_uuid : string
     run_status: RunStatus
     last_updated_time: number
     name: string
@@ -24,6 +26,7 @@ export class RunListItem {
 
     constructor(run_list_item: RunListItemModel) {
         this.run_uuid = run_list_item.run_uuid
+        this.computer_uuid = run_list_item.computer_uuid
         this.name = run_list_item.name
         this.comment = run_list_item.comment
         this.start_time = run_list_item.start_time

@@ -235,7 +235,7 @@ class RunHeaderView extends ScreenView {
     onDelete = async () => {
         if (confirm("Are you sure?")) {
             try {
-                await CACHE.getRunsList().deleteRuns(new Set<string>([this.uuid]))
+                await CACHE.getRunsList().deleteRuns([this.uuid])
             } catch (e) {
                 handleNetworkError(e)
                 return
@@ -277,7 +277,7 @@ class RunHeaderView extends ScreenView {
         try {
             let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
 
-            if (job.isSuccessful()) {
+            if (job.isSuccessful) {
                 this.userMessages.successMessage('Successfully cleaned the check points')
             } else {
                 this.userMessages.warningMessage('Error occurred while cleaning the check points')

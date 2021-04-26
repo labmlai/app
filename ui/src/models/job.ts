@@ -25,7 +25,7 @@ export class Job {
         this.data = job.data
     }
 
-    isSuccessful(){
+    get isSuccessful() {
         return this.status === 'success'
     }
 }
