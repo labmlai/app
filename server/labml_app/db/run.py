@@ -236,6 +236,7 @@ class Run(Model['Run']):
             'is_claimed': self.is_claimed,
             'size_checkpoints': self.size_checkpoints,
             'size_tensorboard': self.size_tensorboard,
+            'computer_uuid': self.computer_uuid,
             'configs': configs,
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,

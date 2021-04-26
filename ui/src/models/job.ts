@@ -24,4 +24,8 @@ export class Job {
         this.completed_time = job.completed_time
         this.data = job.data
     }
+
+    isSuccessful(){
+        return this.status === 'success'
+    }
 }

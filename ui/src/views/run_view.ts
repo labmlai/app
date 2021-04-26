@@ -124,6 +124,15 @@ class RunView extends ScreenView {
     renderButtons() {
         this.ButtonsContainer.innerHTML = ''
         $(this.ButtonsContainer, $ => {
+            if (this.run.size_tensorboard) {
+                new CustomButton({
+                    onButtonClick: this.onStartTensorBoard.bind(this),
+                    text: 'TB',
+                    title: 'start TensorBoard',
+                    parent: this.constructor.name
+                }).render($)
+            }
+
             if (!this.run.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
@@ -150,7 +159,6 @@ class RunView extends ScreenView {
 
     async onRunAction(isRunClaim: boolean) {
         if (!this.isUserLogged.is_user_logged) {
-            mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
             ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
         } else {
             try {
@@ -169,6 +177,15 @@ class RunView extends ScreenView {
                 this.userMessages.networkErrorMessage()
                 return
             }
+        }
+    }
+
+    async onStartTensorBoard() {
+        let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
+        if (job.isSuccessful()) {
+            this.userMessages.successMessage('Successfully started the TensorBoard')
+        } else {
+            this.userMessages.warningMessage('Error occurred while starting the TensorBoard')
         }
     }
 
