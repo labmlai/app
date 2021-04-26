@@ -75,7 +75,7 @@ polling = {
                                 'status': job.JobStatuses.INITIATED,
                                 'created_time': '16234567',
                                 'completed_time': None,
-                                'instruction': job.JobInstructions.START_TENSORBOARD,
+                                'method': job.JobMethods.START_TENSORBOARD,
                                 'data': {'runs': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']}
                             }
                         ]
@@ -114,7 +114,7 @@ start_tensor_board = {
                         'status': job.JobStatuses.SUCCESS,
                         'created_time': '16234567',
                         'completed_time': '16234567',
-                        'instruction': job.JobInstructions.START_TENSORBOARD
+                        'method': job.JobMethods.START_TENSORBOARD
                     }
             },
         }
@@ -149,7 +149,7 @@ clear_checkpoints = {
                         'status': job.JobStatuses.SUCCESS,
                         'created_time': '16234567',
                         'completed_time': '16234567',
-                        'instruction': job.JobInstructions.START_TENSORBOARD
+                        'method': job.JobMethods.START_TENSORBOARD
                     }
             },
         }

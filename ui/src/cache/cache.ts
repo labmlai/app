@@ -6,6 +6,7 @@ import {RunsList} from '../models/run_list'
 import {AnalysisPreference} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
+import {Job} from '../models/job'
 
 const RELOAD_TIMEOUT = 60 * 1000
 
@@ -146,6 +147,18 @@ export class RunsListCache extends CacheObject<RunsList> {
     async claimRun(run: Run): Promise<void> {
         await NETWORK.claimRun(run.run_uuid)
         this.invalidate_cache()
+    }
+
+    async startTensorBoard(computerUUID, runUUIDs: Array<string>): Promise<Job> {
+        let res = await NETWORK.startTensorBoard(computerUUID, runUUIDs)
+
+        return new Job(res)
+    }
+
+    async clearCheckPoints(computerUUID, runUUIDs: Array<string>): Promise<Job> {
+        let res = await NETWORK.clearCheckPoints(computerUUID, runUUIDs)
+
+        return new Job(res)
     }
 }
 

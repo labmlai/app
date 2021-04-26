@@ -32,8 +32,8 @@ class Computer(Model['Computer']):
     def get_deleted_runs(self) -> List[str]:
         return list(self.deleted_runs)
 
-    def create_job(self, instruction: str, data: Dict[str, str]) -> 'job.Job':
-        j = job.create(instruction, data)
+    def create_job(self, method: str, data: Dict[str, str]) -> 'job.Job':
+        j = job.create(method, data)
 
         self.pending_jobs[j.job_uuid] = j.key
         self.save()

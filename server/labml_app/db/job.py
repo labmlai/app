@@ -13,7 +13,7 @@ class JobStatuses:
     TIMEOUT = 'timeout'
 
 
-class JobInstructions:
+class JobMethods:
     START_TENSORBOARD = 'start_tensorboard'
     DELETE_RUNS = 'delete_runs'
     CLEAR_CHECKPOINTS = 'clear_checkpoints'
@@ -24,7 +24,7 @@ JobDict = Dict[str, Union[str, float]]
 
 class Job(Model['Job']):
     job_uuid: str
-    instruction: str
+    method: str
     status: str
     created_time: float
     completed_time: float
@@ -33,7 +33,7 @@ class Job(Model['Job']):
     @classmethod
     def defaults(cls):
         return dict(job_uuid='',
-                    instruction='',
+                    method='',
                     status='',
                     created_time=None,
                     completed_time=None,
@@ -55,7 +55,7 @@ class Job(Model['Job']):
     def to_data(self) -> JobDict:
         return {
             'uuid': self.job_uuid,
-            'instruction': self.instruction,
+            'method': self.method,
             'status': self.status,
             'created_time': self.created_time,
             'completed_time': self.completed_time,
@@ -75,9 +75,9 @@ class JobIndex(Index['Job']):
     pass
 
 
-def create(instruction: str, data: Dict[str, Any]) -> Job:
+def create(method: str, data: Dict[str, Any]) -> Job:
     job = Job(job_uuid=utils.gen_token(),
-              instruction=instruction,
+              method=method,
               created_time=time.time(),
               data=data,
               status=JobStatuses.INITIATED,
