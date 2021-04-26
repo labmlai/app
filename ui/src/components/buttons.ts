@@ -182,7 +182,7 @@ export class CancelButton extends Button {
     }
 }
 
-export class AddButton extends Button {
+export class CleanButton extends Button {
     constructor(opt: buttonOptions) {
         super(opt)
     }
@@ -191,7 +191,7 @@ export class AddButton extends Button {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}},
             $ => {
-                $('span', '.fas.fa-plus', '')
+                $('span', '.fas.fa-broom', '')
             })
     }
 }
@@ -325,6 +325,7 @@ export class CustomButton extends Button {
     }
 }
 
+
 interface ShareButtonOptions extends buttonOptions {
     text: string
 }
@@ -351,7 +352,7 @@ export class ShareButton extends Button {
     }
 
     renderToast() {
-        if(this.toastDiv != null) {
+        if (this.toastDiv != null) {
             this.toastDiv.remove()
         }
         $(document.body, $ => {

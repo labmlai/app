@@ -31,7 +31,7 @@ class RunView extends ScreenView {
     runHeaderCard: RunHeaderCard
     cards: Card[] = []
     lastUpdated: number
-    ButtonsContainer: HTMLSpanElement
+    buttonsContainer: HTMLSpanElement
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -84,7 +84,7 @@ class RunView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}}, $ => {
                     $('div', $ => {
                         this.userMessages.render($)
-                        this.ButtonsContainer = $('span', '.float-right')
+                        this.buttonsContainer = $('span', '.float-right')
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                             this.refresh.render($)
@@ -122,8 +122,8 @@ class RunView extends ScreenView {
     }
 
     renderButtons() {
-        this.ButtonsContainer.innerHTML = ''
-        $(this.ButtonsContainer, $ => {
+        this.buttonsContainer.innerHTML = ''
+        $(this.buttonsContainer, $ => {
             if (this.run.size_tensorboard) {
                 new CustomButton({
                     onButtonClick: this.onStartTensorBoard.bind(this),
@@ -170,7 +170,6 @@ class RunView extends ScreenView {
                     await this.runListCache.addRun(this.run)
                     this.userMessages.successMessage('Successfully added to your runs list')
                 }
-
                 this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
@@ -181,11 +180,15 @@ class RunView extends ScreenView {
     }
 
     async onStartTensorBoard() {
-        let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
-        if (job.isSuccessful()) {
-            this.userMessages.successMessage('Successfully started the TensorBoard')
-        } else {
-            this.userMessages.warningMessage('Error occurred while starting the TensorBoard')
+        try {
+            let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
+            if (job.isSuccessful()) {
+                this.userMessages.successMessage('Successfully started the TensorBoard')
+            } else {
+                this.userMessages.warningMessage('Error occurred while starting the TensorBoard')
+            }
+        } catch (e) {
+            this.userMessages.networkErrorMessage()
         }
     }
 

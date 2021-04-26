@@ -4,7 +4,14 @@ import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
 import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
-import {BackButton, CancelButton, CustomButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
+import {
+    BackButton,
+    CancelButton,
+    CleanButton,
+    DeleteButton,
+    EditButton,
+    SaveButton
+} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
@@ -14,11 +21,13 @@ import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
+import {UserMessages} from "../../../components/alert"
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
     run: Run
     runCache: RunCache
+    runListCache: RunsListCache
     status: Status
     statusCache: RunStatusCache
     isUserLogged: IsUserLogged
@@ -28,21 +37,26 @@ class RunHeaderView extends ScreenView {
     actualWidth: number
     isProjectRun: boolean = false
     fieldContainer: HTMLDivElement
+    cleanButtonContainer: HTMLSpanElement
     nameField: EditableField
     commentField: EditableField
     noteField: EditableField
     private deleteButton: DeleteButton
+    private userMessages: UserMessages
     private loader: DataLoader
 
     constructor(uuid: string) {
         super()
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
+        this.runListCache = CACHE.getRunsList()
         this.statusCache = CACHE.getRunStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
+
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.status = await this.statusCache.get(force)
@@ -75,8 +89,10 @@ class RunHeaderView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}},
                 $ => {
                     $('div', $ => {
+                        this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
+                            this.cleanButtonContainer = $('span', '.float-right')
                             if (this.isEditMode) {
                                 new CancelButton({
                                     onButtonClick: this.onToggleEdit,
@@ -103,6 +119,7 @@ class RunHeaderView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run Details', item: this.run.name})
+            this.renderCleanButton()
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -209,7 +226,6 @@ class RunHeaderView extends ScreenView {
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
 
-
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
 
@@ -243,6 +259,32 @@ class RunHeaderView extends ScreenView {
 
         this.runCache.setRun(this.run).then()
         this.onToggleEdit()
+    }
+
+    renderCleanButton() {
+        this.cleanButtonContainer.innerHTML = ''
+        $(this.cleanButtonContainer, $ => {
+            if (this.run.size_checkpoints) {
+                new CleanButton({
+                    onButtonClick: this.onCleaningCheckPoints.bind(this),
+                    parent: this.constructor.name
+                }).render($)
+            }
+        })
+    }
+
+    async onCleaningCheckPoints() {
+        try {
+            let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
+
+            if (job.isSuccessful()) {
+                this.userMessages.successMessage('Successfully cleaned the check points')
+            } else {
+                this.userMessages.warningMessage('Error occurred while cleaning the check points')
+            }
+        } catch (e) {
+            this.userMessages.networkErrorMessage()
+        }
     }
 }
 
