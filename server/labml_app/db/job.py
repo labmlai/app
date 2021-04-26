@@ -14,8 +14,8 @@ class JobStatuses:
 
 
 class JobInstructions:
-    START_TB = 'start_tb'
-    DELETE_RUN = 'delete_runs'
+    START_TENSORBOARD = 'start_tensorboard'
+    DELETE_RUNS = 'delete_runs'
     CLEAR_CHECKPOINTS = 'clear_checkpoints'
 
 

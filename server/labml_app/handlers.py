@@ -549,7 +549,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     c = computer.get_or_create(computer_uuid)
 
     runs = request.json.get('runs', [])
-    j = c.create_job(job.JobInstructions.START_TB, {'runs': runs})
+    j = c.create_job(job.JobInstructions.START_TENSORBOARD, {'runs': runs})
 
     for i in range(5):
         c = computer.get_or_create(computer_uuid)
@@ -562,7 +562,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
 
-    return utils.format_rv({'job': data})
+    return utils.format_rv(data)
 
 
 @swag_from(docs.clear_checkpoints)
@@ -585,7 +585,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
 
-    return utils.format_rv({'job': data})
+    return utils.format_rv(data)
 
 
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
@@ -628,7 +628,7 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
-    _add_ui(app, 'POST', start_tensor_board, 'start_tb/<computer_uuid>')
+    _add_ui(app, 'POST', start_tensor_board, 'start_tensorboard/<computer_uuid>')
     _add_ui(app, 'POST', clear_checkpoints, 'clear_checkpoints/<computer_uuid>')
 
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():

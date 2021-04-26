@@ -75,7 +75,7 @@ polling = {
                                 'status': job.JobStatuses.INITIATED,
                                 'created_time': '16234567',
                                 'completed_time': None,
-                                'instruction': job.JobInstructions.START_TB,
+                                'instruction': job.JobInstructions.START_TENSORBOARD,
                                 'data': {'runs': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']}
                             }
                         ]
@@ -108,19 +108,14 @@ start_tensor_board = {
             "description": "job details with the response",
             "schema": {
                 'type': 'object',
-                'properties': {
-                    'job': {
-                        'type': 'object',
-                        'example':
-                            {
-                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
-                                'status': job.JobStatuses.SUCCESS,
-                                'created_time': '16234567',
-                                'completed_time': '16234567',
-                                'instruction': job.JobInstructions.START_TB
-                            }
+                'example':
+                    {
+                        'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                        'status': job.JobStatuses.SUCCESS,
+                        'created_time': '16234567',
+                        'completed_time': '16234567',
+                        'instruction': job.JobInstructions.START_TENSORBOARD
                     }
-                }
             },
         }
     }
@@ -148,34 +143,14 @@ clear_checkpoints = {
             "description": "job details with the response",
             "schema": {
                 'type': 'object',
-                'properties': {
-                    'job': {
-                        'type': 'object',
-                        'properties': {
-                            'uuid': {
-                                'type': 'string',
-                                'example': '0c112ffda506f10f9f793c0fb6d9de4b43595d03'
-                            },
-                            'status': {
-                                'type': 'string',
-                                'example': job.JobStatuses.ERROR,
-                                'enum': [job.JobStatuses.ERROR, job.JobStatuses.SUCCESS, job.JobStatuses.TIMEOUT]
-                            },
-                            'created_time': {
-                                'type': 'float',
-                                'example': '16234567',
-                            },
-                            'completed_time': {
-                                'type': 'float',
-                                'example': '16234567'
-                            },
-                            'instruction': {
-                                'type': 'string',
-                                'example': job.JobInstructions.CLEAR_CHECKPOINTS
-                            },
-                        },
+                'example':
+                    {
+                        'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                        'status': job.JobStatuses.SUCCESS,
+                        'created_time': '16234567',
+                        'completed_time': '16234567',
+                        'instruction': job.JobInstructions.START_TENSORBOARD
                     }
-                }
             },
         }
     }

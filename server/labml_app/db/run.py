@@ -188,7 +188,6 @@ class Run(Model['Run']):
             return ''
 
         url = urls[0]
-
         if not url:
             return ''
         if 'git' not in url:
@@ -196,7 +195,6 @@ class Run(Model['Run']):
             return ''
 
         split = url.split(':')
-
         if split[0] != 'https':
             split[0] = 'https'
             return '://github.com/'.join(split)[:-4]
@@ -236,6 +234,8 @@ class Run(Model['Run']):
             'commit': self.format_commit(formatted_repo, self.commit),
             'commit_message': self.commit_message,
             'is_claimed': self.is_claimed,
+            'size_checkpoints': self.size_checkpoints,
+            'size_tensorboard': self.size_tensorboard,
             'configs': configs,
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,

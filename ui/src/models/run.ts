@@ -14,6 +14,8 @@ export interface RunModel {
     start_step: number
     is_claimed: boolean
     is_project_run: boolean
+    size_checkpoints: number
+    size_tensorboard : number
     configs: ConfigModel[]
     stdout: string
     logger: string
@@ -65,6 +67,8 @@ export class Run {
     start_step: number
     is_claimed: boolean
     is_project_run: boolean
+    size_checkpoints: number
+    size_tensorboard : number
     configs: Config[]
     dynamic: object
     stdout: string
@@ -85,6 +89,8 @@ export class Run {
         this.start_step = run.start_step
         this.is_claimed = run.is_claimed
         this.is_project_run = run.is_project_run
+        this.size_checkpoints = run.size_checkpoints
+        this.size_tensorboard = run.size_tensorboard
         this.configs = []
         for (let c of run.configs) {
             this.configs.push(new Config(c))
