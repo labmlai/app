@@ -40,6 +40,8 @@ class Run(Model['Run']):
     status: Key['status.Status']
     configs: Dict[str, any]
     computer_uuid: str
+    size_checkpoints: float
+    size_tensorboard: float
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -70,6 +72,8 @@ class Run(Model['Run']):
                     status=None,
                     configs={},
                     computer_uuid='',
+                    size_checkpoints=None,
+                    size_tensorboard=None,
                     stdout='',
                     stdout_unmerged='',
                     logger='',
@@ -90,6 +94,17 @@ class Run(Model['Run']):
         s = get_status(self.run_uuid)
 
         return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
+
+    def sync_run(self, **kwargs) -> None:
+        size_checkpoints = kwargs.get('size_checkpoints', None)
+        size_tensorboard = kwargs.get('size_tensorboard', None)
+
+        if size_checkpoints:
+            self.size_checkpoints = size_checkpoints
+        if size_tensorboard:
+            self.size_tensorboard = size_tensorboard
+
+        self.save()
 
     def update_run(self, data: Dict[str, any]) -> None:
         if not self.name:

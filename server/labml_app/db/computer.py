@@ -3,6 +3,7 @@ from typing import List, Dict, Set, Optional, Any
 from labml_db import Model, Index, Key
 
 from . import job
+from . import run
 
 JobResponse = Dict[str, str]
 
@@ -27,9 +28,6 @@ class Computer(Model['Computer']):
 
     def get_sessions(self) -> List[str]:
         return list(self.sessions)
-
-    def get_active_runs(self) -> List[str]:
-        return list(self.active_runs)
 
     def get_deleted_runs(self) -> List[str]:
         return list(self.deleted_runs)
@@ -64,9 +62,12 @@ class Computer(Model['Computer']):
         active = []
         deleted = []
         unknown = []
-        for run in runs:
-            run_uuid = run['uuid']
-            if run_uuid in self.active_runs:
+        for run_data in runs:
+            run_uuid = run_data['uuid']
+            r = run.get(run_uuid)
+
+            if r:
+                r.sync_run(**run_data)
                 active.append(run_uuid)
             elif run_uuid in self.deleted_runs:
                 deleted.append(run_uuid)
