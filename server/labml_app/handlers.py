@@ -505,9 +505,7 @@ def sync_computer() -> flask.Response:
     c = computer.get_or_create(computer_uuid)
 
     runs = request.json.get('runs', [])
-    res = []
-    if runs:
-        res = c.sync_runs(runs)
+    res = c.sync_runs(runs)
 
     return jsonify({'runs': res})
 
