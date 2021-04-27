@@ -6,17 +6,20 @@ const DIVERGENT = d3.piecewise(d3.interpolateHcl, ["#ffa600", "#bc5090", "#003f5
 
 interface ChartColorsOptions {
     nColors: number
+    secondNColors: number
     isDivergent?: boolean
 }
 
 export default class ChartColors {
     nColors: number
+    secondNColors: number
     isDivergent: boolean
     colorScale: d3.ScaleLinear<number, string>
     colors: string[] = []
 
     constructor(opt: ChartColorsOptions) {
         this.nColors = opt.nColors
+        this.secondNColors = opt.secondNColors ?? 0
         this.isDivergent = opt.isDivergent
 
         this.colorScale = DIVERGENT

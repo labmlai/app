@@ -209,6 +209,9 @@ class RunHeaderView extends ScreenView {
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
 
+    onSetComparison = () => {
+
+    }
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode

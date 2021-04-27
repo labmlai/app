@@ -3,7 +3,7 @@ import {Status} from "../models/status"
 import NETWORK from "../network"
 import {IsUserLogged, User} from "../models/user"
 import {RunsList} from '../models/run_list'
-import {AnalysisPreference} from "../models/preferences"
+import {AnalysisPreference, ComparisonPreference} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 
