@@ -77,7 +77,7 @@ def sign_out() -> flask.Response:
     return response
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
+# @utils.mix_panel.MixPanelEvent.time_this(0.4)
 def update_run() -> flask.Response:
     errors = []
 
@@ -140,7 +140,7 @@ def update_run() -> flask.Response:
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
-    time.sleep(3)
+    time.sleep(8)
 
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
@@ -538,7 +538,7 @@ def polling() -> flask.Response:
     return jsonify({'jobs': active_jobs})
 
 
-@auth.login_required
+# @auth.login_required
 @swag_from(docs.start_tensor_board)
 def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
