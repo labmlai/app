@@ -84,10 +84,10 @@ class RunView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}}, $ => {
                     $('div', $ => {
                         this.userMessages.render($)
-                        this.buttonsContainer = $('span', '.float-right')
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                             this.refresh.render($)
+                            this.buttonsContainer = $('span', '.float-right')
                             this.share.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
