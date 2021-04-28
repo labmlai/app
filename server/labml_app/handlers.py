@@ -147,6 +147,8 @@ def update_run() -> flask.Response:
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
+    time.sleep(3)
+
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
 
