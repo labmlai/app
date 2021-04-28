@@ -540,16 +540,16 @@ def polling() -> flask.Response:
     if job_responses:
         c.sync_jobs(job_responses)
 
-    active_jobs = []
+    pending_jobs = []
     for i in range(5):
         c = computer.get_or_create(computer_uuid)
-        active_jobs = c.get_pending_jobs()
-        if active_jobs:
+        pending_jobs = c.get_pending_jobs()
+        if pending_jobs:
             break
 
         time.sleep(2.5)
 
-    return jsonify({'jobs': active_jobs})
+    return jsonify({'jobs': pending_jobs})
 
 
 # @auth.login_required
@@ -566,7 +566,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
-            return utils.format_rv({'job': completed_job.to_data()})
+            return utils.format_rv(completed_job.to_data())
 
         time.sleep(2.5)
 
@@ -590,7 +590,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
-            return utils.format_rv({'job': completed_job.to_data()})
+            return utils.format_rv(completed_job.to_data())
 
         time.sleep(2.5)
 

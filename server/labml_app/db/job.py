@@ -17,6 +17,7 @@ class JobMethods:
     START_TENSORBOARD = 'start_tensorboard'
     DELETE_RUNS = 'delete_runs'
     CLEAR_CHECKPOINTS = 'clear_checkpoints'
+    CALL_SYNC = 'call_sync'
 
 
 JobDict = Dict[str, Union[str, float]]
