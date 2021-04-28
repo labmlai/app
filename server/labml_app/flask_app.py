@@ -129,8 +129,10 @@ def after_request(response):
 
     if not settings.IS_MIX_PANEL:
         time_limit = 0.4
+    elif '/track' in request.full_path:
+        time_limit = 4.5
     else:
-        time_limit = 6
+        time_limit = 1.5
 
     if '/api' not in request.full_path:
         return response
