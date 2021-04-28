@@ -83,7 +83,6 @@ def update_run() -> flask.Response:
 
     token = request.args.get('labml_token', '')
     run_uuid = request.args.get('run_uuid', '')
-    computer_uuid = request.args.get('computer_uuid', '')
     version = request.args.get('labml_version', '')
 
     if blocked_uuids.is_run_blocked(run_uuid):
@@ -91,12 +90,6 @@ def update_run() -> flask.Response:
                  'message': f'Blocked or deleted run, uuid:{run_uuid}'}
         errors.append(error)
         return jsonify({'errors': errors})
-
-    # if len(computer_uuid) < 10:
-    #     error = {'error': 'invalid_computer_uuid',
-    #              'message': f'Invalid Computer UUID'}
-    #     errors.append(error)
-    #     return jsonify({'errors': errors})
 
     if len(run_uuid) < 10:
         error = {'error': 'invalid_run_uuid',
@@ -129,7 +122,7 @@ def update_run() -> flask.Response:
                                 'add it to your experiments list.'}
         errors.append(error)
 
-    r = run.get_or_create(run_uuid, computer_uuid, token, request.remote_addr)
+    r = run.get_or_create(run_uuid, token, request.remote_addr)
     s = r.status.load()
 
     if isinstance(request.json, list):
