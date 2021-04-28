@@ -77,8 +77,8 @@ def sign_out() -> flask.Response:
     return response
 
 
-# @utils.mix_panel.MixPanelEvent.time_this(0.4)
-def update_run() -> flask.Response:
+@utils.mix_panel.MixPanelEvent.time_this(0.4)
+def _update_run():
     errors = []
 
     token = request.args.get('labml_token', '')
@@ -140,13 +140,18 @@ def update_run() -> flask.Response:
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
+    return errors, r.url, hp_values
+
+
+def update_run() -> flask.Response:
+    errors, url, hp_values = _update_run()
+
     time.sleep(8)
 
-    return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
+    return jsonify({'errors': errors, 'url': url, 'dynamic': hp_values})
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
-def update_session() -> flask.Response:
+def _update_session():
     errors = []
 
     token = request.args.get('labml_token', '')
@@ -214,7 +219,16 @@ def update_session() -> flask.Response:
     logger.debug(
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
-    return jsonify({'errors': errors, 'url': c.url})
+    return errors, c.url
+
+
+@utils.mix_panel.MixPanelEvent.time_this(0.4)
+def update_session() -> flask.Response:
+    errors, url = _update_session()
+
+    time.sleep(8)
+
+    return jsonify({'errors': errors, 'url': url})
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)

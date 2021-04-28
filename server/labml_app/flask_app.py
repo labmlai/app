@@ -129,8 +129,8 @@ def after_request(response):
 
     if not settings.IS_MIX_PANEL:
         time_limit = 0.4
-    elif '/track' in request.full_path:
-        time_limit = 4.5
+    elif '/track' in request.full_path or '/computer' in request.full_path:
+        time_limit = 9.5
     else:
         time_limit = 1.5
 
