@@ -112,7 +112,7 @@ class SessionHeaderView extends ScreenView {
                         this.fieldContainer = $('div', '.input-list-container')
                     })
 
-                    $('h6', '.text-center', 'Previous Sessions')
+                    $('h6', '.text-center', 'More Sessions')
                     $('div', '.runs-list', $ => {
                         this.sessionsListContainer = $('div', '.list.runs-list.list-group', '')
                     })
