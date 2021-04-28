@@ -264,7 +264,7 @@ class RunHeaderView extends ScreenView {
     renderCleanButton() {
         this.cleanButtonContainer.innerHTML = ''
         $(this.cleanButtonContainer, $ => {
-            if (this.run.size_checkpoints) {
+            if (this.run.size_checkpoints && this.run.is_project_run) {
                 new CleanButton({
                     onButtonClick: this.onCleaningCheckPoints.bind(this),
                     parent: this.constructor.name

@@ -456,6 +456,7 @@ def add_session(session_uuid: str) -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
+@auth.login_required
 @swag_from(docs.get_computer)
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_computer(computer_uuid) -> flask.Response:
@@ -542,6 +543,7 @@ def polling() -> flask.Response:
     return jsonify({'jobs': active_jobs})
 
 
+@auth.login_required
 @swag_from(docs.start_tensor_board)
 def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
@@ -565,6 +567,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     return utils.format_rv(data)
 
 
+@auth.login_required
 @swag_from(docs.clear_checkpoints)
 def clear_checkpoints(computer_uuid: str) -> flask.Response:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.

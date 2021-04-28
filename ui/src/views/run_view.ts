@@ -124,7 +124,7 @@ class RunView extends ScreenView {
     renderButtons() {
         this.buttonsContainer.innerHTML = ''
         $(this.buttonsContainer, $ => {
-            if (this.run.size_tensorboard) {
+            if (this.run.size_tensorboard && this.run.is_project_run) {
                 new CustomButton({
                     onButtonClick: this.onStartTensorBoard.bind(this),
                     text: 'TB',
