@@ -139,8 +139,8 @@ def after_request(response):
 
     if request_time > time_limit:
         slack.client.send(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
-    else:
-        logger.info(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
+
+    logger.info(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
 
     return response
 
