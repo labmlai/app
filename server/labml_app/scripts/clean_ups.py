@@ -75,10 +75,15 @@ def move_to_samples():
 
 
 def add_block_uuids():
+    logger.info('add_block_uuids started')
+
     for run_uuid in block_uuids.update_run_uuids:
         r = run.get(run_uuid)
         if r:
+            logger.info(r.run_uuid)
             blocked_uuids.add_blocked_run(r)
+
+    logger.info('......Done.........')
 
 
 if __name__ == "__main__":
