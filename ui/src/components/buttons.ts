@@ -90,6 +90,10 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
+        if (ROUTER.canBack()) {
+            ROUTER.back()
+            return
+        }
         ROUTER.navigate(this.navigatePath)
     }
 
@@ -324,7 +328,6 @@ export class CustomButton extends Button {
             })
     }
 }
-
 
 interface ShareButtonOptions extends buttonOptions {
     text: string
