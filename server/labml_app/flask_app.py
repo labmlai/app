@@ -130,7 +130,7 @@ def after_request(response):
     if not settings.IS_MIX_PANEL:
         time_limit = 0.4
     else:
-        time_limit = 1.5
+        time_limit = 6
 
     if '/api' not in request.full_path:
         return response
