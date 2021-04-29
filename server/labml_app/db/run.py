@@ -14,6 +14,8 @@ from ..logger import logger
 from .. import analyses
 from ..enums import RunEnums
 
+SYNC_INTERVAL = 60 * 20
+
 
 class CardInfo(NamedTuple):
     class_name: str
@@ -42,6 +44,7 @@ class Run(Model['Run']):
     computer_uuid: str
     size_checkpoints: float
     size_tensorboard: float
+    last_synced: float
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -74,6 +77,7 @@ class Run(Model['Run']):
                     computer_uuid='',
                     size_checkpoints=None,
                     size_tensorboard=None,
+                    last_synced=None,
                     stdout='',
                     stdout_unmerged='',
                     logger='',
@@ -95,6 +99,13 @@ class Run(Model['Run']):
 
         return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
 
+    @property
+    def is_sync_needed(self) -> bool:
+        if not self.size_checkpoints or not self.size_tensorboard:
+            return True
+        else:
+            return time.time() - self.last_synced >= SYNC_INTERVAL
+
     def sync_run(self, **kwargs) -> None:
         size_checkpoints = kwargs.get('size_checkpoints', None)
         size_tensorboard = kwargs.get('size_tensorboard', None)
@@ -103,6 +114,8 @@ class Run(Model['Run']):
             self.size_checkpoints = size_checkpoints
         if size_tensorboard:
             self.size_tensorboard = size_tensorboard
+
+        self.last_synced = time.time()
 
         self.save()
 

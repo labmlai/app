@@ -136,6 +136,10 @@ def _update_run():
         if 'track' in d:
             analyses.AnalysisManager.track(run_uuid, d['track'])
 
+    if r.is_sync_needed and not r.is_in_progress:
+        c = computer.get_or_create(r.computer_uuid)
+        c.create_job(job.JobMethods.CALL_SYNC, {})
+
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
@@ -536,12 +540,14 @@ def polling() -> flask.Response:
 
     c = computer.get_or_create(computer_uuid)
 
+    c.update_last_online()
+
     job_responses = request.json.get('jobs', [])
     if job_responses:
         c.sync_jobs(job_responses)
 
     pending_jobs = []
-    for i in range(5):
+    for i in range(10):
         c = computer.get_or_create(computer_uuid)
         pending_jobs = c.get_pending_jobs()
         if pending_jobs:
@@ -552,7 +558,7 @@ def polling() -> flask.Response:
     return jsonify({'jobs': pending_jobs})
 
 
-# @auth.login_required
+@auth.login_required
 @swag_from(docs.start_tensor_board)
 def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.

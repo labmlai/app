@@ -1,3 +1,4 @@
+import time
 from typing import List, Dict, Set, Optional, Any
 
 from labml_db import Model, Index, Key
@@ -7,6 +8,8 @@ from . import run
 
 JobResponse = Dict[str, str]
 
+ONLINE_TIME_GAP = 60
+
 
 class Computer(Model['Computer']):
     computer_uuid: str
@@ -15,6 +18,7 @@ class Computer(Model['Computer']):
     deleted_runs: Set[str]
     pending_jobs: Dict[str, Key['job.Job']]
     completed_jobs: Dict[str, Key['job.Job']]
+    last_online: float
 
     @classmethod
     def defaults(cls):
@@ -24,13 +28,22 @@ class Computer(Model['Computer']):
                     deleted_runs=set(),
                     pending_jobs={},
                     completed_jobs={},
+                    last_online=None
                     )
+
+    @property
+    def is_online(self) -> bool:
+        return self.last_online and (time.time() - self.last_online) <= ONLINE_TIME_GAP
 
     def get_sessions(self) -> List[str]:
         return list(self.sessions)
 
     def get_deleted_runs(self) -> List[str]:
         return list(self.deleted_runs)
+
+    def update_last_online(self) -> None:
+        self.last_online = time.time()
+        self.save()
 
     def create_job(self, method: str, data: Dict[str, str]) -> 'job.Job':
         j = job.create(method, data)
