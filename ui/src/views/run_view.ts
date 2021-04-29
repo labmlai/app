@@ -37,6 +37,7 @@ class RunView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
     private share: ShareButton
+    private startTBButton: CustomButton
 
     constructor(uuid: string) {
         super()
@@ -57,6 +58,12 @@ class RunView extends ScreenView {
         this.share = new ShareButton({
             text: 'run',
             parent: this.constructor.name
+        })
+        this.startTBButton = new CustomButton({
+            onButtonClick: this.onStartTensorBoard.bind(this),
+            text: 'TB',
+            title: 'start TensorBoard',
+            parent: this.constructor.name,
         })
 
         mix_panel.track('Run View', {uuid: this.uuid})
@@ -125,16 +132,8 @@ class RunView extends ScreenView {
         this.buttonsContainer.innerHTML = ''
         $(this.buttonsContainer, $ => {
             if (this.run.size_tensorboard && this.run.is_project_run) {
-                let startTBButton = new CustomButton({
-                    onButtonClick: this.onStartTensorBoard.bind(this),
-                    text: 'TB',
-                    title: 'start TensorBoard',
-                    parent: this.constructor.name
-                })
-                if (!this.run.is_computer_online) {
-                    startTBButton.disabled = true
-                }
-                startTBButton.render($)
+                this.startTBButton.render($)
+                this.startTBButton.disabled = !this.run.is_computer_online
             }
 
             if (!this.run.is_claimed) {
@@ -185,6 +184,7 @@ class RunView extends ScreenView {
 
     async onStartTensorBoard() {
         this.userMessages.hide(true)
+        this.startTBButton.disabled = true
 
         try {
             let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
@@ -196,6 +196,8 @@ class RunView extends ScreenView {
         } catch (e) {
             this.userMessages.networkError()
         }
+
+        this.startTBButton.disabled = false
     }
 
     render(): WeyaElement {

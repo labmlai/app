@@ -7,6 +7,7 @@ interface buttonOptions {
     onButtonClick?: () => void
     isDisabled?: boolean
     parent: string
+    title?: string
 }
 
 abstract class Button {
@@ -14,11 +15,13 @@ abstract class Button {
     isDisabled: boolean
     parent: string
     elem?: WeyaElement
+    title?: string
 
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
         this.isDisabled = opt.isDisabled ? opt.isDisabled : false
         this.parent = opt.parent
+        this.title = opt.title
     }
 
     set disabled(isDisabled: boolean) {
@@ -306,18 +309,14 @@ export class ToggleButton extends Button {
 
 interface CustomButtonOptions extends buttonOptions {
     text: string
-    title?: string
 }
 
 export class CustomButton extends Button {
     text: string
-    title: string
 
     constructor(opt: CustomButtonOptions) {
         super(opt)
-
         this.text = opt.text
-        this.title = opt.title
     }
 
     render($: WeyaElementFunction) {

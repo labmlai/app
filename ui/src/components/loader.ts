@@ -40,11 +40,11 @@ export class Loader {
 }
 
 export class DataLoader {
-    private _load: (force: boolean) => Promise<void>;
-    private loaded: boolean;
-    private loader: Loader;
-    private elem: HTMLDivElement;
-    private errorMessage: ErrorMessage;
+    private _load: (force: boolean) => Promise<void>
+    private loaded: boolean
+    private loader: Loader
+    private elem: HTMLDivElement
+    private errorMessage: ErrorMessage
 
     constructor(load: (force: boolean) => Promise<void>) {
         this._load = load
