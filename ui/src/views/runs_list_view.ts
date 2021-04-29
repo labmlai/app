@@ -176,6 +176,9 @@ class RunsListView extends ScreenView {
     }
 
     onStartTensorBoard = async () => {
+        this.userMessages.hide(true)
+        this.startTBButton.disabled = true
+
         let computerUUID: string = ''
         let runUUIDs: Array<string> = []
 
@@ -183,7 +186,7 @@ class RunsListView extends ScreenView {
             if (!computerUUID) {
                 computerUUID = run.computer_uuid
             } else if (computerUUID !== run.computer_uuid) {
-                this.userMessages.warning('To start TensorBoard, all the selected runs should be from a same computer')
+                this.userMessages.warning('All the selected runs should be from a single computer')
                 return
             } else {
                 runUUIDs.push(run.run_uuid)
@@ -205,6 +208,8 @@ class RunsListView extends ScreenView {
         } catch (e) {
             this.userMessages.networkError()
         }
+
+         this.startTBButton.disabled = false
     }
 
     onCancel = () => {

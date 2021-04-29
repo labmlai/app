@@ -42,6 +42,7 @@ class RunHeaderView extends ScreenView {
     commentField: EditableField
     noteField: EditableField
     private deleteButton: DeleteButton
+    private cleanButton: CleanButton
     private userMessages: UserMessages
     private loader: DataLoader
 
@@ -55,6 +56,10 @@ class RunHeaderView extends ScreenView {
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
+        this.cleanButton = new CleanButton({
+            onButtonClick: this.onCleaningCheckPoints.bind(this),
+            parent: this.constructor.name
+        })
 
         this.userMessages = new UserMessages()
 
@@ -262,18 +267,17 @@ class RunHeaderView extends ScreenView {
     }
 
     renderCleanButton() {
-        this.cleanButtonContainer.innerHTML = ''
         $(this.cleanButtonContainer, $ => {
             if (this.run.size_checkpoints && this.run.is_project_run) {
-                new CleanButton({
-                    onButtonClick: this.onCleaningCheckPoints.bind(this),
-                    parent: this.constructor.name
-                }).render($)
+                this.cleanButton.render($)
             }
         })
     }
 
     async onCleaningCheckPoints() {
+        this.userMessages.hide(true)
+        this.cleanButton.disabled = true
+
         try {
             let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
 
@@ -285,6 +289,8 @@ class RunHeaderView extends ScreenView {
         } catch (e) {
             this.userMessages.networkError()
         }
+
+        this.cleanButton.disabled = false
     }
 }
 
