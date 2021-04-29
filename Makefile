@@ -11,9 +11,11 @@ setup: ## install server and ui dependencies
 server-dev: ## start and watch server
 	cd server &&  pipenv run python -m labml_app.flask_app
 
-server-prod: ## compile and start server in prod
-	# pkill gunicorn
-    # export PATH=~/miniconda/bin:$PATH
+prep-prod-env: ## start and watch server
+	pkill gunicorn
+    export PATH=~/miniconda/bin:$PATH
+
+server-prod: prep-prod-env ## compile and start server in prod
 	cd server && pipenv install --ignore-pipfile && pipenv run gunicorn -c gunicorn.conf.py --bind 0.0.0.0:5000 labml_app.flask_app:app --daemon
 
 clean-db: ## clean float-project and move samples to float-project
