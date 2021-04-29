@@ -15,6 +15,7 @@ import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
+import {openInNewTab} from '../utils/new_tab'
 
 
 class RunView extends ScreenView {
@@ -188,8 +189,11 @@ class RunView extends ScreenView {
 
         try {
             let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
-            if (job.isSuccessful) {
+            let url = job.data['url']
+
+            if (job.isSuccessful && url) {
                 this.userMessages.success('Successfully started the TensorBoard')
+                openInNewTab(url)
             } else {
                 this.userMessages.warning('Error occurred while starting the TensorBoard')
             }

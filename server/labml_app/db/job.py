@@ -63,11 +63,14 @@ class Job(Model['Job']):
             'data': self.data
         }
 
-    def update_status(self, status: str) -> None:
+    def update_job(self, status: str, data: Dict[str, Any]) -> None:
         self.status = status
 
         if self.status in [JobStatuses.SUCCESS, JobStatuses.ERROR]:
             self.completed_time = time.time()
+
+        if data:
+            self.data.update(data)
 
         self.save()
 

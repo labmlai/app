@@ -14,6 +14,7 @@ import {UserMessages} from '../components/user_messages'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
+import {openInNewTab} from "../utils/new_tab"
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
@@ -200,8 +201,11 @@ class RunsListView extends ScreenView {
 
         try {
             let job = await this.runListCache.startTensorBoard(computerUUID, runUUIDs)
-            if (job.isSuccessful) {
+            let url = job.data['url']
+
+            if (job.isSuccessful && url) {
                 this.userMessages.success('Successfully started the TensorBoard')
+                openInNewTab(url)
             } else {
                 this.userMessages.warning('Error occurred while starting the TensorBoard')
             }
@@ -209,7 +213,7 @@ class RunsListView extends ScreenView {
             this.userMessages.networkError()
         }
 
-         this.startTBButton.disabled = false
+        this.startTBButton.disabled = false
     }
 
     onCancel = () => {
