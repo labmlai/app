@@ -547,7 +547,7 @@ def polling() -> flask.Response:
         c.sync_jobs(job_responses)
 
     pending_jobs = []
-    for i in range(10):
+    for i in range(5):
         c = computer.get_or_create(computer_uuid)
         pending_jobs = c.get_pending_jobs()
         if pending_jobs:

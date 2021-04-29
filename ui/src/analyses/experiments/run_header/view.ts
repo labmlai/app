@@ -21,7 +21,7 @@ import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
-import {UserMessages} from "../../../components/alert"
+import {UserMessages} from "../../../components/user_messages"
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -278,12 +278,12 @@ class RunHeaderView extends ScreenView {
             let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
 
             if (job.isSuccessful) {
-                this.userMessages.successMessage('Successfully cleaned the check points')
+                this.userMessages.success('Successfully cleaned the check points')
             } else {
-                this.userMessages.warningMessage('Error occurred while cleaning the check points')
+                this.userMessages.warning('Error occurred while cleaning the check points')
             }
         } catch (e) {
-            this.userMessages.networkErrorMessage()
+            this.userMessages.networkError()
         }
     }
 }

@@ -10,7 +10,7 @@ import {CancelButton, CustomButton, EditButton, DeleteButton} from '../component
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
-import {UserMessages} from '../components/alert'
+import {UserMessages} from '../components/user_messages'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
@@ -171,7 +171,7 @@ class RunsListView extends ScreenView {
             await this.loader.load()
             await this.renderList()
         } catch (e) {
-            this.userMessages.networkErrorMessage()
+            this.userMessages.networkError()
         }
     }
 
@@ -183,7 +183,7 @@ class RunsListView extends ScreenView {
             if (!computerUUID) {
                 computerUUID = run.computer_uuid
             } else if (computerUUID !== run.computer_uuid) {
-                this.userMessages.warningMessage('To start TensorBoard, all the selected runs should be from a same computer')
+                this.userMessages.warning('To start TensorBoard, all the selected runs should be from a same computer')
                 return
             } else {
                 runUUIDs.push(run.run_uuid)
@@ -191,19 +191,19 @@ class RunsListView extends ScreenView {
         }
 
         if (!computerUUID) {
-            this.userMessages.warningMessage('Selected runs do not belong to any computer')
+            this.userMessages.warning('Selected runs do not belong to any computer')
             return
         }
 
         try {
             let job = await this.runListCache.startTensorBoard(computerUUID, runUUIDs)
             if (job.isSuccessful) {
-                this.userMessages.successMessage('Successfully started the TensorBoard')
+                this.userMessages.success('Successfully started the TensorBoard')
             } else {
-                this.userMessages.warningMessage('Error occurred while starting the TensorBoard')
+                this.userMessages.warning('Error occurred while starting the TensorBoard')
             }
         } catch (e) {
-            this.userMessages.networkErrorMessage()
+            this.userMessages.networkError()
         }
     }
 

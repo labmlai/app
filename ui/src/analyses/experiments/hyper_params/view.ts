@@ -17,7 +17,7 @@ import {CustomLineChart} from "../../../components/charts/custom_lines/chart"
 import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
-import {UserMessages} from "../../../components/alert"
+import {UserMessages} from "../../../components/user_messages"
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement
@@ -149,7 +149,7 @@ class HyperParamsView extends ScreenView {
             this.renderParamsResetButton(true)
 
             if (!this.run.is_project_run && this.status.isRunning) {
-                this.userMessages.warningMessage('Please claim or add this run to change parameters')
+                this.userMessages.warning('Please claim or add this run to change parameters')
             }
         } catch (e) {
             handleNetworkErrorInplace(e)

@@ -10,7 +10,7 @@ import {SessionsListItemView} from '../components/sessions_list_item'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptySessionsList from "./empty_sessions_list"
-import {AlertMessage} from "../components/alert"
+import {AlertMessage} from "../components/user_messages"
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'

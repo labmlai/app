@@ -6,7 +6,7 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
 import {BackButton, CustomButton, ShareButton} from "../components/buttons"
-import {UserMessages} from "../components/alert"
+import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
@@ -125,12 +125,16 @@ class RunView extends ScreenView {
         this.buttonsContainer.innerHTML = ''
         $(this.buttonsContainer, $ => {
             if (this.run.size_tensorboard && this.run.is_project_run) {
-                new CustomButton({
+                let startTBButton = new CustomButton({
                     onButtonClick: this.onStartTensorBoard.bind(this),
                     text: 'TB',
                     title: 'start TensorBoard',
                     parent: this.constructor.name
-                }).render($)
+                })
+                if (!this.run.is_computer_online) {
+                    startTBButton.disabled = true
+                }
+                startTBButton.render($)
             }
 
             if (!this.run.is_claimed) {
@@ -153,7 +157,7 @@ class RunView extends ScreenView {
 
     renderClaimMessage() {
         if (!this.run.is_claimed) {
-            this.userMessages.warningMessage('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
+            this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
     }
 
@@ -164,31 +168,33 @@ class RunView extends ScreenView {
             try {
                 if (isRunClaim) {
                     await this.runListCache.claimRun(this.run)
-                    this.userMessages.successMessage('Successfully claimed and added to your runs list')
+                    this.userMessages.success('Successfully claimed and added to your runs list')
                     this.run.is_claimed = true
                 } else {
                     await this.runListCache.addRun(this.run)
-                    this.userMessages.successMessage('Successfully added to your runs list')
+                    this.userMessages.success('Successfully added to your runs list')
                 }
                 this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.networkErrorMessage()
+                this.userMessages.networkError()
                 return
             }
         }
     }
 
     async onStartTensorBoard() {
+        this.userMessages.hide(true)
+
         try {
             let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
             if (job.isSuccessful) {
-                this.userMessages.successMessage('Successfully started the TensorBoard')
+                this.userMessages.success('Successfully started the TensorBoard')
             } else {
-                this.userMessages.warningMessage('Error occurred while starting the TensorBoard')
+                this.userMessages.warning('Error occurred while starting the TensorBoard')
             }
         } catch (e) {
-            this.userMessages.networkErrorMessage()
+            this.userMessages.networkError()
         }
     }
 
