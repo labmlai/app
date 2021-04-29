@@ -94,13 +94,13 @@ export class CompareLineChart {
         const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        this.chartColors = new ChartColors({nColors: this.series.length, isDivergent: opt.isDivergent})
+        this.chartColors = new ChartColors({nColors: this.currentSeries.length, secondNColors: this.baseSeries.length, isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
 
     changeScale() {
-        let plotSeries = this.plot.map(s => s.series)
+        let plotSeries = this.currentPlot.concat(this.basePlot).map(s => s.series)
 
         if (this.chartType === 'log') {
             this.yScale = getLogScale(getExtent(plotSeries, d => d.value, false, true), -this.chartHeight)
@@ -164,14 +164,14 @@ export class CompareLineChart {
     }
 
     render($: WeyaElementFunction) {
+        console.log("zxc")
         this.changeScale()
 
-        if (this.series.length === 0) {
+        if (this.currentSeries.concat(this.baseSeries).length === 0) {
             $('div', '')
         } else {
             $('div', $ => {
                 $('div', $ => {
-                        // this.stepElement = $('h6', '.text-center.selected-step', '')
                         this.svgElem = $('svg', '#chart',
                             {
                                 height: LABEL_HEIGHT + 2 * this.margin + this.axisSize + this.chartHeight,
@@ -187,24 +187,44 @@ export class CompareLineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        if (this.plot.length < 3) {
-                                            this.plot.map((s, i) => {
+                                        if (this.currentPlot.concat(this.basePlot).length < 3) {
+                                            this.currentPlot.map((s, i) => {
                                                 new LineFill({
                                                     series: s.series,
                                                     xScale: this.xScale,
                                                     yScale: this.yScale,
-                                                    color: this.chartColors.getColor(this.filteredPlotIdx[i]),
-                                                    colorIdx: this.filteredPlotIdx[i],
+                                                    color: this.chartColors.getColor(this.filteredCurrentPlotIdx[i]),
+                                                    colorIdx: this.filteredCurrentPlotIdx[i],
+                                                    chartId: this.chartId
+                                                }).render($)
+                                            })
+                                            this.basePlot.map((s, i) => {
+                                                new LineFill({
+                                                    series: s.series,
+                                                    xScale: this.xScale,
+                                                    yScale: this.yScale,
+                                                    color: this.chartColors.getSecondColor(this.filteredBasePlotIdx[i]),
+                                                    colorIdx: this.filteredBasePlotIdx[i],
                                                     chartId: this.chartId
                                                 }).render($)
                                             })
                                         }
-                                        this.plot.map((s, i) => {
+                                        this.currentPlot.map((s, i) => {
                                             let linePlot = new CompareLinePlot({
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getColor(this.filteredPlotIdx[i])
+                                                color: this.chartColors.getColor(this.filteredCurrentPlotIdx[i])
+                                            })
+                                            this.linePlots.push(linePlot)
+                                            linePlot.render($)
+                                        })
+                                        this.basePlot.map((s, i) => {
+                                            let linePlot = new CompareLinePlot({
+                                                series: s.series,
+                                                xScale: this.xScale,
+                                                yScale: this.yScale,
+                                                color: this.chartColors.getSecondColor(this.filteredBasePlotIdx[i])
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)

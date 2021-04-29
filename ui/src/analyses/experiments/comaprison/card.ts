@@ -1,15 +1,14 @@
 import {Weya as $, WeyaElement, WeyaElementFunction,} from '../../../../../lib/weya/weya'
-import {InsightModel, SeriesModel} from "../../../models/run"
-import {AnalysisPreferenceModel, ComparisonPreferenceModel} from "../../../models/preferences"
+import {SeriesModel} from "../../../models/run"
+import {ComparisonPreferenceModel} from "../../../models/preferences"
 import {Card, CardOptions} from "../../types"
 import {AnalysisDataCache, AnalysisPreferenceCache} from "../../../cache/cache"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
-import {LineChart} from "../../../components/charts/lines/chart"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
-import InsightsList from "../../../components/insights_list"
 import {ROUTER} from '../../../app'
 import {DataLoader} from '../../../components/loader'
 import comparisonCache from './cache'
+import {CompareLineChart} from '../../../components/charts/compare_lines/chart'
+import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/chart'
 
 export class ComparisonCard extends Card {
     currentUuid: string
@@ -39,6 +38,10 @@ export class ComparisonCard extends Card {
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.compared_with
+            if (this.baseUuid == null) {
+                this.elem.classList.add('hide')
+                return
+            }
             this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
@@ -53,7 +56,7 @@ export class ComparisonCard extends Card {
 
     async render($: WeyaElementFunction) {
         this.elem = $('div', '.labml-card.labml-card-action', {on: {click: this.onClick}}, $ => {
-            $('h3','.header', 'Metrics')
+            $('h3', '.header', 'Comparison')
             this.loader.render($)
             this.lineChartContainer = $('div', '')
             this.sparkLinesContainer = $('div', '')
@@ -71,7 +74,7 @@ export class ComparisonCard extends Card {
                 this.basePlotIdx = [...baseAnalysisPreferences]
             }
 
-            if (this.series.length > 0) {
+            if (this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.renderLineChart()
                 this.renderSparkLines()
             } else {
@@ -84,10 +87,12 @@ export class ComparisonCard extends Card {
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.series,
+            new CompareLineChart({
+                series: this.currentSeries,
+                baseSeries: this.baseSeries,
                 width: this.width,
-                plotIdx: this.plotIdx,
+                currentPlotIdx: this.currentPlotIdx,
+                basePlotIdx: this.basePlotIdx,
                 chartType: this.preferenceData && this.preferenceData.chart_type ?
                     getChartType(this.preferenceData.chart_type) : 'linear',
                 isDivergent: true
@@ -98,9 +103,11 @@ export class ComparisonCard extends Card {
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            new SparkLines({
-                series: this.series,
-                plotIdx: this.plotIdx,
+            new CompareSparkLines({
+                series: this.currentSeries,
+                baseSeries: this.baseSeries,
+                currentPlotIdx: this.currentPlotIdx,
+                basePlotIdx: this.basePlotIdx,
                 width: this.width,
                 isDivergent: true
             }).render($)
@@ -110,7 +117,7 @@ export class ComparisonCard extends Card {
     async refresh() {
         try {
             await this.loader.load(true)
-            if (this.series.length > 0) {
+            if (this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.renderLineChart()
                 this.renderSparkLines()
                 this.elem.classList.remove('hide')

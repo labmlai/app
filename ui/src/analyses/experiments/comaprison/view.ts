@@ -7,30 +7,34 @@ import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
 import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
-import {AnalysisPreferenceModel} from "../../../models/preferences"
+import {ComparisonPreferenceModel} from "../../../models/preferences"
 import comparisonCache from "./cache"
-import {LineChart} from "../../../components/charts/lines/chart"
-import {SparkLines} from "../../../components/charts/spark_lines/chart"
 import {getChartType, toPointValues} from "../../../components/charts/utils"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
+import {CompareLineChart} from '../../../components/charts/compare_lines/chart'
+import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/chart'
 
 class ComparisonView extends ScreenView {
     elem: HTMLDivElement
-    uuid: string
+    currentUuid: string
+    baseUuid: string
     status: Status
-    plotIdx: number[] = []
+    currentPlotIdx: number[] = []
+    basePlotIdx: number[] = []
     currentChart: number
     statusCache: RunStatusCache
-    series: SeriesModel[]
-    preferenceData: AnalysisPreferenceModel
-    analysisCache: AnalysisDataCache
+    currentSeries: SeriesModel[]
+    baseSeries: SeriesModel[]
+    preferenceData: ComparisonPreferenceModel
+    baseAnalysisCache: AnalysisDataCache
+    currentAnalysisCache: AnalysisDataCache
     preferenceCache: AnalysisPreferenceCache
     runHeaderCard: RunHeaderCard
-    sparkLines: SparkLines
+    sparkLines: CompareSparkLines
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
     saveButtonContainer: HTMLDivElement
@@ -46,25 +50,28 @@ class ComparisonView extends ScreenView {
     constructor(uuid: string) {
         super()
 
-        this.uuid = uuid
+        this.currentUuid = uuid
         this.currentChart = 0
-        this.runCache = CACHE.getRun(this.uuid)
-        this.statusCache = CACHE.getRunStatus(this.uuid)
-        this.analysisCache = comparisonCache.getAnalysis(this.uuid)
-        this.preferenceCache = comparisonCache.getPreferences(this.uuid)
+        this.runCache = CACHE.getRun(this.currentUuid)
+        this.statusCache = CACHE.getRunStatus(this.currentUuid)
+        this.currentAnalysisCache = comparisonCache.getAnalysis(this.currentUuid)
+        this.preferenceCache = comparisonCache.getPreferences(this.currentUuid)
 
         this.isUpdateDisable = true
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
+            this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
+            this.baseUuid = this.preferenceData.compared_with
+            this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
-            this.series = toPointValues((await this.analysisCache.get(force)).series)
-            this.preferenceData = await this.preferenceCache.get(force)
+            this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
+            this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
-        mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
+        mix_panel.track('Analysis View', {uuid: this.currentUuid, analysis: this.constructor.name})
     }
 
     get requiresAuth(): boolean {
@@ -95,7 +102,7 @@ class ComparisonView extends ScreenView {
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
-                            uuid: this.uuid,
+                            uuid: this.currentUuid,
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
@@ -113,7 +120,7 @@ class ComparisonView extends ScreenView {
         try {
             await this.loader.load()
 
-            setTitle({section: 'Metrics', item: this.run.name})
+            setTitle({section: 'Comparison', item: this.run.name})
             this.calcPreferences()
 
             this.renderSparkLines()
@@ -186,43 +193,66 @@ class ComparisonView extends ScreenView {
     renderLineChart() {
         this.lineChartContainer.innerHTML = ''
         $(this.lineChartContainer, $ => {
-            new LineChart({
-                series: this.series,
+            let zxc = new CompareLineChart({
+                series: this.currentSeries,
+                baseSeries: this.baseSeries,
                 width: this.actualWidth,
-                plotIdx: this.plotIdx,
+                currentPlotIdx: this.currentPlotIdx,
+                basePlotIdx: this.basePlotIdx,
                 chartType: getChartType(this.currentChart),
                 onCursorMove: [this.sparkLines.changeCursorValues],
                 isCursorMoveOpt: true,
                 isDivergent: true
-            }).render($)
+            })
+            zxc.render($)
         })
     }
 
     renderSparkLines() {
         this.sparkLinesContainer.innerHTML = ''
         $(this.sparkLinesContainer, $ => {
-            this.sparkLines = new SparkLines({
-                series: this.series,
-                plotIdx: this.plotIdx,
+            this.sparkLines = new CompareSparkLines({
+                series: this.currentSeries,
+                baseSeries: this.baseSeries,
+                currentPlotIdx: this.currentPlotIdx,
+                basePlotIdx: this.basePlotIdx,
                 width: this.actualWidth,
-                onSelect: this.toggleChart,
+                onCurrentSelect: this.toggleCurrentChart,
+                onBaseSelect: this.toggleBaseChart,
                 isDivergent: true
             })
             this.sparkLines.render($)
         })
     }
 
-    toggleChart = (idx: number) => {
+    toggleCurrentChart = (idx: number) => {
         this.isUpdateDisable = false
 
-        if (this.plotIdx[idx] >= 0) {
-            this.plotIdx[idx] = -1
+        if (this.currentPlotIdx[idx] >= 0) {
+            this.currentPlotIdx[idx] = -1
         } else {
-            this.plotIdx[idx] = Math.max(...this.plotIdx) + 1
+            this.currentPlotIdx[idx] = Math.max(...this.currentPlotIdx) + 1
         }
 
-        if (this.plotIdx.length > 1) {
-            this.plotIdx = new Array<number>(...this.plotIdx)
+        if (this.currentPlotIdx.length > 1) {
+            this.currentPlotIdx = new Array<number>(...this.currentPlotIdx)
+        }
+
+        this.renderSparkLines()
+        this.renderLineChart()
+        this.renderSaveButton()
+    }
+    toggleBaseChart = (idx: number) => {
+        this.isUpdateDisable = false
+
+        if (this.basePlotIdx[idx] >= 0) {
+            this.basePlotIdx[idx] = -1
+        } else {
+            this.basePlotIdx[idx] = Math.max(...this.basePlotIdx) + 1
+        }
+
+        if (this.basePlotIdx.length > 1) {
+            this.basePlotIdx = new Array<number>(...this.basePlotIdx)
         }
 
         this.renderSparkLines()
@@ -233,15 +263,25 @@ class ComparisonView extends ScreenView {
     private calcPreferences() {
         this.currentChart = this.preferenceData.chart_type
 
-        let analysisPreferences = this.preferenceData.series_preferences
-        if (analysisPreferences && analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
-        } else if (this.series) {
+        let currentAnalysisPreferences = this.preferenceData.series_preferences
+        if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
+            this.currentPlotIdx = [...currentAnalysisPreferences]
+        } else if (this.currentSeries) {
             let res: number[] = []
-            for (let i = 0; i < this.series.length; i++) {
+            for (let i = 0; i < this.currentSeries.length; i++) {
                 res.push(i)
             }
-            this.plotIdx = res
+            this.currentPlotIdx = res
+        }
+        let baseAnalysisPreferences = this.preferenceData.base_series_preferences
+        if (baseAnalysisPreferences && baseAnalysisPreferences.length > 0) {
+            this.basePlotIdx = [...baseAnalysisPreferences]
+        } else if (this.baseSeries) {
+            let res: number[] = []
+            for (let i = 0; i < this.baseSeries.length; i++) {
+                res.push(i)
+            }
+            this.basePlotIdx = res
         }
     }
 
@@ -259,7 +299,8 @@ class ComparisonView extends ScreenView {
     }
 
     updatePreferences = () => {
-        this.preferenceData.series_preferences = this.plotIdx
+        this.preferenceData.series_preferences = this.currentPlotIdx
+        this.preferenceData.base_series_preferences = this.basePlotIdx
         this.preferenceData.chart_type = this.currentChart
         this.preferenceCache.setPreference(this.preferenceData).then()
 

@@ -2,7 +2,13 @@ import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {IsUserLoggedCache, RunCache, RunsListCache, RunStatusCache} from "../../../cache/cache"
+import CACHE, {
+    AnalysisPreferenceCache,
+    IsUserLoggedCache,
+    RunCache,
+    RunsListCache,
+    RunStatusCache
+} from "../../../cache/cache"
 import {Status} from "../../../models/status"
 import {BackButton, CancelButton, CustomButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
@@ -14,6 +20,8 @@ import mix_panel from "../../../mix_panel"
 import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
+import comparisonCache from '../comaprison/cache'
+import {ComparisonPreferenceModel} from '../../../models/preferences'
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -21,6 +29,8 @@ class RunHeaderView extends ScreenView {
     runCache: RunCache
     status: Status
     statusCache: RunStatusCache
+    preferenceCache: AnalysisPreferenceCache
+    preferenceData: ComparisonPreferenceModel
     isUserLogged: IsUserLogged
     isUserLoggedCache: IsUserLoggedCache
     isEditMode: boolean
@@ -30,6 +40,7 @@ class RunHeaderView extends ScreenView {
     fieldContainer: HTMLDivElement
     nameField: EditableField
     commentField: EditableField
+    compareField: EditableField
     noteField: EditableField
     private deleteButton: DeleteButton
     private loader: DataLoader
@@ -39,6 +50,7 @@ class RunHeaderView extends ScreenView {
         this.uuid = uuid
         this.runCache = CACHE.getRun(this.uuid)
         this.statusCache = CACHE.getRunStatus(this.uuid)
+        this.preferenceCache = comparisonCache.getPreferences(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
         this.isEditMode = false
 
@@ -48,6 +60,7 @@ class RunHeaderView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
+            this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
@@ -153,6 +166,12 @@ class RunHeaderView extends ScreenView {
                     isEditable: this.isEditMode
                 })
                 this.noteField.render($)
+                this.compareField = new EditableField({
+                    name: 'Compared with',
+                    value: this.preferenceData.compared_with,
+                    isEditable: this.isEditMode
+                })
+                this.compareField.render($)
                 $(`li`, $ => {
                     $('span', '.item-key', 'Run Status')
                     $('span', '.item-value', $ => {
@@ -209,10 +228,6 @@ class RunHeaderView extends ScreenView {
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.run.is_claimed))
     }
 
-    onSetComparison = () => {
-
-    }
-
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
 
@@ -245,6 +260,11 @@ class RunHeaderView extends ScreenView {
         }
 
         this.runCache.setRun(this.run).then()
+
+        if(this.compareField.getInput()) {
+            this.preferenceData.compared_with = this.compareField.getInput()
+            this.preferenceCache.setPreference(this.preferenceData).then()
+        }
         this.onToggleEdit()
     }
 }
