@@ -330,7 +330,7 @@ class RunHeaderView extends ScreenView {
 
             if (job.isSuccessful && url) {
                 this.userMessages.success('Successfully started the TensorBoard')
-                openInNewTab(url)
+                openInNewTab(url, this.userMessages)
             } else if (job.isComputerOffline) {
                 this.userMessages.warning('Your computer is currently offline')
             } else {
