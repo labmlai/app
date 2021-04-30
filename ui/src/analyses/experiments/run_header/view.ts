@@ -195,6 +195,14 @@ class RunHeaderView extends ScreenView {
                         formatTime(this.status.last_updated_time),
                 }).render($)
                 new EditableField({
+                    name: 'TensorBoard Size',
+                    value: this.run.size_tensorboard
+                }).render($)
+                new EditableField({
+                    name: 'Checkpoints Size',
+                    value: this.run.size_checkpoints
+                }).render($)
+                new EditableField({
                     name: 'Start Step',
                     value: this.run.start_step
                 }).render($)
