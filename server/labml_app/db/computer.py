@@ -110,7 +110,7 @@ class Computer(Model['Computer']):
                 j = self.pending_jobs[job_uuid].load()
                 j.update_job(status, data)
 
-                if j.is_completed or j.is_error:
+                if j.is_completed:
                     self.pending_jobs.pop(job_uuid)
                     self.completed_jobs[job_uuid] = j.key
 

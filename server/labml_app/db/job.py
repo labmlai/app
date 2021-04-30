@@ -8,7 +8,7 @@ from labml_app import utils
 
 class JobStatuses:
     INITIATED = 'initiated'
-    ERROR = 'error'
+    FAIL = 'fail'
     SUCCESS = 'success'
     TIMEOUT = 'timeout'
     COMPUTER_OFFLINE = 'computer_offline'
@@ -50,11 +50,11 @@ class Job(Model['Job']):
 
     @property
     def is_error(self) -> bool:
-        return self.status == JobStatuses.ERROR
+        return self.status == JobStatuses.FAIL
 
     @property
     def is_completed(self) -> bool:
-        return self.status == JobStatuses.ERROR or self.status == JobStatuses.SUCCESS
+        return self.status == JobStatuses.FAIL or self.status == JobStatuses.SUCCESS
 
     @property
     def is_non_repeated(self) -> bool:
@@ -73,7 +73,7 @@ class Job(Model['Job']):
     def update_job(self, status: str, data: Dict[str, Any]) -> None:
         self.status = status
 
-        if self.status in [JobStatuses.SUCCESS, JobStatuses.ERROR]:
+        if self.status in [JobStatuses.SUCCESS, JobStatuses.FAIL]:
             self.completed_time = time.time()
 
         if type(data) is dict:

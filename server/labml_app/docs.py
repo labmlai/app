@@ -58,7 +58,7 @@ polling = {
             "type": "list",
             "description": "Status of the jobs initiated by UI",
             "example": [{'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.SUCCESS},
-                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.ERROR}]
+                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.FAIL}]
         }
     ],
     "responses": {
