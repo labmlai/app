@@ -21,7 +21,7 @@ class JobMethods:
     CALL_SYNC = 'call_sync'
 
 
-NON_REPEATED_JOBS = [JobMethods.CALL_SYNC]
+NON_REPEATED_METHODS = [JobMethods.CALL_SYNC]
 
 JobDict = Dict[str, Union[str, float]]
 
@@ -58,7 +58,7 @@ class Job(Model['Job']):
 
     @property
     def is_non_repeated(self) -> bool:
-        return self.method in NON_REPEATED_JOBS
+        return self.method in NON_REPEATED_METHODS
 
     def to_data(self) -> JobDict:
         return {

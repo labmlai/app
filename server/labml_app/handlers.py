@@ -136,9 +136,12 @@ def _update_run():
         if 'track' in d:
             analyses.AnalysisManager.track(run_uuid, d['track'])
 
-    if r.is_sync_needed and not r.is_in_progress:
+    if r.is_sync_needed or not r.is_in_progress:
         c = computer.get_or_create(r.computer_uuid)
-        c.create_job(job.JobMethods.CALL_SYNC, {})
+        try:
+            c.create_job(job.JobMethods.CALL_SYNC, {})
+        except AssertionError as e:
+            logger.debug(f'error while creating CALL_SYNC : {e}')
 
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
@@ -575,7 +578,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
 
     for i in range(5):
         c = computer.get_or_create(computer_uuid)
-        completed_job = c.get_job(j.job_uuid)
+        completed_job = c.get_completed_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
             return utils.format_rv(completed_job.to_data())
 
@@ -603,7 +606,7 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
 
     for i in range(5):
         c = computer.get_or_create(computer_uuid)
-        completed_job = c.get_job(j.job_uuid)
+        completed_job = c.get_completed_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
             return utils.format_rv(completed_job.to_data())
 

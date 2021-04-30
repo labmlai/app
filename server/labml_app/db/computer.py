@@ -46,6 +46,9 @@ class Computer(Model['Computer']):
         self.save()
 
     def is_method_repeated(self, method: str) -> bool:
+        if method not in job.NON_REPEATED_METHODS:
+            return False
+
         for job_uuid, job_key in self.pending_jobs.items():
             j = job_key.load()
             if j.is_non_repeated and j.method == method:
@@ -54,15 +57,17 @@ class Computer(Model['Computer']):
         return False
 
     def create_job(self, method: str, data: Dict[str, str]) -> 'job.Job':
+        assert self.is_online, 'computer is not online'
+        assert not self.is_method_repeated(method), 'non repeated method in the job queue'
+
         j = job.create(method, data)
 
-        if self.is_online and not self.is_method_repeated(method):
-            self.pending_jobs[j.job_uuid] = j.key
-            self.save()
+        self.pending_jobs[j.job_uuid] = j.key
+        self.save()
 
         return j
 
-    def get_job(self, job_uuid: str) -> Optional['job.Job']:
+    def get_completed_job(self, job_uuid: str) -> Optional['job.Job']:
         if job_uuid in self.completed_jobs:
             job_key = self.completed_jobs[job_uuid]
 
@@ -114,7 +119,7 @@ class Computer(Model['Computer']):
                     self.pending_jobs.pop(job_uuid)
                     self.completed_jobs[job_uuid] = j.key
 
-        self.save()
+                    self.save()
 
     def get_data(self):
         return {
