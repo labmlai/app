@@ -8,7 +8,7 @@ from . import run
 
 JobResponse = Dict[str, str]
 
-ONLINE_TIME_GAP = 60
+ONLINE_TIME_GAP = 120
 
 
 class Computer(Model['Computer']):
@@ -45,11 +45,20 @@ class Computer(Model['Computer']):
         self.last_online = time.time()
         self.save()
 
+    def is_method_repeated(self, method: str) -> bool:
+        for job_uuid, job_key in self.pending_jobs.items():
+            j = job_key.load()
+            if j.is_non_repeated and j.method == method:
+                return True
+
+        return False
+
     def create_job(self, method: str, data: Dict[str, str]) -> 'job.Job':
         j = job.create(method, data)
 
-        self.pending_jobs[j.job_uuid] = j.key
-        self.save()
+        if self.is_online and not self.is_method_repeated(method):
+            self.pending_jobs[j.job_uuid] = j.key
+            self.save()
 
         return j
 

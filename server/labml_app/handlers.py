@@ -525,6 +525,7 @@ def sync_computer() -> flask.Response:
 
 
 @swag_from(docs.polling)
+@utils.mix_panel.MixPanelEvent.time_this(60.4)
 def polling() -> flask.Response:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
@@ -547,26 +548,27 @@ def polling() -> flask.Response:
         c.sync_jobs(job_responses)
 
     pending_jobs = []
-    for i in range(10):
+    for i in range(20):
         c = computer.get_or_create(computer_uuid)
         pending_jobs = c.get_pending_jobs()
         if pending_jobs:
             break
 
-        time.sleep(2.5)
+        time.sleep(3)
 
     return jsonify({'jobs': pending_jobs})
 
 
 @auth.login_required
 @swag_from(docs.start_tensor_board)
+@utils.mix_panel.MixPanelEvent.time_this(12.9)
 def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
 
     if not c.is_online:
-        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE})
+        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE, 'data': {}})
 
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobMethods.START_TENSORBOARD, {'runs': runs})
@@ -587,13 +589,14 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
 
 @auth.login_required
 @swag_from(docs.clear_checkpoints)
+@utils.mix_panel.MixPanelEvent.time_this(12.9)
 def clear_checkpoints(computer_uuid: str) -> flask.Response:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
 
     if not c.is_online:
-        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE})
+        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE, 'data': {}})
 
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobMethods.CLEAR_CHECKPOINTS, {'runs': runs})

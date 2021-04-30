@@ -23,6 +23,7 @@ import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redi
 import {setTitle} from '../../../utils/document'
 import {UserMessages} from "../../../components/user_messages"
 import {openInNewTab} from "../../../utils/new_tab"
+import {formatFixed} from "../../../utils/value"
 
 
 class RunHeaderView extends ScreenView {
@@ -205,11 +206,11 @@ class RunHeaderView extends ScreenView {
                 }).render($)
                 new EditableField({
                     name: 'TensorBoard Size',
-                    value: this.run.size_tensorboard
+                    value: formatFixed(this.run.size_tensorboard, 1)
                 }).render($)
                 new EditableField({
                     name: 'Checkpoints Size',
-                    value: this.run.size_checkpoints
+                    value: formatFixed(this.run.size_checkpoints, 1)
                 }).render($)
                 new EditableField({
                     name: 'Start Step',

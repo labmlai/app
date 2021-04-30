@@ -7,6 +7,8 @@ from typing import NamedTuple, Dict, Union, Callable
 
 from flask import request
 
+from . import slack
+
 try:
     import mixpanel
 except ImportError:
@@ -109,6 +111,10 @@ class Event:
                 total_time = end - start
                 if time_limit and total_time < time_limit:
                     return r
+
+                if time_limit and total_time > time_limit + 1.5:
+                    slack.client.send(
+                        f'PERF time: {"%.5fs" % total_time} uri: {request.full_path} method:{request.method}')
 
                 self.track(function.__name__, {'time_elapsed': str(total_time)})
 

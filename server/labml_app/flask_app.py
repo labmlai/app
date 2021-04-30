@@ -127,18 +127,8 @@ def after_request(response):
     """Calculate and log execution time"""
     request_time = time.time() - g.request_start_time
 
-    if not settings.IS_MIX_PANEL:
-        time_limit = 0.4
-    elif '/track' in request.full_path or '/computer' in request.full_path:
-        time_limit = 9.5
-    else:
-        time_limit = 1.5
-
     if '/api' not in request.full_path:
         return response
-
-    if request_time > time_limit:
-        slack.client.send(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
 
     logger.info(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
 
