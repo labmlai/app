@@ -133,7 +133,7 @@ class RunHeaderView extends ScreenView {
             await this.loader.load()
 
             setTitle({section: 'Run Details', item: this.run.name})
-            this.renderCleanButton()
+            this.renderComputerButtons()
             this.renderFields()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -283,11 +283,11 @@ class RunHeaderView extends ScreenView {
         this.onToggleEdit()
     }
 
-    renderCleanButton() {
+    renderComputerButtons() {
         this.computerButtonsContainer.innerHTML = ''
         $(this.computerButtonsContainer, $ => {
             if (this.run.size_tensorboard && this.run.is_project_run) {
-                $('span', '.float-right',$ => {
+                $('span', '.float-right', $ => {
                     this.startTBButton.render($)
                 })
             }
@@ -307,6 +307,8 @@ class RunHeaderView extends ScreenView {
 
             if (job.isSuccessful) {
                 this.userMessages.success('Successfully cleaned the checkpoints')
+            } else if (job.isComputerOffline) {
+                this.userMessages.warning('Your computer is currently offline')
             } else {
                 this.userMessages.warning('Error occurred while cleaning checkpoints')
             }
@@ -328,6 +330,8 @@ class RunHeaderView extends ScreenView {
             if (job.isSuccessful && url) {
                 this.userMessages.success('Successfully started the TensorBoard')
                 openInNewTab(url)
+            } else if (job.isComputerOffline) {
+                this.userMessages.warning('Your computer is currently offline')
             } else {
                 this.userMessages.warning('Error occurred while starting TensorBoard')
             }

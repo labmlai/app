@@ -28,4 +28,8 @@ export class Job {
     get isSuccessful() {
         return this.status === 'success'
     }
+
+    get isComputerOffline() {
+        return this.status === 'computer_offline'
+    }
 }

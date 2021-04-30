@@ -11,6 +11,7 @@ class JobStatuses:
     ERROR = 'error'
     SUCCESS = 'success'
     TIMEOUT = 'timeout'
+    COMPUTER_OFFLINE = 'computer_offline'
 
 
 class JobMethods:
@@ -69,7 +70,7 @@ class Job(Model['Job']):
         if self.status in [JobStatuses.SUCCESS, JobStatuses.ERROR]:
             self.completed_time = time.time()
 
-        if data:
+        if type(data) is dict:
             self.data.update(data)
 
         self.save()

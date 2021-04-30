@@ -547,7 +547,7 @@ def polling() -> flask.Response:
         c.sync_jobs(job_responses)
 
     pending_jobs = []
-    for i in range(5):
+    for i in range(10):
         c = computer.get_or_create(computer_uuid)
         pending_jobs = c.get_pending_jobs()
         if pending_jobs:
@@ -564,6 +564,9 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
+
+    if not c.is_online:
+        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE})
 
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobMethods.START_TENSORBOARD, {'runs': runs})
@@ -589,10 +592,13 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
             """
     c = computer.get_or_create(computer_uuid)
 
+    if not c.is_online:
+        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE})
+
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobMethods.CLEAR_CHECKPOINTS, {'runs': runs})
 
-    for i in range(10):
+    for i in range(5):
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
