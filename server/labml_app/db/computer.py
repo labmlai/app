@@ -8,7 +8,7 @@ from . import run
 
 JobResponse = Dict[str, str]
 
-ONLINE_TIME_GAP = 120
+ONLINE_TIME_GAP = 60
 
 
 class Computer(Model['Computer']):
