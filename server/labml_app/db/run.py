@@ -234,12 +234,6 @@ class Run(Model['Run']):
         else:
             is_project_run = False
 
-        c = computer.get_or_create(self.computer_uuid)
-        if c:
-            is_computer_online = c.is_online
-        else:
-            is_computer_online = False
-
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
 
@@ -260,7 +254,6 @@ class Run(Model['Run']):
             'size_checkpoints': self.size_checkpoints,
             'size_tensorboard': self.size_tensorboard,
             'computer_uuid': self.computer_uuid,
-            'is_computer_online': is_computer_online,
             'configs': configs,
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,

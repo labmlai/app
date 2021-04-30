@@ -155,6 +155,7 @@ def update_run() -> flask.Response:
     return res
 
 
+@utils.mix_panel.MixPanelEvent.time_this(0.4)
 def _update_session():
     errors = []
 
@@ -226,7 +227,6 @@ def _update_session():
     return jsonify({'errors': errors, 'url': c.url})
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
 def update_session() -> flask.Response:
     res = _update_session()
 

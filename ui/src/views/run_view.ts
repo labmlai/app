@@ -15,7 +15,6 @@ import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
-import {openInNewTab} from '../utils/new_tab'
 
 
 class RunView extends ScreenView {
@@ -38,7 +37,6 @@ class RunView extends ScreenView {
     private refresh: AwesomeRefreshButton
     private userMessages: UserMessages
     private share: ShareButton
-    private startTBButton: CustomButton
 
     constructor(uuid: string) {
         super()
@@ -59,12 +57,6 @@ class RunView extends ScreenView {
         this.share = new ShareButton({
             text: 'run',
             parent: this.constructor.name
-        })
-        this.startTBButton = new CustomButton({
-            onButtonClick: this.onStartTensorBoard.bind(this),
-            text: 'TB',
-            title: 'start TensorBoard',
-            parent: this.constructor.name,
         })
 
         mix_panel.track('Run View', {uuid: this.uuid})
@@ -132,11 +124,6 @@ class RunView extends ScreenView {
     renderButtons() {
         this.buttonsContainer.innerHTML = ''
         $(this.buttonsContainer, $ => {
-            if (this.run.size_tensorboard && this.run.is_project_run) {
-                this.startTBButton.render($)
-                this.startTBButton.disabled = !this.run.is_computer_online
-            }
-
             if (!this.run.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
@@ -181,27 +168,6 @@ class RunView extends ScreenView {
                 return
             }
         }
-    }
-
-    async onStartTensorBoard() {
-        this.userMessages.hide(true)
-        this.startTBButton.disabled = true
-
-        try {
-            let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
-            let url = job.data['url']
-
-            if (job.isSuccessful && url) {
-                this.userMessages.success('Successfully started the TensorBoard')
-                openInNewTab(url)
-            } else {
-                this.userMessages.warning('Error occurred while starting the TensorBoard')
-            }
-        } catch (e) {
-            this.userMessages.networkError()
-        }
-
-        this.startTBButton.disabled = false
     }
 
     render(): WeyaElement {

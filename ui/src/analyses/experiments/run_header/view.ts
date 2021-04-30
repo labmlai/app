@@ -7,7 +7,7 @@ import {Status} from "../../../models/status"
 import {
     BackButton,
     CancelButton,
-    CleanButton,
+    CleanButton, CustomButton,
     DeleteButton,
     EditButton,
     SaveButton
@@ -22,6 +22,8 @@ import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {UserMessages} from "../../../components/user_messages"
+import {openInNewTab} from "../../../utils/new_tab"
+
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -37,12 +39,13 @@ class RunHeaderView extends ScreenView {
     actualWidth: number
     isProjectRun: boolean = false
     fieldContainer: HTMLDivElement
-    cleanButtonContainer: HTMLSpanElement
+    computerButtonsContainer: HTMLSpanElement
     nameField: EditableField
     commentField: EditableField
     noteField: EditableField
     private deleteButton: DeleteButton
     private cleanButton: CleanButton
+    private startTBButton: CustomButton
     private userMessages: UserMessages
     private loader: DataLoader
 
@@ -59,6 +62,12 @@ class RunHeaderView extends ScreenView {
         this.cleanButton = new CleanButton({
             onButtonClick: this.onCleaningCheckPoints.bind(this),
             parent: this.constructor.name
+        })
+        this.startTBButton = new CustomButton({
+            onButtonClick: this.onStartTensorBoard.bind(this),
+            text: 'TB',
+            title: 'start TensorBoard',
+            parent: this.constructor.name,
         })
 
         this.userMessages = new UserMessages()
@@ -97,7 +106,7 @@ class RunHeaderView extends ScreenView {
                         this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.cleanButtonContainer = $('span', '.float-right')
+                            this.computerButtonsContainer = $('span')
                             if (this.isEditMode) {
                                 new CancelButton({
                                     onButtonClick: this.onToggleEdit,
@@ -275,7 +284,14 @@ class RunHeaderView extends ScreenView {
     }
 
     renderCleanButton() {
-        $(this.cleanButtonContainer, $ => {
+        this.computerButtonsContainer.innerHTML = ''
+        $(this.computerButtonsContainer, $ => {
+            if (this.run.size_tensorboard && this.run.is_project_run) {
+                $('span', '.float-right',$ => {
+                    this.startTBButton.render($)
+                })
+            }
+
             if (this.run.size_checkpoints && this.run.is_project_run) {
                 this.cleanButton.render($)
             }
@@ -290,15 +306,36 @@ class RunHeaderView extends ScreenView {
             let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
 
             if (job.isSuccessful) {
-                this.userMessages.success('Successfully cleaned the check points')
+                this.userMessages.success('Successfully cleaned the checkpoints')
             } else {
-                this.userMessages.warning('Error occurred while cleaning the check points')
+                this.userMessages.warning('Error occurred while cleaning checkpoints')
             }
         } catch (e) {
             this.userMessages.networkError()
         }
 
         this.cleanButton.disabled = false
+    }
+
+    async onStartTensorBoard() {
+        this.userMessages.hide(true)
+        this.startTBButton.disabled = true
+
+        try {
+            let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
+            let url = job.data['url']
+
+            if (job.isSuccessful && url) {
+                this.userMessages.success('Successfully started the TensorBoard')
+                openInNewTab(url)
+            } else {
+                this.userMessages.warning('Error occurred while starting TensorBoard')
+            }
+        } catch (e) {
+            this.userMessages.networkError()
+        }
+
+        this.startTBButton.disabled = false
     }
 }
 
