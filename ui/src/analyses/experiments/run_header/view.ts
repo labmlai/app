@@ -7,7 +7,7 @@ import {Status} from "../../../models/status"
 import {
     BackButton,
     CancelButton,
-    CleanButton, CustomButton,
+    CleanButton, TensorBoardButton,
     DeleteButton,
     EditButton,
     SaveButton
@@ -46,7 +46,7 @@ class RunHeaderView extends ScreenView {
     noteField: EditableField
     private deleteButton: DeleteButton
     private cleanButton: CleanButton
-    private startTBButton: CustomButton
+    private startTBButton: TensorBoardButton
     private userMessages: UserMessages
     private loader: DataLoader
 
@@ -64,10 +64,8 @@ class RunHeaderView extends ScreenView {
             onButtonClick: this.onCleaningCheckPoints.bind(this),
             parent: this.constructor.name
         })
-        this.startTBButton = new CustomButton({
+        this.startTBButton = new TensorBoardButton({
             onButtonClick: this.onStartTensorBoard.bind(this),
-            text: 'TB',
-            title: 'start TensorBoard',
             parent: this.constructor.name,
         })
 
@@ -107,7 +105,6 @@ class RunHeaderView extends ScreenView {
                         this.userMessages.render($)
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.computerButtonsContainer = $('span')
                             if (this.isEditMode) {
                                 new CancelButton({
                                     onButtonClick: this.onToggleEdit,
@@ -122,6 +119,7 @@ class RunHeaderView extends ScreenView {
                                     parent: this.constructor.name
                                 }).render($)
                             }
+                            this.computerButtonsContainer = $('span')
                         })
                         $('h2', '.header.text-center', 'Run Details')
                         this.loader.render($)

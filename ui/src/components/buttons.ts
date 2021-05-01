@@ -196,7 +196,7 @@ export class CleanButton extends Button {
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}},
+            {on: {click: this.onClick},  title: 'clean checkpoints'},
             $ => {
                 $('span', '.fas.fa-broom', '')
             })
@@ -324,6 +324,20 @@ export class CustomButton extends Button {
             {on: {click: this.onClick}, title: this.title},
             $ => {
                 $('span', this.text)
+            })
+    }
+}
+
+export class TensorBoardButton extends Button {
+    constructor(opt: buttonOptions) {
+        super(opt)
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}, title: 'start TensorBoard', style: {padding: '2px 6px 2px 6px'}},
+            $ => {
+                $('img', {src: '../../images/tf_Icon.png', width: `${35}px`})
             })
     }
 }

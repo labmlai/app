@@ -6,7 +6,7 @@ import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, CustomButton, EditButton, DeleteButton} from '../components/buttons'
+import {CancelButton, TensorBoardButton, EditButton, DeleteButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
@@ -24,7 +24,7 @@ class RunsListView extends ScreenView {
     searchQuery: string
     buttonContainer: HTMLDivElement
     deleteButton: DeleteButton
-    startTBButton: CustomButton
+    startTBButton: TensorBoardButton
     editButton: EditButton
     cancelButton: CancelButton
     isEditMode: boolean
@@ -39,9 +39,8 @@ class RunsListView extends ScreenView {
         this.runListCache = CACHE.getRunsList()
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
-        this.startTBButton = new CustomButton({
+        this.startTBButton = new TensorBoardButton({
             onButtonClick: this.onStartTensorBoard,
-            text: 'TB',
             parent: this.constructor.name
         })
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
