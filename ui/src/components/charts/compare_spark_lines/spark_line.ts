@@ -5,6 +5,7 @@ import {getBaseColor} from "../constants"
 import {getExtent, getScale, getSelectedIdx} from "../utils"
 import {LineFill, LinePlot} from "../lines/plot"
 import {formatFixed} from "../../../utils/value"
+import {CompareLinePlot} from '../compare_lines/plot'
 
 export interface CompareSparkLineOptions {
     name: string
@@ -17,6 +18,7 @@ export interface CompareSparkLineOptions {
     onClick?: () => void
     isMouseMoveOpt?: boolean
     color: string
+    isDotted?: boolean
 }
 
 export class CompareSparkLine {
@@ -37,6 +39,7 @@ export class CompareSparkLine {
     yScale: d3.ScaleLinear<number, number>
     bisect: d3.Bisector<number, number>
     linePlot: LinePlot
+    isDotted: boolean
 
     constructor(opt: CompareSparkLineOptions) {
         this.series = opt.series
@@ -49,6 +52,7 @@ export class CompareSparkLine {
         this.titleWidth = (opt.width - this.chartWidth) / 2
         this.minLastValue = opt.minLastValue
         this.maxLastValue = opt.maxLastValue
+        this.isDotted = opt.isDotted ?? false
 
         this.yScale = getScale(getExtent([this.series], d => d.value, true), -25)
         this.xScale = getScale(opt.stepExtent, this.chartWidth)
@@ -98,11 +102,12 @@ export class CompareSparkLine {
                             color: '#7f8c8d',
                             colorIdx: 9
                         }).render($)
-                        this.linePlot = new LinePlot({
+                        this.linePlot = new CompareLinePlot({
                             series: this.series,
                             xScale: this.xScale,
                             yScale: this.yScale,
-                            color: '#7f8c8d'
+                            color: '#7f8c8d',
+                            isDotted: this.isDotted
                         })
                         this.linePlot.render($)
                     })

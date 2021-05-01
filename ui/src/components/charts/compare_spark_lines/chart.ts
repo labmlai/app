@@ -6,7 +6,6 @@ import {CompareSparkLine} from "./spark_line"
 import ChartColors from "../chart_colors"
 import {DefaultLineGradient} from "../chart_gradients"
 
-
 interface CompareSparkLinesOptions extends ChartOptions {
     baseSeries: SeriesModel[]
     currentPlotIdx: number[]
@@ -35,6 +34,7 @@ export class CompareSparkLines {
     sparkLines: CompareSparkLine[] = []
     chartColors: ChartColors
     isDivergent?: boolean
+    uniqueItems: Map<string, number>
 
     constructor(opt: CompareSparkLinesOptions) {
         this.currentSeries = opt.series
@@ -44,14 +44,19 @@ export class CompareSparkLines {
         this.onCurrentSelect = opt.onCurrentSelect
         this.onBaseSelect = opt.onBaseSelect
         this.isMouseMoveOpt = opt.isMouseMoveOpt
+        this.uniqueItems = new Map<string, number>()
 
         const margin = Math.floor(opt.width / 64)
         this.rowWidth = Math.min(450, opt.width - 3 * margin)
 
         let lastValues: number[] = []
+        let idx = 0
         for (let s of this.currentSeries.concat(this.baseSeries)) {
             let series = s.series
             lastValues.push(series[series.length - 1].value)
+            if (!this.uniqueItems.has(s.name)) {
+                this.uniqueItems.set(s.name, idx++)
+            }
         }
 
         this.maxLastValue = Math.max(...lastValues)
@@ -81,7 +86,7 @@ export class CompareSparkLines {
             }
         }
 
-        this.chartColors = new ChartColors({nColors: this.currentSeries.length, secondNColors: this.baseSeries.length, isDivergent: opt.isDivergent})
+        this.chartColors = new ChartColors({nColors: this.uniqueItems.size, isDivergent: opt.isDivergent})
     }
 
     changeCursorValues = (cursorStep?: number | null) => {
@@ -91,7 +96,7 @@ export class CompareSparkLines {
     }
 
     render($: WeyaElementFunction) {
-        console.log("asd")
+        this.sparkLines = []
         $('div.sparkline-list.list-group', $ => {
             this.currentSeries.map((s, i) => {
                 $('svg', {style: {height: `${1}px`}}, $ => {
@@ -102,7 +107,7 @@ export class CompareSparkLines {
                     onClick = this.onCurrentSelect.bind(null, i)
                 }
                 let sparkLine = new CompareSparkLine({
-                    name: `current.${s.name}`,
+                    name: s.name,
                     series: s.series,
                     selected: this.currentPlotIdx[i],
                     stepExtent: this.stepExtent,
@@ -110,11 +115,10 @@ export class CompareSparkLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color: this.chartColors.getColor(this.currentColorIndices[i]),
+                    color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
                     isMouseMoveOpt: this.isMouseMoveOpt
                 })
                 this.sparkLines.push(sparkLine)
-                sparkLine.render($)
             })
             this.baseSeries.map((s, i) => {
                 $('svg', {style: {height: `${1}px`}}, $ => {
@@ -125,7 +129,7 @@ export class CompareSparkLines {
                     onClick = this.onBaseSelect.bind(null, i)
                 }
                 let sparkLine = new CompareSparkLine({
-                    name: `base.${s.name}`,
+                    name: s.name,
                     series: s.series,
                     selected: this.basePlotIdx[i],
                     stepExtent: this.stepExtent,
@@ -133,10 +137,14 @@ export class CompareSparkLines {
                     onClick: onClick,
                     minLastValue: this.minLastValue,
                     maxLastValue: this.maxLastValue,
-                    color: this.chartColors.getSecondColor(this.baseColorIndices[i]),
-                    isMouseMoveOpt: this.isMouseMoveOpt
+                    color: this.chartColors.getColor(this.uniqueItems.get(s.name)),
+                    isMouseMoveOpt: this.isMouseMoveOpt,
+                    isDotted: true
                 })
                 this.sparkLines.push(sparkLine)
+            })
+            this.sparkLines.sort((a, b) => a.name.localeCompare(b.name))
+            this.sparkLines.map(sparkLine => {
                 sparkLine.render($)
             })
         })

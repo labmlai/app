@@ -94,7 +94,7 @@ export class CompareLineChart {
         const stepExtent = getExtent(this.currentSeries.concat(this.baseSeries).map(s => s.series), d => d.step)
         this.xScale = getScale(stepExtent, this.chartWidth, false)
 
-        this.chartColors = new ChartColors({nColors: this.currentSeries.length, secondNColors: this.baseSeries.length, isDivergent: opt.isDivergent})
+        this.chartColors = new ChartColors({nColors: this.currentSeries.length, isDivergent: opt.isDivergent})
     }
 
     chartId = `chart_${Math.round(Math.random() * 1e9)}`
@@ -164,7 +164,6 @@ export class CompareLineChart {
     }
 
     render($: WeyaElementFunction) {
-        console.log("zxc")
         this.changeScale()
 
         if (this.currentSeries.concat(this.baseSeries).length === 0) {
@@ -187,7 +186,7 @@ export class CompareLineChart {
                                     {
                                         transform: `translate(${this.margin}, ${this.margin + this.chartHeight})`
                                     }, $ => {
-                                        if (this.currentPlot.concat(this.basePlot).length < 3) {
+                                        if (this.currentPlot.length < 3) {
                                             this.currentPlot.map((s, i) => {
                                                 new LineFill({
                                                     series: s.series,
@@ -195,16 +194,6 @@ export class CompareLineChart {
                                                     yScale: this.yScale,
                                                     color: this.chartColors.getColor(this.filteredCurrentPlotIdx[i]),
                                                     colorIdx: this.filteredCurrentPlotIdx[i],
-                                                    chartId: this.chartId
-                                                }).render($)
-                                            })
-                                            this.basePlot.map((s, i) => {
-                                                new LineFill({
-                                                    series: s.series,
-                                                    xScale: this.xScale,
-                                                    yScale: this.yScale,
-                                                    color: this.chartColors.getSecondColor(this.filteredBasePlotIdx[i]),
-                                                    colorIdx: this.filteredBasePlotIdx[i],
                                                     chartId: this.chartId
                                                 }).render($)
                                             })
@@ -224,7 +213,8 @@ export class CompareLineChart {
                                                 series: s.series,
                                                 xScale: this.xScale,
                                                 yScale: this.yScale,
-                                                color: this.chartColors.getSecondColor(this.filteredBasePlotIdx[i])
+                                                color: this.chartColors.getColor(this.filteredBasePlotIdx[i]),
+                                                isDotted: true
                                             })
                                             this.linePlots.push(linePlot)
                                             linePlot.render($)
