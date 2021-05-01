@@ -22,7 +22,6 @@ import comparisonAnalysis from './experiments/comaprison'
 
 let experimentAnalyses: Analysis[] = [
     metricAnalysis,
-    comparisonAnalysis,
     runConfigsAnalysis,
     hyperPramsAnalysis,
     gradientAnalysis,
