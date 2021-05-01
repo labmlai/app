@@ -17,7 +17,7 @@ def add_blocked_run(r: 'run.Run') -> None:
 
 
 def add_blocked_session(s: 'session.Session') -> None:
-    BlockedSessionIndex.set(s.session_uuidd, s.key)
+    BlockedSessionIndex.set(s.session_uuid, s.key)
 
 
 def is_run_blocked(run_uuid: str) -> bool:

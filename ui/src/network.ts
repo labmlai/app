@@ -118,6 +118,14 @@ class Network {
         return this.sendHttpRequest('POST', `/${url}/preferences/${runUUID}`, data)
     }
 
+    async startTensorBoard(computerUUId: string, runUUIDs: Array<string>): Promise<any> {
+        return this.sendHttpRequest('POST', `/start_tensorboard/${computerUUId}`, {'runs': runUUIDs})
+    }
+
+    async clearCheckPoints(computerUUId: string, runUUIDs: Array<string>): Promise<any> {
+        return this.sendHttpRequest('POST', `/clear_checkpoints/${computerUUId}`, {'runs': runUUIDs})
+    }
+
     private sendHttpRequest = (method: string, url: string, data: object = {}) => {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest()

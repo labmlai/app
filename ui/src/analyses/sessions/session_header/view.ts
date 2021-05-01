@@ -2,7 +2,7 @@ import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
-import CACHE, {IsUserLoggedCache, SessionCache, SessionStatusCache} from "../../../cache/cache"
+import CACHE, {IsUserLoggedCache, SessionCache, SessionsListCache, SessionStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
 import {BackButton, CancelButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
 import EditableField from "../../../components/editable_field"
@@ -14,11 +14,17 @@ import {IsUserLogged} from '../../../models/user'
 import {handleNetworkError, handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Session} from "../../../models/session"
 import {setTitle} from '../../../utils/document'
+import {SessionsListItemModel} from "../../../models/session_list"
+import {SessionsListItemView} from "../../../components/sessions_list_item"
+
 
 class SessionHeaderView extends ScreenView {
     elem: HTMLDivElement
     session: Session
     sessionCache: SessionCache
+    sessionsList: SessionsListItemModel[]
+    sessionListCache: SessionsListCache
+    sessionsListContainer: HTMLDivElement
     status: Status
     statusCache: SessionStatusCache
     isUserLogged: IsUserLogged
@@ -38,6 +44,7 @@ class SessionHeaderView extends ScreenView {
         this.sessionCache = CACHE.getSession(this.uuid)
         this.statusCache = CACHE.getSessionStatus(this.uuid)
         this.isUserLoggedCache = CACHE.getIsUserLogged()
+        this.sessionListCache = CACHE.getSessionsList()
         this.isEditMode = false
 
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete.bind(this), parent: this.constructor.name})
@@ -46,9 +53,19 @@ class SessionHeaderView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.session = await this.sessionCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
+
+            if (this.isUserLogged.is_user_logged) {
+                let sessionsList = (await this.sessionListCache.get(force)).sessions
+                this.sessionsList = sessionsList.filter(session => this.sessionsFilter(session))
+            }
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
+    }
+
+
+    sessionsFilter = (session: SessionsListItemModel) => {
+        return session.computer_uuid === this.session.computer_uuid && session.session_uuid !== this.session.session_uuid
     }
 
     get requiresAuth(): boolean {
@@ -94,6 +111,11 @@ class SessionHeaderView extends ScreenView {
                         this.loader.render($)
                         this.fieldContainer = $('div', '.input-list-container')
                     })
+
+                    $('h6', '.text-center', 'More Sessions')
+                    $('div', '.runs-list', $ => {
+                        this.sessionsListContainer = $('div', '.list.runs-list.list-group', '')
+                    })
                 })
         })
 
@@ -102,6 +124,7 @@ class SessionHeaderView extends ScreenView {
 
             setTitle({section: 'Computer Details', item: this.session.name})
             this.renderFields()
+            this.renderSessionsList()
         } catch (e) {
             handleNetworkErrorInplace(e)
         } finally {
@@ -160,6 +183,27 @@ class SessionHeaderView extends ScreenView {
         })
         this.deleteButton.hide(!(this.isUserLogged.is_user_logged && this.session.is_claimed))
     }
+
+    onItemClicked = (elem: SessionsListItemView) => {
+        let uuid = elem.item.session_uuid
+        if (!this.isEditMode) {
+            ROUTER.navigate(`/session/${uuid}`)
+            return
+        }
+    }
+
+    renderSessionsList() {
+        this.sessionsListContainer.innerHTML = ''
+        $(this.sessionsListContainer, $ => {
+            for (let i = 0; i < this.sessionsList.length; i++) {
+                new SessionsListItemView({
+                    item: this.sessionsList[i],
+                    onClick: this.onItemClicked
+                }).render($)
+            }
+        })
+    }
+
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode

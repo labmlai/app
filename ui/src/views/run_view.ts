@@ -6,7 +6,7 @@ import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
 import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
 import {BackButton, CustomButton, ShareButton} from "../components/buttons"
-import {UserMessages} from "../components/alert"
+import {UserMessages} from "../components/user_messages"
 import {RunHeaderCard} from "../analyses/experiments/run_header/card"
 import {experimentAnalyses} from "../analyses/analyses"
 import {Card} from "../analyses/types"
@@ -31,7 +31,7 @@ class RunView extends ScreenView {
     runHeaderCard: RunHeaderCard
     cards: Card[] = []
     lastUpdated: number
-    ButtonsContainer: HTMLSpanElement
+    buttonsContainer: HTMLSpanElement
     private cardContainer: HTMLDivElement
     private loader: DataLoader
     private refresh: AwesomeRefreshButton
@@ -84,10 +84,10 @@ class RunView extends ScreenView {
                 {style: {width: `${this.actualWidth}px`}}, $ => {
                     $('div', $ => {
                         this.userMessages.render($)
-                        this.ButtonsContainer = $('span', '.float-right')
                         $('div.nav-container', $ => {
                             new BackButton({text: 'Runs', parent: this.constructor.name}).render($)
                             this.refresh.render($)
+                            this.buttonsContainer = $('span', '.float-right')
                             this.share.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -122,8 +122,8 @@ class RunView extends ScreenView {
     }
 
     renderButtons() {
-        this.ButtonsContainer.innerHTML = ''
-        $(this.ButtonsContainer, $ => {
+        this.buttonsContainer.innerHTML = ''
+        $(this.buttonsContainer, $ => {
             if (!this.run.is_claimed) {
                 new CustomButton({
                     onButtonClick: this.onRunAction.bind(this, true),
@@ -144,29 +144,27 @@ class RunView extends ScreenView {
 
     renderClaimMessage() {
         if (!this.run.is_claimed) {
-            this.userMessages.warningMessage('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
+            this.userMessages.warning('This run will be deleted in 12 hours. Click Claim button to add it to your runs.')
         }
     }
 
     async onRunAction(isRunClaim: boolean) {
         if (!this.isUserLogged.is_user_logged) {
-            mix_panel.track('Claim Button Click', {uuid: this.uuid, analysis: this.constructor.name})
             ROUTER.navigate(`/login#return_url=${window.location.pathname}`)
         } else {
             try {
                 if (isRunClaim) {
                     await this.runListCache.claimRun(this.run)
-                    this.userMessages.successMessage('Successfully claimed and added to your runs list')
+                    this.userMessages.success('Successfully claimed and added to your runs list')
                     this.run.is_claimed = true
                 } else {
                     await this.runListCache.addRun(this.run)
-                    this.userMessages.successMessage('Successfully added to your runs list')
+                    this.userMessages.success('Successfully added to your runs list')
                 }
-
                 this.run.is_project_run = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.networkErrorMessage()
+                this.userMessages.networkError()
                 return
             }
         }

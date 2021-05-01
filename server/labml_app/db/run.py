@@ -14,6 +14,8 @@ from ..logger import logger
 from .. import analyses
 from ..enums import RunEnums
 
+SYNC_INTERVAL = 60 * 20
+
 
 class CardInfo(NamedTuple):
     class_name: str
@@ -40,6 +42,9 @@ class Run(Model['Run']):
     status: Key['status.Status']
     configs: Dict[str, any]
     computer_uuid: str
+    size_checkpoints: float
+    size_tensorboard: float
+    last_synced: float
     stdout: str
     stdout_unmerged: str
     logger: str
@@ -70,6 +75,9 @@ class Run(Model['Run']):
                     status=None,
                     configs={},
                     computer_uuid='',
+                    size_checkpoints=None,
+                    size_tensorboard=None,
+                    last_synced=None,
                     stdout='',
                     stdout_unmerged='',
                     logger='',
@@ -91,6 +99,26 @@ class Run(Model['Run']):
 
         return s.get_true_status() == RunEnums.RUN_IN_PROGRESS
 
+    @property
+    def is_sync_needed(self) -> bool:
+        if not self.size_checkpoints or not self.size_tensorboard:
+            return True
+        else:
+            return time.time() - self.last_synced >= SYNC_INTERVAL
+
+    def sync_run(self, **kwargs) -> None:
+        size_checkpoints = kwargs.get('size_checkpoints', None)
+        size_tensorboard = kwargs.get('size_tensorboard', None)
+
+        if size_checkpoints:
+            self.size_checkpoints = size_checkpoints
+        if size_tensorboard:
+            self.size_tensorboard = size_tensorboard
+
+        self.last_synced = time.time()
+
+        self.save()
+
     def update_run(self, data: Dict[str, any]) -> None:
         if not self.name:
             self.name = data.get('name', '')
@@ -108,6 +136,9 @@ class Run(Model['Run']):
             self.commit_message = data.get('commit_message', '')
         if self.start_step is None:
             self.start_step = data.get('start_step', '')
+        if not self.computer_uuid:
+            self.computer_uuid = data.get('computer', '')
+            computer.add_run(self.computer_uuid, self.run_uuid)
 
         if 'configs' in data:
             configs = data.get('configs', {})
@@ -173,7 +204,6 @@ class Run(Model['Run']):
             return ''
 
         url = urls[0]
-
         if not url:
             return ''
         if 'git' not in url:
@@ -181,7 +211,6 @@ class Run(Model['Run']):
             return ''
 
         split = url.split(':')
-
         if split[0] != 'https':
             split[0] = 'https'
             return '://github.com/'.join(split)[:-4]
@@ -199,10 +228,11 @@ class Run(Model['Run']):
         return url + f'/commit/{commit}'
 
     def get_data(self) -> Dict[str, Union[str, any]]:
-        is_project_run = False
         u = auth.get_auth_user()
         if u:
             is_project_run = u.default_project.is_project_run(self.run_uuid)
+        else:
+            is_project_run = False
 
         configs = [{'key': k, **c} for k, c in self.configs.items()]
         formatted_repo = self.format_remote_repo(self.repo_remotes)
@@ -221,6 +251,9 @@ class Run(Model['Run']):
             'commit': self.format_commit(formatted_repo, self.commit),
             'commit_message': self.commit_message,
             'is_claimed': self.is_claimed,
+            'size_checkpoints': self.size_checkpoints,
+            'size_tensorboard': self.size_tensorboard,
+            'computer_uuid': self.computer_uuid,
             'configs': configs,
             'stdout': self.stdout + self.stdout_unmerged,
             'logger': self.logger + self.logger_unmerged,
@@ -230,6 +263,7 @@ class Run(Model['Run']):
     def get_summary(self) -> Dict[str, str]:
         return {
             'run_uuid': self.run_uuid,
+            'computer_uuid': self.computer_uuid,
             'name': self.name,
             'comment': self.comment,
             'start_time': self.start_time,
@@ -250,7 +284,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(run_uuid: str, computer_uuid: str, labml_token: str = '', computer_ip: str = '') -> 'Run':
+def get_or_create(run_uuid: str, labml_token: str = '', computer_ip: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -270,7 +304,6 @@ def get_or_create(run_uuid: str, computer_uuid: str, labml_token: str = '', comp
 
     s = status.create_status()
     run = Run(run_uuid=run_uuid,
-              computer_uuid=computer_uuid,
               owner=identifier,
               start_time=time_now,
               run_ip=computer_ip,
@@ -284,8 +317,6 @@ def get_or_create(run_uuid: str, computer_uuid: str, labml_token: str = '', comp
     p.save()
 
     RunIndex.set(run.run_uuid, run.key)
-
-    computer.add_run(computer_uuid, run_uuid)
 
     utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid, 'labml_token': labml_token})
 

@@ -6,7 +6,7 @@ sync = {
     "parameters": [
         {
             "name": "computer_uuid",
-            "in": "path",
+            "in": "query",
             "type": "string",
             "required": "true",
             "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
@@ -16,7 +16,11 @@ sync = {
             "in": "body",
             "type": "list",
             "description": "Runs to be synced with the server",
-            "example": ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']
+            "example": [{
+                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                'size_tensorboard': 10.2,
+                'size_checkpoints': 15.4
+            }]
         },
     ],
     "responses": {
@@ -43,7 +47,7 @@ polling = {
     "parameters": [
         {
             "name": "computer_uuid",
-            "in": "path",
+            "in": "query",
             "type": "string",
             "required": "true",
             "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
@@ -54,7 +58,7 @@ polling = {
             "type": "list",
             "description": "Status of the jobs initiated by UI",
             "example": [{'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.SUCCESS},
-                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.ERROR}]
+                        {'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03', 'status': job.JobStatuses.FAIL}]
         }
     ],
     "responses": {
@@ -71,7 +75,7 @@ polling = {
                                 'status': job.JobStatuses.INITIATED,
                                 'created_time': '16234567',
                                 'completed_time': None,
-                                'instruction': job.JobInstructions.START_TB,
+                                'method': job.JobMethods.START_TENSORBOARD,
                                 'data': {'runs': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03']}
                             }
                         ]
@@ -104,19 +108,14 @@ start_tensor_board = {
             "description": "job details with the response",
             "schema": {
                 'type': 'object',
-                'properties': {
-                    'job': {
-                        'type': 'object',
-                        'example':
-                            {
-                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
-                                'status': job.JobStatuses.SUCCESS,
-                                'created_time': '16234567',
-                                'completed_time': '16234567',
-                                'instruction': job.JobInstructions.START_TB
-                            }
+                'example':
+                    {
+                        'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                        'status': job.JobStatuses.SUCCESS,
+                        'created_time': '16234567',
+                        'completed_time': '16234567',
+                        'method': job.JobMethods.START_TENSORBOARD
                     }
-                }
             },
         }
     }
@@ -144,19 +143,40 @@ clear_checkpoints = {
             "description": "job details with the response",
             "schema": {
                 'type': 'object',
-                'properties': {
-                    'job': {
-                        'type': 'object',
-                        'example':
-                            {
-                                'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
-                                'status': job.JobStatuses.ERROR,
-                                'created_time': '16234567',
-                                'completed_time': '16234567',
-                                'instruction': job.JobInstructions.CLEAR_CP
-                            }
-
+                'example':
+                    {
+                        'uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                        'status': job.JobStatuses.SUCCESS,
+                        'created_time': '16234567',
+                        'completed_time': '16234567',
+                        'method': job.JobMethods.START_TENSORBOARD
                     }
+            },
+        }
+    }
+}
+
+get_computer = {
+    "parameters": [
+        {
+            "name": "session_uuid",
+            "in": "path",
+            "type": "string",
+            "required": "true",
+            "description": "0c112ffda506f10f9f793c0fb6d9de4b43595d03",
+        },
+    ],
+    "responses": {
+        "200": {
+            "description": "Synced server side run_uuid list",
+            "schema": {
+                'type': 'object',
+                'example': {
+                    'sessions': ['0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+                                 '0c112ffda506f10f9f793c0fb6d9de4b43595d03'
+                                 ],
+                    'session_uuid': '0c112ffda506f10f9f793c0fb6d9de4b43595d03',
+
                 }
             },
         }

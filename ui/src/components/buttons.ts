@@ -7,6 +7,7 @@ interface buttonOptions {
     onButtonClick?: () => void
     isDisabled?: boolean
     parent: string
+    title?: string
 }
 
 abstract class Button {
@@ -14,11 +15,13 @@ abstract class Button {
     isDisabled: boolean
     parent: string
     elem?: WeyaElement
+    title?: string
 
     protected constructor(opt: buttonOptions) {
         this.onButtonClick = opt.onButtonClick
         this.isDisabled = opt.isDisabled ? opt.isDisabled : false
         this.parent = opt.parent
+        this.title = opt.title
     }
 
     set disabled(isDisabled: boolean) {
@@ -90,6 +93,10 @@ export class BackButton extends Button {
     }
 
     onClick = () => {
+        if (ROUTER.canBack()) {
+            ROUTER.back()
+            return
+        }
         ROUTER.navigate(this.navigatePath)
     }
 
@@ -182,16 +189,16 @@ export class CancelButton extends Button {
     }
 }
 
-export class AddButton extends Button {
+export class CleanButton extends Button {
     constructor(opt: buttonOptions) {
         super(opt)
     }
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick}},
+            {on: {click: this.onClick},  title: 'clean checkpoints'},
             $ => {
-                $('span', '.fas.fa-plus', '')
+                $('span', '.fas.fa-broom', '')
             })
     }
 }
@@ -302,18 +309,14 @@ export class ToggleButton extends Button {
 
 interface CustomButtonOptions extends buttonOptions {
     text: string
-    title?: string
 }
 
 export class CustomButton extends Button {
     text: string
-    title: string
 
     constructor(opt: CustomButtonOptions) {
         super(opt)
-
         this.text = opt.text
-        this.title = opt.title
     }
 
     render($: WeyaElementFunction) {
@@ -321,6 +324,20 @@ export class CustomButton extends Button {
             {on: {click: this.onClick}, title: this.title},
             $ => {
                 $('span', this.text)
+            })
+    }
+}
+
+export class TensorBoardButton extends Button {
+    constructor(opt: buttonOptions) {
+        super(opt)
+    }
+
+    render($: WeyaElementFunction) {
+        this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
+            {on: {click: this.onClick}, title: 'start TensorBoard', style: {padding: '2px 6px 2px 6px'}},
+            $ => {
+                $('img', {src: '../../images/tf_Icon.png', width: `${35}px`})
             })
     }
 }
@@ -351,7 +368,7 @@ export class ShareButton extends Button {
     }
 
     renderToast() {
-        if(this.toastDiv != null) {
+        if (this.toastDiv != null) {
             this.toastDiv.remove()
         }
         $(document.body, $ => {

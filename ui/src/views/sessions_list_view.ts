@@ -10,7 +10,7 @@ import {SessionsListItemView} from '../components/sessions_list_item'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptySessionsList from "./empty_sessions_list"
-import {AlertMessage} from "../components/alert"
+import {UserMessages} from "../components/user_messages"
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
@@ -29,6 +29,7 @@ class SessionsListView extends ScreenView {
     isEditMode: boolean
     sessionsDeleteSet: Set<string>
     private loader: DataLoader
+    private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
 
     constructor() {
@@ -39,6 +40,8 @@ class SessionsListView extends ScreenView {
         this.deleteButton = new DeleteButton({onButtonClick: this.onDelete, parent: this.constructor.name})
         this.editButton = new EditButton({onButtonClick: this.onEdit, parent: this.constructor.name})
         this.cancelButton = new CancelButton({onButtonClick: this.onCancel, parent: this.constructor.name})
+
+        this.userMessages = new UserMessages()
 
         this.loader = new DataLoader(async (force) => {
             this.currentSessionsList = (await this.sessionListCache.get(force)).sessions
@@ -57,7 +60,7 @@ class SessionsListView extends ScreenView {
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', $ => {
-                this.alertContainer = $('div')
+                this.userMessages.render($)
                 new HamburgerMenuView({
                     title: 'Computers',
                     setButtonContainer: container => this.buttonContainer = container
@@ -113,13 +116,6 @@ class SessionsListView extends ScreenView {
         }
     }
 
-    renderAlertMessage() {
-        this.alertContainer.innerHTML = ''
-        $(this.alertContainer, $ => {
-            new AlertMessage({message: 'An unexpected network error occurred. Please try again later'}).render($)
-        })
-    }
-
     sessionsFilter = (session: SessionsListItemModel, query: RegExp) => {
         let name = session.name.toLowerCase()
         let comment = session.comment.toLowerCase()
@@ -157,7 +153,7 @@ class SessionsListView extends ScreenView {
             await this.loader.load()
             await this.renderList()
         } catch (e) {
-            this.renderAlertMessage()
+            this.userMessages.networkError()
         }
     }
 

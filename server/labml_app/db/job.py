@@ -8,23 +8,27 @@ from labml_app import utils
 
 class JobStatuses:
     INITIATED = 'initiated'
-    ERROR = 'error'
+    FAIL = 'fail'
     SUCCESS = 'success'
     TIMEOUT = 'timeout'
+    COMPUTER_OFFLINE = 'computer_offline'
 
 
-class JobInstructions:
-    START_TB = 'start_tb'
-    DELETE_RUN = 'delete_runs'
-    CLEAR_CP = 'clear_cp'
+class JobMethods:
+    START_TENSORBOARD = 'start_tensorboard'
+    DELETE_RUNS = 'delete_runs'
+    CLEAR_CHECKPOINTS = 'clear_checkpoints'
+    CALL_SYNC = 'call_sync'
 
+
+NON_REPEATED_METHODS = [JobMethods.CALL_SYNC]
 
 JobDict = Dict[str, Union[str, float]]
 
 
 class Job(Model['Job']):
     job_uuid: str
-    instruction: str
+    method: str
     status: str
     created_time: float
     completed_time: float
@@ -33,7 +37,7 @@ class Job(Model['Job']):
     @classmethod
     def defaults(cls):
         return dict(job_uuid='',
-                    instruction='',
+                    method='',
                     status='',
                     created_time=None,
                     completed_time=None,
@@ -46,27 +50,34 @@ class Job(Model['Job']):
 
     @property
     def is_error(self) -> bool:
-        return self.status == JobStatuses.ERROR
+        return self.status == JobStatuses.FAIL
 
     @property
     def is_completed(self) -> bool:
-        return self.status == JobStatuses.ERROR or self.status == JobStatuses.SUCCESS
+        return self.status == JobStatuses.FAIL or self.status == JobStatuses.SUCCESS
+
+    @property
+    def is_non_repeated(self) -> bool:
+        return self.method in NON_REPEATED_METHODS
 
     def to_data(self) -> JobDict:
         return {
             'uuid': self.job_uuid,
-            'instruction': self.instruction,
+            'method': self.method,
             'status': self.status,
             'created_time': self.created_time,
             'completed_time': self.completed_time,
             'data': self.data
         }
 
-    def update_status(self, status: str) -> None:
+    def update_job(self, status: str, data: Dict[str, Any]) -> None:
         self.status = status
 
-        if self.status in [JobStatuses.SUCCESS, JobStatuses.ERROR]:
+        if self.status in [JobStatuses.SUCCESS, JobStatuses.FAIL]:
             self.completed_time = time.time()
+
+        if type(data) is dict:
+            self.data.update(data)
 
         self.save()
 
@@ -75,9 +86,9 @@ class JobIndex(Index['Job']):
     pass
 
 
-def create(instruction: str, data: Dict[str, Any]) -> Job:
+def create(method: str, data: Dict[str, Any]) -> Job:
     job = Job(job_uuid=utils.gen_token(),
-              instruction=instruction,
+              method=method,
               created_time=time.time(),
               data=data,
               status=JobStatuses.INITIATED,

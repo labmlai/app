@@ -40,8 +40,11 @@ def _init_file_handler():
     file_handler = RotatingFileHandler(filename=_LOG_PATH, maxBytes=_MAX_BYTES)
     file_handler.setFormatter(CustomFormatter())
 
+    return file_handler
+
 
 logger = logging.getLogger('LabML logger')
 logger.setLevel(logging.INFO)
 
 logger.addHandler(_init_streaming_handler())
+logger.addHandler(_init_file_handler())

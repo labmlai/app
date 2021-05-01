@@ -78,12 +78,11 @@ def sign_out() -> flask.Response:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(0.4)
-def update_run() -> flask.Response:
+def _update_run():
     errors = []
 
     token = request.args.get('labml_token', '')
     run_uuid = request.args.get('run_uuid', '')
-    computer_uuid = request.args.get('computer_uuid', '')
     version = request.args.get('labml_version', '')
 
     if blocked_uuids.is_run_blocked(run_uuid):
@@ -91,12 +90,6 @@ def update_run() -> flask.Response:
                  'message': f'Blocked or deleted run, uuid:{run_uuid}'}
         errors.append(error)
         return jsonify({'errors': errors})
-
-    # if len(computer_uuid) < 10:
-    #     error = {'error': 'invalid_computer_uuid',
-    #              'message': f'Invalid Computer UUID'}
-    #     errors.append(error)
-    #     return jsonify({'errors': errors})
 
     if len(run_uuid) < 10:
         error = {'error': 'invalid_run_uuid',
@@ -129,7 +122,7 @@ def update_run() -> flask.Response:
                                 'add it to your experiments list.'}
         errors.append(error)
 
-    r = run.get_or_create(run_uuid, computer_uuid, token, request.remote_addr)
+    r = run.get_or_create(run_uuid, token, request.remote_addr)
     s = r.status.load()
 
     if isinstance(request.json, list):
@@ -143,6 +136,13 @@ def update_run() -> flask.Response:
         if 'track' in d:
             analyses.AnalysisManager.track(run_uuid, d['track'])
 
+    if r.is_sync_needed or not r.is_in_progress:
+        c = computer.get_or_create(r.computer_uuid)
+        try:
+            c.create_job(job.JobMethods.CALL_SYNC, {})
+        except AssertionError as e:
+            logger.debug(f'error while creating CALL_SYNC : {e}')
+
     logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
@@ -150,8 +150,16 @@ def update_run() -> flask.Response:
     return jsonify({'errors': errors, 'url': r.url, 'dynamic': hp_values})
 
 
+def update_run() -> flask.Response:
+    res = _update_run()
+
+    time.sleep(3)
+
+    return res
+
+
 @utils.mix_panel.MixPanelEvent.time_this(0.4)
-def update_session() -> flask.Response:
+def _update_session():
     errors = []
 
     token = request.args.get('labml_token', '')
@@ -220,6 +228,14 @@ def update_session() -> flask.Response:
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     return jsonify({'errors': errors, 'url': c.url})
+
+
+def update_session() -> flask.Response:
+    res = _update_session()
+
+    time.sleep(3)
+
+    return res
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
@@ -456,6 +472,8 @@ def add_session(session_uuid: str) -> flask.Response:
     return utils.format_rv({'is_successful': True})
 
 
+@auth.login_required
+@swag_from(docs.get_computer)
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_computer(computer_uuid) -> flask.Response:
     c = computer.get_or_create(computer_uuid)
@@ -488,86 +506,116 @@ def is_user_logged() -> flask.Response:
 
 
 @swag_from(docs.sync)
-def sync_computer(computer_uuid: str) -> flask.Response:
+@utils.mix_panel.MixPanelEvent.time_this(None)
+def sync_computer() -> flask.Response:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
         """
+    errors = []
+
+    computer_uuid = request.args.get('computer_uuid', '')
+    if len(computer_uuid) < 10:
+        error = {'error': 'invalid_computer_uuid',
+                 'message': f'Invalid Computer UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
     c = computer.get_or_create(computer_uuid)
 
     runs = request.json.get('runs', [])
-    res = []
-    if runs:
-        res = c.sync_runs(runs)
+    res = c.sync_runs(runs)
 
-    return utils.format_rv({'runs': res})
+    return jsonify({'runs': res})
 
 
 @swag_from(docs.polling)
-def polling(computer_uuid: str) -> flask.Response:
+@utils.mix_panel.MixPanelEvent.time_this(60.4)
+def polling() -> flask.Response:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
            """
+    errors = []
+
+    computer_uuid = request.args.get('computer_uuid', '')
+    if len(computer_uuid) < 10:
+        error = {'error': 'invalid_computer_uuid',
+                 'message': f'Invalid Computer UUID'}
+        errors.append(error)
+        return jsonify({'errors': errors})
+
     c = computer.get_or_create(computer_uuid)
+
+    c.update_last_online()
 
     job_responses = request.json.get('jobs', [])
     if job_responses:
         c.sync_jobs(job_responses)
 
-    active_jobs = []
-    for i in range(50):
+    pending_jobs = []
+    for i in range(16):
         c = computer.get_or_create(computer_uuid)
-        active_jobs = c.get_pending_jobs()
-        if active_jobs:
+        pending_jobs = c.get_pending_jobs()
+        if pending_jobs:
             break
 
-        time.sleep(2.5)
+        time.sleep(3)
 
-    return utils.format_rv({'jobs': active_jobs})
+    return jsonify({'jobs': pending_jobs})
 
 
+@auth.login_required
 @swag_from(docs.start_tensor_board)
+@utils.mix_panel.MixPanelEvent.time_this(12.9)
 def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
 
+    if not c.is_online:
+        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE, 'data': {}})
+
     runs = request.json.get('runs', [])
-    j = c.create_job(job.JobInstructions.START_TB, {'runs': runs})
+    j = c.create_job(job.JobMethods.START_TENSORBOARD, {'runs': runs})
 
     for i in range(5):
         c = computer.get_or_create(computer_uuid)
-        completed_job = c.get_job(j.job_uuid)
+        completed_job = c.get_completed_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
-            return utils.format_rv({'job': completed_job.to_data()})
+            return utils.format_rv(completed_job.to_data())
 
         time.sleep(2.5)
 
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
 
-    return utils.format_rv({'job': data})
+    return utils.format_rv(data)
 
 
+@auth.login_required
 @swag_from(docs.clear_checkpoints)
+@utils.mix_panel.MixPanelEvent.time_this(12.9)
 def clear_checkpoints(computer_uuid: str) -> flask.Response:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
 
-    runs = request.json.get('runs', [])
-    j = c.create_job(job.JobInstructions.CLEAR_CP, {'runs': runs})
+    if not c.is_online:
+        return utils.format_rv({'status': job.JobStatuses.COMPUTER_OFFLINE, 'data': {}})
 
-    for i in range(10):
+    runs = request.json.get('runs', [])
+    j = c.create_job(job.JobMethods.CLEAR_CHECKPOINTS, {'runs': runs})
+
+    for i in range(5):
         c = computer.get_or_create(computer_uuid)
-        completed_job = c.get_job(j.job_uuid)
+        completed_job = c.get_completed_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
-            return utils.format_rv({'job': completed_job.to_data()})
+            return utils.format_rv(completed_job.to_data())
 
         time.sleep(2.5)
 
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
 
-    return utils.format_rv({'job': data})
+    return utils.format_rv(data)
 
 
 def _add_server(app: flask.Flask, method: str, func: Callable, url: str):
@@ -581,8 +629,8 @@ def _add_ui(app: flask.Flask, method: str, func: Callable, url: str):
 def add_handlers(app: flask.Flask):
     _add_server(app, 'POST', update_run, 'track')
     _add_server(app, 'POST', update_session, 'computer')
-    _add_server(app, 'POST', sync_computer, 'sync/<computer_uuid>')
-    _add_server(app, 'POST', polling, 'polling/<computer_uuid>')
+    _add_server(app, 'POST', sync_computer, 'sync')
+    _add_server(app, 'POST', polling, 'polling')
 
     _add_ui(app, 'GET', get_runs, 'runs/<labml_token>')
     _add_ui(app, 'PUT', delete_runs, 'runs')
@@ -610,8 +658,8 @@ def add_handlers(app: flask.Flask):
     _add_ui(app, 'DELETE', sign_out, 'auth/sign_out')
     _add_ui(app, 'GET', is_user_logged, 'auth/is_logged')
 
-    _add_ui(app, 'POST', start_tensor_board, 'start_tb/<computer_uuid>')
-    _add_ui(app, 'POST', clear_checkpoints, 'clear_cp/<computer_uuid>')
+    _add_ui(app, 'POST', start_tensor_board, 'start_tensorboard/<computer_uuid>')
+    _add_ui(app, 'POST', clear_checkpoints, 'clear_checkpoints/<computer_uuid>')
 
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:

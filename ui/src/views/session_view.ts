@@ -10,7 +10,7 @@ import CACHE, {IsUserLoggedCache, SessionCache, SessionsListCache, SessionStatus
 import {Session} from '../models/session'
 import {SessionHeaderCard} from '../analyses/sessions/session_header/card'
 import {sessionAnalyses} from '../analyses/analyses'
-import {UserMessages} from "../components/alert"
+import {UserMessages} from "../components/user_messages"
 import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
@@ -144,17 +144,17 @@ class SessionView extends ScreenView {
             try {
                 if (isSessionClaim) {
                     await this.sessionsListCache.claimSession(this.session)
-                    this.userMessages.successMessage('Successfully claimed and added to your computers list')
+                    this.userMessages.success('Successfully claimed and added to your computers list')
                     this.session.is_claimed = true
                 } else {
                     await this.sessionsListCache.addSession(this.session)
-                    this.userMessages.successMessage('Successfully added to your computers list')
+                    this.userMessages.success('Successfully added to your computers list')
                 }
 
                 this.session.is_project_session = true
                 this.renderButtons()
             } catch (e) {
-                this.userMessages.networkErrorMessage()
+                this.userMessages.networkError()
                 return
             }
         }

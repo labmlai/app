@@ -3,7 +3,7 @@ import time
 from labml_app import settings
 from labml_app import block_uuids
 from labml_app.logger import logger
-from labml_app.db import project, run, session, blocked_uuids
+from labml_app.db import project, run, session, blocked_uuids, init_db
 
 
 def clean_float_project() -> None:
@@ -74,6 +74,20 @@ def move_to_samples():
     logger.info('......Done.........')
 
 
+def add_block_uuids():
+    logger.info('add_block_uuids started')
+
+    for run_uuid in block_uuids.update_run_uuids:
+        r = run.get(run_uuid)
+        if r:
+            logger.info(r.run_uuid)
+            blocked_uuids.add_blocked_run(r)
+
+    logger.info('......Done.........')
+
+
 if __name__ == "__main__":
-    move_to_samples()
-    clean_float_project()
+    init_db()
+    # move_to_samples()
+    # clean_float_project()
+    add_block_uuids()
