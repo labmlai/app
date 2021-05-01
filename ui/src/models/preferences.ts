@@ -19,3 +19,23 @@ export class AnalysisPreference {
         this.sub_series_preferences = preference.sub_series_preferences
     }
 }
+
+export interface ComparisonPreferenceModel extends AnalysisPreferenceModel {
+    base_series_preferences: number[]
+    compared_with: string
+}
+
+export class ComparisonPreference extends AnalysisPreference {
+    base_series_preferences: number[]
+    compared_with: string
+
+    constructor(preference: ComparisonPreferenceModel) {
+        super(preference)
+        if (preference.base_series_preferences) {
+            this.base_series_preferences = preference.base_series_preferences
+        } else {
+            this.base_series_preferences = []
+        }
+        this.compared_with = preference.compared_with
+    }
+}
