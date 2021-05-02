@@ -53,34 +53,3 @@ class Preferences:
             'chart_type': self.chart_type,
             'sub_series_preferences': self.get_sub_series_preferences(),
         }
-
-
-class ComparisonPreferences(Preferences):
-    base_series_preferences: SeriesPreferences
-    base_experiment: str
-
-    @classmethod
-    def defaults(cls):
-        outp = super().defaults()
-        outp["base_series_preferences"] = []
-        outp["base_experiment"] = ""
-        return outp
-
-    def update_preferences(self, data: PreferencesData) -> None:
-        if 'base_series_preferences' in data:
-            self.update_base_series_preferences(data['base_series_preferences'])
-
-        if 'base_experiment' in data:
-            self.base_experiment = data['base_experiment']
-
-        super().update_preferences(data)
-
-    def update_base_series_preferences(self, data: SeriesPreferences) -> None:
-        self.base_series_preferences = data
-
-    def get_data(self) -> Dict[str, Any]:
-        outp = super().get_data()
-        outp["base_series_preferences"] = self.base_series_preferences
-        outp["base_experiment"] = self.base_experiment
-        
-        return outp

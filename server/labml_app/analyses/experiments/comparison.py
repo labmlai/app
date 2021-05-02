@@ -1,4 +1,4 @@
-from typing import Dict, Any
+from typing import Any, Dict, List
 
 from flask import make_response, request
 from labml_db import Model, Index
@@ -6,18 +6,43 @@ from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.logger import logger
-from labml_app.enums import INDICATORS
-from ..analysis import Analysis
-from ..series import SeriesModel, Series
-from ..series_collection import SeriesCollection
-from ..preferences import ComparisonPreferences
 from labml_app import utils
-from labml_app.settings import INDICATOR_LIMIT
+from ..analysis import Analysis
+from .. import preferences
 
 
-@Analysis.db_model(PickleSerializer, 'comparison')
-class ComparisonModel(Model['ComparisonModel'], SeriesCollection):
-    pass
+class ComparisonPreferences:
+    base_series_preferences: preferences.SeriesPreferences
+    base_experiment: str
+    errors: List[Dict[str, str]]
+    chart_type: int
+
+    @classmethod
+    def defaults(cls):
+        return dict(base_series_preferences=[],
+                    base_experiment=str,
+                    chart_type=0,
+                    errors=[]
+                    )
+
+    def update_preferences(self, data: preferences.PreferencesData) -> None:
+        if 'base_series_preferences' in data:
+            self.update_base_series_preferences(data['base_series_preferences'])
+
+        if 'base_experiment' in data:
+            self.base_experiment = data['base_experiment']
+
+        self.save()
+
+    def update_base_series_preferences(self, data: preferences.SeriesPreferences) -> None:
+        self.base_series_preferences = data
+
+    def get_data(self) -> Dict[str, Any]:
+        return {
+            'base_series_preferences': self.base_series_preferences,
+            'base_experiment': self.base_experiment,
+            'chart_type': self.chart_type,
+        }
 
 
 @Analysis.db_model(PickleSerializer, 'comparison_preferences')
@@ -30,88 +55,6 @@ class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
     pass
 
 
-@Analysis.db_index(YamlSerializer, 'comparison_index.yaml')
-class ComparisonIndex(Index['Comparison']):
-    pass
-
-
-class ComparisonAnalysis(Analysis):
-    comparison: ComparisonModel
-
-    def __init__(self, data):
-        self.comparison = data
-
-    def track(self, data: Dict[str, SeriesModel]):
-        res = {}
-        for ind, s in data.items():
-            ind_split = ind.split('.')
-            ind_type = ind_split[0]
-            if ind_type not in INDICATORS:
-                if ind not in self.comparison.indicators:
-                    if len(self.comparison.indicators) >= INDICATOR_LIMIT:
-                        continue
-                    self.comparison.indicators.add('.'.join(ind))
-
-                res[ind] = s
-
-        self.comparison.track(res)
-
-    def get_tracking(self):
-        res = []
-        is_series_updated = False
-        for ind, track in self.comparison.tracking.items():
-            name = ind.split('.')
-
-            s = Series().load(track)
-            series: Dict[str, Any] = s.detail
-            series['name'] = '.'.join(name)
-
-            if s.is_smoothed_updated:
-                self.comparison.tracking[ind] = s.to_data()
-                is_series_updated = True
-
-            res.append(series)
-
-        if is_series_updated:
-            self.comparison.save()
-
-        res.sort(key=lambda s: s['name'])
-
-        return res
-
-    @staticmethod
-    def get_or_create(run_uuid: str):
-        comparison_key = ComparisonIndex.get(run_uuid)
-
-        if not comparison_key:
-            m = ComparisonModel()
-            m.save()
-            ComparisonIndex.set(run_uuid, m.key)
-
-            mp = ComparisonPreferencesModel()
-            mp.save()
-            ComparisonPreferencesIndex.set(run_uuid, mp.key)
-
-            return ComparisonAnalysis(m)
-
-        return ComparisonAnalysis(comparison_key.load())
-
-    @staticmethod
-    def delete(run_uuid: str):
-        comparison_key = ComparisonIndex.get(run_uuid)
-        preferences_key = ComparisonPreferencesIndex.get(run_uuid)
-
-        if comparison_key:
-            m: ComparisonModel = comparison_key.load()
-            ComparisonIndex.delete(run_uuid)
-            m.delete()
-
-        if preferences_key:
-            mp: ComparisonPreferencesModel = preferences_key.load()
-            ComparisonPreferencesIndex.delete(run_uuid)
-            mp.delete()
-
-
 @Analysis.route('GET', 'compare/preferences/<run_uuid>')
 def get_comparison_preferences(run_uuid: str) -> Any:
     preferences_data = {}
@@ -120,8 +63,8 @@ def get_comparison_preferences(run_uuid: str) -> Any:
     if not preferences_key:
         return utils.format_rv(preferences_data)
 
-    mp: ComparisonPreferencesModel = preferences_key.load()
-    preferences_data = mp.get_data()
+    cp: ComparisonPreferencesModel = preferences_key.load()
+    preferences_data = cp.get_data()
 
     response = make_response(utils.format_rv(preferences_data))
 
@@ -133,11 +76,13 @@ def set_comparison_preferences(run_uuid: str) -> Any:
     preferences_key = ComparisonPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        cp = ComparisonPreferencesModel()
+        ComparisonPreferencesIndex.set(run_uuid, cp.key)
+    else:
+        cp = preferences_key.load()
 
-    mp = preferences_key.load()
-    mp.update_preferences(request.json)
+    cp.update_preferences(request.json)
 
-    logger.debug(f'update comparison preferences: {mp.key}')
+    logger.debug(f'update comparison preferences: {cp.key}')
 
-    return utils.format_rv({'errors': mp.errors})
+    return utils.format_rv({'errors': cp.errors})
