@@ -62,7 +62,7 @@ class ComparisonView extends ScreenView {
 
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
-            this.baseUuid = this.preferenceData.compared_with
+            this.baseUuid = this.preferenceData.base_experiment
             this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()

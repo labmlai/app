@@ -22,7 +22,7 @@ export class AnalysisPreference {
 
 export interface ComparisonPreferenceModel extends AnalysisPreferenceModel {
     base_series_preferences: number[]
-    compared_with: string
+    base_experiment: string
 }
 
 export class ComparisonPreference extends AnalysisPreference {
@@ -36,6 +36,6 @@ export class ComparisonPreference extends AnalysisPreference {
         } else {
             this.base_series_preferences = []
         }
-        this.compared_with = preference.compared_with
+        this.compared_with = preference.base_experiment
     }
 }

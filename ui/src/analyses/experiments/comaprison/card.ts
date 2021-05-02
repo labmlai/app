@@ -37,7 +37,7 @@ export class ComparisonCard extends Card {
         this.preferenceCache = comparisonCache.getPreferences(this.currentUuid)
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
-            this.baseUuid = this.preferenceData.compared_with
+            this.baseUuid = this.preferenceData.base_experiment
             if (this.baseUuid == null) {
                 this.elem.classList.add('hide')
                 return
