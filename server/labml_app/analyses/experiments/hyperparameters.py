@@ -13,7 +13,40 @@ from ..series import Series
 from ..analysis import Analysis
 from ..series import SeriesModel
 from ..series_collection import SeriesCollection
-from ..preferences import Preferences
+from .. import preferences
+
+
+class HyperParamPreferences(preferences.Preferences):
+    sub_series_preferences: Dict[str, preferences.SeriesPreferences]
+
+    @classmethod
+    def defaults(cls):
+        return dict(sub_series_preferences={},
+                    )
+
+    def update_sub_series_preferences(self, data: preferences.PreferencesData) -> None:
+        data = data.get('sub_series_preferences', {})
+        for k, v in data.items():
+            self.sub_series_preferences[k] = v
+
+        self.save()
+
+    def get_sub_series_preferences(self) -> Dict[str, preferences.SeriesPreferences]:
+        res = {}
+        for k, v in self.sub_series_preferences.items():
+            if v:
+                res[k] = v
+            else:
+                res[k] = []
+
+        return res
+
+    def get_data(self) -> Dict[str, Any]:
+        return {
+            'series_preferences': self.series_preferences,
+            'chart_type': self.chart_type,
+            'sub_series_preferences': self.get_sub_series_preferences(),
+        }
 
 
 @Analysis.db_model(PickleSerializer, 'hyperparams')
@@ -34,7 +67,7 @@ class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
 
 
 @Analysis.db_model(PickleSerializer, 'hyperparams_preferences')
-class HyperParamsPreferencesModel(Model['HyperParamsPreferencesModel'], Preferences):
+class HyperParamsPreferencesModel(Model['HyperParamsPreferencesModel'], HyperParamPreferences):
     pass
 
 

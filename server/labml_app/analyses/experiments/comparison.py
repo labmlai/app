@@ -11,18 +11,14 @@ from ..analysis import Analysis
 from .. import preferences
 
 
-class ComparisonPreferences:
+class ComparisonPreferences(preferences.Preferences):
     base_series_preferences: preferences.SeriesPreferences
     base_experiment: str
-    errors: List[Dict[str, str]]
-    chart_type: int
 
     @classmethod
     def defaults(cls):
         return dict(base_series_preferences=[],
                     base_experiment=str,
-                    chart_type=0,
-                    errors=[]
                     )
 
     def update_preferences(self, data: preferences.PreferencesData) -> None:

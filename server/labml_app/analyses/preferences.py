@@ -6,14 +6,12 @@ SeriesPreferences = List[int]
 
 class Preferences:
     series_preferences: SeriesPreferences
-    sub_series_preferences: Dict[str, SeriesPreferences]
     chart_type: int
     errors: List[Dict[str, str]]
 
     @classmethod
     def defaults(cls):
         return dict(series_preferences=[],
-                    sub_series_preferences={},
                     chart_type=0,
                     errors=[]
                     )
@@ -30,26 +28,8 @@ class Preferences:
     def update_series_preferences(self, data: SeriesPreferences) -> None:
         self.series_preferences = data
 
-    def update_sub_series_preferences(self, data: PreferencesData) -> None:
-        data = data.get('sub_series_preferences', {})
-        for k, v in data.items():
-            self.sub_series_preferences[k] = v
-
-        self.save()
-
-    def get_sub_series_preferences(self) -> Dict[str, SeriesPreferences]:
-        res = {}
-        for k, v in self.sub_series_preferences.items():
-            if v:
-                res[k] = v
-            else:
-                res[k] = []
-
-        return res
-
     def get_data(self) -> Dict[str, Any]:
         return {
             'series_preferences': self.series_preferences,
             'chart_type': self.chart_type,
-            'sub_series_preferences': self.get_sub_series_preferences(),
         }
