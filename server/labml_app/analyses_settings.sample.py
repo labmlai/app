@@ -3,7 +3,6 @@ from .analyses.experiments.gradients import GradientsAnalysis
 from .analyses.experiments.metrics import MetricsAnalysis
 from .analyses.experiments.outputs import OutputsAnalysis
 from .analyses.experiments.hyperparameters import HyperParamsAnalysis
-from .analyses.experiments.comparison import ComparisonAnalysis
 
 from .analyses.computers.cpu import CPUAnalysis
 from .analyses.computers.gpu import GPUAnalysis
@@ -16,8 +15,7 @@ experiment_analyses = [GradientsAnalysis,
                        OutputsAnalysis,
                        ParametersAnalysis,
                        HyperParamsAnalysis,
-                       MetricsAnalysis,
-                       ComparisonAnalysis]
+                       MetricsAnalysis]
 
 computer_analyses = [CPUAnalysis,
                      GPUAnalysis,
