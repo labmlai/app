@@ -111,11 +111,14 @@ class Run(Model['Run']):
     def sync_run(self, **kwargs) -> None:
         size_checkpoints = kwargs.get('size_checkpoints', None)
         size_tensorboard = kwargs.get('size_tensorboard', None)
+        size = kwargs.get('size', None)
 
         if size_checkpoints:
             self.size_checkpoints = size_checkpoints
         if size_tensorboard:
             self.size_tensorboard = size_tensorboard
+        if size:
+            self.size = size
 
         self.last_synced = time.time()
 
