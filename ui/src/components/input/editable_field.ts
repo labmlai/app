@@ -1,5 +1,4 @@
-import {WeyaElementFunction} from '../../../lib/weya/weya'
-
+import {WeyaElementFunction} from '../../../../lib/weya/weya'
 
 interface EditableFieldOptions {
     name: string

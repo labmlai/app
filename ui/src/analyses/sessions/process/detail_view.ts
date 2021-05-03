@@ -14,7 +14,7 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Session} from '../../../models/session'
 import {setTitle} from '../../../utils/document'
 import {DetailsDataCache} from "./cache_helper"
-import EditableField from "../../../components/editable_field"
+import EditableField from "../../../components/input/editable_field"
 import {formatTime} from "../../../utils/time"
 import {SingleScaleLineChart} from "../../../components/charts/timeseries/single_scale_lines"
 import {SeriesModel} from "../../../models/run"

@@ -5,7 +5,7 @@ import {Loader} from "../components/loader"
 import CACHE, {UserCache} from "../cache/cache"
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import {User} from '../models/user'
-import EditableField from '../components/editable_field'
+import EditableField from '../components/input/editable_field'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
 import {setTitle} from '../utils/document'
@@ -53,7 +53,7 @@ class SettingsView extends ScreenView {
         setTitle({section: 'Settings'})
         try {
             this.user = await this.userCache.get()
-        }  catch (e) {
+        } catch (e) {
             handleNetworkError(e)
             return
         }

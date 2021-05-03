@@ -13,12 +13,13 @@ import {Status} from "../../../models/status"
 import {
     BackButton,
     CancelButton,
-    CleanButton, TensorBoardButton,
+    CleanButton,
     DeleteButton,
     EditButton,
-    SaveButton
+    SaveButton,
+    TensorBoardButton
 } from "../../../components/buttons"
-import EditableField from "../../../components/editable_field"
+import EditableField from "../../../components/input/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 import {BadgeView} from "../../../components/badge"
@@ -32,7 +33,7 @@ import {openInNewTab} from "../../../utils/new_tab"
 import {formatFixed} from "../../../utils/value"
 import comparisonCache from '../comaprison/cache'
 import {ComparisonPreferenceModel} from '../../../models/preferences'
-
+import EditableSelectField from '../../../components/input/editable_select_field'
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -53,13 +54,14 @@ class RunHeaderView extends ScreenView {
     computerButtonsContainer: HTMLSpanElement
     nameField: EditableField
     commentField: EditableField
-    compareField: EditableField
+    compareField: EditableSelectField
     noteField: EditableField
     private deleteButton: DeleteButton
     private cleanButton: CleanButton
     private startTBButton: TensorBoardButton
     private userMessages: UserMessages
     private loader: DataLoader
+    private currentRunsList: [string, string][]
 
     constructor(uuid: string) {
         super()
@@ -88,6 +90,9 @@ class RunHeaderView extends ScreenView {
             this.run = await this.runCache.get(force)
             this.isUserLogged = await this.isUserLoggedCache.get(force)
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
+            this.currentRunsList = (await this.runListCache.get(force)).runs
+                .filter(value => value.run_uuid !== this.run.run_uuid)
+                .map(value => [value.run_uuid, `${value.name} | ${formatTime(value.start_time)}`])
         })
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
@@ -196,9 +201,10 @@ class RunHeaderView extends ScreenView {
                     isEditable: this.isEditMode
                 })
                 this.noteField.render($)
-                this.compareField = new EditableField({
+                this.compareField = new EditableSelectField({
                     name: 'Compared with',
                     value: this.preferenceData.base_experiment,
+                    values: this.currentRunsList,
                     isEditable: this.isEditMode
                 })
                 this.compareField.render($)

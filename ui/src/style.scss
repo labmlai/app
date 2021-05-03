@@ -102,7 +102,7 @@ input[type="email"], input[type="text"] {
     margin-right: -5px;
     border-radius: 10px;
 
-    input, textarea {
+    input, textarea, select {
       flex: 1 1 auto;
       padding: .375rem .75rem;
       border: none;
@@ -113,6 +113,11 @@ input[type="email"], input[type="text"] {
       &:focus {
         box-shadow: none;
       }
+    }
+
+    select {
+      height: 25px;
+      box-sizing: content-box;
     }
   }
 }
