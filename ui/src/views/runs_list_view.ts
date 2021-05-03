@@ -203,7 +203,8 @@ class RunsListView extends ScreenView {
             let url = job.data['url']
 
             if (job.isSuccessful && url) {
-                this.userMessages.success('Successfully started the TensorBoard')
+                let message = job.data['message']
+                this.userMessages.success(message)
                 openInNewTab(url, this.userMessages)
             } else if (job.isComputerOffline) {
                 this.userMessages.warning('Your computer is currently offline')
