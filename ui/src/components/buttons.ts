@@ -334,7 +334,7 @@ export class TensorBoardButton extends Button {
     }
 
     render($: WeyaElementFunction) {
-        this.elem = $('nav', `.nav-link.mb-2.tab${this.isDisabled ? '.disabled' : ''}`,
+        this.elem = $('nav', `.nav-link.tab${this.isDisabled ? '.disabled' : ''}`,
             {on: {click: this.onClick}, title: 'start TensorBoard', style: {padding: '2px 6px 2px 6px'}},
             $ => {
                 $('img', {src: '../../images/tf_Icon.png', width: `${35}px`})
