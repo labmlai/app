@@ -5,7 +5,7 @@ import {Run} from "../../../models/run"
 import CACHE, {IsUserLoggedCache, SessionCache, SessionsListCache, SessionStatusCache} from "../../../cache/cache"
 import {Status} from "../../../models/status"
 import {BackButton, CancelButton, DeleteButton, EditButton, SaveButton} from "../../../components/buttons"
-import EditableField from "../../../components/editable_field"
+import EditableField from "../../../components/input/editable_field"
 import {formatTime, getTimeDiff} from "../../../utils/time"
 import {DataLoader} from "../../../components/loader"
 import {StatusView} from "../../../components/status"
@@ -16,7 +16,6 @@ import {Session} from "../../../models/session"
 import {setTitle} from '../../../utils/document'
 import {SessionsListItemModel} from "../../../models/session_list"
 import {SessionsListItemView} from "../../../components/sessions_list_item"
-
 
 class SessionHeaderView extends ScreenView {
     elem: HTMLDivElement
@@ -62,7 +61,6 @@ class SessionHeaderView extends ScreenView {
 
         mix_panel.track('Analysis View', {uuid: this.uuid, analysis: this.constructor.name})
     }
-
 
     sessionsFilter = (session: SessionsListItemModel) => {
         return session.computer_uuid === this.session.computer_uuid && session.session_uuid !== this.session.session_uuid
@@ -203,7 +201,6 @@ class SessionHeaderView extends ScreenView {
             }
         })
     }
-
 
     onToggleEdit = () => {
         this.isEditMode = !this.isEditMode
