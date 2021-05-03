@@ -79,7 +79,7 @@ class RunsListView extends ScreenView {
             })
         })
         $(this.buttonContainer, $ => {
-            // this.startTBButton.render($)
+            this.startTBButton.render($)
             this.deleteButton.render($)
             this.cancelButton.render($)
             this.editButton.render($)
@@ -207,8 +207,13 @@ class RunsListView extends ScreenView {
                 openInNewTab(url, this.userMessages)
             } else if (job.isComputerOffline) {
                 this.userMessages.warning('Your computer is currently offline')
+            } else if (job.isFailed) {
+                let message = job.data['message']
+                this.userMessages.warning(`Failed to start TensorBoard: ${message}`)
+            } else if (job.isTimeOut) {
+                this.userMessages.warning(`Timeout occurred while starting TensorBoard`)
             } else {
-                this.userMessages.warning('Error occurred while starting the TensorBoard')
+                this.userMessages.warning('Error occurred while starting TensorBoard')
             }
         } catch (e) {
             this.userMessages.networkError()
