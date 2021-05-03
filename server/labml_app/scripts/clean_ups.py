@@ -88,6 +88,6 @@ def add_block_uuids():
 
 if __name__ == "__main__":
     init_db()
-    # move_to_samples()
-    # clean_float_project()
+    clean_float_project()
+    move_to_samples()
     add_block_uuids()
