@@ -42,6 +42,7 @@ class Run(Model['Run']):
     status: Key['status.Status']
     configs: Dict[str, any]
     computer_uuid: str
+    size: float
     size_checkpoints: float
     size_tensorboard: float
     last_synced: float
@@ -75,6 +76,7 @@ class Run(Model['Run']):
                     status=None,
                     configs={},
                     computer_uuid='',
+                    size=None,
                     size_checkpoints=None,
                     size_tensorboard=None,
                     last_synced=None,
@@ -251,6 +253,7 @@ class Run(Model['Run']):
             'commit': self.format_commit(formatted_repo, self.commit),
             'commit_message': self.commit_message,
             'is_claimed': self.is_claimed,
+            'size': self.size,
             'size_checkpoints': self.size_checkpoints,
             'size_tensorboard': self.size_tensorboard,
             'computer_uuid': self.computer_uuid,
