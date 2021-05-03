@@ -363,7 +363,7 @@ class RunHeaderView extends ScreenView {
                 this.userMessages.warning('Your computer is currently offline')
             } else if (job.isFailed) {
                 let message = job.data['message']
-                this.userMessages.warning(`Error occurred; ${message}`)
+                this.userMessages.warning(`Error occurred: ${message}`)
             } else if (job.isTimeOut) {
                 this.userMessages.warning(`Timeout occurred while starting TensorBoard`)
             } else {
