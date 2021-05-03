@@ -130,7 +130,7 @@ def _update_run():
     else:
         data = [request.json]
 
-    logger.info(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
+    logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     for d in data:
         r.update_run(d)

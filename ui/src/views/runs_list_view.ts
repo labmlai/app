@@ -185,7 +185,9 @@ class RunsListView extends ScreenView {
         for (let run of this.selectedRunsSet) {
             if (!computerUUID) {
                 computerUUID = run.computer_uuid
-            } else if (computerUUID !== run.computer_uuid) {
+            }
+
+            if (computerUUID !== run.computer_uuid) {
                 this.userMessages.warning('All the selected runs should be from a single computer')
                 return
             } else {
