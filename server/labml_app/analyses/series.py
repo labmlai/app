@@ -36,6 +36,9 @@ class Series:
     def last_value(self) -> float:
         return self.value[-1]
 
+    def find_step_gap(self):
+        return max(1, (self.last_step[1] - self.last_step[0]).item())
+
     @property
     def detail(self) -> Dict[str, List[float]]:
         if not self.smoothed or len(self.smoothed) != len(self.step):
@@ -83,7 +86,7 @@ class Series:
         self.last_step = np.concatenate((self.last_step, last_step))
 
         if len(self) > 1:
-            self.step_gap = (self.last_step[1] - self.last_step[0]).item()
+            self.step_gap = self.find_step_gap()
         else:
             self.step_gap = 1.
 
@@ -136,6 +139,7 @@ class Series:
             prev_ls = self.last_step[from_step - 1].item()
         else:
             prev_ls = 0
+
         n = self._merge(self.value, self.last_step, self.step, prev_ls, from_step)
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]
