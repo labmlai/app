@@ -36,6 +36,7 @@ class ComparisonPreferences(preferences.Preferences):
     def get_data(self) -> Dict[str, Any]:
         return {
             'base_series_preferences': self.base_series_preferences,
+            'series_preferences': self.series_preferences,
             'base_experiment': self.base_experiment,
             'chart_type': self.chart_type,
         }
