@@ -29,6 +29,14 @@ export class Job {
         return this.status === 'success'
     }
 
+    get isFailed() {
+        return this.status === 'fail'
+    }
+
+    get isTimeOut() {
+        return this.status === 'timeout'
+    }
+
     get isComputerOffline() {
         return this.status === 'computer_offline'
     }

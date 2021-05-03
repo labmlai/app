@@ -223,11 +223,11 @@ class RunHeaderView extends ScreenView {
                 }).render($)
                 new EditableField({
                     name: 'TensorBoard Size',
-                    value: this.run.size_tensorboard ? formatFixed(this.run.size_tensorboard, 1) : ''
+                    value: this.run.size_tensorboard ? formatFixed(this.run.size_tensorboard, 1) : '0'
                 }).render($)
                 new EditableField({
                     name: 'Checkpoints Size',
-                    value: this.run.size_checkpoints ? formatFixed(this.run.size_checkpoints, 1) : ''
+                    value: this.run.size_checkpoints ? formatFixed(this.run.size_checkpoints, 1) : '0'
                 }).render($)
                 new EditableField({
                     name: 'Start Step',
@@ -299,7 +299,7 @@ class RunHeaderView extends ScreenView {
 
         this.runCache.setRun(this.run).then()
 
-        if(this.compareField.getInput()) {
+        if (this.compareField.getInput()) {
             this.preferenceData.base_experiment = this.compareField.getInput()
             this.preferenceCache.setPreference(this.preferenceData).then()
         }
@@ -355,6 +355,11 @@ class RunHeaderView extends ScreenView {
                 openInNewTab(url, this.userMessages)
             } else if (job.isComputerOffline) {
                 this.userMessages.warning('Your computer is currently offline')
+            } else if (job.isFailed) {
+                let message = job.data['message']
+                this.userMessages.warning(`Error occurred; ${message}`)
+            } else if (job.isTimeOut) {
+                this.userMessages.warning(`Timeout occurred while starting TensorBoard`)
             } else {
                 this.userMessages.warning('Error occurred while starting TensorBoard')
             }

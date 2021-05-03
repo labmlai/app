@@ -576,13 +576,13 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobMethods.START_TENSORBOARD, {'runs': runs})
 
-    for i in range(5):
+    for i in range(15):
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_completed_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
             return utils.format_rv(completed_job.to_data())
 
-        time.sleep(2.5)
+        time.sleep(2)
 
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
@@ -604,13 +604,13 @@ def clear_checkpoints(computer_uuid: str) -> flask.Response:
     runs = request.json.get('runs', [])
     j = c.create_job(job.JobMethods.CLEAR_CHECKPOINTS, {'runs': runs})
 
-    for i in range(5):
+    for i in range(15):
         c = computer.get_or_create(computer_uuid)
         completed_job = c.get_completed_job(j.job_uuid)
         if completed_job and completed_job.is_completed:
             return utils.format_rv(completed_job.to_data())
 
-        time.sleep(2.5)
+        time.sleep(2)
 
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
