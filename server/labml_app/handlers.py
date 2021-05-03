@@ -564,7 +564,7 @@ def polling() -> flask.Response:
 
 @auth.login_required
 @swag_from(docs.start_tensor_board)
-@utils.mix_panel.MixPanelEvent.time_this(12.9)
+@utils.mix_panel.MixPanelEvent.time_this(30.4)
 def start_tensor_board(computer_uuid: str) -> flask.Response:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
@@ -592,7 +592,7 @@ def start_tensor_board(computer_uuid: str) -> flask.Response:
 
 @auth.login_required
 @swag_from(docs.clear_checkpoints)
-@utils.mix_panel.MixPanelEvent.time_this(12.9)
+@utils.mix_panel.MixPanelEvent.time_this(30.4)
 def clear_checkpoints(computer_uuid: str) -> flask.Response:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
