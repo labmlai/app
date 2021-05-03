@@ -24,7 +24,7 @@ def clean_float_project() -> None:
             elif (time.time() - 86400) > s.last_updated_time:
                 delete_run_list.append(run_uuid)
         except TypeError:
-            logger.error(f'error while deleting the session {run_uuid}')
+            logger.error(f'error while deleting the run {run_uuid}')
 
     for run_uuid in delete_run_list:
         p.runs.pop(run_uuid)
