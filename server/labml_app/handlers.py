@@ -130,6 +130,8 @@ def _update_run():
     else:
         data = [request.json]
 
+    logger.info(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
+
     for d in data:
         r.update_run(d)
         s.update_time_status(d)
@@ -142,8 +144,6 @@ def _update_run():
             c.create_job(job.JobMethods.CALL_SYNC, {})
         except AssertionError as e:
             logger.debug(f'error while creating CALL_SYNC : {e}')
-
-    logger.info(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
