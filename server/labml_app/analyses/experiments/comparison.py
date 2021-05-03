@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from flask import make_response, request
 from labml_db import Model, Index

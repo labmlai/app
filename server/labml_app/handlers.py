@@ -143,7 +143,7 @@ def _update_run():
         except AssertionError as e:
             logger.debug(f'error while creating CALL_SYNC : {e}')
 
-    logger.debug(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
+    logger.info(f'update_run, run_uuid: {run_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
     hp_values = analyses.AnalysisManager.get_experiment_analysis('HyperParamsAnalysis', run_uuid).get_hyper_params()
 
