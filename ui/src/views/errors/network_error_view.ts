@@ -1,8 +1,8 @@
 import {ROUTER, SCREEN} from '../../app'
 import {Weya as $} from '../../../../lib/weya/weya'
-import {ScreenView} from "../../screen"
 import mix_panel from "../../mix_panel"
 import {setTitle} from '../../utils/document'
+import {ScreenView} from '../../screen_view'
 
 function wrapEvent(eventName: string, func: Function) {
     function wrapper() {
@@ -71,10 +71,10 @@ class NetworkErrorView extends ScreenView {
 
 export class NetworkErrorHandler {
     constructor() {
-        ROUTER.route('network_error', [this.handleNetworkError])
+        ROUTER.route('network_error', [NetworkErrorHandler.handleNetworkError])
     }
 
-    handleNetworkError = () => {
+    static handleNetworkError = () => {
         SCREEN.setView(new NetworkErrorView())
     }
 }

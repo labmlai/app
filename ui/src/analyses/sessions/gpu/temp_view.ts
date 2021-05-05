@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {SeriesModel} from "../../../models/run"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, SessionCache, SessionStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -18,6 +17,7 @@ import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Session} from '../../../models/session'
 import {setTitle} from '../../../utils/document'
+import {ScreenView} from '../../../screen_view'
 
 class GPUTempView extends ScreenView {
     elem: HTMLDivElement

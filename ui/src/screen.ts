@@ -1,29 +1,11 @@
-import {Weya as $, WeyaElement} from '../../lib/weya/weya'
+import {Weya as $} from '../../lib/weya/weya'
 import {getWindowDimensions} from "./utils/window_dimentions"
 import CACHE, {IsUserLoggedCache, UserCache} from './cache/cache'
 import {Loader} from './components/loader'
 import {ROUTER} from './app'
 import {setTitle} from './utils/document'
-
-abstract class ScreenView {
-    abstract render(): WeyaElement
-
-    onResize(width: number) {
-    }
-
-    destroy() {
-    }
-
-    onRefresh() {
-    }
-
-    onVisibilityChange() {
-    }
-
-    get requiresAuth() {
-        return true
-    }
-}
+import {ScreenView} from './screen_view'
+import {handleNetworkErrorInplace} from './utils/redirect'
 
 class ScreenContainer {
     view?: ScreenView
@@ -37,10 +19,6 @@ class ScreenContainer {
         this.view = null
         this.isUserLoggedCache = CACHE.getIsUserLogged()
         this.userCache = CACHE.getUser()
-        this.isUserLoggedCache.get().then(val => {
-            this.isUserLogged = val.is_user_logged
-            this.updateTheme().then()
-        })
         this.loader = new Loader(true)
         window.addEventListener('resize', this.onResize.bind(this))
         document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this))
@@ -63,7 +41,9 @@ class ScreenContainer {
 
     async updateTheme() {
         let theme = localStorage.getItem('theme') || 'light'
-        document.body.className = theme
+        if (document.body.className !== theme) {
+            document.body.className = theme
+        }
         try {
             this.isUserLogged = (await this.isUserLoggedCache.get()).is_user_logged
             if (this.isUserLogged) {
@@ -73,7 +53,9 @@ class ScreenContainer {
         } catch (e) {
             //Let the view handle network failures
         }
-        document.body.className = theme || 'light'
+        if (document.body.className !== theme) {
+            document.body.className = theme || 'light'
+        }
     }
 
     setView(view: ScreenView) {
@@ -83,7 +65,15 @@ class ScreenContainer {
         }
         this.view = view
         document.body.innerHTML = ''
+        this.updateTheme().then()
         this.loader.render($)
+        if (!this.view.requiresAuth) {
+            document.body.innerHTML = ''
+            this.windowWidth = null
+            this.onResize()
+            document.body.append(this.view.render())
+            return
+        }
         this.isUserLoggedCache.get().then(value => {
             this.isUserLogged = value.is_user_logged
             if (this.view.requiresAuth && !value.is_user_logged) {
@@ -94,8 +84,10 @@ class ScreenContainer {
             this.windowWidth = null
             this.onResize()
             document.body.append(this.view.render())
+        }).catch(e => {
+            handleNetworkErrorInplace(e)
         })
     }
 }
 
-export {ScreenContainer, ScreenView}
+export {ScreenContainer}

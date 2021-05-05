@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {Run} from "../../../models/run"
 import CACHE, {RunCache, RunStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -13,6 +12,7 @@ import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
+import {ScreenView} from '../../../screen_view'
 
 class StdErrorView extends ScreenView {
     elem: HTMLDivElement

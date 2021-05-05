@@ -2,7 +2,6 @@ import {Status} from "../models/status"
 import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
 import {BackButton, CustomButton, ShareButton} from "../components/buttons"
 import {Card} from "../analyses/types"
@@ -15,6 +14,7 @@ import mix_panel from "../mix_panel"
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {setTitle} from '../utils/document'
+import {ScreenView} from '../screen_view'
 
 class SessionView extends ScreenView {
     uuid: string

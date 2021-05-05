@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {ProcessDetailsModel} from "./types"
 import CACHE, {SessionCache, SessionStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -20,6 +19,7 @@ import {SingleScaleLineChart} from "../../../components/charts/timeseries/single
 import {SeriesModel} from "../../../models/run"
 import {toPointValues} from "../../../components/charts/utils"
 import {SparkTimeLines} from "../../../components/charts/spark_time_lines/chart"
+import {ScreenView} from '../../../screen_view'
 
 class ProcessDetailView extends ScreenView {
     elem: HTMLDivElement

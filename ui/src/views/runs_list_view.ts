@@ -1,12 +1,11 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
 import CACHE, {RunsListCache} from "../cache/cache"
 import {RunListItemModel} from '../models/run_list'
 import {RunsListItemView} from '../components/runs_list_item'
 import {SearchView} from '../components/search'
-import {CancelButton, TensorBoardButton, EditButton, DeleteButton} from '../components/buttons'
+import {CancelButton, DeleteButton, EditButton, TensorBoardButton} from '../components/buttons'
 import {HamburgerMenuView} from '../components/hamburger_menu'
 import mix_panel from "../mix_panel"
 import EmptyRunsList from './empty_runs_list'
@@ -15,6 +14,7 @@ import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
 import {openInNewTab} from "../utils/new_tab"
+import {ScreenView} from '../screen_view'
 
 class RunsListView extends ScreenView {
     runListCache: RunsListCache
