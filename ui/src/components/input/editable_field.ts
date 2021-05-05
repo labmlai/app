@@ -15,6 +15,7 @@ export default class EditableField {
     isEditable: boolean
     numEditRows: number
     inputElem: HTMLInputElement | HTMLTextAreaElement
+    valueElem: HTMLSpanElement
 
     constructor(opt: EditableFieldOptions) {
         this.name = opt.name
@@ -26,6 +27,10 @@ export default class EditableField {
 
     getInput() {
         return this.inputElem.value
+    }
+
+    updateValue(value: string) {
+        this.valueElem.textContent = value
     }
 
     render($: WeyaElementFunction) {
@@ -51,8 +56,9 @@ export default class EditableField {
                     })
                 })
             } else {
-                $('span.item-value', this.value)
+                this.valueElem = $('span', '.item-value')
             }
         })
+        this.updateValue(this.value)
     }
 }

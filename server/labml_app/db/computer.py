@@ -121,6 +121,12 @@ class Computer(Model['Computer']):
 
                     self.save()
 
+            runs = data.get('runs', [])
+            for run_data in runs:
+                run_uuid = run_data.get('uuid')
+                r = run.get(run_uuid)
+                r.sync_run(**run_data)
+
     def get_data(self):
         return {
             'computer_uuid': self.computer_uuid,

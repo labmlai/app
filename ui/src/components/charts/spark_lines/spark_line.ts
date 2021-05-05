@@ -119,7 +119,6 @@ export class SparkLine {
                 })
             })
         })
-
         this.renderValue()
     }
 }

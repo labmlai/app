@@ -56,6 +56,9 @@ class RunHeaderView extends ScreenView {
     commentField: EditableField
     compareField: EditableSelectField
     noteField: EditableField
+    sizeField: EditableField
+    sizeCheckPoints: EditableField
+    sizeTensorBoard: EditableField
     private deleteButton: DeleteButton
     private cleanButton: CleanButton
     private startTBButton: TensorBoardButton
@@ -228,25 +231,28 @@ class RunHeaderView extends ScreenView {
                         formatTime(this.status.last_updated_time),
                 }).render($)
                 new EditableField({
-                    name: 'Size',
-                    value: this.run.size ? formatFixed(this.run.size, 1) : '0'
-                }).render($)
-                new EditableField({
-                    name: 'TensorBoard Size',
-                    value: this.run.size_tensorboard ? formatFixed(this.run.size_tensorboard, 1) : '0'
-                }).render($)
-                new EditableField({
-                    name: 'Checkpoints Size',
-                    value: this.run.size_checkpoints ? formatFixed(this.run.size_checkpoints, 1) : '0'
-                }).render($)
-                new EditableField({
                     name: 'Start Step',
                     value: this.run.start_step
                 }).render($)
+                this.sizeField = new EditableField({
+                    name: 'Size',
+                    value: this.run.size ? formatFixed(this.run.size, 1) : '0'
+                })
+                this.sizeField.render($)
+                this.sizeCheckPoints = new EditableField({
+                    name: 'Checkpoints Size',
+                    value: this.run.size_checkpoints ? formatFixed(this.run.size_checkpoints, 1) : '0'
+                })
+                this.sizeCheckPoints.render($)
+                this.sizeTensorBoard = new EditableField({
+                    name: 'TensorBoard Size',
+                    value: this.run.size_tensorboard ? formatFixed(this.run.size_tensorboard, 1) : '0'
+                })
+                this.sizeTensorBoard.render($)
                 new EditableField({
                     name: 'Python File',
                     value: this.run.python_file
-                }).render($)
+                })
                 $(`li`, $ => {
                     $('span', '.item-key', 'Remote Repo')
                     $('span', '.item-value', $ => {
@@ -339,6 +345,8 @@ class RunHeaderView extends ScreenView {
             let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
 
             if (job.isSuccessful) {
+                let size_checkpoints = job.data['runs'][0]['size_checkpoints']
+                this.sizeCheckPoints.updateValue(formatFixed(size_checkpoints, 1))
                 this.userMessages.success('Successfully cleaned the checkpoints')
             } else if (job.isComputerOffline) {
                 this.userMessages.warning('Your computer is currently offline')
