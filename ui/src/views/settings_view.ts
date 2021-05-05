@@ -1,6 +1,5 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {UserCache} from "../cache/cache"
 import {HamburgerMenuView} from '../components/hamburger_menu'
@@ -9,6 +8,7 @@ import EditableField from '../components/input/editable_field'
 import mix_panel from "../mix_panel"
 import {handleNetworkError} from '../utils/redirect'
 import {setTitle} from '../utils/document'
+import {ScreenView} from '../screen_view'
 
 const DEFAULT_IMAGE = 'https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg'
 const LIGHT = 'light'

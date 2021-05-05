@@ -7,7 +7,6 @@ import {RunHeaderCard} from "../run_header/card"
 import hyperParamsCache from "./cache"
 import {toPointValues} from "../../../components/charts/utils"
 import {EditableSparkLines} from "../../../components/charts/editable_spark_lines/chart"
-import {ScreenView} from "../../../screen"
 import {ROUTER, SCREEN} from "../../../app"
 import mix_panel from "../../../mix_panel"
 import {ViewHandler} from "../../types"
@@ -18,6 +17,7 @@ import {AnalysisPreferenceModel} from "../../../models/preferences"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {UserMessages} from "../../../components/user_messages"
+import {ScreenView} from '../../../screen_view'
 
 class HyperParamsView extends ScreenView {
     elem: HTMLDivElement

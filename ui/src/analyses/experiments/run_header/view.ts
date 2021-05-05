@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
@@ -34,6 +33,7 @@ import {formatFixed} from "../../../utils/value"
 import comparisonCache from '../comaprison/cache'
 import {ComparisonPreferenceModel} from '../../../models/preferences'
 import EditableSelectField from '../../../components/input/editable_select_field'
+import {ScreenView} from '../../../screen_view'
 
 class RunHeaderView extends ScreenView {
     elem: HTMLDivElement

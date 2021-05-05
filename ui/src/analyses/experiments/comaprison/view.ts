@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {Run, SeriesModel} from "../../../models/run"
 import CACHE, {AnalysisDataCache, AnalysisPreferenceCache, RunCache, RunStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -17,6 +16,7 @@ import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
 import {CompareLineChart} from '../../../components/charts/compare_lines/chart'
 import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/chart'
+import {ScreenView} from '../../../screen_view'
 
 class ComparisonView extends ScreenView {
     elem: HTMLDivElement

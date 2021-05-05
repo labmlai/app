@@ -1,6 +1,5 @@
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {ScreenView} from "../screen"
 import {DataLoader} from "../components/loader"
 import CACHE, {SessionsListCache} from "../cache/cache"
 import {SearchView} from '../components/search';
@@ -14,6 +13,7 @@ import {UserMessages} from "../components/user_messages"
 import {AwesomeRefreshButton} from '../components/refresh_button'
 import {handleNetworkErrorInplace} from '../utils/redirect'
 import {setTitle} from '../utils/document'
+import {ScreenView} from '../screen_view'
 
 class SessionsListView extends ScreenView {
     sessionListCache: SessionsListCache

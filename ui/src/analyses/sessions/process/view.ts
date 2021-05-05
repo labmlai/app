@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {ProcessModel} from "./types"
 import CACHE, {AnalysisDataCache, SessionCache, SessionStatusCache} from "../../../cache/cache"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
@@ -14,6 +13,7 @@ import {ProcessList} from "./process_list"
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {Session} from '../../../models/session'
 import {setTitle} from '../../../utils/document'
+import {ScreenView} from '../../../screen_view'
 
 class ProcessView extends ScreenView {
     elem: HTMLDivElement

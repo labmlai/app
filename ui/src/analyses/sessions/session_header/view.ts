@@ -1,4 +1,3 @@
-import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {ROUTER, SCREEN} from "../../../app"
 import {Run} from "../../../models/run"
@@ -16,6 +15,7 @@ import {Session} from "../../../models/session"
 import {setTitle} from '../../../utils/document'
 import {SessionsListItemModel} from "../../../models/session_list"
 import {SessionsListItemView} from "../../../components/sessions_list_item"
+import {ScreenView} from '../../../screen_view'
 
 class SessionHeaderView extends ScreenView {
     elem: HTMLDivElement

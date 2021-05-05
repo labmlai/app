@@ -1,12 +1,12 @@
 import {IsUserLogged} from '../models/user'
 import {ROUTER, SCREEN} from '../app'
 import {Weya as $, WeyaElement} from '../../../lib/weya/weya'
-import {ScreenView} from "../screen"
 import {Loader} from "../components/loader"
 import CACHE, {IsUserLoggedCache} from "../cache/cache"
 import NETWORK from '../network'
 import {handleNetworkError} from '../utils/redirect';
 import {setTitle} from '../utils/document'
+import {ScreenView} from '../screen_view'
 
 class LoginView extends ScreenView {
     isUserLogged: IsUserLogged

@@ -1,5 +1,4 @@
 import {ROUTER, SCREEN} from "../../../app"
-import {ScreenView} from "../../../screen"
 import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Run} from "../../../models/run"
 import {Status} from "../../../models/status"
@@ -13,6 +12,7 @@ import {ViewHandler} from "../../types"
 import {AwesomeRefreshButton} from '../../../components/refresh_button'
 import {handleNetworkErrorInplace} from '../../../utils/redirect'
 import {setTitle} from '../../../utils/document'
+import {ScreenView} from '../../../screen_view'
 
 class RunConfigsView extends ScreenView {
     elem: HTMLDivElement

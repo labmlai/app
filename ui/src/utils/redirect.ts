@@ -4,6 +4,7 @@ import {Sentry} from '../sentry';
 import {PageNotFoundHandler} from '../views/errors/page_not_found_view'
 import {AuthErrorHandler} from '../views/errors/auth_error_view'
 import {OtherErrorHandler} from '../views/errors/other_error_view'
+import {NetworkErrorHandler} from '../views/errors/network_error_view'
 
 export function handleNetworkError(error: Error | NetworkError) {
     if (error instanceof NetworkError) {
@@ -30,6 +31,8 @@ export function handleNetworkErrorInplace(error: Error | NetworkError) {
         } else {
             OtherErrorHandler.handleOtherError()
         }
+    } else {
+        NetworkErrorHandler.handleNetworkError()
     }
 
     Sentry.setExtra('error', error)
