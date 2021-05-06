@@ -97,7 +97,7 @@ export class BackButton extends Button {
             ROUTER.back()
             return
         }
-        ROUTER.navigate(this.navigatePath)
+        ROUTER.navigate(this.navigatePath, {replace: true})
     }
 
     render($: WeyaElementFunction) {
