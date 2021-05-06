@@ -57,8 +57,8 @@ export default class EditableField {
                 })
             } else {
                 this.valueElem = $('span', '.item-value')
+                this.updateValue(this.value)
             }
         })
-        this.updateValue(this.value)
     }
 }
