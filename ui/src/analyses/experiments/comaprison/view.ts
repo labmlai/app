@@ -210,7 +210,7 @@ class ComparisonView extends ScreenView {
                     this.onToggleEdit()
                     this.isUpdateDisable = false
                     this.shouldPreservePreferences = false
-                    this.preferenceData.base_experiment = undefined
+                    this.preferenceData.base_experiment = ''
                     this.preferenceData.base_series_preferences = []
                 }
                 SCREEN.setView(this)
