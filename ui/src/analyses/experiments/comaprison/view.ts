@@ -4,7 +4,7 @@ import {Weya as $, WeyaElement} from "../../../../../lib/weya/weya"
 import {Status} from "../../../models/status"
 import {DataLoader} from "../../../components/loader"
 import {ROUTER, SCREEN} from "../../../app"
-import {BackButton, SaveButton, ToggleButton} from "../../../components/buttons"
+import {BackButton, CancelButton, EditButton, SaveButton, ToggleButton} from "../../../components/buttons"
 import {RunHeaderCard} from "../run_header/card"
 import {ComparisonPreferenceModel} from "../../../models/preferences"
 import comparisonCache from "./cache"
@@ -17,6 +17,8 @@ import {setTitle} from '../../../utils/document'
 import {CompareLineChart} from '../../../components/charts/compare_lines/chart'
 import {CompareSparkLines} from '../../../components/charts/compare_spark_lines/chart'
 import {ScreenView} from '../../../screen_view'
+import EditableSelectField from '../../../components/input/editable_select_field'
+import {RunsPickerView} from '../../../views/run_picker_view'
 
 class ComparisonView extends ScreenView {
     elem: HTMLDivElement
@@ -37,7 +39,7 @@ class ComparisonView extends ScreenView {
     sparkLines: CompareSparkLines
     lineChartContainer: HTMLDivElement
     sparkLinesContainer: HTMLDivElement
-    saveButtonContainer: HTMLDivElement
+    buttonsContainer: HTMLDivElement
     toggleButtonContainer: HTMLDivElement
     saveButton: SaveButton
     isUpdateDisable: boolean
@@ -46,6 +48,8 @@ class ComparisonView extends ScreenView {
     private refresh: AwesomeRefreshButton;
     private runCache: RunCache
     private run: Run
+    private isEditMode: boolean
+    private fieldsContainer: HTMLUListElement
 
     constructor(uuid: string) {
         super()
@@ -63,11 +67,16 @@ class ComparisonView extends ScreenView {
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
-            this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
-            this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
+            if (this.baseUuid != null) {
+                this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+                this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
+            } else {
+                this.baseAnalysisCache = undefined
+                this.baseSeries = undefined
+            }
         })
         this.refresh = new AwesomeRefreshButton(this.onRefresh.bind(this))
 
@@ -89,7 +98,7 @@ class ComparisonView extends ScreenView {
     }
 
     async _render() {
-        setTitle({section: 'Metrics'})
+        setTitle({section: 'Comparison'})
         this.elem.innerHTML = ''
         $(this.elem, $ => {
             $('div', '.page',
@@ -98,7 +107,7 @@ class ComparisonView extends ScreenView {
                     $('div', $ => {
                         $('div', '.nav-container', $ => {
                             new BackButton({text: 'Run', parent: this.constructor.name}).render($)
-                            this.saveButtonContainer = $('div')
+                            this.buttonsContainer = $('div')
                             this.refresh.render($)
                         })
                         this.runHeaderCard = new RunHeaderCard({
@@ -106,8 +115,11 @@ class ComparisonView extends ScreenView {
                             width: this.actualWidth
                         })
                         this.runHeaderCard.render($).then()
+                        $('div', '.input-list-container', $ => {
+                            this.fieldsContainer = $('ul', {style: {margin: '0'}})
+                        })
                         this.toggleButtonContainer = $('div')
-                        $('h2', '.header.text-center', 'Metrics')
+                        $('h2', '.header.text-center', 'Comparison')
                         this.loader.render($)
                         $('div', '.detail-card', $ => {
                             this.lineChartContainer = $('div', '.fixed-chart')
@@ -125,7 +137,8 @@ class ComparisonView extends ScreenView {
 
             this.renderSparkLines()
             this.renderLineChart()
-            this.renderSaveButton()
+            this.renderButtons()
+            this.renderFields()
             this.renderToggleButton()
         } catch (e) {
             handleNetworkErrorInplace(e)
@@ -170,59 +183,126 @@ class ComparisonView extends ScreenView {
         this.refresh.changeVisibility(!document.hidden)
     }
 
-    renderSaveButton() {
+    onToggleEdit = () => {
+        this.isEditMode = !this.isEditMode
+
+        this.renderFields()
+        this.renderButtons()
+    }
+
+    onCompareEdit = () => {
+        SCREEN.setView(new RunsPickerView({
+            title: 'Select run for comparison',
+            excludedRuns: new Set<string>([this.run.run_uuid]),
+            onPicked: run => {
+                if (this.preferenceData.base_experiment !== run.run_uuid) {
+                    this.onToggleEdit()
+                    this.isUpdateDisable = false
+                    this.preferenceData.base_experiment = run.run_uuid
+                    this.preferenceData.base_series_preferences = []
+                }
+                SCREEN.setView(this)
+            }, onCancel: () => {
+                if (this.preferenceData.base_experiment != null) {
+                    this.onToggleEdit()
+                    this.isUpdateDisable = false
+                    this.preferenceData.base_experiment = undefined
+                    this.preferenceData.base_series_preferences = []
+                }
+                SCREEN.setView(this)
+            }
+        }))
+    }
+
+    renderButtons() {
         this.saveButton.disabled = this.isUpdateDisable
-        this.saveButtonContainer.innerHTML = ''
-        $(this.saveButtonContainer, $ => {
+        this.buttonsContainer.innerHTML = ''
+        $(this.buttonsContainer, $ => {
             this.saveButton.render($)
+            if (this.isEditMode) {
+                new CancelButton({
+                    onButtonClick: this.onToggleEdit,
+                    parent: this.constructor.name
+                }).render($)
+            } else {
+                new EditButton({
+                    onButtonClick: this.onToggleEdit,
+                    parent: this.constructor.name
+                }).render($)
+            }
         })
     }
 
-    renderToggleButton() {
-        this.toggleButtonContainer.innerHTML = ''
-        $(this.toggleButtonContainer, $ => {
-            new ToggleButton({
-                onButtonClick: this.onChangeScale,
-                text: 'Log',
-                isToggled: this.currentChart > 0,
-                parent: this.constructor.name
+    renderFields() {
+        this.fieldsContainer.innerHTML = ''
+        $(this.fieldsContainer, $ => {
+            new EditableSelectField({
+                name: 'Compared with',
+                value: this.preferenceData.base_experiment,
+                isEditable: this.isEditMode,
+                onEdit: this.onCompareEdit,
+                onClick: this.openRun
             }).render($)
         })
     }
 
-    renderLineChart() {
-        this.lineChartContainer.innerHTML = ''
-        $(this.lineChartContainer, $ => {
-            let zxc = new CompareLineChart({
-                series: this.currentSeries,
-                baseSeries: this.baseSeries,
-                width: this.actualWidth,
-                currentPlotIdx: this.currentPlotIdx,
-                basePlotIdx: this.basePlotIdx,
-                chartType: getChartType(this.currentChart),
-                onCursorMove: [this.sparkLines.changeCursorValues],
-                isCursorMoveOpt: true,
-                isDivergent: true
+    openRun = () => {
+        if (this.preferenceData.base_experiment) {
+            ROUTER.navigate(`/run/${this.preferenceData.base_experiment}`)
+        }
+    }
+
+    renderToggleButton() {
+        if (this.baseSeries && this.baseSeries.length > 0) {
+            this.toggleButtonContainer.innerHTML = ''
+            $(this.toggleButtonContainer, $ => {
+                new ToggleButton({
+                    onButtonClick: this.onChangeScale,
+                    text: 'Log',
+                    isToggled: this.currentChart > 0,
+                    parent: this.constructor.name
+                }).render($)
             })
-            zxc.render($)
-        })
+        }
+    }
+
+    renderLineChart() {
+        if (this.baseSeries && this.baseSeries.length > 0) {
+            this.lineChartContainer.innerHTML = ''
+            $(this.lineChartContainer, $ => {
+                let zxc = new CompareLineChart({
+                    series: this.currentSeries,
+                    baseSeries: this.baseSeries,
+                    width: this.actualWidth,
+                    currentPlotIdx: this.currentPlotIdx,
+                    basePlotIdx: this.basePlotIdx,
+                    chartType: getChartType(this.currentChart),
+                    onCursorMove: [this.sparkLines.changeCursorValues],
+                    isCursorMoveOpt: true,
+                    isDivergent: true
+                })
+                zxc.render($)
+            })
+        }
     }
 
     renderSparkLines() {
-        this.sparkLinesContainer.innerHTML = ''
-        $(this.sparkLinesContainer, $ => {
-            this.sparkLines = new CompareSparkLines({
-                series: this.currentSeries,
-                baseSeries: this.baseSeries,
-                currentPlotIdx: this.currentPlotIdx,
-                basePlotIdx: this.basePlotIdx,
-                width: this.actualWidth,
-                onCurrentSelect: this.toggleCurrentChart,
-                onBaseSelect: this.toggleBaseChart,
-                isDivergent: true
+        if (this.baseSeries && this.baseSeries.length > 0) {
+            this.sparkLinesContainer.innerHTML = ''
+            $(this.sparkLinesContainer, $ => {
+                this.sparkLines = new CompareSparkLines({
+                    series: this.currentSeries,
+                    baseSeries: this.baseSeries,
+                    currentPlotIdx: this.currentPlotIdx,
+                    basePlotIdx: this.basePlotIdx,
+                    width: this.actualWidth,
+                    onCurrentSelect: this.toggleCurrentChart,
+                    onBaseSelect: this.toggleBaseChart,
+                    isDivergent: true
+                })
+                this.sparkLines.render($)
             })
-            this.sparkLines.render($)
-        })
+        }
     }
 
     toggleCurrentChart = (idx: number) => {
@@ -240,7 +320,7 @@ class ComparisonView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
-        this.renderSaveButton()
+        this.renderButtons()
     }
     toggleBaseChart = (idx: number) => {
         this.isUpdateDisable = false
@@ -257,7 +337,30 @@ class ComparisonView extends ScreenView {
 
         this.renderSparkLines()
         this.renderLineChart()
-        this.renderSaveButton()
+        this.renderButtons()
+    }
+
+    onChangeScale = () => {
+        this.isUpdateDisable = false
+
+        if (this.currentChart === 1) {
+            this.currentChart = 0
+        } else {
+            this.currentChart = this.currentChart + 1
+        }
+
+        this.renderLineChart()
+        this.renderButtons()
+    }
+
+    updatePreferences = () => {
+        this.preferenceData.series_preferences = this.currentPlotIdx
+        this.preferenceData.base_series_preferences = this.basePlotIdx
+        this.preferenceData.chart_type = this.currentChart
+        this.preferenceCache.setPreference(this.preferenceData).then()
+
+        this.isUpdateDisable = true
+        this.renderButtons()
     }
 
     private calcPreferences() {
@@ -283,29 +386,6 @@ class ComparisonView extends ScreenView {
             }
             this.basePlotIdx = res
         }
-    }
-
-    onChangeScale = () => {
-        this.isUpdateDisable = false
-
-        if (this.currentChart === 1) {
-            this.currentChart = 0
-        } else {
-            this.currentChart = this.currentChart + 1
-        }
-
-        this.renderLineChart()
-        this.renderSaveButton()
-    }
-
-    updatePreferences = () => {
-        this.preferenceData.series_preferences = this.currentPlotIdx
-        this.preferenceData.base_series_preferences = this.basePlotIdx
-        this.preferenceData.chart_type = this.currentChart
-        this.preferenceCache.setPreference(this.preferenceData).then()
-
-        this.isUpdateDisable = true
-        this.renderSaveButton()
     }
 }
 

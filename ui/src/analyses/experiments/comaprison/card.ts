@@ -16,7 +16,6 @@ export class ComparisonCard extends Card {
     width: number
     currentSeries: SeriesModel[]
     baseSeries: SeriesModel[]
-    // series: SeriesModel[]
     preferenceData: ComparisonPreferenceModel
     baseAnalysisCache: AnalysisDataCache
     currentAnalysisCache: AnalysisDataCache
@@ -38,15 +37,14 @@ export class ComparisonCard extends Card {
         this.loader = new DataLoader(async (force) => {
             this.preferenceData = <ComparisonPreferenceModel>await this.preferenceCache.get(force)
             this.baseUuid = this.preferenceData.base_experiment
-            if (this.baseUuid == null) {
-                this.elem.classList.add('hide')
-                return
-            }
-            this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
-            let baseAnalysisData = await this.baseAnalysisCache.get(force)
-            this.baseSeries = toPointValues(baseAnalysisData.series)
+            if (this.baseUuid != null) {
+                this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
+                let baseAnalysisData = await this.baseAnalysisCache.get(force)
+                this.baseSeries = toPointValues(baseAnalysisData.series)
+            }
         })
     }
 
@@ -77,8 +75,6 @@ export class ComparisonCard extends Card {
             if (this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.renderLineChart()
                 this.renderSparkLines()
-            } else {
-                this.elem.classList.add('hide')
             }
         } catch (e) {
         }
@@ -120,7 +116,6 @@ export class ComparisonCard extends Card {
             if (this.currentSeries.concat(this.baseSeries).length > 0) {
                 this.renderLineChart()
                 this.renderSparkLines()
-                this.elem.classList.remove('hide')
             }
         } catch (e) {
         }
