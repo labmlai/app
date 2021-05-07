@@ -40,7 +40,7 @@ export class ComparisonCard extends Card {
 
             let currentAnalysisData = await this.currentAnalysisCache.get(force)
             this.currentSeries = toPointValues(currentAnalysisData.series)
-            if (this.baseUuid != null) {
+            if (this.baseUuid != null && this.baseUuid.length > 0) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
                 let baseAnalysisData = await this.baseAnalysisCache.get(force)
                 this.baseSeries = toPointValues(baseAnalysisData.series)

@@ -72,7 +72,7 @@ class ComparisonView extends ScreenView {
             this.status = await this.statusCache.get(force)
             this.run = await this.runCache.get()
             this.currentSeries = toPointValues((await this.currentAnalysisCache.get(force)).series)
-            if (this.baseUuid != null) {
+            if (this.baseUuid != null && this.baseUuid.length > 0) {
                 this.baseAnalysisCache = comparisonCache.getAnalysis(this.baseUuid)
                 this.baseSeries = toPointValues((await this.baseAnalysisCache.get(force)).series)
             } else {
