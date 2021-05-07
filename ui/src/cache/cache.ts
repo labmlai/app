@@ -3,15 +3,20 @@ import {Status} from "../models/status"
 import NETWORK from "../network"
 import {IsUserLogged, User} from "../models/user"
 import {RunsList} from '../models/run_list'
-import {AnalysisPreference, ComparisonPreference} from "../models/preferences"
+import {AnalysisPreference} from "../models/preferences"
 import {SessionsList} from '../models/session_list'
 import {Session} from '../models/session'
 import {Job} from '../models/job'
 
 const RELOAD_TIMEOUT = 60 * 1000
+const FORCE_RELOAD_TIMEOUT = 5 * 1000
 
 export function isReloadTimeout(lastUpdated: number): boolean {
     return (new Date()).getTime() - lastUpdated > RELOAD_TIMEOUT
+}
+
+export function isForceReloadTimeout(lastUpdated: number): boolean {
+    return (new Date()).getTime() - lastUpdated > FORCE_RELOAD_TIMEOUT
 }
 
 class BroadcastPromise<T> {
@@ -87,7 +92,7 @@ export abstract class CacheObject<T> {
     abstract load(...args: any[]): Promise<T>
 
     async get(isRefresh = false, ...args: any[]): Promise<T> {
-        if (this.data == null || isRefresh || isReloadTimeout(this.lastUpdated)) {
+        if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
         }
@@ -115,7 +120,7 @@ export class RunsListCache extends CacheObject<RunsList> {
             return await this.load(args[0])
         }
 
-        if (this.data == null || isRefresh || isReloadTimeout(this.lastUpdated)) {
+        if (this.data == null || (isRefresh && isForceReloadTimeout(this.lastUpdated)) || isReloadTimeout(this.lastUpdated)) {
             this.data = await this.load(null)
             this.lastUpdated = (new Date()).getTime()
         }
@@ -217,7 +222,7 @@ export class RunCache extends CacheObject<Run> {
     async get(isRefresh = false): Promise<Run> {
         let status = await this.statusCache.get()
 
-        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || (isRefresh && isForceReloadTimeout(this.lastUpdated))) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
 
@@ -336,7 +341,7 @@ export class AnalysisDataCache extends CacheObject<AnalysisDataModel> {
     async get(isRefresh = false): Promise<AnalysisDataModel> {
         let status = await this.statusCache.get()
 
-        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || isRefresh) {
+        if (this.data == null || (status.isRunning && isReloadTimeout(this.lastUpdated)) || (isRefresh && isForceReloadTimeout(this.lastUpdated))) {
             this.data = await this.load()
             this.lastUpdated = (new Date()).getTime()
 
