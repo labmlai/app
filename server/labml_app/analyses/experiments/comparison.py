@@ -28,6 +28,12 @@ class ComparisonPreferences(preferences.Preferences):
         if 'base_experiment' in data:
             self.base_experiment = data['base_experiment']
 
+        if 'series_preferences' in data:
+            self.update_series_preferences(data['series_preferences'])
+
+        if 'chart_type' in data:
+            self.chart_type = data['chart_type']
+
         self.save()
 
     def update_base_series_preferences(self, data: preferences.SeriesPreferences) -> None:
