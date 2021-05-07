@@ -37,7 +37,10 @@ class Series:
         return self.value[-1]
 
     def find_step_gap(self):
-        return max(1, (self.last_step[1] - self.last_step[0]).item())
+        if len(self) > 1:
+            return max(1., (self.last_step[1] - self.last_step[0]).item())
+        else:
+            return 1.
 
     @property
     def detail(self) -> Dict[str, List[float]]:
@@ -85,10 +88,7 @@ class Series:
         self.step = np.concatenate((self.step, step))
         self.last_step = np.concatenate((self.last_step, last_step))
 
-        if len(self) > 1:
-            self.step_gap = self.find_step_gap()
-        else:
-            self.step_gap = 1.
+        self.step_gap = self.find_step_gap()
 
         self.merge(prev_size)
 
@@ -107,28 +107,30 @@ class Series:
                 values[i] = values[i - 1]
 
     def _merge(self,
-               values: np.ndarray, last_step: np.ndarray, steps: np.ndarray,
-               prev_ls: int = 0,
-               i: int = 0):
+               values: np.ndarray,
+               last_step: np.ndarray,
+               steps: np.ndarray,
+               prev_last_step: int = 0,
+               i: int = 0  # from_step
+               ):
         j = i + 1
         while j < len(values):
-            if last_step[j] - prev_ls < self.step_gap:
-                # merge
-                iw = max(1., last_step[i] - prev_ls)
+            if last_step[j] - prev_last_step < self.step_gap:  # merge
+                iw = max(1., last_step[i] - prev_last_step)
                 jw = max(1., last_step[j] - last_step[i])
                 steps[i] = (steps[i] * iw + steps[j] * jw) / (iw + jw)
                 values[i] = (values[i] * iw + values[j] * jw) / (iw + jw)
                 last_step[i] = last_step[j]
                 j += 1
-            else:
-                prev_ls = last_step[i]
+            else:  # move to next
+                prev_last_step = last_step[i]
                 i += 1
                 last_step[i] = last_step[j]
                 steps[i] = steps[j]
                 values[i] = values[j]
                 j += 1
 
-        return i + 1
+        return i + 1  # size after merging
 
     def merge(self, prev_size: int = 0):
         from_step = max(0, prev_size - 1)
@@ -136,11 +138,11 @@ class Series:
             return
 
         if from_step > 0:
-            prev_ls = self.last_step[from_step - 1].item()
+            prev_last_step = self.last_step[from_step - 1].item()
         else:
-            prev_ls = 0
+            prev_last_step = 0
 
-        n = self._merge(self.value, self.last_step, self.step, prev_ls, from_step)
+        n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]
         self.value = self.value[:n]
