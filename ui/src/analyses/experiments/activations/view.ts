@@ -232,17 +232,19 @@ class ActivationsView extends ScreenView {
     }
 
     private calcPreferences() {
-        this.currentChart = this.preferenceData.chart_type
+        if (this.isUpdateDisable) {
+            this.currentChart = this.preferenceData.chart_type
 
-        let analysisPreferences = this.preferenceData.series_preferences
-        if (analysisPreferences && analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
-        } else if (this.series) {
-            let res: number[] = []
-            for (let i = 0; i < this.series.length; i++) {
-                res.push(i)
+            let analysisPreferences = this.preferenceData.series_preferences
+            if (analysisPreferences && analysisPreferences.length > 0) {
+                this.plotIdx = [...analysisPreferences]
+            } else if (this.series) {
+                let res: number[] = []
+                for (let i = 0; i < this.series.length; i++) {
+                    res.push(i)
+                }
+                this.plotIdx = res
             }
-            this.plotIdx = res
         }
     }
 

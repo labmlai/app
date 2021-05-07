@@ -216,15 +216,17 @@ class GPUMemoryView extends ScreenView {
     }
 
     calcPreferences() {
-        let analysisPreferences = this.preferenceData.sub_series_preferences['memory']
-        if (analysisPreferences && analysisPreferences.length > 0) {
-            this.plotIdx = [...analysisPreferences]
-        } else if (this.series) {
-            let res: number[] = []
-            for (let i = 0; i < this.series.length; i++) {
-                res.push(i)
+        if (this.isUpdateDisable) {
+            let analysisPreferences = this.preferenceData.sub_series_preferences['memory']
+            if (analysisPreferences && analysisPreferences.length > 0) {
+                this.plotIdx = [...analysisPreferences]
+            } else if (this.series) {
+                let res: number[] = []
+                for (let i = 0; i < this.series.length; i++) {
+                    res.push(i)
+                }
+                this.plotIdx = res
             }
-            this.plotIdx = res
         }
     }
 

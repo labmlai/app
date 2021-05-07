@@ -50,6 +50,7 @@ class ComparisonView extends ScreenView {
     private run: Run
     private isEditMode: boolean
     private fieldsContainer: HTMLUListElement
+    private shouldPreservePreferences: boolean
 
     constructor(uuid: string) {
         super()
@@ -62,6 +63,7 @@ class ComparisonView extends ScreenView {
         this.preferenceCache = comparisonCache.getPreferences(this.currentUuid)
 
         this.isUpdateDisable = true
+        this.shouldPreservePreferences = false
         this.saveButton = new SaveButton({onButtonClick: this.updatePreferences, parent: this.constructor.name})
 
         this.loader = new DataLoader(async (force) => {
@@ -198,6 +200,7 @@ class ComparisonView extends ScreenView {
                 if (this.preferenceData.base_experiment !== run.run_uuid) {
                     this.onToggleEdit()
                     this.isUpdateDisable = false
+                    this.shouldPreservePreferences = false
                     this.preferenceData.base_experiment = run.run_uuid
                     this.preferenceData.base_series_preferences = []
                 }
@@ -206,6 +209,7 @@ class ComparisonView extends ScreenView {
                 if (this.preferenceData.base_experiment != null) {
                     this.onToggleEdit()
                     this.isUpdateDisable = false
+                    this.shouldPreservePreferences = false
                     this.preferenceData.base_experiment = undefined
                     this.preferenceData.base_series_preferences = []
                 }
@@ -307,6 +311,7 @@ class ComparisonView extends ScreenView {
 
     toggleCurrentChart = (idx: number) => {
         this.isUpdateDisable = false
+        this.shouldPreservePreferences = true
 
         if (this.currentPlotIdx[idx] >= 0) {
             this.currentPlotIdx[idx] = -1
@@ -324,6 +329,7 @@ class ComparisonView extends ScreenView {
     }
     toggleBaseChart = (idx: number) => {
         this.isUpdateDisable = false
+        this.shouldPreservePreferences = true
 
         if (this.basePlotIdx[idx] >= 0) {
             this.basePlotIdx[idx] = -1
@@ -342,6 +348,7 @@ class ComparisonView extends ScreenView {
 
     onChangeScale = () => {
         this.isUpdateDisable = false
+        this.shouldPreservePreferences = true
 
         if (this.currentChart === 1) {
             this.currentChart = 0
@@ -360,31 +367,34 @@ class ComparisonView extends ScreenView {
         this.preferenceCache.setPreference(this.preferenceData).then()
 
         this.isUpdateDisable = true
+        this.shouldPreservePreferences = false
         this.renderButtons()
     }
 
     private calcPreferences() {
-        this.currentChart = this.preferenceData.chart_type
+        if (!this.shouldPreservePreferences) {
+            this.currentChart = this.preferenceData.chart_type
 
-        let currentAnalysisPreferences = this.preferenceData.series_preferences
-        if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
-            this.currentPlotIdx = [...currentAnalysisPreferences]
-        } else if (this.currentSeries) {
-            let res: number[] = []
-            for (let i = 0; i < this.currentSeries.length; i++) {
-                res.push(i)
+            let currentAnalysisPreferences = this.preferenceData.series_preferences
+            if (currentAnalysisPreferences && currentAnalysisPreferences.length > 0) {
+                this.currentPlotIdx = [...currentAnalysisPreferences]
+            } else if (this.currentSeries) {
+                let res: number[] = []
+                for (let i = 0; i < this.currentSeries.length; i++) {
+                    res.push(i)
+                }
+                this.currentPlotIdx = res
             }
-            this.currentPlotIdx = res
-        }
-        let baseAnalysisPreferences = this.preferenceData.base_series_preferences
-        if (baseAnalysisPreferences && baseAnalysisPreferences.length > 0) {
-            this.basePlotIdx = [...baseAnalysisPreferences]
-        } else if (this.baseSeries) {
-            let res: number[] = []
-            for (let i = 0; i < this.baseSeries.length; i++) {
-                res.push(i)
+            let baseAnalysisPreferences = this.preferenceData.base_series_preferences
+            if (baseAnalysisPreferences && baseAnalysisPreferences.length > 0) {
+                this.basePlotIdx = [...baseAnalysisPreferences]
+            } else if (this.baseSeries) {
+                let res: number[] = []
+                for (let i = 0; i < this.baseSeries.length; i++) {
+                    res.push(i)
+                }
+                this.basePlotIdx = res
             }
-            this.basePlotIdx = res
         }
     }
 }
