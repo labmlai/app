@@ -115,7 +115,10 @@ class HyperParamsAnalysis(Analysis):
 
             if name in self.hyper_params.hp_series:
                 s = Series().load(self.hyper_params.hp_series[name])
-                steps, values = self.get_input_series(s.step.tolist(), s.value.tolist(), self.hyper_params.step,
+                steps, values = self.get_input_series(step[0],
+                                                      s.step.tolist(),
+                                                      s.value.tolist(),
+                                                      self.hyper_params.step,
                                                       default_values[name]['default'])
 
                 series['sub'] = {'step': steps, 'value': values, 'smoothed': values}
@@ -127,8 +130,12 @@ class HyperParamsAnalysis(Analysis):
         return res
 
     @staticmethod
-    def get_input_series(series_steps: List[float], series_values: List[float], current_step, default: float):
-        steps, values = [0, series_steps[0] - 1], [default, default]
+    def get_input_series(start_step: int,
+                         series_steps: List[float],
+                         series_values: List[float],
+                         current_step,
+                         default: float):
+        steps, values = [start_step, series_steps[0] - 1], [default, default]
 
         for i in range(len(series_steps)):
             v = series_values[i]
