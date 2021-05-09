@@ -87,10 +87,15 @@ export class FormattedValue {
             }
             $('span.subtle', ']')
         } else if (typeof this.value === 'object') {
+            let count = 0
             for (const k in this.value) {
+                if (count >= 3) {
+                    break
+                }
                 $('span.object-key', `${k}` + ': ')
                 $('span.object-value', `${this.value[k]}`)
                 $('span', ' ')
+                count++
             }
         } else {
             $('span.unknown', this.value)

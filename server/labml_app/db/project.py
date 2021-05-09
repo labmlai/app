@@ -34,18 +34,24 @@ class Project(Model['Project']):
 
     def get_runs(self) -> List['run.Run']:
         res = []
+        likely_deleted = []
         for run_uuid, run_key in self.runs.items():
             try:
                 r = run.get(run_uuid)
                 if r:
                     res.append(r)
                 else:
-                    logger.error('error in creating run list, ' + run_uuid)
+                    likely_deleted.append(run_uuid)
             except TypeError as e:
                 logger.error('error in creating run list, ' + run_uuid + ':' + str(e))
 
+        for run_uuid in likely_deleted:
+            self.runs.pop(run_uuid)
+
         if self.is_run_added:
             self.is_run_added = False
+
+        if not self.is_run_added or likely_deleted:
             self.save()
 
         return res
