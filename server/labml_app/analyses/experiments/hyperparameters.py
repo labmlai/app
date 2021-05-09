@@ -1,6 +1,5 @@
 from typing import Dict, Any, List, Union
 
-import numpy as np
 from flask import make_response, request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
@@ -51,9 +50,9 @@ class HyperParamPreferences(preferences.Preferences):
 
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
-    default_values: Dict[str, any]
-    hp_values: Dict[str, Union[int, float]]
-    hp_series: Dict[str, SeriesModel]
+    default_values: Dict[str, any]  # hp configs
+    hp_values: Dict[str, Union[int, float]]  # current hp values
+    hp_series: Dict[str, SeriesModel]  # values and steps updates
     has_hp_updated: Dict[str, bool]
 
     @classmethod
@@ -100,8 +99,8 @@ class HyperParamsAnalysis(Analysis):
         res = []
         default_values = self.hyper_params.default_values
         for ind, track in self.hyper_params.tracking.items():
-            name = ind.split('.')
-            name = ''.join(name[-1])
+            name_split = ind.split('.')
+            name = ''.join(name_split[-1])
 
             s = Series().load(track)
             step, value = s.step.tolist(), s.value.tolist()
@@ -109,15 +108,14 @@ class HyperParamsAnalysis(Analysis):
                                       'value': value,
                                       'smoothed': value,
                                       'is_editable': name in default_values,
-                                      'range': default_values[name]['range'],
-                                      'dynamic_type': default_values[name]['dynamic_type'],
+                                      'range': default_values.get(name, {'range': []})['range'],
                                       'name': name}
 
             if name in self.hyper_params.hp_series:
-                s = Series().load(self.hyper_params.hp_series[name])
+                s = self.hyper_params.hp_series[name]
                 steps, values = self.get_input_series(step[0],
-                                                      s.step.tolist(),
-                                                      s.value.tolist(),
+                                                      s['step'],
+                                                      s['value'],
                                                       self.hyper_params.step,
                                                       default_values[name]['default'])
 
@@ -212,14 +210,10 @@ class HyperParamsAnalysis(Analysis):
         hp_series = self.hyper_params.hp_series
 
         if ind not in hp_series:
-            hp_series[ind] = Series().to_data()
+            hp_series[ind] = {'step': [], 'value': []}
 
-        s = Series().load(hp_series[ind])
-
-        s.step = np.append(s.step, self.hyper_params.step)
-        s.value = np.append(s.value, value)
-
-        hp_series[ind] = s.to_data()
+        hp_series[ind]['value'].append(value)
+        hp_series[ind]['step'].append(self.hyper_params.step)
 
     def set_default_values(self, data: Dict[str, any]):
         default_values = {}
