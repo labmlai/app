@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union
 
 import numpy as np
 from flask import make_response, request
@@ -52,7 +52,7 @@ class HyperParamPreferences(preferences.Preferences):
 @Analysis.db_model(PickleSerializer, 'hyperparams')
 class HyperParamsModel(Model['HyperParamsModel'], SeriesCollection):
     default_values: Dict[str, any]
-    hp_values: Dict[str, any]
+    hp_values: Dict[str, Union[int, float]]
     hp_series: Dict[str, SeriesModel]
     has_hp_updated: Dict[str, bool]
 
@@ -188,6 +188,7 @@ class HyperParamsAnalysis(Analysis):
 
     def set_hyper_params(self, data: Dict[str, any]) -> None:
         hp_values = self.hyper_params.hp_values
+
         for k, v in data.items():
             if k not in hp_values:
                 continue
@@ -209,6 +210,7 @@ class HyperParamsAnalysis(Analysis):
 
     def update_hp_series(self, ind: str, value: float) -> None:
         hp_series = self.hyper_params.hp_series
+
         if ind not in hp_series:
             hp_series[ind] = Series().to_data()
 
@@ -222,6 +224,7 @@ class HyperParamsAnalysis(Analysis):
     def set_default_values(self, data: Dict[str, any]):
         default_values = {}
         hp_values = {}
+
         for k, v in data.items():
             default_values[k] = v
             hp_values[k] = v['default']
@@ -232,16 +235,13 @@ class HyperParamsAnalysis(Analysis):
 
     def get_hyper_params(self):
         res = {}
-        is_saving = False
         has_hp_updated = self.hyper_params.has_hp_updated
         for k, v in self.hyper_params.hp_values.items():
             if has_hp_updated.get(k, False):
                 res[k] = v
-                is_saving = True
                 has_hp_updated[k] = False
 
-        if is_saving:
-            self.hyper_params.save()
+                self.hyper_params.save()
 
         return res
 

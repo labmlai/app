@@ -228,6 +228,7 @@ class Series:
         self.step = data['step'].copy()
         self.last_step = data['last_step'].copy()
         self.value = data['value'].copy()
+
         if 'smoothed' in data:
             self.smoothed = data['smoothed'].copy()
         else:
