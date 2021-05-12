@@ -304,6 +304,7 @@ class RunHeaderView extends ScreenView {
 
             if (this.run.size_checkpoints && this.run.is_project_run) {
                 this.cleanButton.render($)
+                this.cleanButton.isLoading = false
             }
         })
     }
@@ -311,6 +312,7 @@ class RunHeaderView extends ScreenView {
     async onCleaningCheckPoints() {
         this.userMessages.hide(true)
         this.cleanButton.disabled = true
+        this.cleanButton.isLoading = true
 
         try {
             let job = await this.runListCache.clearCheckPoints(this.run.computer_uuid, [this.run.run_uuid])
@@ -329,6 +331,7 @@ class RunHeaderView extends ScreenView {
         }
 
         this.cleanButton.disabled = false
+        this.cleanButton.isLoading = false
     }
 
     async onStartTensorBoard() {

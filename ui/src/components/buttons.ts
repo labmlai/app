@@ -190,8 +190,18 @@ export class CancelButton extends Button {
 }
 
 export class CleanButton extends Button {
+    private refreshIcon: HTMLSpanElement
+
     constructor(opt: buttonOptions) {
         super(opt)
+    }
+
+    set isLoading(value: boolean) {
+        if (value) {
+            this.refreshIcon.classList.remove('hide')
+        } else {
+            this.refreshIcon.classList.add('hide')
+        }
     }
 
     render($: WeyaElementFunction) {
@@ -199,6 +209,7 @@ export class CleanButton extends Button {
             {on: {click: this.onClick}, title: 'clean checkpoints'},
             $ => {
                 $('span', '.fas.fa-broom', '')
+                this.refreshIcon = $('span', '.fas.fa-sync.spin', {style: {'margin-right': '6px'}})
             })
     }
 }
