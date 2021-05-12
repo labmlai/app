@@ -4,6 +4,7 @@ from typing import List, Dict, Any
 
 def find_common_prefix(names: List[str]) -> str:
     shortest = min(names, key=len)
+
     for i, word in enumerate(shortest):
         for name in names:
             if name[i] != word:
@@ -24,10 +25,11 @@ def remove_common_prefix(series: List[Dict[str, Any]], key: str) -> None:
 
     common_prefix = find_common_prefix(names)
 
-    if not common_prefix:
-        return
+    if common_prefix:
+        len_removed = len(common_prefix)
+    else:
+        len_removed = 0
 
-    len_removed = len(common_prefix)
     for s in series:
         name = s[key][len_removed:]
 
