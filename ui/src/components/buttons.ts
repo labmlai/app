@@ -196,7 +196,7 @@ export class CleanButton extends Button {
 
     render($: WeyaElementFunction) {
         this.elem = $('nav', `.nav-link.tab.float-right${this.isDisabled ? '.disabled' : ''}`,
-            {on: {click: this.onClick},  title: 'clean checkpoints'},
+            {on: {click: this.onClick}, title: 'clean checkpoints'},
             $ => {
                 $('span', '.fas.fa-broom', '')
             })
@@ -329,8 +329,18 @@ export class CustomButton extends Button {
 }
 
 export class TensorBoardButton extends Button {
+    private refreshIcon: HTMLSpanElement
+
     constructor(opt: buttonOptions) {
         super(opt)
+    }
+
+    set isLoading(value: boolean) {
+        if (value) {
+            this.refreshIcon.classList.remove('hide')
+        } else {
+            this.refreshIcon.classList.add('hide')
+        }
     }
 
     render($: WeyaElementFunction) {
@@ -338,6 +348,7 @@ export class TensorBoardButton extends Button {
             {on: {click: this.onClick}, title: 'start TensorBoard', style: {padding: '2px 6px 2px 6px'}},
             $ => {
                 $('img', {src: '../../images/tf_Icon.png', width: `${35}px`})
+                this.refreshIcon = $('span', '.fas.fa-sync.spin', {style: {'margin-right': '6px'}})
             })
     }
 }
@@ -347,13 +358,18 @@ interface ShareButtonOptions extends buttonOptions {
 }
 
 export class ShareButton extends Button {
-    private _text: string
     private toastDiv: HTMLDivElement
 
     constructor(opt: ShareButtonOptions) {
         super(opt)
 
         this._text = `Check this ${opt.text} on labml`
+    }
+
+    private _text: string
+
+    set text(value: string) {
+        this._text = `Check this ${value} on labml`
     }
 
     render($: WeyaElementFunction) {
@@ -412,9 +428,5 @@ export class ShareButton extends Button {
         } else {
             this.copyLink()
         }
-    }
-
-    set text(value: string) {
-        this._text = `Check this ${value} on labml`
     }
 }

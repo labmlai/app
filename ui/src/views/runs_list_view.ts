@@ -32,6 +32,7 @@ class RunsListView extends ScreenView {
     private loader: DataLoader
     private userMessages: UserMessages
     private refresh: AwesomeRefreshButton
+    private isTBProcessing: boolean
 
     constructor() {
         super()
@@ -56,6 +57,7 @@ class RunsListView extends ScreenView {
         this.searchQuery = ''
         this.isEditMode = false
         this.selectedRunsSet = new Set<RunListItemModel>()
+        this.isTBProcessing = false
 
         mix_panel.track('Runs List View')
     }
@@ -88,6 +90,7 @@ class RunsListView extends ScreenView {
             this.startTBButton.hide(true)
             this.cancelButton.hide(true)
             this.editButton.hide(true)
+            this.startTBButton.isLoading = false
         })
 
         try {
@@ -151,7 +154,8 @@ class RunsListView extends ScreenView {
 
         this.isEditMode = true
         this.deleteButton.disabled = isRunsSelected
-        this.startTBButton.disabled = isRunsSelected
+        this.startTBButton.disabled = isRunsSelected || this.isTBProcessing
+        this.startTBButton.isLoading = this.isTBProcessing
         this.updateButtons()
     }
 
@@ -177,7 +181,9 @@ class RunsListView extends ScreenView {
 
     onStartTensorBoard = async () => {
         this.userMessages.hide(true)
-        this.startTBButton.disabled = true
+        this.isTBProcessing = true
+        this.startTBButton.disabled = this.isTBProcessing
+        this.startTBButton.isLoading = this.isTBProcessing
 
         let computerUUID: string = ''
         let runUUIDs: Array<string> = []
@@ -222,7 +228,10 @@ class RunsListView extends ScreenView {
             this.userMessages.networkError()
         }
 
-        this.startTBButton.disabled = false
+        this.isTBProcessing = false
+        let isRunsDeselected = this.selectedRunsSet.size === 0
+        this.startTBButton.disabled = isRunsDeselected || this.isTBProcessing
+        this.startTBButton.isLoading = this.isTBProcessing
     }
 
     onCancel = () => {
@@ -249,8 +258,8 @@ class RunsListView extends ScreenView {
 
         let isRunsSelected = this.selectedRunsSet.size === 0
 
-        this.deleteButton.disabled = isRunsSelected
-        this.startTBButton.disabled = isRunsSelected
+        this.deleteButton.disabled = isRunsSelected || this.isTBProcessing
+        this.startTBButton.disabled = isRunsSelected || this.isTBProcessing
     }
 
     onSearch = async (query: string) => {

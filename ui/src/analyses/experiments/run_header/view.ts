@@ -298,6 +298,7 @@ class RunHeaderView extends ScreenView {
             if (this.run.size_tensorboard && this.run.is_project_run) {
                 $('span', '.float-right', $ => {
                     this.startTBButton.render($)
+                    this.startTBButton.isLoading = false
                 })
             }
 
@@ -333,6 +334,7 @@ class RunHeaderView extends ScreenView {
     async onStartTensorBoard() {
         this.userMessages.hide(true)
         this.startTBButton.disabled = true
+        this.startTBButton.isLoading = true
 
         try {
             let job = await this.runListCache.startTensorBoard(this.run.computer_uuid, [this.run.run_uuid])
@@ -357,6 +359,7 @@ class RunHeaderView extends ScreenView {
         }
 
         this.startTBButton.disabled = false
+        this.startTBButton.isLoading = false
     }
 }
 
