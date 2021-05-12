@@ -181,9 +181,7 @@ class RunsListView extends ScreenView {
 
     onStartTensorBoard = async () => {
         this.userMessages.hide(true)
-        this.isTBProcessing = true
-        this.startTBButton.disabled = this.isTBProcessing
-        this.startTBButton.isLoading = this.isTBProcessing
+        this.updateTBButtonState(true)
 
         let computerUUID: string = ''
         let runUUIDs: Array<string> = []
@@ -195,7 +193,7 @@ class RunsListView extends ScreenView {
 
             if (computerUUID !== run.computer_uuid) {
                 this.userMessages.warning('All the selected runs should be from a single computer')
-                return
+                this.updateTBButtonState(false)
             } else {
                 runUUIDs.push(run.run_uuid)
             }
@@ -203,7 +201,7 @@ class RunsListView extends ScreenView {
 
         if (!computerUUID) {
             this.userMessages.warning('Selected runs do not belong to any computer')
-            return
+            this.updateTBButtonState(false)
         }
 
         try {
@@ -228,10 +226,7 @@ class RunsListView extends ScreenView {
             this.userMessages.networkError()
         }
 
-        this.isTBProcessing = false
-        let isRunsDeselected = this.selectedRunsSet.size === 0
-        this.startTBButton.disabled = isRunsDeselected || this.isTBProcessing
-        this.startTBButton.isLoading = this.isTBProcessing
+        this.updateTBButtonState(false)
     }
 
     onCancel = () => {
@@ -266,6 +261,13 @@ class RunsListView extends ScreenView {
         this.searchQuery = query
         await this.loader.load()
         this.renderList().then()
+    }
+
+    private updateTBButtonState(isLoading: boolean) {
+        this.isTBProcessing = isLoading
+        let isRunsDeselected = this.selectedRunsSet.size === 0
+        this.startTBButton.disabled = isRunsDeselected || this.isTBProcessing
+        this.startTBButton.isLoading = this.isTBProcessing
     }
 
     private async renderList() {
