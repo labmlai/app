@@ -9,16 +9,13 @@ def clean_hyper_parameters():
 
     for hp_key in hp_keys:
         hp = hp_key.load()
-        for k, v in hp.tracking.items():
-            if type(v['step']) == list:
-                v['step'] = np.array(v['step'])
 
         for k, v in hp.hp_series.items():
-            if type(v['step']) == list:
-                v['step'] = np.array(v['step'])
+            if type(v['step']) == np.ndarray:
+                v['step'] = v['step'].tolist()
 
-            if type(v['value']) == list:
-                v['value'] = np.array(v['value'])
+            if type(v['value']) == np.ndarray:
+                v['value'] = v['value'].tolist()
 
         hp.save()
 
