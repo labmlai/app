@@ -109,6 +109,8 @@ class HyperParamsAnalysis(Analysis):
                                       'smoothed': value,
                                       'is_editable': name in default_values,
                                       'range': default_values.get(name, {'range': []})['range'],
+                                      'dynamic_type': default_values.get(name, {'dynamic_type': ''})[
+                                          'dynamic_type'],
                                       'name': name}
 
             if name in self.hyper_params.hp_series:
