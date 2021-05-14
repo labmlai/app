@@ -153,7 +153,7 @@ class Run(Model['Run']):
             for k, v in configs.items():
                 computed = v['computed']
                 name = v['name']
-                if computed and type(computed) == dict and computed['type'] == 'DynamicSchedule':
+                if computed and type(computed) == dict and computed.get('type', '') == 'DynamicSchedule':
                     defaults[name] = computed
 
             if defaults:
