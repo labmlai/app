@@ -6,8 +6,6 @@ from . import docs
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml import monit
-
 from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
@@ -120,13 +118,7 @@ class ProcessAnalysis(Analysis):
 
                 res[ind] = s
 
-        with monit.section('track process'):
-            avg_length = 0
-            for ind, series in self.process.tracking.items():
-                avg_length += len(series['step'])
-
-            print(avg_length/len(res), len(res))
-            self.process.track(res)
+        self.process.track(res)
 
     def get_tracking(self):
         res = {}
