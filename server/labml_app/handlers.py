@@ -224,6 +224,8 @@ def _update_session():
         if 'track' in d:
             analyses.AnalysisManager.track_computer(session_uuid, d['track'])
 
+        logger.info(f"data length: {len(d['track'])}  session_uuid: {session_uuid}")
+
     logger.debug(
         f'update_session, session_uuid: {session_uuid}, size : {sys.getsizeof(str(request.json)) / 1024} Kb')
 
