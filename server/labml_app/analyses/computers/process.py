@@ -121,7 +121,11 @@ class ProcessAnalysis(Analysis):
                 res[ind] = s
 
         with monit.section('track process'):
-            print(len(res))
+            avg_length = 0
+            for ind, series in self.process.tracking.items():
+                avg_length += series['step']
+
+            print(avg_length/len(res), len(res))
             self.process.track(res)
 
     def get_tracking(self):
