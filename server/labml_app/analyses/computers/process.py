@@ -121,6 +121,7 @@ class ProcessAnalysis(Analysis):
                 res[ind] = s
 
         with monit.section('track process'):
+            print(len(res))
             self.process.track(res)
 
     def get_tracking(self):
