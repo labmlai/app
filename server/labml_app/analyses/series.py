@@ -2,6 +2,7 @@ import math
 from typing import Dict, List, Optional, Union
 
 import numpy as np
+from labml import monit
 
 MAX_BUFFER_LENGTH = 1024
 SMOOTH_POINTS = 50
@@ -90,11 +91,13 @@ class Series:
 
         self.step_gap = self.find_step_gap()
 
-        self.merge(prev_size)
+        with monit.section('Merge added'):
+            self.merge(prev_size)
 
         while len(self) > self.max_buffer_length:
             self.step_gap *= 2
-            self.merge()
+            with monit.section('Merge'):
+                self.merge()
 
     def _remove_nan(self, values) -> None:
         infin = np.isfinite(values)
