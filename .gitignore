@@ -52,3 +52,5 @@ labml
 ui/src/env.ts
 
 dist/
+
+*.log

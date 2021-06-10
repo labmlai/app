@@ -1,12 +1,14 @@
-from slack_sdk import WebClient
-from slack_sdk.errors import SlackApiError
+try:
+    from slack_sdk import WebClient
+    from slack_sdk.errors import SlackApiError
+except ImportError as e:
+    WebClient = None
+    SlackApiError = None
 
 from labml_app import settings
 
 
 class SlackMessage:
-    _client: WebClient
-
     def __init__(self):
         self._client = WebClient(settings.SLACK_BOT_TOKEN)
 
@@ -27,4 +29,12 @@ class SlackMessage:
         return res
 
 
-client = SlackMessage()
+class DummySlackMessage:
+    def send(self, text):
+        return {'error': '', 'success': False, 'ts': ''}
+
+
+if WebClient is not None:
+    client = SlackMessage()
+else:
+    client = DummySlackMessage()
