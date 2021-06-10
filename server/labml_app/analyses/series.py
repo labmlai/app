@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Union
 
 import numpy as np
 from labml import monit
+import labml_fast_merge
 
 MAX_BUFFER_LENGTH = 1024
 SMOOTH_POINTS = 50
@@ -109,7 +110,7 @@ class Series:
             if infin[i]:
                 values[i] = values[i - 1]
 
-    def _merge(self,
+    def _merge_old(self,
                values: np.ndarray,
                last_step: np.ndarray,
                steps: np.ndarray,
@@ -135,6 +136,15 @@ class Series:
 
         return i + 1  # size after merging
 
+    def _merge(self,
+               values: np.ndarray,
+               last_step: np.ndarray,
+               steps: np.ndarray,
+               prev_last_step: int = 0,
+               i: int = 0  # from_step
+               ):
+        return labml_fast_merge.merge(values, last_step, steps, float(self.step_gap), float(prev_last_step), i)
+
     def merge(self, prev_size: int = 0):
         from_step = max(0, prev_size - 1)
         if len(self) - from_step <= 1:
@@ -145,7 +155,8 @@ class Series:
         else:
             prev_last_step = 0
 
-        n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
+        with monit.section('_merge'):
+            n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]
         self.value = self.value[:n]

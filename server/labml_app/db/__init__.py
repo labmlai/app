@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import redis
 from labml_db import Model, Index
 from labml_db.driver.redis import RedisDbDriver
 from labml_db.driver.file import FileDbDriver
@@ -53,6 +52,7 @@ def init_db():
         Index.set_db_drivers(
             [FileIndexDbDriver(YamlSerializer(), m, Path(f'{data_path}/{m.__name__}.yaml')) for m in Indexes])
     else:
+        import redis
         db = redis.Redis(host='localhost', port=6379, db=0)
 
         Model.set_db_drivers([RedisDbDriver(s, m, db) for s, m in Models])
