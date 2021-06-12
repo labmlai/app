@@ -17,7 +17,7 @@ def merge(np.ndarray[np.double_t, ndim=1] values,
     cdef int length = values.shape[0]
     cdef double iw, jw
     while j < length:
-        if last_step[j] - prev_last_step < step_gap:  # merge
+        if last_step[j] - prev_last_step < step_gap or last_step[j] - last_step[j - 1] < 1e-3:  # merge
             iw = max(1., last_step[i] - prev_last_step)
             jw = max(1., last_step[j] - last_step[i])
             steps[i] = (steps[i] * iw + steps[j] * jw) / (iw + jw)
