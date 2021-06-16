@@ -92,13 +92,13 @@ class Series:
 
         self.step_gap = self.find_step_gap()
 
-        with monit.section('Merge added'):
-            self.merge(prev_size)
+        # with monit.section('Merge added'):
+        self.merge(prev_size)
 
         while len(self) > self.max_buffer_length:
             self.step_gap *= 2
-            with monit.section('Merge'):
-                self.merge()
+            # with monit.section('Merge'):
+            self.merge()
 
     def _remove_nan(self, values) -> None:
         infin = np.isfinite(values)
@@ -155,8 +155,9 @@ class Series:
         else:
             prev_last_step = 0
 
-        with monit.section('_merge'):
-            n = self._merge_old(self.value, self.last_step, self.step, prev_last_step, from_step)
+        #with monit.section('_merge'):
+        n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
+
         self.last_step = self.last_step[:n]
         self.step = self.step[:n]
         self.value = self.value[:n]
