@@ -155,7 +155,7 @@ class Series:
         else:
             prev_last_step = 0
 
-        #with monit.section('_merge'):
+        # with monit.section('_merge'):
         n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
 
         self.last_step = self.last_step[:n]
