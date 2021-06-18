@@ -21,6 +21,7 @@ def clean_float_project() -> None:
                 run.delete(run_uuid)
                 blocked_uuids.remove_blocked_run(run_uuid)
                 delete_run_list.append(run_uuid)
+                logger.log(str(r.run_uuid))
             elif (time.time() - 86400) > s.last_updated_time:
                 delete_run_list.append(run_uuid)
         except TypeError:
