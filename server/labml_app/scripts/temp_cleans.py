@@ -1,6 +1,6 @@
 import numpy as np
 
-from..db import project, run, session, blocked_uuids, init_db
+from labml_app.db import project, run, session, blocked_uuids, init_db
 
 init_db()
 
