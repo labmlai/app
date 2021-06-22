@@ -4,6 +4,7 @@ from typing import Callable, Dict, Any, List
 
 import requests
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 from .logger import logger
 from . import settings
@@ -37,7 +38,6 @@ def _get_user_profile(token: str):
     return res.json()
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 async def sign_in(request: Request) -> EndPointRes:
     json = await request.json()
@@ -60,7 +60,6 @@ async def sign_in(request: Request) -> EndPointRes:
     return {'is_successful': True, 'app_token': at.token_id}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def sign_out(request: Request) -> EndPointRes:
     token_id = request.headers.get('Authorization', '')
@@ -141,7 +140,6 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
     return {'errors': errors, 'url': r.url, 'dynamic': hp_values}
 
 
-@utils.api_endpoint
 async def update_run(request: Request, labml_token: str, run_uuid: str, labml_version: str) -> EndPointRes:
     res = await _update_run(request, labml_token, run_uuid, labml_version)
 
@@ -221,7 +219,6 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     return {'errors': errors, 'url': c.url}
 
 
-@utils.api_endpoint
 async def update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str,
                          labml_version: str) -> EndPointRes:
     res = await _update_session(request, labml_token, session_uuid, computer_uuid, labml_version)
@@ -231,7 +228,6 @@ async def update_session(request: Request, labml_token: str, session_uuid: str, 
     return res
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_run(request: Request, run_uuid: str) -> EndPointRes:
     r = run.get(run_uuid)
@@ -260,7 +256,6 @@ def claim_run(request: Request, run_uuid: str) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_session(request: Request, session_uuid: str) -> EndPointRes:
     c = session.get(session_uuid)
@@ -288,31 +283,38 @@ def claim_session(request: Request, session_uuid: str) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_run(request: Request, run_uuid: str) -> EndPointRes:
+def get_run(request: Request, run_uuid: str) -> JSONResponse:
     run_data = {}
+    status_code = 404
 
     r = run.get(run_uuid)
     if r:
         run_data = r.get_data(request)
+        status_code = 200
 
-    return run_data
+    response = JSONResponse(run_data)
+    response.status_code = status_code
+
+    return response
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_session(request: Request, session_uuid: str) -> EndPointRes:
+def get_session(request: Request, session_uuid: str) -> JSONResponse:
     session_data = {}
+    status_code = 404
 
     c = session.get(session_uuid)
     if c:
         session_data = c.get_data(request)
+        status_code = 200
 
-    return session_data
+    response = JSONResponse(session_data)
+    response.status_code = status_code
+
+    return response
 
 
-@utils.api_endpoint
 @auth.login_required
 async def edit_run(request: Request, run_uuid: str) -> EndPointRes:
     r = run.get(run_uuid)
@@ -327,7 +329,6 @@ async def edit_run(request: Request, run_uuid: str) -> EndPointRes:
     return {'errors': errors}
 
 
-@utils.api_endpoint
 async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
     c = session.get(session_uuid)
     errors = []
@@ -341,36 +342,42 @@ async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
     return {'errors': errors}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_run_status(request: Request, run_uuid: str) -> EndPointRes:
+def get_run_status(request: Request, run_uuid: str) -> JSONResponse:
     status_data = {}
+    status_code = 404
 
     s = run.get_status(run_uuid)
     if s:
         status_data = s.get_data()
+        status_code = 200
 
-    return status_data
+    response = JSONResponse(status_data)
+    response.status_code = status_code
+
+    return response
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def get_session_status(request: Request, session_uuid: str) -> EndPointRes:
+def get_session_status(request: Request, session_uuid: str) -> JSONResponse:
     status_data = {}
+    status_code = 404
 
     s = session.get_status(session_uuid)
     if s:
         status_data = s.get_data()
+        status_code = 200
 
-    return status_data
+    response = JSONResponse(status_data)
+    response.status_code = status_code
+
+    return response
 
 
-@utils.api_endpoint
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.check_labml_token_permission
 def get_runs(request: Request, labml_token: str) -> EndPointRes:
-    print(labml_token)
     u = auth.get_auth_user(request)
 
     if labml_token:
@@ -391,7 +398,6 @@ def get_runs(request: Request, labml_token: str) -> EndPointRes:
     return {'runs': res, 'labml_token': labml_token}
 
 
-@utils.api_endpoint
 @auth.login_required
 @auth.check_labml_token_permission
 @utils.mix_panel.MixPanelEvent.time_this(None)
@@ -416,7 +422,6 @@ def get_sessions(request: Request, labml_token: str) -> EndPointRes:
     return {'sessions': res, 'labml_token': labml_token}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.login_required
 async def delete_runs(request: Request) -> EndPointRes:
@@ -429,7 +434,6 @@ async def delete_runs(request: Request) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.login_required
 async def delete_sessions(request: Request) -> EndPointRes:
@@ -442,7 +446,6 @@ async def delete_sessions(request: Request) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @auth.login_required
 def add_run(request: Request, run_uuid: str) -> EndPointRes:
     u = auth.get_auth_user(request)
@@ -452,7 +455,6 @@ def add_run(request: Request, run_uuid: str) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @auth.login_required
 def add_session(request: Request, session_uuid: str) -> EndPointRes:
     u = auth.get_auth_user(request)
@@ -462,7 +464,6 @@ def add_session(request: Request, session_uuid: str) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
@@ -471,7 +472,6 @@ def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
     return c.get_data()
 
 
-@utils.api_endpoint
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
 async def set_user(request: Request) -> EndPointRes:
@@ -484,7 +484,6 @@ async def set_user(request: Request) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.api_endpoint
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def get_user(request: Request) -> EndPointRes:
@@ -493,13 +492,11 @@ def get_user(request: Request) -> EndPointRes:
     return u.get_data()
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def is_user_logged(request: Request) -> EndPointRes:
     return {'is_user_logged': auth.get_is_user_logged(request)}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(None)
 def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any]]) -> EndPointRes:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
@@ -519,7 +516,6 @@ def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any
     return {'runs': res}
 
 
-@utils.api_endpoint
 @utils.mix_panel.MixPanelEvent.time_this(60.4)
 def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
@@ -552,7 +548,6 @@ def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
     return {'jobs': pending_jobs}
 
 
-@utils.api_endpoint
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(30.4)
 def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRes:
@@ -579,7 +574,6 @@ def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRe
     return data
 
 
-@utils.api_endpoint
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(30.4)
 def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPointRes:
@@ -653,5 +647,4 @@ def add_handlers(app: FastAPI):
         if login_required:
             func = auth.login_required(func)
 
-        func = utils.api_endpoint(func)
         _add_ui(app, method, func, url)

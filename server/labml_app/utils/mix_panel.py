@@ -102,7 +102,7 @@ class Event:
             @wraps(function)
             def time_wrapper(request: Request, *args, **kwargs):
                 start = time.time()
-                r = function(*args, **kwargs)
+                r = function(request, *args, **kwargs)
                 end = time.time()
 
                 total_time = end - start

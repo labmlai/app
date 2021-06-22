@@ -6,7 +6,6 @@ from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.logger import logger
-from labml_app import utils
 from ..analysis import Analysis
 from .. import preferences
 

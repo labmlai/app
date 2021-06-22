@@ -1,4 +1,5 @@
 import git
+import os
 import logging
 import time
 import warnings
@@ -32,7 +33,7 @@ if settings.SENTRY_DSN:
 
 
 def get_static_path():
-    package_path = Path(__file__).parent
+    package_path = Path(os.path.dirname(os.path.abspath(__file__)))
     app_path = package_path.parent.parent
 
     static_path = app_path / 'static'

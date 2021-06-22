@@ -23,16 +23,16 @@ def gen_token() -> str:
     return uuid4().hex
 
 
-def api_endpoint(func) -> functools.wraps:
-    @functools.wraps(func)
-    def wrapper(request: Request, *args, **kwargs) -> Response:
-        res = func(request, *args, **kwargs)
-        response = JSONResponse(res)
-        if not res:
-            response.status_code = 404
-        return response
-
-    return wrapper
+# def api_endpoint(func) -> functools.wraps:
+#     @functools.wraps(func)
+#     def wrapper(request: Request, *args, **kwargs) -> Response:
+#         res = func(request, *args, **kwargs)
+#         response = JSONResponse(res)
+#         if not res:
+#             response.status_code = 404
+#         return response
+#
+#     return wrapper
 
 
 def time_this(function) -> Callable:
