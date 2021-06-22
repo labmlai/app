@@ -1,10 +1,11 @@
 import time
-from typing import Any, Dict, Callable
+import functools
+from typing import Callable
 from uuid import uuid4
 from functools import wraps
 
-import flask
-from flask import jsonify
+from fastapi import Request, Response
+from fastapi.responses import JSONResponse
 from . import mix_panel
 
 
@@ -22,13 +23,16 @@ def gen_token() -> str:
     return uuid4().hex
 
 
-def format_rv(data: Any, updated: Dict[str, Any] = None) -> flask.Response:
-    meta = {'is_run_added': False}
+def api_endpoint(func) -> functools.wraps:
+    @functools.wraps(func)
+    async def wrapper(request: Request, *args, **kwargs) -> Response:
+        res = await func(request, *args, **kwargs)
+        response = JSONResponse(res)
+        if not res:
+            response.status_code = 404
+        return response
 
-    if updated:
-        meta.update(updated)
-
-    return jsonify({'data': data, 'meta': meta})
+    return wrapper
 
 
 def time_this(function) -> Callable:

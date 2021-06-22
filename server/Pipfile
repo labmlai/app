@@ -6,10 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-requests = "==2.22.0"
-Flask = "==1.1.1"
-gunicorn = "==20.0.4"
-flask_cors = "*"
+requests = "*"
+gunicorn = "*"
 labml="*"
 numpy = "*"
 sentry-sdk = {extras = ["flask"], version = "*"}
@@ -17,7 +15,9 @@ labml-db = "*"
 redis = "*"
 mixpanel = "*"
 slack-sdk = "*"
-flasgger = "*"
+fastapi = "*"
+uvicorn = "*"
+aiofiles = "*"
 
 [requires]
 python_version = "3.7"

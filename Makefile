@@ -9,7 +9,7 @@ setup: ## install server and ui dependencies
 	cd server && pipenv install --ignore-pipfile
 
 server-dev: ## start and watch server
-	cd server &&  pipenv run python -m labml_app.flask_app
+	cd server &&  pipenv run uvicorn labml_app.flask_app:app --reload
 
 server-prod: ## compile and start server in prod
 	# pkill gunicorn
@@ -59,3 +59,4 @@ check-package:  ## List contents of PIPy Package
 
 help: ## Show this help.
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
