@@ -307,7 +307,7 @@ def get_session(request: Request, session_uuid: str) -> EndPointRes:
 
     c = session.get(session_uuid)
     if c:
-        session_data = c.get_data()
+        session_data = c.get_data(request)
 
     return session_data
 

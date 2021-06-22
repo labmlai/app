@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from flask import make_response, request
+from fastapi import Request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
@@ -104,49 +104,42 @@ class CPUAnalysis(Analysis):
             cp.delete()
 
 
-@Analysis.route('GET', 'cpu/<session_uuid>')
-def get_cpu_tracking(session_uuid: str) -> Any:
+@Analysis.route('GET', 'cpu/{session_uuid}')
+def get_cpu_tracking(request: Request, session_uuid: str) -> Any:
     track_data = []
     summary_data = []
-    status_code = 404
 
     ans = CPUAnalysis.get_or_create(session_uuid)
     if ans:
         track_data, summary_data = ans.get_tracking()
-        status_code = 200
 
-    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
-    response.status_code = status_code
-
-    return response
+    return {'series': track_data, 'insights': [], 'summary': summary_data}
 
 
-@Analysis.route('GET', 'cpu/preferences/<session_uuid>')
-def get_cpu_preferences(session_uuid: str) -> Any:
+@Analysis.route('GET', 'cpu/preferences/{session_uuid}')
+def get_cpu_preferences(request: Request, session_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = CPUPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
     cp: CPUPreferencesModel = preferences_key.load()
-    preferences_data = cp.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return cp.get_data()
 
 
 @Analysis.route('POST', 'cpu/preferences/<session_uuid>')
-def set_cpu_preferences(session_uuid: str) -> Any:
+async def set_cpu_preferences(request: Request, session_uuid: str) -> Any:
     preferences_key = CPUPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        return {}
 
     cp = preferences_key.load()
-    cp.update_preferences(request.json)
+    json = await request.json()
+    cp.update_preferences(json)
 
     logger.debug(f'update cpu preferences: {cp.key}')
 
-    return utils.format_rv({'errors': cp.errors})
+    return {'errors': cp.errors}

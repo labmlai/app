@@ -1,6 +1,7 @@
 import time
 from typing import Dict, List, Optional, Union
 
+from fastapi import Request
 from labml_db import Model, Key, Index
 
 from .. import utils
@@ -63,9 +64,9 @@ class Session(Model['Session']):
 
         self.save()
 
-    def get_data(self) -> Dict[str, Union[str, any]]:
+    def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
         is_project_session = False
-        u = auth.get_auth_user()
+        u = auth.get_auth_user(request)
         if u:
             is_project_session = u.default_project.is_project_session(self.session_uuid)
 
