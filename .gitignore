@@ -54,3 +54,6 @@ ui/src/env.ts
 dist/
 
 *.log
+
+build/
+*.so
