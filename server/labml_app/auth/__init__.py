@@ -1,4 +1,5 @@
 import functools
+import inspect
 from typing import Optional
 
 from fastapi import Request
@@ -33,11 +34,14 @@ def check_labml_token_permission(func) -> functools.wraps:
 
 def login_required(func) -> functools.wraps:
     @functools.wraps(func)
-    def wrapper(request: Request, *args, **kwargs):
+    async def wrapper(request: Request, *args, **kwargs):
         token_id = request.headers.get('Authorization', '')
         at = app_token.get_or_create(token_id)
         if at.is_auth:
-            return func(request, *args, **kwargs)
+            if inspect.iscoroutinefunction(func):
+                await func(request, *args, **kwargs)
+            else:
+                func(request, *args, **kwargs)
         else:
             response = JSONResponse()
             response.status_code = 403

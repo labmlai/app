@@ -1,4 +1,5 @@
 import queue
+import inspect
 import re
 import threading
 import time
@@ -98,11 +99,16 @@ class Event:
         return self._track(identifier, event, data)
 
     def time_this(self, time_limit: float = None) -> Callable:
-        def decorator_function(function):
-            @wraps(function)
-            def time_wrapper(request: Request, *args, **kwargs):
+        def decorator_function(func):
+            @wraps(func)
+            async def time_wrapper(request: Request, *args, **kwargs):
                 start = time.time()
-                r = function(request, *args, **kwargs)
+
+                if inspect.iscoroutinefunction(func):
+                    r = await func(request, *args, **kwargs)
+                else:
+                    r = func(request, *args, **kwargs)
+
                 end = time.time()
 
                 total_time = end - start
@@ -110,9 +116,9 @@ class Event:
                     return r
 
                 if time_limit and total_time > time_limit + 1.5:
-                    slack.client.send(f'PERF time: {total_time * 1000:.2f}ms method:{function.__name__}')
+                    slack.client.send(f'PERF time: {total_time * 1000:.2f}ms method:{func.__name__}')
 
-                self.track(request, function.__name__, {'time_elapsed': str(total_time)})
+                self.track(request, func.__name__, {'time_elapsed': str(total_time)})
 
                 return r
 
