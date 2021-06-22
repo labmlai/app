@@ -506,11 +506,12 @@ def is_user_logged(request: Request) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any]]) -> EndPointRes:
+async def sync_computer(request: Request) -> EndPointRes:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
         """
     errors = []
 
+    computer_uuid = request.query_params.get('computer_uuid', '')
     if len(computer_uuid) < 10:
         error = {'error': 'invalid_computer_uuid',
                  'message': f'Invalid Computer UUID'}
@@ -519,18 +520,21 @@ def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any
 
     c = computer.get_or_create(computer_uuid)
 
+    json = await request.json()
+    runs = json.get('runs', [])
     res = c.sync_runs(runs)
 
     return {'runs': res}
 
 
 @utils.mix_panel.MixPanelEvent.time_this(60.4)
-async def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
+async def polling(request: Request) -> EndPointRes:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
            """
     errors = []
 
+    computer_uuid = request.query_params.get('computer_uuid', '')
     if len(computer_uuid) < 10:
         error = {'error': 'invalid_computer_uuid',
                  'message': f'Invalid Computer UUID'}
@@ -541,8 +545,10 @@ async def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
 
     c.update_last_online()
 
-    if jobs:
-        c.sync_jobs(jobs)
+    json = await request.json()
+    job_responses = json.get('jobs', [])
+    if job_responses:
+        c.sync_jobs(job_responses)
 
     pending_jobs = []
     for i in range(16):
@@ -558,7 +564,7 @@ async def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
 
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(30.4)
-async def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRes:
+async def start_tensor_board(request: Request, computer_uuid: str) -> EndPointRes:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
@@ -566,6 +572,8 @@ async def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndP
     if not c.is_online:
         return {'status': job.JobStatuses.COMPUTER_OFFLINE, 'data': {}}
 
+    json = await request.json()
+    runs = json.get('runs', [])
     j = c.create_job(job.JobMethods.START_TENSORBOARD, {'runs': runs})
 
     for i in range(15):
@@ -584,7 +592,7 @@ async def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndP
 
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(30.4)
-async def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPointRes:
+async def clear_checkpoints(request: Request, computer_uuid: str) -> EndPointRes:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
@@ -592,6 +600,8 @@ async def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPo
     if not c.is_online:
         return {'status': job.JobStatuses.COMPUTER_OFFLINE, 'data': {}}
 
+    json = await request.json()
+    runs = json.get('runs', [])
     j = c.create_job(job.JobMethods.CLEAR_CHECKPOINTS, {'runs': runs})
 
     for i in range(15):
