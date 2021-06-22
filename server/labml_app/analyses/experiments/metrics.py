@@ -1,6 +1,7 @@
 from typing import Dict, Any
 
-from flask import make_response, request
+from fastapi import Request
+from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -11,7 +12,6 @@ from ..analysis import Analysis
 from ..series import SeriesModel, Series
 from ..series_collection import SeriesCollection
 from ..preferences import Preferences
-from labml_app import utils
 from labml_app.settings import INDICATOR_LIMIT
 
 
@@ -112,9 +112,9 @@ class MetricsAnalysis(Analysis):
             mp.delete()
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-@Analysis.route('GET', 'metrics/<run_uuid>')
-def get_metrics_tracking(run_uuid: str) -> Any:
+# @utils.mix_panel.MixPanelEvent.time_this(None)
+@Analysis.route('GET', 'metrics/{run_uuid}')
+def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -123,38 +123,36 @@ def get_metrics_tracking(run_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
+    response = JSONResponse({'series': track_data, 'insights': []})
     response.status_code = status_code
 
     return response
 
 
-@Analysis.route('GET', 'metrics/preferences/<run_uuid>')
-def get_metrics_preferences(run_uuid: str) -> Any:
+@Analysis.route('GET', 'metrics/preferences/{run_uuid}')
+def get_metrics_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
     mp: MetricsPreferencesModel = preferences_key.load()
-    preferences_data = mp.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return mp.get_data()
 
 
-@Analysis.route('POST', 'metrics/preferences/<run_uuid>')
-def set_metrics_preferences(run_uuid: str) -> Any:
+@Analysis.route('POST', 'metrics/preferences/{run_uuid}')
+async def set_metrics_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = MetricsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        return {}
 
     mp = preferences_key.load()
-    mp.update_preferences(request.json)
+    json = await request.json()
+    mp.update_preferences(json)
 
     logger.debug(f'update metrics preferences: {mp.key}')
 
-    return utils.format_rv({'errors': mp.errors})
+    return {'errors': mp.errors}

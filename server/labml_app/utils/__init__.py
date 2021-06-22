@@ -1,10 +1,8 @@
 import time
-from typing import Any, Dict, Callable
+from typing import Callable
 from uuid import uuid4
 from functools import wraps
 
-import flask
-from flask import jsonify
 from . import mix_panel
 
 
@@ -20,15 +18,6 @@ def check_version(user_v, new_v) -> bool:
 
 def gen_token() -> str:
     return uuid4().hex
-
-
-def format_rv(data: Any, updated: Dict[str, Any] = None) -> flask.Response:
-    meta = {'is_run_added': False}
-
-    if updated:
-        meta.update(updated)
-
-    return jsonify({'data': data, 'meta': meta})
 
 
 def time_this(function) -> Callable:

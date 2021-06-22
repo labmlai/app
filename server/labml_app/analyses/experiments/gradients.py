@@ -1,11 +1,11 @@
 from typing import Dict, Any
 
-from flask import make_response, request
+from fastapi import Request
+from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app import utils
 from labml_app.logger import logger
 from labml_app import enums
 from labml_app import settings
@@ -151,9 +151,8 @@ class GradientsAnalysis(Analysis):
             gp.delete()
 
 
-@utils.mix_panel.MixPanelEvent.time_this(None)
-@Analysis.route('GET', 'gradients/<run_uuid>')
-def get_grads_tracking(run_uuid: str) -> Any:
+@Analysis.route('GET', 'gradients/{run_uuid}')
+def get_grads_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     summary_data = []
     status_code = 404
@@ -164,38 +163,36 @@ def get_grads_tracking(run_uuid: str) -> Any:
         summary_data = ans.get_track_summaries()
         status_code = 200
 
-    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
+    response = JSONResponse({'series': track_data, 'insights': [], 'summary': summary_data})
     response.status_code = status_code
 
     return response
 
 
-@Analysis.route('GET', 'gradients/preferences/<run_uuid>')
-def get_grads_preferences(run_uuid: str) -> Any:
+@Analysis.route('GET', 'gradients/preferences/{run_uuid}')
+def get_grads_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = GradientsPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
     gp: GradientsPreferencesModel = preferences_key.load()
-    preferences_data = gp.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return gp.get_data()
 
 
-@Analysis.route('POST', 'gradients/preferences/<run_uuid>')
-def set_grads_preferences(run_uuid: str) -> Any:
+@Analysis.route('POST', 'gradients/preferences/{run_uuid}')
+async def set_grads_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = GradientsPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        return {}
 
     gp = preferences_key.load()
-    gp.update_preferences(request.json)
+    json = await request.json()
+    gp.update_preferences(json)
 
     logger.debug(f'update gradients preferences: {gp.key}')
 
-    return utils.format_rv({'errors': gp.errors})
+    return {'errors': gp.errors}

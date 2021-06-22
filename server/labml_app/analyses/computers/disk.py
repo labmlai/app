@@ -1,10 +1,10 @@
 from typing import Dict, Any
 
-from flask import make_response, request
+from fastapi import Request
+from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 
-from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
@@ -101,8 +101,8 @@ class DiskAnalysis(Analysis):
             dp.delete()
 
 
-@Analysis.route('GET', 'disk/<session_uuid>')
-def get_disk_tracking(session_uuid: str) -> Any:
+@Analysis.route('GET', 'disk/{session_uuid}')
+def get_disk_tracking(request: Request, session_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -111,38 +111,36 @@ def get_disk_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
+    response = JSONResponse({'series': track_data, 'insights': []})
     response.status_code = status_code
 
     return response
 
 
-@Analysis.route('GET', 'disk/preferences/<session_uuid>')
-def get_disk_preferences(session_uuid: str) -> Any:
+@Analysis.route('GET', 'disk/preferences/{session_uuid}')
+def get_disk_preferences(request: Request, session_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = DiskPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
     dp: DiskPreferencesModel = preferences_key.load()
-    preferences_data = dp.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return dp.get_data()
 
 
-@Analysis.route('POST', 'disk/preferences/<session_uuid>')
-def set_disk_preferences(session_uuid: str) -> Any:
+@Analysis.route('POST', 'disk/preferences/{session_uuid}')
+async def set_disk_preferences(request: Request, session_uuid: str) -> Any:
     preferences_key = DiskPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        return {}
 
     dp = preferences_key.load()
-    dp.update_preferences(request.json)
+    json = await request.json()
+    dp.update_preferences(json)
 
     logger.debug(f'update disk preferences: {dp.key}')
 
-    return utils.format_rv({'errors': dp.errors})
+    return {'errors': dp.errors}

@@ -1,18 +1,21 @@
 import git
+import os
 import logging
 import time
 import warnings
 from pathlib import Path
 from time import strftime
 
-from flask import Flask, request, g, send_from_directory
-from flask_cors import CORS
-from flasgger import Swagger
+import uvicorn
+from fastapi import FastAPI, Request, Response
+from fastapi.logger import logger as flogger
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 from labml_app import handlers
 from labml_app import settings
 from labml_app.logger import logger
-from labml_app.utils import mix_panel, slack
+from labml_app.utils import mix_panel
 from labml_app import db
 
 if settings.SENTRY_DSN:
@@ -30,7 +33,7 @@ if settings.SENTRY_DSN:
 
 
 def get_static_path():
-    package_path = Path(__file__).parent
+    package_path = Path(os.path.dirname(os.path.abspath(__file__)))
     app_path = package_path.parent.parent
 
     static_path = app_path / 'static'
@@ -50,14 +53,12 @@ STATIC_PATH = get_static_path()
 
 
 def create_app():
-    # disable flask logger
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
+    # disable logger
+    flogger.setLevel(logging.ERROR)
 
-    _app = Flask(__name__, static_folder=str(STATIC_PATH), static_url_path='/static')
+    _app = FastAPI()
 
-    with _app.app_context():
-        db.init_db()
+    db.init_db()
 
     def run_on_start():
         repo = git.Repo(search_parent_directories=True)
@@ -77,63 +78,53 @@ def create_app():
 
 app = create_app()
 
-template = {
-    "swagger": "2.0",
-    "info": {
-        "title": "labml.ai Server API",
-        "description": "API to communicate with UI and computer",
-        "version": "v1"
-    },
-    "schemes": [
-        "http",
-        "https"
-    ]
-}
-swagger = Swagger(app, template=template)
-
-cors = CORS(app, supports_credentials=True)
-app.config['CORS_HEADERS'] = 'Content-Type'
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],
+    allow_credentials=True,
+)
 
 handlers.add_handlers(app)
 
 
-@app.route('/')
-def root():
-    return app.send_static_file('index.html')
+@app.get('/')
+def index():
+    file_path = str(STATIC_PATH) + '/' + 'index.html'
+
+    return FileResponse(file_path)
 
 
-@app.route('/<path:path>')
-def send_js(path):
-    # TODO: Fix this properly
-    try:
-        return send_from_directory(STATIC_PATH, path)
-    except Exception as e:
-        return app.send_static_file('index.html')
+@app.get('/{file_path:path}')
+def send_js(file_path: str):
+    file_path = str(STATIC_PATH) + '/' + file_path
+    if not Path(file_path).exists():
+        file_path = str(STATIC_PATH) + '/' + 'index.html'
+
+    return FileResponse(file_path)
 
 
-@app.before_request
-def before_request():
-    """Save time before each request"""
+@app.middleware('http')
+async def log_process_time(request: Request, call_next):
+    """
+    Save time before each request
+    TODO: Track time and content size in tracker. No need of logs"""
     timestamp = strftime('[%Y-%b-%d %H:%M]')
-    g.request_start_time = time.time()
-    content_size = request.content_length
-    if content_size and content_size > (15 * 1000000):
-        logger.error(f'large content size: {request.content_length / 1000000} MB')
-    logger.debug(f'time: {timestamp} uri: {request.full_path}')
+    request_start_time = time.time()
+    logger.debug(f'time: {timestamp} uri: {request.url}')
 
+    response: Response = await call_next(request)
 
-@app.after_request
-def after_request(response):
     """Calculate and log execution time"""
-    request_time = time.time() - g.request_start_time
+    request_time = time.time() - request_start_time
 
-    if '/api' not in request.full_path:
-        return response
+    logger.info(f'PERF time: {request_time * 1000:.2f}ms uri: {request.url} method:{request.method}')
 
-    logger.info(f'PERF time: {"%.5fs" % request_time} uri: {request.full_path} method:{request.method}')
+    # TODO check this
+    response.headers[
+        'Access-Control-Expose-Headers'] = 'Authorization'  # otherwise network.ts:43 Refused to get unsafe header "Authorization"
 
     return response
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', threaded=True)
+    uvicorn.run(app, debug=True, host='0.0.0.0', port=5000)

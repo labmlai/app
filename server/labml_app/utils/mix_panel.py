@@ -1,11 +1,12 @@
 import queue
+import inspect
 import re
 import threading
 import time
 from functools import wraps
 from typing import NamedTuple, Dict, Union, Callable
 
-from flask import request
+from fastapi import Request
 
 from . import slack
 
@@ -60,9 +61,9 @@ class Event:
     def has_numbers(input_string) -> bool:
         return bool(re.search(r'\d', input_string))
 
-    def get_meta_data(self) -> Dict[str, str]:
-        run_uuid = request.args.get('run_uuid', '')
-        computer_uuid = request.args.get('computer_uuid', '')
+    def get_meta_data(self, request: Request) -> Dict[str, str]:
+        run_uuid = request.query_params.get('run_uuid', '')
+        computer_uuid = request.query_params.get('computer_uuid', '')
 
         uuid = ''
         if run_uuid:
@@ -70,42 +71,44 @@ class Event:
         elif computer_uuid:
             uuid = computer_uuid
         else:
-            value = request.base_url.split('/')[-1]
+            value = request.base_url.path.split('/')[-1]
             if self.has_numbers(value):
                 uuid = value
 
-        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
-            remote_addr = request.environ['REMOTE_ADDR']
-        else:
-            remote_addr = request.environ['HTTP_X_FORWARDED_FOR']  # if behind a proxy
+        remote_addr = request.client.host
 
         meta = {'remote_ip': remote_addr,
                 'uuid': uuid,
-                'labml_token': request.args.get('labml_token', ''),
-                'labml_version': request.args.get('labml_version', ''),
+                'labml_token': request.query_params.get('labml_token', ''),
+                'labml_version': request.query_params.get('labml_version', ''),
                 'agent': request.headers['User-Agent']
                 }
 
         return meta
 
-    def track(self, event: str, data: Union[NamedTuple, Dict], identifier: str = '') -> None:
+    def track(self, request: Request, event: str, data: Union[NamedTuple, Dict], identifier: str = '') -> None:
         if isinstance(data, NamedTuple):
             data = dict(data)
 
-        user = auth.get_auth_user()
+        user = auth.get_auth_user(request)
         if user:
             identifier = user.email
 
-        data.update(self.get_meta_data())
+        data.update(self.get_meta_data(request))
 
         return self._track(identifier, event, data)
 
     def time_this(self, time_limit: float = None) -> Callable:
-        def decorator_function(function):
-            @wraps(function)
-            def time_wrapper(*args, **kwargs):
+        def decorator_function(func):
+            @wraps(func)
+            async def time_wrapper(request: Request, *args, **kwargs):
                 start = time.time()
-                r = function(*args, **kwargs)
+
+                if inspect.iscoroutinefunction(func):
+                    r = await func(request, *args, **kwargs)
+                else:
+                    r = func(request, *args, **kwargs)
+
                 end = time.time()
 
                 total_time = end - start
@@ -113,10 +116,9 @@ class Event:
                     return r
 
                 if time_limit and total_time > time_limit + 1.5:
-                    slack.client.send(
-                        f'PERF time: {"%.5fs" % total_time} uri: {request.full_path} method:{request.method}')
+                    slack.client.send(f'PERF time: {total_time * 1000:.2f}ms method:{func.__name__}')
 
-                self.track(function.__name__, {'time_elapsed': str(total_time)})
+                self.track(request, func.__name__, {'time_elapsed': str(total_time)})
 
                 return r
 

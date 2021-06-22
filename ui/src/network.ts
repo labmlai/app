@@ -148,7 +148,7 @@ class Network {
                         reject(new NetworkError(xhr.status, url, JSON.stringify(xhr.response)))
                     }
                 } else {
-                    resolve(xhr.response.data)
+                    resolve(xhr.response)
                 }
             }
 

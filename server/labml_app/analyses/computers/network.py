@@ -1,11 +1,11 @@
 from typing import Dict, Any
 
-from flask import make_response, request
+from fastapi import Request
+from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import COMPUTEREnums
 from ..analysis import Analysis
@@ -98,8 +98,8 @@ class NetworkAnalysis(Analysis):
             np.delete()
 
 
-@Analysis.route('GET', 'network/<session_uuid>')
-def get_network_tracking(session_uuid: str) -> Any:
+@Analysis.route('GET', 'network/{session_uuid}')
+def get_network_tracking(request: Request, session_uuid: str) -> Any:
     track_data = []
     status_code = 404
 
@@ -108,38 +108,36 @@ def get_network_tracking(session_uuid: str) -> Any:
         track_data = ans.get_tracking()
         status_code = 200
 
-    response = make_response(utils.format_rv({'series': track_data, 'insights': []}))
+    response = JSONResponse({'series': track_data, 'insights': []})
     response.status_code = status_code
 
     return response
 
 
-@Analysis.route('GET', 'network/preferences/<session_uuid>')
-def get_network_preferences(session_uuid: str) -> Any:
+@Analysis.route('GET', 'network/preferences/{session_uuid}')
+def get_network_preferences(request: Request, session_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = NetworkPreferencesIndex.get(session_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
     np: NetworkPreferencesModel = preferences_key.load()
-    preferences_data = np.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return np.get_data()
 
 
-@Analysis.route('POST', 'network/preferences/<session_uuid>')
-def set_network_preferences(session_uuid: str) -> Any:
+@Analysis.route('POST', 'network/preferences/{session_uuid}')
+async def set_network_preferences(request: Request, session_uuid: str) -> Any:
     preferences_key = NetworkPreferencesIndex.get(session_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        return {}
 
     np = preferences_key.load()
-    np.update_preferences(request.json)
+    json = await request.json()
+    np.update_preferences(json)
 
     logger.debug(f'update network preferences: {np.key}')
 
-    return utils.format_rv({'errors': np.errors})
+    return {'errors': np.errors}

@@ -1,12 +1,11 @@
 from typing import Any, Dict
 
-from flask import make_response, request
+from fastapi import Request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
 from labml_app.logger import logger
-from labml_app import utils
 from ..analysis import Analysis
 from .. import preferences
 
@@ -58,24 +57,22 @@ class ComparisonPreferencesIndex(Index['ComparisonPreferences']):
     pass
 
 
-@Analysis.route('GET', 'compare/preferences/<run_uuid>')
-def get_comparison_preferences(run_uuid: str) -> Any:
+@Analysis.route('GET', 'compare/preferences/{run_uuid}')
+def get_comparison_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = ComparisonPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
-    cp: ComparisonPreferencesModel = preferences_key.load()
+    cp: ComparisonPreferences = preferences_key.load()
     preferences_data = cp.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return preferences_data
 
 
-@Analysis.route('POST', 'compare/preferences/<run_uuid>')
-def set_comparison_preferences(run_uuid: str) -> Any:
+@Analysis.route('POST', 'compare/preferences/{run_uuid}')
+async def set_comparison_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = ComparisonPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
@@ -84,8 +81,9 @@ def set_comparison_preferences(run_uuid: str) -> Any:
     else:
         cp = preferences_key.load()
 
-    cp.update_preferences(request.json)
+    json = await request.json()
+    cp.update_preferences(json)
 
     logger.debug(f'update comparison preferences: {cp.key}')
 
-    return utils.format_rv({'errors': cp.errors})
+    return {'errors': cp.errors}
