@@ -45,7 +45,7 @@ jobs:
 
       - name: Deploy
         run: |
-          rsync -zravKLt --perms --executability static/ ubuntu@app.labml.ai:~/labml/app/ui/build/static/
+          rsync -zravKLt --perms --executability static/ ${{ secrets.DEPLOY_LOCATION }}
 
       - name: Create Sentry release
         uses: getsentry/action-release@v1
