@@ -1,6 +1,7 @@
 from typing import Dict, Any
 
 from fastapi import Request
+from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -115,12 +116,17 @@ class MetricsAnalysis(Analysis):
 @Analysis.route('GET', 'metrics/{run_uuid}')
 def get_metrics_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
+    status_code = 404
 
     ans = MetricsAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
+        status_code = 200
 
-    return {'series': track_data, 'insights': []}
+    response = JSONResponse({'series': track_data, 'insights': []})
+    response.status_code = status_code
+
+    return response
 
 
 @Analysis.route('GET', 'metrics/preferences/{run_uuid}')

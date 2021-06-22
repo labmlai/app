@@ -1,11 +1,11 @@
 from typing import Dict, Any
 
 from fastapi import Request
+from fastapi.responses import JSONResponse
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
 
-from labml_app import utils
 from labml_app.logger import logger
 from labml_app.enums import SeriesEnums
 from labml_app.settings import INDICATOR_LIMIT
@@ -156,13 +156,18 @@ class OutputsAnalysis(Analysis):
 def get_modules_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     summary_data = []
+    status_code = 404
 
     ans = OutputsAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
         summary_data = ans.get_track_summaries()
+        status_code = 200
 
-    return {'series': track_data, 'insights': [], 'summary': summary_data}
+    response = JSONResponse({'series': track_data, 'insights': [], 'summary': summary_data})
+    response.status_code = status_code
+
+    return response
 
 
 @Analysis.route('GET', 'outputs/preferences/{run_uuid}')
