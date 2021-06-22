@@ -38,7 +38,7 @@ def _get_user_profile(token: str):
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 async def sign_in(request: Request) -> EndPointRes:
     json = await request.json()
     if 'token' in json:
@@ -61,7 +61,7 @@ async def sign_in(request: Request) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def sign_out(request: Request) -> EndPointRes:
     token_id = request.headers.get('Authorization', '')
     at = app_token.get_or_create(token_id)
@@ -150,7 +150,7 @@ async def update_run(request: Request, labml_token: str, run_uuid: str, labml_ve
     return res
 
 
-# @utils.mix_panel.MixPanelEvent.time_this(0.4)
+@utils.mix_panel.MixPanelEvent.time_this(0.4)
 async def _update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str,
                           labml_version: str):
     errors = []
@@ -232,7 +232,7 @@ async def update_session(request: Request, labml_token: str, session_uuid: str, 
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_run(request: Request, run_uuid: str) -> EndPointRes:
     r = run.get(run_uuid)
     at = auth.get_app_token(request)
@@ -261,7 +261,7 @@ def claim_run(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def claim_session(request: Request, session_uuid: str) -> EndPointRes:
     c = session.get(session_uuid)
     at = auth.get_app_token(request)
@@ -289,7 +289,7 @@ def claim_session(request: Request, session_uuid: str) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_run(request: Request, run_uuid: str) -> EndPointRes:
     run_data = {}
 
@@ -301,7 +301,7 @@ def get_run(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_session(request: Request, session_uuid: str) -> EndPointRes:
     session_data = {}
 
@@ -342,7 +342,7 @@ async def edit_session(request: Request, session_uuid: str) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_run_status(request: Request, run_uuid: str) -> EndPointRes:
     status_data = {}
 
@@ -354,7 +354,7 @@ def get_run_status(request: Request, run_uuid: str) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_session_status(request: Request, session_uuid: str) -> EndPointRes:
     status_data = {}
 
@@ -367,7 +367,7 @@ def get_session_status(request: Request, session_uuid: str) -> EndPointRes:
 
 @utils.api_endpoint
 @auth.login_required
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.check_labml_token_permission
 def get_runs(request: Request, labml_token: str) -> EndPointRes:
     print(labml_token)
@@ -394,7 +394,7 @@ def get_runs(request: Request, labml_token: str) -> EndPointRes:
 @utils.api_endpoint
 @auth.login_required
 @auth.check_labml_token_permission
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_sessions(request: Request, labml_token: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
@@ -417,7 +417,7 @@ def get_sessions(request: Request, labml_token: str) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 @auth.login_required
 async def delete_runs(request: Request) -> EndPointRes:
     json = await request.json()
@@ -473,7 +473,7 @@ def get_computer(request: Request, computer_uuid: str) -> EndPointRes:
 
 @utils.api_endpoint
 @auth.login_required
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 async def set_user(request: Request) -> EndPointRes:
     json = await request.json()
     data = json['user']
@@ -486,7 +486,7 @@ async def set_user(request: Request) -> EndPointRes:
 
 @utils.api_endpoint
 @auth.login_required
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def get_user(request: Request) -> EndPointRes:
     u = auth.get_auth_user(request)
 
@@ -494,13 +494,13 @@ def get_user(request: Request) -> EndPointRes:
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def is_user_logged(request: Request) -> EndPointRes:
     return {'is_user_logged': auth.get_is_user_logged(request)}
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(None)
+@utils.mix_panel.MixPanelEvent.time_this(None)
 def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any]]) -> EndPointRes:
     """End point to sync UI-server and UI-computer. runs: to sync with the server.
         """
@@ -520,7 +520,7 @@ def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any
 
 
 @utils.api_endpoint
-# @utils.mix_panel.MixPanelEvent.time_this(60.4)
+@utils.mix_panel.MixPanelEvent.time_this(60.4)
 def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
@@ -554,7 +554,7 @@ def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
 
 @utils.api_endpoint
 @auth.login_required
-# @utils.mix_panel.MixPanelEvent.time_this(30.4)
+@utils.mix_panel.MixPanelEvent.time_this(30.4)
 def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRes:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
@@ -581,7 +581,7 @@ def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRe
 
 @utils.api_endpoint
 @auth.login_required
-# @utils.mix_panel.MixPanelEvent.time_this(30.4)
+@utils.mix_panel.MixPanelEvent.time_this(30.4)
 def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPointRes:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
