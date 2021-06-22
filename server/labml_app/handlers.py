@@ -1,6 +1,6 @@
 import sys
 import asyncio
-from typing import Callable, Dict, Any, List
+from typing import Callable, Dict, Any
 
 import requests
 from fastapi import FastAPI, Request
