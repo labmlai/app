@@ -9,7 +9,6 @@ import uvicorn
 from fastapi import FastAPI, Request, Response
 from fastapi.logger import logger as flogger
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from labml_app import handlers

@@ -25,8 +25,8 @@ def gen_token() -> str:
 
 def api_endpoint(func) -> functools.wraps:
     @functools.wraps(func)
-    async def wrapper(request: Request, *args, **kwargs) -> Response:
-        res = await func(request, *args, **kwargs)
+    def wrapper(request: Request, *args, **kwargs) -> Response:
+        res = func(request, *args, **kwargs)
         response = JSONResponse(res)
         if not res:
             response.status_code = 404
