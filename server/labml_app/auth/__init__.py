@@ -39,9 +39,9 @@ def login_required(func) -> functools.wraps:
         at = app_token.get_or_create(token_id)
         if at.is_auth:
             if inspect.iscoroutinefunction(func):
-                await func(request, *args, **kwargs)
+                return await func(request, *args, **kwargs)
             else:
-                func(request, *args, **kwargs)
+                return func(request, *args, **kwargs)
         else:
             response = JSONResponse()
             response.status_code = 403

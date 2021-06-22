@@ -1,6 +1,5 @@
 import sys
 import asyncio
-import time
 from typing import Callable, Dict, Any, List
 
 import requests
@@ -408,8 +407,8 @@ def get_runs(request: Request, labml_token: str) -> EndPointRes:
 
 
 @auth.login_required
-@auth.check_labml_token_permission
 @utils.mix_panel.MixPanelEvent.time_this(None)
+@auth.check_labml_token_permission
 def get_sessions(request: Request, labml_token: str) -> EndPointRes:
     u = auth.get_auth_user(request)
 
@@ -526,7 +525,7 @@ def sync_computer(request: Request, computer_uuid: str, runs: List[Dict[str, Any
 
 
 @utils.mix_panel.MixPanelEvent.time_this(60.4)
-def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
+async def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
     """End point to sync UI-server and UI-computer. jobs: statuses of jobs.
     pending jobs will be returned in the response if there any
            """
@@ -552,14 +551,14 @@ def polling(request: Request, computer_uuid: str, jobs) -> EndPointRes:
         if pending_jobs:
             break
 
-        time.sleep(3)
+        await asyncio.sleep(3)
 
     return {'jobs': pending_jobs}
 
 
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(30.4)
-def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRes:
+async def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRes:
     """End point to start TB for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
@@ -575,7 +574,7 @@ def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRe
         if completed_job and completed_job.is_completed:
             return completed_job.to_data()
 
-        time.sleep(2)
+        await asyncio.sleep(2)
 
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
@@ -585,7 +584,7 @@ def start_tensor_board(request: Request, computer_uuid: str, runs) -> EndPointRe
 
 @auth.login_required
 @utils.mix_panel.MixPanelEvent.time_this(30.4)
-def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPointRes:
+async def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPointRes:
     """End point to clear checkpoints for set of runs. runs: all the runs should be from a same computer.
             """
     c = computer.get_or_create(computer_uuid)
@@ -601,7 +600,7 @@ def clear_checkpoints(request: Request, computer_uuid: str, runs) -> EndPointRes
         if completed_job and completed_job.is_completed:
             return completed_job.to_data()
 
-        time.sleep(2)
+        await asyncio.sleep(2)
 
     data = j.to_data()
     data['status'] = job.JobStatuses.TIMEOUT
