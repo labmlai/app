@@ -11,5 +11,6 @@ for run_key in run_keys:
     r = run_key.load()
     if r.is_claimed:
         c += 1
-
+        
 print(c, len(run_keys))
+
