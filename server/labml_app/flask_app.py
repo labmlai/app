@@ -80,7 +80,7 @@ app = create_app()
 
 app.add_middleware(
     CORSMiddleware,
-    # allow_origins=['*'],
+    allow_origins=['https://api.labml.ai'],
     allow_credentials=True,
 )
 
