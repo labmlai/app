@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from flask import make_response, request
+from fastapi import Request
 from labml_db import Model, Index
 from labml_db.serializer.pickle import PickleSerializer
 from labml_db.serializer.yaml import YamlSerializer
@@ -151,50 +151,43 @@ class ParametersAnalysis(Analysis):
 
 
 @utils.mix_panel.MixPanelEvent.time_this(None)
-@Analysis.route('GET', 'parameters/<run_uuid>')
-def get_params_tracking(run_uuid: str) -> Any:
+@Analysis.route('GET', 'parameters/{run_uuid}')
+def get_params_tracking(request: Request, run_uuid: str) -> Any:
     track_data = []
     summary_data = []
-    status_code = 404
 
     ans = ParametersAnalysis.get_or_create(run_uuid)
     if ans:
         track_data = ans.get_tracking()
         summary_data = ans.get_track_summaries()
-        status_code = 200
 
-    response = make_response(utils.format_rv({'series': track_data, 'insights': [], 'summary': summary_data}))
-    response.status_code = status_code
-
-    return response
+    return {'series': track_data, 'insights': [], 'summary': summary_data}
 
 
-@Analysis.route('GET', 'parameters/preferences/<run_uuid>')
-def get_params_preferences(run_uuid: str) -> Any:
+@Analysis.route('GET', 'parameters/preferences/{run_uuid}')
+def get_params_preferences(request: Request, run_uuid: str) -> Any:
     preferences_data = {}
 
     preferences_key = ParametersPreferencesIndex.get(run_uuid)
     if not preferences_key:
-        return utils.format_rv(preferences_data)
+        return preferences_data
 
     pp: ParametersPreferencesModel = preferences_key.load()
-    preferences_data = pp.get_data()
 
-    response = make_response(utils.format_rv(preferences_data))
-
-    return response
+    return pp.get_data()
 
 
-@Analysis.route('POST', 'parameters/preferences/<run_uuid>')
-def set_params_preferences(run_uuid: str) -> Any:
+@Analysis.route('POST', 'parameters/preferences/{run_uuid}')
+async def set_params_preferences(request: Request, run_uuid: str) -> Any:
     preferences_key = ParametersPreferencesIndex.get(run_uuid)
 
     if not preferences_key:
-        return utils.format_rv({})
+        return {}
 
     pp = preferences_key.load()
-    pp.update_preferences(request.json)
+    json = await request.json()
+    pp.update_preferences(json)
 
     logger.debug(f'update parameters preferences: {pp.key}')
 
-    return utils.format_rv({'errors': pp.errors})
+    return {'errors': pp.errors}

@@ -1,6 +1,8 @@
 import time
 from typing import Dict, List, Optional, Union, NamedTuple
 
+from fastapi import Request
+
 from labml_db import Model, Key, Index
 
 from .. import auth
@@ -232,8 +234,8 @@ class Run(Model['Run']):
 
         return url + f'/commit/{commit}'
 
-    def get_data(self) -> Dict[str, Union[str, any]]:
-        u = auth.get_auth_user()
+    def get_data(self, request: Request) -> Dict[str, Union[str, any]]:
+        u = auth.get_auth_user(request)
         if u:
             is_project_run = u.default_project.is_project_run(self.run_uuid)
         else:

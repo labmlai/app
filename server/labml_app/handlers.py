@@ -3,8 +3,7 @@ import time
 from typing import Callable, Dict, Any, List
 
 import requests
-from fastapi import FastAPI, Response, Request, Body
-from fastapi.responses import HTMLResponse, ORJSONResponse
+from fastapi import FastAPI, Request
 
 from .logger import logger
 from . import settings
@@ -296,7 +295,7 @@ def get_run(request: Request, run_uuid: str) -> EndPointRes:
 
     r = run.get(run_uuid)
     if r:
-        run_data = r.get_data()
+        run_data = r.get_data(request)
 
     return run_data
 
@@ -653,4 +652,6 @@ def add_handlers(app: FastAPI):
     for method, func, url, login_required in analyses.AnalysisManager.get_handlers():
         if login_required:
             func = auth.login_required(func)
+
+        func = utils.api_endpoint(func)
         _add_ui(app, method, func, url)
