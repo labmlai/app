@@ -86,19 +86,19 @@ app.add_middleware(
 
 handlers.add_handlers(app)
 
-app.mount("/static", StaticFiles(directory=str(STATIC_PATH), html=True), name="static")
-
 
 @app.get('/')
-def send_js(path: str):
+def index():
     file_path = str(STATIC_PATH) + '/' + 'index.html'
 
     return FileResponse(file_path)
 
 
-@app.get('/{path}')
-def send_js(path: str):
-    file_path = str(STATIC_PATH) + '/' + 'index.html'
+@app.get('/{file_path:path}')
+def send_js(file_path: str):
+    file_path = str(STATIC_PATH) + '/' + file_path
+    if not Path(file_path).exists():
+        file_path = str(STATIC_PATH) + '/' + 'index.html'
 
     return FileResponse(file_path)
 
