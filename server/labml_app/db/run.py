@@ -292,7 +292,7 @@ class RunIndex(Index['Run']):
     pass
 
 
-def get_or_create(run_uuid: str, labml_token: str = '', computer_ip: str = '') -> 'Run':
+def get_or_create(request: Request, run_uuid: str, labml_token: str = '') -> 'Run':
     p = project.get_project(labml_token)
 
     if run_uuid in p.runs:
@@ -305,7 +305,7 @@ def get_or_create(run_uuid: str, labml_token: str = '', computer_ip: str = '') -
         is_claimed = True
 
         identifier = user.get_token_owner(labml_token)
-        utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
+        utils.mix_panel.MixPanelEvent.track(request, 'run_claimed', {'run_uuid': run_uuid}, identifier=identifier)
         utils.mix_panel.MixPanelEvent.run_claimed_set(identifier)
 
     time_now = time.time()
@@ -314,7 +314,7 @@ def get_or_create(run_uuid: str, labml_token: str = '', computer_ip: str = '') -
     run = Run(run_uuid=run_uuid,
               owner=identifier,
               start_time=time_now,
-              run_ip=computer_ip,
+              run_ip=request.client.host,
               is_claimed=is_claimed,
               status=s.key,
               )
@@ -326,7 +326,7 @@ def get_or_create(run_uuid: str, labml_token: str = '', computer_ip: str = '') -
 
     RunIndex.set(run.run_uuid, run.key)
 
-    utils.mix_panel.MixPanelEvent.track('run_created', {'run_uuid': run_uuid, 'labml_token': labml_token})
+    utils.mix_panel.MixPanelEvent.track(request, 'run_created', {'run_uuid': run_uuid, 'labml_token': labml_token})
 
     return run
 

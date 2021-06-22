@@ -1,11 +1,8 @@
 import time
-import functools
 from typing import Callable
 from uuid import uuid4
 from functools import wraps
 
-from fastapi import Request, Response
-from fastapi.responses import JSONResponse
 from . import mix_panel
 
 
@@ -21,18 +18,6 @@ def check_version(user_v, new_v) -> bool:
 
 def gen_token() -> str:
     return uuid4().hex
-
-
-# def api_endpoint(func) -> functools.wraps:
-#     @functools.wraps(func)
-#     def wrapper(request: Request, *args, **kwargs) -> Response:
-#         res = func(request, *args, **kwargs)
-#         response = JSONResponse(res)
-#         if not res:
-#             response.status_code = 404
-#         return response
-#
-#     return wrapper
 
 
 def time_this(function) -> Callable:

@@ -1,4 +1,5 @@
 import sys
+import asyncio
 import time
 from typing import Callable, Dict, Any, List
 
@@ -113,7 +114,7 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
                                 'add it to your experiments list.'}
         errors.append(error)
 
-    r = run.get_or_create(run_uuid, token, request.client.host)
+    r = run.get_or_create(request, run_uuid, token)
     s = r.status.load()
 
     json = await request.json()
@@ -140,10 +141,14 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
     return {'errors': errors, 'url': r.url, 'dynamic': hp_values}
 
 
-async def update_run(request: Request, labml_token: str, run_uuid: str, labml_version: str) -> EndPointRes:
+async def update_run(request: Request) -> EndPointRes:
+    labml_token = request.query_params.get('labml_token', '')
+    run_uuid = request.query_params.get('run_uuid', '')
+    labml_version = request.query_params.get('labml_version', '')
+
     res = await _update_run(request, labml_token, run_uuid, labml_version)
 
-    time.sleep(3)
+    await asyncio.sleep(3)
 
     return res
 
@@ -198,7 +203,7 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
                                 'add it to your experiments list.'}
         errors.append(error)
 
-    c = session.get_or_create(session_uuid, computer_uuid, token, request.client.host)
+    c = session.get_or_create(request, session_uuid, computer_uuid, token)
     s = c.status.load()
 
     json = await request.json()
@@ -219,11 +224,15 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     return {'errors': errors, 'url': c.url}
 
 
-async def update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str,
-                         labml_version: str) -> EndPointRes:
+async def update_session(request: Request) -> EndPointRes:
+    labml_token = request.query_params.get('labml_token', '')
+    session_uuid = request.query_params.get('session_uuid', '')
+    computer_uuid = request.query_params.get('computer_uuid', '')
+    labml_version = request.query_params.get('labml_version', '')
+
     res = await _update_session(request, labml_token, session_uuid, computer_uuid, labml_version)
 
-    time.sleep(3)
+    await asyncio.sleep(3)
 
     return res
 
@@ -250,7 +259,7 @@ def claim_run(request: Request, run_uuid: str) -> EndPointRes:
             r.owner = u.email
             r.save()
 
-            utils.mix_panel.MixPanelEvent.track('run_claimed', {'run_uuid': r.run_uuid})
+            utils.mix_panel.MixPanelEvent.track(request, 'run_claimed', {'run_uuid': r.run_uuid})
             utils.mix_panel.MixPanelEvent.run_claimed_set(u.email)
 
     return {'is_successful': True}
@@ -277,7 +286,7 @@ def claim_session(request: Request, session_uuid: str) -> EndPointRes:
             c.owner = u.email
             c.save()
 
-            utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': c.session_uuid})
+            utils.mix_panel.MixPanelEvent.track(request, 'session_claimed', {'session_uuid': c.session_uuid})
             utils.mix_panel.MixPanelEvent.computer_claimed_set(u.email)
 
     return {'is_successful': True}

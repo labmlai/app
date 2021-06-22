@@ -105,7 +105,7 @@ class SessionIndex(Index['Session']):
     pass
 
 
-def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', computer_ip: str = '') -> Session:
+def get_or_create(request: Request, session_uuid: str, computer_uuid: str, labml_token: str = '') -> Session:
     p = project.get_project(labml_token)
 
     if session_uuid in p.sessions:
@@ -118,7 +118,8 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
         is_claimed = True
 
         identifier = user.get_token_owner(labml_token)
-        utils.mix_panel.MixPanelEvent.track('session_claimed', {'session_uuid': session_uuid}, identifier=identifier)
+        utils.mix_panel.MixPanelEvent.track(request, 'session_claimed', {'session_uuid': session_uuid},
+                                            identifier=identifier)
         utils.mix_panel.MixPanelEvent.computer_claimed_set(identifier)
 
     time_now = time.time()
@@ -128,7 +129,7 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
                       computer_uuid=computer_uuid,
                       owner=identifier,
                       start_time=time_now,
-                      computer_ip=computer_ip,
+                      computer_ip=request.client.host,
                       is_claimed=is_claimed,
                       status=s.key,
                       )
@@ -141,7 +142,8 @@ def get_or_create(session_uuid: str, computer_uuid: str, labml_token: str = '', 
 
     computer.add_session(computer_uuid, session_uuid)
 
-    utils.mix_panel.MixPanelEvent.track('session_created', {'session_uuid': session_uuid, 'labml_token': labml_token})
+    utils.mix_panel.MixPanelEvent.track(request, 'session_created',
+                                        {'session_uuid': session_uuid, 'labml_token': labml_token})
 
     return session
 
