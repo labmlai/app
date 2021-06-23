@@ -123,6 +123,7 @@ async def log_process_time(request: Request, call_next):
 
     # TODO check this; otherwise network.ts:43 Refused to get unsafe header "Authorization"
     response.headers['Access-Control-Expose-Headers'] = 'Authorization'
+    response.headers['Access-Control-Max-Age'] = str(60 * 24)
 
     return response
 
