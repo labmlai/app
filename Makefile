@@ -9,7 +9,7 @@ setup: ## install server and ui dependencies
 	cd server && pipenv install --ignore-pipfile
 
 server-dev: ## start and watch server
-	cd server &&  pipenv run uvicorn labml_app.flask_app:app --reload
+	cd server &&  pipenv run uvicorn labml_app.flask_app:app --reload --host 0.0.0.0 --port 5000
 
 server-prod: ## compile and start server in prod
 	# pkill gunicorn

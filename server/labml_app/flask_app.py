@@ -81,6 +81,8 @@ app = create_app()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['https://api.labml.ai'],
+    allow_methods=["*"],
+    allow_headers=["*"],
     allow_credentials=True,
 )
 
@@ -121,7 +123,7 @@ async def log_process_time(request: Request, call_next):
 
     # TODO check this
     response.headers[
-        'Access-Control-Expose-Headers'] = 'Authorization' # otherwise network.ts:43 Refused to get unsafe header "Authorization"]
+        'Access-Control-Expose-Headers'] = 'Authorization'  # otherwise network.ts:43 Refused to get unsafe header "Authorization"]
     response.headers[
         'Access-Control-Allow-Origin'] = '*'
 
@@ -129,4 +131,4 @@ async def log_process_time(request: Request, call_next):
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, debug=True, host='0.0.0.0', port=5000)
+    uvicorn.run(app, host='0.0.0.0', port=5000)
