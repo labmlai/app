@@ -121,11 +121,8 @@ async def log_process_time(request: Request, call_next):
 
     logger.info(f'PERF time: {request_time * 1000:.2f}ms uri: {request.url} method:{request.method}')
 
-    # TODO check this
-    response.headers[
-        'Access-Control-Expose-Headers'] = 'Authorization'  # otherwise network.ts:43 Refused to get unsafe header "Authorization"]
-    # response.headers[
-    #     'Access-Control-Allow-Origin'] = '*'
+    # TODO check this; otherwise network.ts:43 Refused to get unsafe header "Authorization"
+    response.headers['Access-Control-Expose-Headers'] = 'Authorization'
 
     return response
 
