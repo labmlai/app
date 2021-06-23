@@ -2,7 +2,6 @@ import math
 from typing import Dict, List, Optional, Union
 
 import numpy as np
-from labml import monit
 import labml_fast_merge
 
 MAX_BUFFER_LENGTH = 1024
@@ -155,7 +154,6 @@ class Series:
         else:
             prev_last_step = 0
 
-        # with monit.section('_merge'):
         n = self._merge(self.value, self.last_step, self.step, prev_last_step, from_step)
 
         self.last_step = self.last_step[:n]
