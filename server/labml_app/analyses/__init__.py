@@ -1,5 +1,6 @@
 from typing import Dict, List, Tuple, Callable
 
+from labml import monit
 from . import analysis
 from .series import SeriesModel
 from ..analyses_settings import experiment_analyses, computer_analyses
@@ -18,7 +19,10 @@ class AnalysisManager:
     @staticmethod
     def track_computer(session_uuid: str, data: Dict[str, SeriesModel]) -> None:
         for ans in computer_analyses:
-            ans.get_or_create(session_uuid).track(data)
+            with monit.section('get_or_create'):
+                print(ans.__name__)
+                _ans = ans.get_or_create(session_uuid)
+            _ans.get_or_create(session_uuid).track(data)
 
     @staticmethod
     def delete_run(run_uuid: str) -> None:
