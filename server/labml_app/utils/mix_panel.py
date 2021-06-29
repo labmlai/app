@@ -71,7 +71,7 @@ class Event:
         elif computer_uuid:
             uuid = computer_uuid
         else:
-            value = request.base_url.path.split('/')[-1]
+            value = request.url.path.split('/')[-1]
             if self.has_numbers(value):
                 uuid = value
 
