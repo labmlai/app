@@ -71,7 +71,7 @@ def sign_out(request: Request) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(0.4)
-async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_version: str):
+def _update_run(request: Request, labml_token: str, run_uuid: str, labml_version: str, json: Dict[str, Any]):
     errors = []
 
     token = labml_token
@@ -116,7 +116,6 @@ async def _update_run(request: Request, labml_token: str, run_uuid: str, labml_v
     r = run.get_or_create(request, run_uuid, token)
     s = r.status.load()
 
-    json = await request.json()
     if isinstance(json, list):
         data = json
     else:
@@ -145,7 +144,8 @@ async def update_run(request: Request) -> EndPointRes:
     run_uuid = request.query_params.get('run_uuid', '')
     labml_version = request.query_params.get('labml_version', '')
 
-    res = await _update_run(request, labml_token, run_uuid, labml_version)
+    json = await request.json()
+    res = _update_run(request, labml_token, run_uuid, labml_version, json)
 
     await asyncio.sleep(3)
 
@@ -153,8 +153,8 @@ async def update_run(request: Request) -> EndPointRes:
 
 
 @utils.mix_panel.MixPanelEvent.time_this(0.4)
-async def _update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str,
-                          labml_version: str):
+def _update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str, labml_version: str,
+                    json: Dict[str, Any]):
     errors = []
 
     token = labml_token
@@ -205,7 +205,6 @@ async def _update_session(request: Request, labml_token: str, session_uuid: str,
     c = session.get_or_create(request, session_uuid, computer_uuid, token)
     s = c.status.load()
 
-    json = await request.json()
     if isinstance(json, list):
         data = json
     else:
@@ -229,7 +228,8 @@ async def update_session(request: Request) -> EndPointRes:
     computer_uuid = request.query_params.get('computer_uuid', '')
     labml_version = request.query_params.get('labml_version', '')
 
-    res = await _update_session(request, labml_token, session_uuid, computer_uuid, labml_version)
+    json = await request.json()
+    res = _update_session(request, labml_token, session_uuid, computer_uuid, labml_version, json)
 
     await asyncio.sleep(3)
 
