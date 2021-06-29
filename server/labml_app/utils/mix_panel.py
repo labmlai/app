@@ -116,7 +116,11 @@ class Event:
                     return r
 
                 if time_limit and total_time > time_limit + 1.5:
-                    slack.client.send(f'PERF time: {total_time * 1000:.2f}ms method:{func.__name__}')
+                    slack.client.send(
+                        f'PERF time: {total_time * 1000:.2f}ms, '
+                        f'method:{func.__name__}, '
+                        f'url: {request.url.path}'
+                    )
 
                 self.track(request, func.__name__, {'time_elapsed': str(total_time)})
 
