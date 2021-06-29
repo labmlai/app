@@ -101,6 +101,9 @@ class ProcessAnalysis(Analysis):
                         self.process.ppids[process_id] = s['value'][0]
                     continue
                 elif 'dead' == suffix:
+                    if ind in self.process.tracking:
+                        self.process.tracking.pop(ind)
+
                     if process_id not in self.process.dead:
                         self.process.dead[process_id] = s['value'][0]
                     continue

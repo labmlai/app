@@ -19,10 +19,7 @@ class AnalysisManager:
     @staticmethod
     def track_computer(session_uuid: str, data: Dict[str, SeriesModel]) -> None:
         for ans in computer_analyses:
-            with monit.section('get_or_create'):
-                print(ans.__name__)
-                _ans = ans.get_or_create(session_uuid)
-            _ans.get_or_create(session_uuid).track(data)
+            ans.get_or_create(session_uuid).track(data)
 
     @staticmethod
     def delete_run(run_uuid: str) -> None:
