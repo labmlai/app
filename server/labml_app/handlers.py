@@ -70,7 +70,6 @@ def sign_out(request: Request) -> EndPointRes:
     return {'is_successful': True}
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
 def _update_run(request: Request, labml_token: str, run_uuid: str, labml_version: str, json: Dict[str, Any]):
     errors = []
 
@@ -145,14 +144,15 @@ async def update_run(request: Request) -> EndPointRes:
     labml_version = request.query_params.get('labml_version', '')
 
     json = await request.json()
-    res = _update_run(request, labml_token, run_uuid, labml_version, json)
+
+    with utils.mix_panel.TimeLog('update_run', 0.4, request):
+        res = _update_run(request, labml_token, run_uuid, labml_version, json)
 
     await asyncio.sleep(3)
 
     return res
 
 
-@utils.mix_panel.MixPanelEvent.time_this(0.4)
 def _update_session(request: Request, labml_token: str, session_uuid: str, computer_uuid: str, labml_version: str,
                     json: Dict[str, Any]):
     errors = []
@@ -229,7 +229,8 @@ async def update_session(request: Request) -> EndPointRes:
     labml_version = request.query_params.get('labml_version', '')
 
     json = await request.json()
-    res = _update_session(request, labml_token, session_uuid, computer_uuid, labml_version, json)
+    with utils.mix_panel.TimeLog('update_session', 0.4, request):
+        res = _update_session(request, labml_token, session_uuid, computer_uuid, labml_version, json)
 
     await asyncio.sleep(3)
 

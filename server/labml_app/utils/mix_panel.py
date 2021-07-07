@@ -1,5 +1,6 @@
 import queue
 import inspect
+import json
 import re
 import threading
 import time
@@ -149,3 +150,41 @@ class MixPanelThread(threading.Thread):
 
 
 MixPanelEvent = Event()
+
+
+class TimeLog:
+    _start_time: float
+    name: str
+    time_limit: float
+    request: Request
+    kwargs = Dict[str, str]
+
+    def __init__(self, name: str, time_limit: float, request: Request, **kwargs):
+        self.name = name
+        self.time_limit = time_limit
+        self.request = request
+        self.kwargs = kwargs
+
+    def __enter__(self):
+        self._start_time = time.time()
+
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        total_time = time.time() - self._start_time
+
+        if self.time_limit and total_time < self.time_limit:
+            return
+
+        if self.time_limit and total_time > self.time_limit + 1.5:
+            kwargs_str = json.dumps(self.kwargs) if self.kwargs else ''
+
+            slack.client.send(
+                f'PERF time: {total_time * 1000:.2f}ms, '
+                f'method:{self.name}, '
+                f'url: {self.request.url.path} '
+                f'query params: {self.request.query_params}'
+                f'{kwargs_str}'
+            )
+
+        MixPanelEvent.track(self.request, self.name, {'time_elapsed': str(total_time)})
