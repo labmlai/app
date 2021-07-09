@@ -59,6 +59,10 @@ def get_auth_user(request: Request) -> Optional['user.User']:
     if s.user:
         u = s.user.load()
 
+    if not settings.IS_LOGIN_REQUIRED:
+        u = user.get_or_create_user(user.AuthOInfo(
+            **{k: '' for k in ('name', 'email', 'sub', 'email_verified', 'picture')}))
+
     return u
 
 
