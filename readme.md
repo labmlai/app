@@ -1,3 +1,5 @@
+# ⚠️ This repo has been moved to [labml/app](https://github.com/labmlai/labml/tree/master/app)
+
 <div align="center" style="margin-bottom: 100px;">
     
 <img src="https://raw.githubusercontent.com/lab-ml/lab/master/images/lab_logo.png" width="200px" alt="">
